@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = "s2,ssb1[0].s1,ssb1[0].i1".SplitCsv();
+                    var fields = new [] { "s2","ssb1[0].S1","ssb1[0].i1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -172,13 +172,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2",
+                            "s1 = ssb2.S2",
                             namedWindow ? null : "MyInfra",
                             namedWindow ? BACKING_SINGLE_UNIQUE : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             namedWindow ? null : "MyInfra",
                             namedWindow ? BACKING_SINGLE_UNIQUE : backingUniqueS1,
                             eventSendAssertion),
@@ -206,34 +206,34 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         preloadedEventsOne,
                         "std:unique(s1, d1)",
                         new[] {
-                            new IndexAssertion(null, "s1 = ssb2.s2", null, BACKING_SINGLE_DUPS, eventSendAssertion),
+                            new IndexAssertion(null, "s1 = ssb2.S2", null, BACKING_SINGLE_DUPS, eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.s2 and l1 = ssb2.l2",
+                                "s1 = ssb2.S2 and l1 = ssb2.l2",
                                 null,
                                 BACKING_MULTI_DUPS,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.s2 and d1 = ssb2.d2",
+                                "s1 = ssb2.S2 and d1 = ssb2.d2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.s2 and l1 = ssb2.l2 and d1 = ssb2.d2",
+                                "s1 = ssb2.S2 and l1 = ssb2.l2 and d1 = ssb2.d2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "d1 = ssb2.d2 and s1 = ssb2.s2 and l1 = ssb2.l2",
+                                "d1 = ssb2.d2 and s1 = ssb2.S2 and l1 = ssb2.l2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "l1 = ssb2.l2 and s1 = ssb2.s2 and d1 = ssb2.d2",
+                                "l1 = ssb2.l2 and s1 = ssb2.S2 and d1 = ssb2.d2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion)
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = "s2,ssb1[0].s1,ssb1[0].i1".SplitCsv();
+                    var fields = new [] { "s2","ssb1[0].S1","ssb1[0].i1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -292,19 +292,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2",
+                            "s1 = ssb2.S2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion)
@@ -321,16 +321,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         preloadedEventsOne,
                         "std:unique(s1)",
                         new[] {
-                            new IndexAssertion(null, "s1 = ssb2.s2", "One", backingUniqueS1, eventSendAssertion),
+                            new IndexAssertion(null, "s1 = ssb2.S2", "One", backingUniqueS1, eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.s2 and l1 = ssb2.l2",
+                                "s1 = ssb2.S2 and l1 = ssb2.l2",
                                 "One",
                                 backingUniqueS1,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 "@Hint('index(One)')",
-                                "s1 = ssb2.s2 and l1 = ssb2.l2",
+                                "s1 = ssb2.S2 and l1 = ssb2.l2",
                                 "One",
                                 backingUniqueS1,
                                 eventSendAssertion)
@@ -350,13 +350,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2",
+                            "s1 = ssb2.S2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             "One",
                             backingUniqueS1L1,
                             eventSendAssertion)
@@ -378,38 +378,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         new IndexAssertion(null, "d1 = ssb2.d2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2",
+                            "s1 = ssb2.S2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(Two,One)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.s2 and l1 = ssb2.l2"), // busted
+                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.S2 and l1 = ssb2.l2"), // busted
                         new IndexAssertion(
                             "@Hint('index(explicit,bust)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and d1 = ssb2.d2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and d1 = ssb2.d2 and l1 = ssb2.l2",
                             namedWindow ? "Two" : "MyInfra",
                             namedWindow ? backingUniqueS1D1 : backingUniqueS1,
                             eventSendAssertion),
@@ -428,38 +428,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         new IndexAssertion(null, "d1 = ssb2.d2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2",
+                            "s1 = ssb2.S2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(Two,One)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.s2 and l1 = ssb2.l2"), // busted
+                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.S2 and l1 = ssb2.l2"), // busted
                         new IndexAssertion(
                             "@Hint('index(explicit,bust)')",
-                            "s1 = ssb2.s2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and l1 = ssb2.l2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.s2 and d1 = ssb2.d2 and l1 = ssb2.l2",
+                            "s1 = ssb2.S2 and d1 = ssb2.d2 and l1 = ssb2.l2",
                             namedWindow ? "Two" : "MyInfra",
                             namedWindow ? backingUniqueS1D1 : backingUniqueS1,
                             eventSendAssertion),
@@ -513,8 +513,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "@Hint('index(subquery(1), I1, bust)')\n" +
                     "@Hint('index(subquery(0), I2, bust)')\n" +
                     "select " +
-                    "(select * from MyInfraMIH where s1 = ssb2.s2 and i1 = ssb2.i2) as sub1," +
-                    "(select * from MyInfraMIH where i1 = ssb2.i2 and s1 = ssb2.s2) as sub2 " +
+                    "(select * from MyInfraMIH where s1 = ssb2.S2 and i1 = ssb2.i2) as sub1," +
+                    "(select * from MyInfraMIH where i1 = ssb2.i2 and s1 = ssb2.S2) as sub2 " +
                     "from SupportSimpleBeanTwo ssb2",
                     path);
                 var subqueries = SupportQueryPlanIndexHook.GetAndResetSubqueries();
@@ -590,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-                var fields = "id,details[0].TheString,details[0].IntPrimitive".SplitCsv();
+                var fields = new [] { "Id","details[0].TheString","details[0].IntPrimitive" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));

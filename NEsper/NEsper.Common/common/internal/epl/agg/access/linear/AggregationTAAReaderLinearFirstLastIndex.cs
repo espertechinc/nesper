@@ -18,10 +18,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     public class AggregationTAAReaderLinearFirstLastIndex : AggregationMultiFunctionTableReader
     {
-        private AggregationAccessorLinearType accessType;
-        private int? optionalConstIndex;
-        private ExprEvaluator optionalIndexEval;
-
         public object GetValue(
             int aggColNum,
             AggregationRow row,
@@ -76,29 +72,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return null;
         }
 
-        public void SetAccessType(AggregationAccessorLinearType accessType)
-        {
-            this.accessType = accessType;
-        }
+        public AggregationAccessorLinearType AccessType { get; set; }
 
-        public void SetOptionalConstIndex(int? optionalConstIndex)
-        {
-            this.optionalConstIndex = optionalConstIndex;
-        }
+        public int? OptionalConstIndex { get; set; }
 
-        public void SetOptionalIndexEval(ExprEvaluator optionalIndexEval)
-        {
-            this.optionalIndexEval = optionalIndexEval;
-        }
+        public ExprEvaluator OptionalIndexEval { get; set; }
 
         private EventBean GetBean(IList<EventBean> events)
         {
             int index;
-            if (optionalConstIndex != null) {
-                index = optionalConstIndex.Value;
+            if (OptionalConstIndex != null) {
+                index = OptionalConstIndex.Value;
             }
             else {
-                var result = optionalIndexEval.Evaluate(null, true, null);
+                var result = OptionalIndexEval.Evaluate(null, true, null);
                 if (result == null || !result.IsInt()) {
                     return null;
                 }
@@ -114,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 return null;
             }
 
-            if (accessType == AggregationAccessorLinearType.FIRST) {
+            if (AccessType == AggregationAccessorLinearType.FIRST) {
                 return events[index];
             }
 

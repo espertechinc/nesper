@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type clazz,
             string @ref)
         {
-            this._clazz = clazz;
-            this._ref = @ref;
+            _clazz = clazz;
+            _ref = @ref;
         }
 
         public void Render(

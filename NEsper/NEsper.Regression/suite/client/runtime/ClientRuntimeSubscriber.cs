@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@Name('s0') select null, S1, S0 from SupportBean#keepall as S0, SupportMarketDataBean#keepall as S1 where S0.TheString = S1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@Name('s0') select * from SupportBean#keepall as S0, SupportMarketDataBean#keepall as S1 where S0.TheString = S1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-                    "@Name('s0') select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@Name('s0') select TheString || '<', S1.* as S1, S0.* as S0 from SupportBean#keepall as S0, SupportMarketDataBean#keepall as S1 where S0.TheString = S1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -574,7 +574,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             RegressionEnvironment env,
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
-            var stmt = env.CompileDeploy("@Name('s0') select rstream s0 from SupportBean#unique(TheString) as s0")
+            var stmt = env.CompileDeploy("@Name('s0') select rstream S0 from SupportBean#unique(TheString) as S0")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -772,7 +772,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         private void RunAssertionVariables(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var fields = "myvar".SplitCsv();
+            var fields = new [] { "myvar" };
             var subscriberCreateVariable = new SubscriberMap();
             var stmtTextCreate = "@Name('s0') create variable string myvar = 'abc'";
             var stmt = env.CompileDeploy(stmtTextCreate, path).Statement("s0");
@@ -805,7 +805,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum)
         {
-            var fields = "key,value".SplitCsv();
+            var fields = new [] { "key","value" };
             var path = new RegressionPath();
             var subscriberNamedWindow = new SubscriberMap();
             var stmtTextCreate = eventRepresentationEnum.GetAnnotationText() +
@@ -832,7 +832,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // test on-delete
             var subscriberDelete = new SubscriberMap();
             var stmtTextDelete =
-                "@Name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.Key";
+                "@Name('ondelete') on SupportMarketDataBean S0 delete from MyWindow s1 where S0.Symbol = S1.Key";
             stmt = env.CompileDeploy(stmtTextDelete, path).Statement("ondelete");
             stmt.SetSubscriber(subscriberDelete);
 
@@ -845,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             // test on-select
             var subscriberSelect = new SubscriberMap();
-            var stmtTextSelect = "@Name('onselect') on SupportMarketDataBean s0 select key, value from MyWindow s1";
+            var stmtTextSelect = "@Name('onselect') on SupportMarketDataBean S0 select key, value from MyWindow s1";
             stmt = env.CompileDeploy(stmtTextSelect, path).Statement("onselect");
             stmt.SetSubscriber(subscriberSelect);
 

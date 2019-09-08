@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                     parent,
                     symbols,
                     classScope)
-                .Constant("name", name)
+                .Constant("Name", name)
                 .Build();
         }
     }

@@ -70,13 +70,6 @@ namespace com.espertech.esper.common.@internal.@event.path
         public EventType Resolve(EventTypeMetadata metadata)
         {
             EventType type;
-            Console.WriteLine(metadata.Name);
-            if (metadata.Name == "InnerSchema") {
-                var thread = Thread.CurrentThread;
-                var stack = new System.Diagnostics.StackTrace();
-                var stackAsString = stack.ToString();
-                Console.WriteLine("Break: {0}", stackAsString);
-            }
             // public can only see public
             if (metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
                 type = publics.GetTypeByName(metadata.Name);

@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             int numLoops,
             AssertionCallback assertionCallback)
         {
-            var fields = "mini,maxi".SplitCsv();
+            var fields = new [] { "mini","maxi" };
 
             env.CompileDeploy("@Name('s0')" + epl, path).AddListener("s0").MilestoneInc(milestone);
 

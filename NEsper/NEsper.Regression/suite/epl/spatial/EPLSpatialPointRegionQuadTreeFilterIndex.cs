@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 env.CompileDeploy(
                     "@Name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
-                    "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]");
+                    "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(point(p.Px, p.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]");
                 env.AddListener("s0");
 
                 SendSpatialPoints(env, 100, 100);
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.CompileDeploy("create context PerPointCtx initiated by SupportSpatialPoint ssp", path);
                 env.CompileDeploy(
                     "@Name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
-                    "context PerPointCtx select count(*) from SupportSpatialAABB(point(context.ssp.px, context.ssp.py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))",
+                    "context PerPointCtx select count(*) from SupportSpatialAABB(point(context.ssp.Px, context.ssp.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))",
                     path);
                 env.AddListener("s0");
 
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('out') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
-                          "select p.Id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]";
+                          "select p.Id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.Px, p.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]";
                 env.CompileDeploy(epl).AddListener("out");
 
                 env.Milestone(0);
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl =
                     "create context PointContext initiated by SupportSpatialPoint ssp terminated by SupportBean(TheString=ssp.Id);\n" +
                     "@Name('out') expression myindex {pointregionquadtree(0, 0, 10, 10)}" +
-                    "context PointContext select context.ssp.Id as c0 from SupportSpatialAABB(point(context.ssp.px, context.ssp.py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))";
+                    "context PointContext select context.ssp.Id as c0 from SupportSpatialAABB(point(context.ssp.Px, context.ssp.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(epl).AddListener("out");
 
                 IList<SupportSpatialPoint> points = new List<SupportSpatialPoint>();

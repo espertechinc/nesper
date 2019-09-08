@@ -29,8 +29,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.EventMeta.DefaultEventRepresentation = EventUnderlyingType.OBJECTARRAY;
             session.Configuration.Common.AddEventType(
                 "MyOAType",
-                "bean,TheString,map".SplitCsv(),
-                new object[] {typeof(SupportBean), "string", "Dictionary"});
+                new[] {"bean", "TheString", "map"},
+                new object[] {typeof(SupportBean), "string", "map"});
             RegressionRunner.Run(session, new EventObjectArrayConfiguredStatic());
             session.Destroy();
         }

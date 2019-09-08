@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "eq,neq,sqlneq,nneq".SplitCsv();
+                var fields = new [] { "eq","neq","sqlneq","nneq" };
                 var epl = "@Name('s0') select " +
                           "IntPrimitive=all(1,IntBoxed) as eq, " +
                           "IntPrimitive!=all(1,IntBoxed) as neq, " +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "e,ne".SplitCsv();
+                var fields = new [] { "e","ne" };
                 var epl = "@Name('s0') select " +
                           "LongBoxed = all ({1, 1}, IntArr, LongCol) as e, " +
                           "LongBoxed != all ({1, 1}, IntArr, LongCol) as ne " +
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "eq,neq,sqlneq,nneq".SplitCsv();
+                var fields = new [] { "eq","neq","sqlneq","nneq" };
                 var epl = "@Name('s0') select " +
                           "IntPrimitive = any (1, IntBoxed) as eq, " +
                           "IntPrimitive != any (1, IntBoxed) as neq, " +
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "e,ne".SplitCsv();
+                var fields = new [] { "e","ne" };
                 var epl = "@Name('s0') select " +
                           "LongBoxed = any ({1, 1}, IntArr, LongCol) as e, " +
                           "LongBoxed != any ({1, 1}, IntArr, LongCol) as ne " +
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge".SplitCsv();
+                var fields = new [] { "g","ge" };
                 var epl = "@Name('s0') select " +
                           "LongBoxed>all({1,2},IntArr,intCol) as g, " +
                           "LongBoxed>=all({1,2},IntArr,intCol) as ge " +
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 // test array
-                var fields = "vall,vany".SplitCsv();
+                var fields = new [] { "vall","vany" };
                 string epl;
 
                 epl = "@Name('s0') select " +
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.UndeployAll();
 
                 // test fields
-                fields = "vall,vany".SplitCsv();
+                fields = new [] { "vall","vany" };
                 epl = "@Name('s0') select " +
                       "IntBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
                       "IntBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge".SplitCsv();
+                var fields = new [] { "g","ge" };
                 var epl = "@Name('s0') select " +
                           "LongBoxed > any ({1, 2}, IntArr, intCol) as g, " +
                           "LongBoxed >= any ({1, 2}, IntArr, intCol) as ge " +
@@ -451,7 +451,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge,l,le".SplitCsv();
+                var fields = new [] { "g","ge","l","le" };
                 var epl = "@Name('s0') select " +
                           "IntPrimitive > all (1, 3, 4) as g, " +
                           "IntPrimitive >= all (1, 3, 4) as ge, " +
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge,l,le".SplitCsv();
+                var fields = new [] { "g","ge","l","le" };
                 var epl = "@Name('s0') select " +
                           "IntPrimitive > any (1, 3, 4) as g, " +
                           "IntPrimitive >= some (1, 3, 4) as ge, " +
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string[] fields;
                 string epl;
 
-                fields = "eall,eany,neall,neany,isin".SplitCsv();
+                fields = new [] { "eall","eany","neall","neany","isin" };
                 epl = "@Name('s0') select " +
                       "IntBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
                       "IntBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
@@ -557,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.UndeployAll();
 
                 // test non-array case
-                fields = "eall,eany,neall,neany,isin".SplitCsv();
+                fields = new [] { "eall","eany","neall","neany","isin" };
                 epl = "@Name('s0') select " +
                       "IntBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
                       "IntBoxed = any (DoubleBoxed, LongBoxed) as eany, " +

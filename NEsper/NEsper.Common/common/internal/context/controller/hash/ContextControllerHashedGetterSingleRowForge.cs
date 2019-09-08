@@ -99,7 +99,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             tryBlock.BlockReturn(invoke);
 
             // exception handling
-            AppendCatch(tryBlock, reflectionMethod, statementName, reflectionMethod.DeclaringType.Name, true, args);
+            AppendCatch(
+                tryBlock,
+                reflectionMethod,
+                statementName,
+                reflectionMethod.DeclaringType.GetCleanName(),
+                true,
+                args);
 
             exprMethod.Block.MethodReturn(Constant(0));
 

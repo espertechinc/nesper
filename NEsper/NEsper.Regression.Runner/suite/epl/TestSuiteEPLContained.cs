@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             var outerMapDef = Collections.SingletonDataMap("i", "MyInnerMap[]");
             configuration.Common.AddEventType("MyOuterMap", outerMapDef);
 
-            var funcs = "splitSentence,splitSentenceBean,splitWord".SplitCsv();
+            var funcs = new [] { "splitSentence","splitSentenceBean","splitWord" };
             for (var i = 0; i < funcs.Length; i++) {
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     string[] methods;

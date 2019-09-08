@@ -26,18 +26,6 @@ namespace com.espertech.esper.regressionlib.framework
             {
                 File.Delete(srcFile);
             }
-
-            var dllDir = @"C:\src\Espertech\NEsper-master\NEsper\NEsper.Regression.Runner\bin\Debug\net462";
-            foreach (var dllFile in Directory.GetFiles(dllDir, "NEsper_*.dll"))
-            {
-                try
-                {
-                    File.Delete(dllFile);
-                }
-                catch
-                {
-                }
-            }
         }
 
         public static void Initialize()

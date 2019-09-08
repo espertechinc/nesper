@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the name when provided
         /// </summary>
         /// <returns>name</returns>
-        public string OptionalName
-        {
+        public string OptionalName {
             get => optionalName;
+            set => optionalName = value;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -78,27 +78,31 @@ namespace com.espertech.esper.common.client.soda
         /// Sets the name
         /// </summary>
         /// <param name="optionalName">name</param>
-        public void SetOptionalName(string optionalName)
+        public SubstitutionParameterExpression SetOptionalName(string optionalName)
         {
             this.optionalName = optionalName;
+            return this;
+
         }
 
         /// <summary>
         /// Returns the type when provided
         /// </summary>
         /// <returns>type</returns>
-        public string OptionalType
-        {
+        public string OptionalType {
             get => optionalType;
+            set => optionalType = value;
         }
 
         /// <summary>
         /// Sets the type
         /// </summary>
         /// <param name="optionalType">type</param>
-        public void SetOptionalType(string optionalType)
+        public SubstitutionParameterExpression SetOptionalType(string optionalType)
         {
             this.optionalType = optionalType;
+            return this;
+
         }
     }
 } // end of namespace

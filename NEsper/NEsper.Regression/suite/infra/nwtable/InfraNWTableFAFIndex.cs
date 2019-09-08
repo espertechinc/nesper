@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new SupportSimpleBeanTwo("E2", 21, 3, 4)
                 };
                 IndexAssertionFAF fafAssertion = result => {
-                    var fields = "w1.s1,w2.s2,w1.i1,w2.i2".SplitCsv();
+                    var fields = new [] { "w1.S1","w2.s2","w1.i1","w2.i2" };
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         result.Array,
                         fields,
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionFAF fafAssertion = result => {
-                    var fields = "s1,i1".SplitCsv();
+                    var fields = new [] { "s1","i1" };
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,

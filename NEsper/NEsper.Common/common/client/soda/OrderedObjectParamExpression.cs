@@ -49,18 +49,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending, false for ascending.
         /// </summary>
         /// <returns>indicator for descending sort</returns>
-        public bool Descending
-        {
+        public bool Descending {
             get => descending;
+            set => @descending = value;
         }
 
         /// <summary>
         /// Return true for descending.
         /// </summary>
         /// <param name="descending">indicator</param>
-        public void SetDescending(bool descending)
+        public OrderedObjectParamExpression SetDescending(bool descending)
         {
             this.descending = descending;
+            return this;
         }
 
         /// <summary>

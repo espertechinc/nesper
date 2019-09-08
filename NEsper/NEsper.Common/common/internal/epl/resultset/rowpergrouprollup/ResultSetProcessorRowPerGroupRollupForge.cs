@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -142,13 +143,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 true,
                 typeof(AggregationGroupByRollupDesc),
                 GroupByRollupDesc.Codegen());
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(AggregationGroupByRollupDesc),
-                "GetGroupByRollupDesc",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "GroupByRollupDesc",
                 typeof(ResultSetProcessorRowPerGroupRollup),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(rollupDesc));
+                node => node.GetterBlock.BlockReturn(rollupDesc));
 
             ResultSetProcessorRowPerGroupRollupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
             ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             ResultSetProcessorRowPerGroupRollupImpl.GenerateOutputBatchedCodegen(this, instance, classScope);
 
             // generate having clauses
-            ExprForge[] havingForges = PerLevelForges.OptionalHavingForges;
+            var havingForges = PerLevelForges.OptionalHavingForges;
             if (havingForges != null) {
                 factoryMembers.Add(
                     new CodegenTypedParam(typeof(HavingClauseEvaluator[]), NAME_HAVINGEVALUATOR_ARRAYNONMEMBER));
@@ -164,18 +164,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NAME_HAVINGEVALUATOR_ARRAYNONMEMBER,
                     NewArrayByLength(typeof(HavingClauseEvaluator), Constant(havingForges.Length)));
                 for (var i = 0; i < havingForges.Length; i++) {
-                    var impl = NewAnonymousClass(factoryCtor.Block, typeof(HavingClauseEvaluator));
-                    var evaluateHaving = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope)
-                        .AddParam(PARAMS);
-                    impl.AddMethod("EvaluateHaving", evaluateHaving);
-                    evaluateHaving.Block.MethodReturn(
-                        CodegenLegoMethodExpression.CodegenBooleanExpressionReturnTrueFalse(
-                            havingForges[i],
-                            classScope,
-                            factoryCtor,
-                            REF_EPS,
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                            REF_EXPREVALCONTEXT));
+                    var evaluateHaving = new CodegenExpressionLambda(factoryCtor.Block)
+                        .WithParams(PARAMS)
+                        .WithBody(block => block.BlockReturn(
+                            CodegenLegoMethodExpression.CodegenBooleanExpressionReturnTrueFalse(
+                                havingForges[i],
+                                classScope,
+                                factoryCtor,
+                                REF_EPS,
+                                ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                                REF_EXPREVALCONTEXT)));
+
+                    var impl = NewInstance<ProxyHavingClauseEvaluator>(evaluateHaving);
+
+                    //var evaluateHaving = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope)
+                    //    .AddParam(PARAMS);
+                    //impl.AddMethod("EvaluateHaving", evaluateHaving);
+
                     factoryCtor.Block.AssignArrayElement(NAME_HAVINGEVALUATOR_ARRAYNONMEMBER, Constant(i), impl);
                 }
             }

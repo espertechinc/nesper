@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var path = new RegressionPath();
             var eplCtx = "@Name('ctx') create context theContext " +
-                         " initiated by distinct(partitionKey) TestEvent as test " +
+                         " initiated by distinct(PartitionKey) TestEvent as test " +
                          " terminated after 100 milliseconds";
             var compiledContext = Compile(eplCtx, configuration, path);
             path.Add(compiledContext);
             Deploy(compiledContext, runtime);
 
             var eplStmt = "context theContext " +
-                          "select sum(value) as thesum, count(*) as thecnt " +
+                          "select sum(Value) as thesum, count(*) as thecnt " +
                           "from TestEvent output snapshot when terminated";
             var compiledStmt = Compile(eplStmt, configuration, path);
             var listener = new SupportUpdateListener();
@@ -68,10 +68,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var sum = 0;
             long count = 0;
             foreach (var @event in listener.NewDataListFlattened) {
-                var sumBatch = @event.Get("thesum").AsInt();
+                var sumBatch = @event.Get("thesum").AsBoxedInt();
                 // Comment-Me-In: System.out.println(EventBeanUtility.summarize(event));
                 if (sumBatch != null) { // can be null when there is nothing to deliver
-                    sum += sumBatch;
+                    sum += sumBatch.Value;
                     count += @event.Get("thecnt").AsLong();
                 }
             }

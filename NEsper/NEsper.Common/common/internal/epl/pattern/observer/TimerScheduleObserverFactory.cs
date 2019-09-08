@@ -18,26 +18,30 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
     /// </summary>
     public class TimerScheduleObserverFactory : ObserverFactory
     {
-        private bool isAllConstant;
-        private MatchedEventConvertor optionalConvertor;
-        internal int scheduleCallbackId = -1;
-        private TimerScheduleSpecCompute scheduleComputer;
-        private TimerScheduleSpec spec;
+        private bool _isAllConstant;
+        private MatchedEventConvertor _optionalConvertor;
+        private int _scheduleCallbackId = -1;
+        private TimerScheduleSpecCompute _scheduleComputer;
+        private TimerScheduleSpec _spec;
 
         public bool IsAllConstant {
-            set => isAllConstant = value;
+            get => _isAllConstant;
+            set => _isAllConstant = value;
         }
 
         public TimerScheduleSpecCompute ScheduleComputer {
-            set => scheduleComputer = value;
+            get => _scheduleComputer;
+            set => _scheduleComputer = value;
         }
 
         public MatchedEventConvertor OptionalConvertor {
-            set => optionalConvertor = value;
+            get => _optionalConvertor;
+            set => _optionalConvertor = value;
         }
 
         public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
+            get => _scheduleCallbackId;
+            set => _scheduleCallbackId = value;
         }
 
         public EventObserver MakeObserver(
@@ -47,10 +51,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             object observerState,
             bool isFilterChildNonQuitting)
         {
-            if (isAllConstant) {
+            if (_isAllConstant) {
                 try {
-                    spec = scheduleComputer.Compute(
-                        optionalConvertor,
+                    _spec = _scheduleComputer.Compute(
+                        _optionalConvertor,
                         beginState,
                         context.AgentInstanceContext,
                         context.AgentInstanceContext.ImportServiceRuntime.TimeZone,
@@ -74,13 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             MatchedEventMap beginState,
             PatternAgentInstanceContext context)
         {
-            if (spec != null) {
-                return spec;
+            if (_spec != null) {
+                return _spec;
             }
 
             try {
-                return scheduleComputer.Compute(
-                    optionalConvertor,
+                return _scheduleComputer.Compute(
+                    _optionalConvertor,
                     beginState,
                     context.AgentInstanceContext,
                     context.StatementContext.ImportServiceRuntime.TimeZone,

@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public BeanEventPropertyWriterMapProp(
             Type clazz,
-            MethodInfo writerMethod,
+            MethodInfo writerMember,
             string key)
-            : base(clazz, writerMethod)
+            : base(clazz, writerMember)
         {
             this.key = key;
         }

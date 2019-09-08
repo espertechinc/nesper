@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
         }
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
             if (!node.Bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
                 return;
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
             var points = node.Points;
             if (points == null) {

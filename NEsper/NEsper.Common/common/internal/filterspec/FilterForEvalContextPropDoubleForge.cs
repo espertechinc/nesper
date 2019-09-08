@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .IfRefNullReturnNull(Ref("props"))
                 .DeclareVar<object>("result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethod(Cast(typeof(object), Ref("result")), "DoubleValue"));
+                .MethodReturn(ExprDotMethod(Cast(typeof(object), Ref("result")), "AsDouble"));
 
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }

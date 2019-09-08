@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "string,value".SplitCsv();
+                var fields = new [] { "string","value" };
                 var text = "@Name('s0') select * from SupportRecogBean " +
                            "match_recognize (" +
                            "  measures A.TheString as string, A.Value as value" +
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = "a_string,b_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = "a_string,b_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "    B as (B.IntPrimitive = A.IntPrimitive)" +
                            ")";
 
-                var fields = "ast,ai,bi".SplitCsv();
+                var fields = new [] { "ast","ai","bi" };
                 env.CompileDeploy(text, path).AddListener("S1");
 
                 env.Milestone(0);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 env.AdvanceTime(0);
 
-                var fields = "a_string,b_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +

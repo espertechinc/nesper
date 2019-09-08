@@ -346,8 +346,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(15000, env);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a0Id,a1Id".SplitCsv(),
-                    "E1,E2".SplitCsv());
+                    new [] { "a0Id","a1Id" },
+                    new [] { "E1","E2" });
 
                 env.UndeployAll();
             }

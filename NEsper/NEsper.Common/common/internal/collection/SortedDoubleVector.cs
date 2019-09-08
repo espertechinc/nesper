@@ -81,11 +81,11 @@ namespace com.espertech.esper.common.@internal.collection
 
             int index = FindInsertIndex(val);
             if (index == -1) {
-                throw new IllegalStateException("Value not found in collection");
+                return;
             }
 
             double? valueAtIndex = _values[index];
-            if ((valueAtIndex != null) && (valueAtIndex != val)) {
+            if ((valueAtIndex != null) && (valueAtIndex.Value != val)) {
                 throw new IllegalStateException("Value not found in collection");
             }
 

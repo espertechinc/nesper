@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.avg
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenClassScope classScope)
         {
             var distinctValueType = !parent.IsDistinct ? null : childType;
-            if (resultType == typeof(BigInteger) || resultType == typeof(decimal?)) {
+            if (resultType.IsBigInteger() || resultType.IsDecimal()) {
                 aggregator = new AggregatorAvgBig(
                     this,
                     col,
@@ -93,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
         private Type GetAvgAggregatorType(Type type)
         {
-            if (type == typeof(decimal?) || type == typeof(BigInteger)) {
+            if (type.IsDecimal() || type.IsBigInteger()) {
                 return typeof(decimal?);
             }
 

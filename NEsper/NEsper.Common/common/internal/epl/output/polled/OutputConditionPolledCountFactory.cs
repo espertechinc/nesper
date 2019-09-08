@@ -25,14 +25,26 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         private int eventRate;
         private Variable variable;
 
-        public void SetEventRate(int eventRate)
-        {
-            this.eventRate = eventRate;
+        public int EventRate {
+            get => eventRate;
+            set => eventRate = value;
         }
 
-        public void SetVariable(Variable variable)
+        public Variable Variable {
+            get => variable;
+            set => variable = value;
+        }
+
+        public OutputConditionPolledCountFactory SetEventRate(int eventRate)
+        {
+            this.eventRate = eventRate;
+            return this;
+        }
+
+        public OutputConditionPolledCountFactory SetVariable(Variable variable)
         {
             this.variable = variable;
+            return this;
         }
 
         public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)

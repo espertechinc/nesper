@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         public static string UnescapeBacktickForProperty(string unescapedPropertyName)
         {
             if (unescapedPropertyName.StartsWith("`") && unescapedPropertyName.EndsWith("`")) {
-                return unescapedPropertyName.Substring(1, unescapedPropertyName.Length - 1);
+                return unescapedPropertyName.Substring(1, unescapedPropertyName.Length - 2);
             }
 
             if (!unescapedPropertyName.Contains("`")) {

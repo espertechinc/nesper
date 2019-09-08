@@ -425,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             var newEvents = env.Listener("s0").LastNewData;
             env.Listener("s0").Reset();
-            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"s0", "s1", "s2"});
+            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] { "S0", "S1", "S2" });
         }
 
         internal class EPLJoinMapLeftJoinUnsortedProps : RegressionExecution
@@ -493,12 +493,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11, s2.Id, s2.P20, s2.P21".SplitCsv();
+                var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
 
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_S0#length(1000) as s0 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s0.P01 = s2.P21";
+                          "SupportBean_S0#length(1000) as S0 " +
+                          " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
+                          " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 and S0.P01 = S2.P21";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S1(10, "A_1", "B_1"));
@@ -554,16 +554,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
                 var fromClause = FromClause.Create(
-                    FilterStream.Create("SupportBean_S0", "s0").AddView("keepall"),
-                    FilterStream.Create("SupportBean_S1", "s1").AddView("keepall"),
-                    FilterStream.Create("SupportBean_S2", "s2").AddView("keepall"));
-                fromClause.Add(OuterJoinQualifier.Create("s0.P00", OuterJoinType.LEFT, "s1.P10"));
-                fromClause.Add(OuterJoinQualifier.Create("s0.P00", OuterJoinType.LEFT, "s2.P20"));
+                    FilterStream.Create("SupportBean_S0", "S0").AddView("keepall"),
+                    FilterStream.Create("SupportBean_S1", "S1").AddView("keepall"),
+                    FilterStream.Create("SupportBean_S2", "S2").AddView("keepall"));
+                fromClause.Add(OuterJoinQualifier.Create("S0.P00", OuterJoinType.LEFT, "S1.P10"));
+                fromClause.Add(OuterJoinQualifier.Create("S0.P00", OuterJoinType.LEFT, "S2.P20"));
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);
 
                 Assert.AreEqual(
-                    "select * from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.P00 = s1.P10 left outer join SupportBean_S2#keepall as s2 on s0.P00 = s2.P20",
+                    "select * from SupportBean_S0#keepall as S0 " +
+                    "left outer join SupportBean_S1#keepall as S1 on S0.P00 = S1.P10 " +
+                    "left outer join SupportBean_S2#keepall as S2 on S0.P00 = S2.P20",
                     model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -578,9 +580,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_S0#length(1000) as s0 " +
-                          "left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
-                          "left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20";
+                          "SupportBean_S0#length(1000) as S0 " +
+                          "left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
+                          "left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env);
@@ -596,9 +598,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// s0
                 /// </summary>
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_S0#length(1000) as s0 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
+                          "SupportBean_S0#length(1000) as S0 " +
+                          " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
+                          " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -615,10 +617,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// s0
                 /// </summary>
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_S2#length(1000) as s2 " +
-                          " right outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s2.P20 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 ";
+                          "SupportBean_S2#length(1000) as S2 " +
+                          " right outer join SupportBean_S0#length(1000) as S0 on S0.P00 = S2.P20 " +
+                          " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 ";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertion(env);
@@ -634,10 +635,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// s0
                 /// </summary>
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_S1#length(1000) as s1 " +
-                          " right outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10 " +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
+                          "SupportBean_S1#length(1000) as S1 " +
+                          " right outer join SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
+                          " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -652,22 +652,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 string epl;
 
                 epl = "@Name('s0') select * from " +
-                      "SupportBean_S0#length(1000) as s0 " +
-                      " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
-                      " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s1.P11 = s2.P21";
+                      "SupportBean_S0#length(1000) as S0 " +
+                      " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
+                      " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 and S1.P11 = S2.P21";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error valIdating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
+                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
 
                 epl = "@Name('s0') select * from " +
-                      "SupportBean_S0#length(1000) as s0 " +
-                      " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
-                      " left outer join SupportBean_S2#length(1000) as s2 on s2.P20 = s0.P00 and s2.P20 = s1.P11";
+                      "SupportBean_S0#length(1000) as S0 " +
+                      " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
+                      " left outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S0.P00 and S2.P20 = S1.P11";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error valIdating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
+                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
             }
         }
     }

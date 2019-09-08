@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public BeanEventPropertyWriterIndexedProp(
             Type clazz,
-            MethodInfo writerMethod,
+            MethodInfo writerMember,
             int index)
-            : base(clazz, writerMethod)
+            : base(clazz, writerMember)
         {
             this.index = index;
         }

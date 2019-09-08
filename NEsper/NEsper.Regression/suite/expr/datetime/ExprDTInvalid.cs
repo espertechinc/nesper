@@ -68,14 +68,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DtoDate.between(\"a\",\"b\")': Error valIdating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
+                "Failed to validate select-clause expression 'DtoDate.between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
 
             // invalid wrong parameter
             epl = "select DtoDate.between(utildate, utildate, 1, true) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DtoDate.between(utildate,utildate,...(42 chars)': Error valIdating date-time method 'between', expected a boolean-type result for expression parameter 2 but received int");
+                "Failed to validate select-clause expression 'DtoDate.between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received int");
 
             // mispatch parameter to input
             epl = "select DtoDate.format(java.time.format.DateTimeFormatter.ISO_ORDINAL_DATE) from SupportDateTime";
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DtoDate.format(null)': Error valIdating date-time method 'format', expected any of [String, DateFormat, DateTimeFormatter]-type result for expression parameter 0 but received null");
+                "Failed to validate select-clause expression 'DtoDate.format(null)': Error validating date-time method 'format', expected any of [String, DateFormat, DateTimeFormatter]-type result for expression parameter 0 but received null");
         }
     }
 } // end of namespace

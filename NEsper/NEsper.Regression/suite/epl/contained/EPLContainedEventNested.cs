@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
         private static void TryAssertionColumnSelect(RegressionEnvironment env)
         {
-            var fields = "OrderId,BookId,ReviewId".SplitCsv();
+            var fields = new [] { "OrderId","BookId","ReviewId" };
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             EPAssertionUtil.AssertPropsPerRow(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "ReviewId".SplitCsv();
+                var fields = new [] { "ReviewId" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create window OrderWindowNWF#lastevent as OrderBean", path);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,TotalPrice".SplitCsv();
+                var fields = new [] { "TheString","TotalPrice" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create window OrderWindowNWS#lastevent as OrderBean", path);
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "ReviewId".SplitCsv();
+                var fields = new [] { "ReviewId" };
 
                 var stmtText =
                     "@Name('s0') select ReviewId from OrderBean[Books][Reviews] bookReviews order by ReviewId asc";
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "ReviewId".SplitCsv();
+                var fields = new [] { "ReviewId" };
 
                 // try where in root
                 var stmtText =
@@ -322,8 +322,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@Name('s0') select TheString from SupportBean s0 where " +
-                        "exists (select * from OrderBean[Books][Reviews]#unique(ReviewId) where ReviewId = s0.IntPrimitive)")
+                        "@Name('s0') select TheString from SupportBean S0 where " +
+                        "exists (select * from OrderBean[Books][Reviews]#unique(ReviewId) where ReviewId = S0.IntPrimitive)")
                     .AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "OrderId,BookId,ReviewId".SplitCsv();
+                var fields = new [] { "OrderId","BookId","ReviewId" };
 
                 var stmtText =
                     "@Name('s0') select OrderDetail.OrderId as OrderId, BookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +

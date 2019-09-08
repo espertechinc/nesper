@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public override string ToString()
         {
-            return string.Format("{0}minX={1}, minY={2}, maxX={3}, maxY={4}{5}",
+            return string.Format("{0}MinX={1}, MinY={2}, MaxX={3}, MaxY={4}{5}",
                 '{',
                 _minX.RenderAny(),
                 _minY.RenderAny(),

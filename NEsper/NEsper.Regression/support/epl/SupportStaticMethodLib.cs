@@ -70,33 +70,33 @@ namespace com.espertech.esper.regressionlib.support.epl
             return beanOne.Symbol.Equals(beanTwo.TheString);
         }
 
-        public static IDictionary<string, Type> FetchMapArrayMRMetadata()
+        public static IDictionary<string, object> FetchMapArrayMRMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
         }
 
-        public static LinkedHashMap<string, Type> FetchObjectArrayEventBeanMetadata()
+        public static LinkedHashMap<string, object> FetchObjectArrayEventBeanMetadata()
         {
-            var values = new LinkedHashMap<string, Type>();
+            var values = new LinkedHashMap<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
         }
 
-        public static LinkedHashMap<string, Type> FetchOAArrayMRMetadata()
+        public static LinkedHashMap<string, object> FetchOAArrayMRMetadata()
         {
-            var values = new LinkedHashMap<string, Type>();
+            var values = new LinkedHashMap<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
         }
 
-        public static IDictionary<string, Type> FetchSingleValueMetadata()
+        public static IDictionary<string, object> FetchSingleValueMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("result", typeof(int?));
             return values;
         }
@@ -115,9 +115,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return result;
         }
 
-        public static IDictionary<string, Type> FetchResult12Metadata()
+        public static IDictionary<string, object> FetchResult12Metadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("value", typeof(int?));
             return values;
         }
@@ -136,9 +136,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return result;
         }
 
-        public static IDictionary<string, Type> FetchResult23Metadata()
+        public static IDictionary<string, object> FetchResult23Metadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("value", typeof(int?));
             values.Put("valueTwo", typeof(int?));
             return values;
@@ -165,9 +165,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return result;
         }
 
-        public static IDictionary<string, Type> FetchResult100Metadata()
+        public static IDictionary<string, object> FetchResult100Metadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("col1", typeof(int?));
             values.Put("col2", typeof(int?));
             return values;
@@ -221,16 +221,16 @@ namespace com.espertech.esper.regressionlib.support.epl
             return result;
         }
 
-        public static IDictionary<string, Type> FetchBetweenMetadata()
+        public static IDictionary<string, object> FetchBetweenMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("value", typeof(int?));
             return values;
         }
 
-        public static IDictionary<string, Type> FetchBetweenStringMetadata()
+        public static IDictionary<string, object> FetchBetweenStringMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("value", typeof(string));
             return values;
         }
@@ -283,9 +283,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return rows;
         }
 
-        public static IDictionary<string, Type> FetchMapMetadata()
+        public static IDictionary<string, object> FetchMapMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
@@ -309,9 +309,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return values;
         }
 
-        public static IDictionary<string, Type> FetchMapEventBeanMetadata()
+        public static IDictionary<string, object> FetchMapEventBeanMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
@@ -338,9 +338,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return values;
         }
 
-        public static IDictionary<string, Type> FetchIdDelimitedMetadata()
+        public static IDictionary<string, object> FetchIdDelimitedMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("result", typeof(string));
             return values;
         }
@@ -779,9 +779,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return FetchPONOCollectionMR(theString, id).GetEnumerator();
         }
 
-        public static IDictionary<string, Type> FetchMapCollectionMRMetadata()
+        public static IDictionary<string, object> FetchMapCollectionMRMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
@@ -811,7 +811,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             return rows;
         }
 
-        public static IDictionary<string, Type> FetchMapIteratorMRMetadata()
+        public static IDictionary<string, object> FetchMapIteratorMRMetadata()
         {
             return FetchMapCollectionMRMetadata();
         }
@@ -827,9 +827,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return FetchMapCollectionMR(theString, id).GetEnumerator();
         }
 
-        public static LinkedHashMap<string, Type> FetchOACollectionMRMetadata()
+        public static LinkedHashMap<string, object> FetchOACollectionMRMetadata()
         {
-            var values = new LinkedHashMap<string, Type>();
+            var values = new LinkedHashMap<string, object>();
             values.Put("mapstring", typeof(string));
             values.Put("mapint", typeof(int?));
             return values;
@@ -859,7 +859,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             return rows;
         }
 
-        public static LinkedHashMap<string, Type> FetchOAIteratorMRMetadata()
+        public static IDictionary<string, object> FetchOAIteratorMRMetadata()
         {
             return FetchOACollectionMRMetadata();
         }
@@ -904,9 +904,9 @@ namespace com.espertech.esper.regressionlib.support.epl
             return GetOverloadedMethodForJoinResult(Convert.ToString(first), Convert.ToString(second));
         }
 
-        public static IDictionary<string, Type> OverloadedMethodForJoinMetadata()
+        public static IDictionary<string, object> OverloadedMethodForJoinMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("col1", typeof(string));
             values.Put("col2", typeof(string));
             return values;

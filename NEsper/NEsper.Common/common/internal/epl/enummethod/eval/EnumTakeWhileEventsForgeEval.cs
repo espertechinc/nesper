@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "EmptyList"));
+                StaticMethod(typeof(Collections), "GetEmptyList"));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));

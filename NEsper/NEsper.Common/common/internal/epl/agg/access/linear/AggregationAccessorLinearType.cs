@@ -14,33 +14,31 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     /// <summary>
     ///     Enum for aggregation multi-function state type.
     /// </summary>
-    public class AggregationAccessorLinearType
+    public enum AggregationAccessorLinearType
     {
         /// <summary>
         ///     For "first" function.
         /// </summary>
-        public static readonly AggregationAccessorLinearType FIRST = new AggregationAccessorLinearType("FIRST");
+        FIRST,
 
         /// <summary>
         ///     For "last" function.
         /// </summary>
-        public static readonly AggregationAccessorLinearType LAST = new AggregationAccessorLinearType("LAST");
+        LAST,
 
         /// <summary>
         ///     For "window" function.
         /// </summary>
-        public static readonly AggregationAccessorLinearType WINDOW = new AggregationAccessorLinearType("WINDOW");
+        WINDOW
+    }
 
+    public static class AggregationAccessorLinearTypeExtensions
+    {
         public static AggregationAccessorLinearType[] Values = new AggregationAccessorLinearType[] {
-            FIRST,
-            LAST,
-            WINDOW
+            AggregationAccessorLinearType.FIRST,
+            AggregationAccessorLinearType.LAST,
+            AggregationAccessorLinearType.WINDOW
         };
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        public string Name { get; private set; }
 
         /// <summary>
         /// Returns the enumeration value associated with the string text.
@@ -51,17 +49,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             string compare = text.Trim().ToUpperInvariant();
             return Values.FirstOrDefault(
-                type =>
-                    string.Equals(text, type.Name, StringComparison.InvariantCultureIgnoreCase));
+                type => string.Equals(text, type.GetName(), StringComparison.InvariantCultureIgnoreCase));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AggregationAccessorLinearType"/> class.
+        /// Gets the name.
         /// </summary>
-        /// <param name="name">The name.</param>
-        private AggregationAccessorLinearType(string name)
+        public static string GetName(this AggregationAccessorLinearType value)
         {
-            Name = name;
+            switch (value)
+            {
+                case AggregationAccessorLinearType.FIRST:
+                    return "FIRST";
+                case AggregationAccessorLinearType.LAST:
+                    return "LAST";
+                case AggregationAccessorLinearType.WINDOW:
+                    return "WINDOW";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
         }
     }
 } // end of namespace

@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
@@ -123,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             else {
                 EPAssertionUtil.AssertProps(
                     (EventBean) rows[0],
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new object[] {"abc", 100L});
             }
 
@@ -175,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  EventBusSource -> stream.two<SampleSchema> {\n" +
                           "    collector : {\n" +
                           "      class : '" +
-                          typeof(MyDummyCollector).Name +
+                          typeof(MyDummyCollector).MaskTypeName() +
                           "'\n" +
                           "    },\n" +
                           "  }";

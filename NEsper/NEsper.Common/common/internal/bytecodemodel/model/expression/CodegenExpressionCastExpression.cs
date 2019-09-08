@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 throw new ArgumentException("Cast-to class is a null value");
             }
 
-            this._clazz = clazz;
+            _clazz = clazz;
             _typeName = null;
-            this._expression = expression;
+            _expression = expression;
         }
 
         public CodegenExpressionCastExpression(
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
 
             _clazz = null;
-            this._typeName = typeName;
-            this._expression = expression;
+            _typeName = typeName;
+            _expression = expression;
         }
 
         public void Render(

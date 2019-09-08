@@ -20,14 +20,14 @@ namespace com.espertech.esper.common.client.soda
     public class CreateIndexColumn
     {
         private IList<Expression> columns;
-        private String indexType;
+        private string indexType;
         private IList<Expression> parameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateIndexColumn"/> class.
         /// </summary>
         /// <param name="columnName">Name of the column.</param>
-        public CreateIndexColumn(String columnName)
+        public CreateIndexColumn(string columnName)
             : this(columnName, CreateIndexColumnType.HASH)
         {
         }
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columnName">Name of the column.</param>
         /// <param name="type">The index type.</param>
         public CreateIndexColumn(
-            String columnName,
+            string columnName,
             CreateIndexColumnType type)
         {
             this.columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="parameters">The parameters.</param>
         public CreateIndexColumn(
             IList<Expression> columns,
-            String type,
+            string type,
             IList<Expression> parameters)
         {
             this.columns = columns;
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             if ((indexType != null) &&
-                !String.Equals(
+                !string.Equals(
                     indexType,
                     CreateIndexColumnType.HASH.GetName(),
                     StringComparison.InvariantCultureIgnoreCase))
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The type of the index.
         /// </value>
-        public String IndexType
+        public string IndexType
         {
             get => indexType;
             set => indexType = value;

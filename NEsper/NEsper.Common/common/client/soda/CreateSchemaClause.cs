@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="types">are for model-after, could be multiple when declaring a variant stream, or a single fully-qualified class name</param>
         /// <param name="typeDefinition">type definition</param>
         public CreateSchemaClause(
-            String schemaName,
-            ICollection<String> types,
+            string schemaName,
+            ICollection<string> types,
             CreateSchemaClauseTypeDef typeDefinition)
         {
             SchemaName = schemaName;
@@ -42,9 +42,9 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columns">column definition</param>
         /// <param name="inherits">inherited types, if any</param>
         public CreateSchemaClause(
-            String schemaName,
+            string schemaName,
             IList<SchemaColumnDesc> columns,
-            ICollection<String> inherits)
+            ICollection<string> inherits)
         {
             SchemaName = schemaName;
             Columns = columns;
@@ -58,10 +58,10 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columns">column definition</param>
         /// <param name="inherits">inherited types, if any</param>
         public CreateSchemaClause(
-            String schemaName,
-            ICollection<String> types,
+            string schemaName,
+            ICollection<string> types,
             IList<SchemaColumnDesc> columns,
-            ICollection<String> inherits,
+            ICollection<string> inherits,
             CreateSchemaClauseTypeDef typeDefinition)
         {
             SchemaName = schemaName;
@@ -126,8 +126,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(" as ");
             if ((Types != null) && (Types.IsNotEmpty()))
             {
-                String delimiter = "";
-                foreach (String type in Types)
+                string delimiter = "";
+                foreach (string type in Types)
                 {
                     writer.Write(delimiter);
                     writer.Write(type);
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.client.soda
             else
             {
                 writer.Write("(");
-                String delimiter = "";
+                string delimiter = "";
                 foreach (SchemaColumnDesc col in Columns)
                 {
                     writer.Write(delimiter);
@@ -151,8 +151,8 @@ namespace com.espertech.esper.common.client.soda
             if ((Inherits != null) && (Inherits.IsNotEmpty()))
             {
                 writer.Write(" inherits ");
-                String delimiter = "";
-                foreach (String name in Inherits)
+                string delimiter = "";
+                foreach (string name in Inherits)
                 {
                     writer.Write(delimiter);
                     writer.Write(name);
@@ -175,8 +175,8 @@ namespace com.espertech.esper.common.client.soda
             if ((CopyFrom != null) && (CopyFrom.IsNotEmpty()))
             {
                 writer.Write(" copyFrom ");
-                String delimiter = "";
-                foreach (String name in CopyFrom)
+                string delimiter = "";
+                foreach (string name in CopyFrom)
                 {
                     writer.Write(delimiter);
                     writer.Write(name);

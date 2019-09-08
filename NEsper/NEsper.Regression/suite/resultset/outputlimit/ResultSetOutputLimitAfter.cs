@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean("E6", 60));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "thesum".SplitCsv(),
+                new [] { "thesum" },
                 new object[] {210});
 
             env.UndeployAll();

@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
                     "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.intSize)";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "id,cnt".SplitCsv();
+                var fields = new [] { "id","cnt" };
 
                 SendInitEvent(env, "P1", 2);
                 SendInitEvent(env, "P2", 4);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
-                    "id,cnt".SplitCsv(),
+                    new [] { "id","cnt" },
                     new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
 
                 env.UndeployAll();

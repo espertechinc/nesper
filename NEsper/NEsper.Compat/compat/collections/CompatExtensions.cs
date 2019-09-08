@@ -375,7 +375,7 @@ namespace com.espertech.esper.compat.collections
             return true;
         }
 
-        public static bool IsEqual<T>(this T[] arrayThis, T[] arrayThat)
+        public static bool AreEqual<T>(this T[] arrayThis, T[] arrayThat)
         {
             var arrayThisLength = arrayThis.Length;
             var arrayThatLength = arrayThat.Length;
@@ -395,7 +395,7 @@ namespace com.espertech.esper.compat.collections
             return true;
         }
 
-        public static bool IsEqual<T>(this IEnumerator<T> enumThis, IEnumerator<T> enumThat)
+        public static bool AreEqual<T>(this IEnumerator<T> enumThis, IEnumerator<T> enumThat)
         {
             while (true)
             {
@@ -1275,8 +1275,17 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
+            if (value is char asChar) {
+                textWriter.Write('\'');
+                textWriter.Write(asChar);
+                textWriter.Write('\'');
+                return;
+            }
+
             if (value is string s) {
+                textWriter.Write('"');
                 textWriter.Write(s);
+                textWriter.Write('"');
                 return;
             }
 
@@ -1301,6 +1310,7 @@ namespace com.espertech.esper.compat.collections
                 }
 
                 textWriter.Write(text);
+                textWriter.Write('d');
                 return; // + 'd'
             }
 
@@ -1321,6 +1331,12 @@ namespace com.espertech.esper.compat.collections
             {
                 textWriter.Write(value.ToString());
                 textWriter.Write('L');
+                return;
+            }
+
+            if (value is int)
+            {
+                textWriter.Write(value.ToString());
                 return;
             }
 
@@ -1357,6 +1373,11 @@ namespace com.espertech.esper.compat.collections
                 }
 
                 textWriter.Write(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
+                return;
+            }
+
+            if (value is bool asBool) {
+                textWriter.Write(asBool ? "true" : "false");
                 return;
             }
 

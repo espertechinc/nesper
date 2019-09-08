@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "@Name('s0') select exists(item?.Id) as t0, " +
                           " exists(item?.Id?) as t1, " +
                           " exists(item?.item.IntBoxed) as t2, " +
-                          " exists(item?.indexed[0]?) as t3, " +
-                          " exists(item?.mapped('keyOne')?) as t4, " +
+                          " exists(item?.Indexed[0]?) as t3, " +
+                          " exists(item?.Mapped('keyOne')?) as t4, " +
                           " exists(item?.Nested?) as t5, " +
                           " exists(item?.Nested.NestedValue?) as t6, " +
                           " exists(item?.Nested.NestedNested?) as t7, " +

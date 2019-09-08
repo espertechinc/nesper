@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
             SendEvent(env, "CAT", 160, 6);
 
-            var fields = "symbol,Volume,mySum".SplitCsv();
+            var fields = new [] { "symbol","Volume","mySum" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
             SendEvent(env, "CAT", 160, 6);
 
-            var fields = "symbol,sum(Price)".SplitCsv();
+            var fields = new [] { "symbol","sum(Price)" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             SendEvent(env, "CAT", 105, 5);
             SendEvent(env, "CAT", 106, 6);
 
-            var fields = "symbol,Volume,sum(Price)".SplitCsv();
+            var fields = new [] { "symbol","Volume","sum(Price)" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,

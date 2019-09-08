@@ -62,18 +62,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool IsDistinct
-        {
+        public bool IsDistinct {
             get => distinct;
+            set => distinct = value;
         }
 
         /// <summary>
         /// Set the distinct flag indicating the projection considers distinct values only.
         /// </summary>
         /// <param name="distinct">true for distinct, false for not distinct</param>
-        public void SetDistinct(bool distinct)
+        public SumProjectionExpression SetDistinct(bool distinct)
         {
             this.distinct = distinct;
+            return this;
         }
     }
 } // end of namespace

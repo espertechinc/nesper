@@ -54,8 +54,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 _methods = new Dictionary<string, CodegenMethod>();
             }
 
-            Console.WriteLine("AddMethodWithSymbols: {0}", methodName);
-
             var existing = _methods.Get(methodName);
             if (existing != null) {
                 if (ListExtensions.AreEqual(@params, existing.LocalParams)) {
@@ -77,7 +75,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
             var method = _methods.Get(name);
             if (method == null) {
-                throw new IllegalStateException("Method by name '" + method + "' not found");
+                throw new IllegalStateException("Method by name '" + name + "' not found");
             }
 
             return method;

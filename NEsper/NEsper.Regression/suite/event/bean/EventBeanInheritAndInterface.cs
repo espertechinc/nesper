@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select val as value from SupportOverrideOne#length(10)";
+                var epl = "@Name('s0') select Val as value from SupportOverrideOne#length(10)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportOverrideOneA("valA", "valOne", "valBase"));

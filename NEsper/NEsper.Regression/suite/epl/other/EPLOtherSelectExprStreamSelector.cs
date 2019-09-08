@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 TryInvalidCompile(
                     env,
-                    "select simpleProperty.* as a from SupportBeanComplexProps as s0",
+                    "select SimpleProperty.* as a from SupportBeanComplexProps as S0",
                     "The property wildcard syntax must be used without column name");
             }
         }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOneText = "@Name('l1') insert into StreamA select nested.* from SupportBeanComplexProps as s0";
+                var stmtOneText = "@Name('l1') insert into StreamA select Nested.* from SupportBeanComplexProps as S0";
                 env.CompileDeploy(stmtOneText, path).AddListener("l1");
                 Assert.AreEqual(
                     typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(model).AddListener("s0");
 
                 var epl =
-                    "@Name('s0') select s0.*, s1.* as s1stream, TheString as sym from SupportBean#keepall as s0, " +
-                    "SupportMarketDataBean#keepall as s1";
+                    "@Name('s0') select S0.*, S1.* as S1stream, TheString as sym from SupportBean#keepall as S0, " +
+                    "SupportMarketDataBean#keepall as S1";
                 Assert.AreEqual(epl, model.ToEPL());
                 var modelReverse = env.EplToModel(model.ToEPL());
                 Assert.AreEqual(epl, modelReverse.ToEPL());
@@ -208,8 +208,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select *, s1.* from SupportBean#length(3) as s0, " +
-                          "SupportMarketDataBean#keepall as s1";
+                var epl = "@Name('s0') select *, S1.* from SupportBean#length(3) as S0, " +
+                          "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select *, win.* as s0 from SupportBean#length(3) as win";
+                var epl = "@Name('s0') select *, win.* as S0 from SupportBean#length(3) as win";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -262,8 +262,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select *, s1.* as s1stream, s0.* as s0stream from SupportBean#length(3) as s0, " +
-                    "SupportMarketDataBean#keepall as s1";
+                    "@Name('s0') select *, S1.* as S1stream, S0.* as S0stream from SupportBean#length(3) as S0, " +
+                    "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString.* as s0, IntPrimitive as a, TheString.* as s1, IntPrimitive as b from SupportBean#length(3) as TheString";
+                    "@Name('s0') select TheString.* as S0, IntPrimitive as a, TheString.* as S1, IntPrimitive as b from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -321,8 +321,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select IntPrimitive, s1.* as s1stream, TheString, Symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
-                    "SupportMarketDataBean#keepall as s1";
+                    "@Name('s0') select IntPrimitive, S1.* as S1stream, TheString, Symbol as sym, S0.* as S0stream from SupportBean#length(3) as S0, " +
+                    "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -381,8 +381,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select IntPrimitive, s1.*, Symbol as sym from SupportBean#length(3) as s0, " +
-                          "SupportMarketDataBean#keepall as s1";
+                var epl = "@Name('s0') select IntPrimitive, S1.*, Symbol as sym from SupportBean#length(3) as S0, " +
+                          "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select TheString.* as s0 from SupportBean#length(3) as TheString";
+                var epl = "@Name('s0') select TheString.* as S0 from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
 
                 object theEvent = SendBeanEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("s0"));
+                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("S0"));
 
                 env.UndeployAll();
             }
@@ -447,8 +447,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select s1.* as s1 from SupportBean#length(3) as s0, " +
-                          "SupportMarketDataBean#keepall as s1";
+                var epl = "@Name('s0') select S1.* as S1 from SupportBean#length(3) as S0, " +
+                          "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl);
                 var testListener = new SupportUpdateListener();
                 env.Statement("s0").AddListener(testListener);
@@ -461,13 +461,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 object theEvent = SendMarketEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("s1"));
+                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("S1"));
 
                 env.UndeployAll();
 
                 // reverse streams
-                epl = "@Name('s0') select s0.* as szero from SupportBean#length(3) as s0, " +
-                      "SupportMarketDataBean#keepall as s1";
+                epl = "@Name('s0') select S0.* as szero from SupportBean#length(3) as S0, " +
+                      "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 type = env.Statement("s0").EventType;
@@ -488,8 +488,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select s1.* from SupportBean#length(3) as s0, " +
-                          "SupportMarketDataBean#keepall as s1";
+                var epl = "@Name('s0') select S1.* from SupportBean#length(3) as S0, " +
+                          "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -505,8 +505,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // reverse streams
-                epl = "@Name('s0') select s0.* from SupportBean#length(3) as s0, " +
-                      "SupportMarketDataBean#keepall as s1";
+                epl = "@Name('s0') select S0.* from SupportBean#length(3) as S0, " +
+                      "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 type = env.Statement("s0").EventType;
@@ -534,17 +534,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 TryInvalidCompile(
                     env,
-                    "select s1.* as abc from SupportBean#length(3) as s0",
-                    "Stream selector 's1.*' does not match any stream name in the from clause [");
+                    "select S1.* as abc from SupportBean#length(3) as S0",
+                    "Stream selector 'S1.*' does not match any stream name in the from clause [");
 
                 TryInvalidCompile(
                     env,
-                    "select s0.* as abc, s0.* as abc from SupportBean#length(3) as s0",
+                    "select S0.* as abc, S0.* as abc from SupportBean#length(3) as S0",
                     "Column name 'abc' appears more then once in select clause");
 
                 TryInvalidCompile(
                     env,
-                    "select s0.*, s1.* from SupportBean#keepall as s0, SupportBean#keepall as s1",
+                    "select S0.*, S1.* from SupportBean#keepall as S0, SupportBean#keepall as S1",
                     "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
             }
         }

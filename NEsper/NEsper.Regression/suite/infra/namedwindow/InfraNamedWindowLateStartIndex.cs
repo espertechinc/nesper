@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             // test join
             var eplJoin =
-                "@Name('s0') select * from SupportBean_S0 as s0 unidirectional, AWindow(P00='x') as aw where aw.Id = s0.Id";
+                "@Name('s0') select * from SupportBean_S0 as S0 unidirectional, AWindow(P00='x') as aw where aw.Id = S0.Id";
             env.CompileDeploy(eplJoin, path).AddListener("s0");
             Assert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 
@@ -35,8 +35,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             // test subquery no-index-share
             var eplSubqueryNoIndexShare =
-                "@Name('s1') select (select Id from AWindow(P00='x') as aw where aw.Id = s0.Id) " +
-                "from SupportBean_S0 as s0 unidirectional";
+                "@Name('s1') select (select Id from AWindow(P00='x') as aw where aw.Id = S0.Id) " +
+                "from SupportBean_S0 as S0 unidirectional";
             env.CompileDeploy(eplSubqueryNoIndexShare, path).AddListener("s1");
             Assert.AreEqual(1, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 
@@ -47,8 +47,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             path = PreloadData(env, true);
 
             var eplSubqueryWithIndexShare =
-                "@Name('s2') select (select Id from AWindow(P00='x') as aw where aw.Id = s0.Id) " +
-                "from SupportBean_S0 as s0 unidirectional";
+                "@Name('s2') select (select Id from AWindow(P00='x') as aw where aw.Id = S0.Id) " +
+                "from SupportBean_S0 as S0 unidirectional";
             env.CompileDeploy(eplSubqueryWithIndexShare, path).AddListener("s2");
             Assert.AreEqual(1, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 

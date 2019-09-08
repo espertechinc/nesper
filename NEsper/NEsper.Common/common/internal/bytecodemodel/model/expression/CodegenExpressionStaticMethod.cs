@@ -34,11 +34,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type[] methodTypeArgs,
             CodegenExpression[] @params)
         {
-            this._target = target;
-            this._targetClassName = null;
-            this._methodName = methodName;
-            this._methodTypeArgs = methodTypeArgs;
-            this._params = @params;
+            _target = target;
+            _targetClassName = null;
+            _methodName = methodName;
+            _methodTypeArgs = methodTypeArgs;
+            _params = @params;
         }
 
 
@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string methodName,
             CodegenExpression[] @params)
         {
-            this._target = target;
-            this._targetClassName = null;
-            this._methodName = methodName;
-            this._methodTypeArgs = new Type[0];
-            this._params = @params;
+            _target = target;
+            _targetClassName = null;
+            _methodName = methodName;
+            _methodTypeArgs = new Type[0];
+            _params = @params;
         }
 
         public CodegenExpressionStaticMethod(
@@ -59,11 +59,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string methodName,
             CodegenExpression[] @params)
         {
-            this._target = null;
-            this._targetClassName = targetClassName;
-            this._methodName = methodName;
-            this._methodTypeArgs = new Type[0];
-            this._params = @params;
+            _target = null;
+            _targetClassName = targetClassName;
+            _methodName = methodName;
+            _methodTypeArgs = new Type[0];
+            _params = @params;
         }
 
         public void Render(
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             foreach (var methodTypeArg in _methodTypeArgs) {
                 classes.AddToSet(methodTypeArg);
             }
-            CodegenExpressionBuilder.MergeClassesExpressions(classes, _params);
+            MergeClassesExpressions(classes, _params);
         }
     }
 } // end of namespace

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="label">category label</param>
         public ContextDescriptorCategoryItem(
             Expression expression,
-            String label)
+            string label)
         {
             Expression = expression;
             Label = label;

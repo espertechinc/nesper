@@ -39,18 +39,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the stream name.
         /// </summary>
         /// <returns>stream name</returns>
-        public string StreamName
-        {
+        public string StreamName {
             get => streamName;
+            set => streamName = value;
         }
 
         /// <summary>
         /// Sets the stream name.
         /// </summary>
         /// <param name="streamName">stream name</param>
-        public void SetStreamName(string streamName)
+        public StreamWildcardExpression SetStreamName(string streamName)
         {
             this.streamName = streamName;
+            return this;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

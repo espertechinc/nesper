@@ -14,6 +14,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -23,8 +25,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class DivideBigIntConvComputer : Computer
         {
-            private readonly BigIntegerCoercer convOne;
-            private readonly BigIntegerCoercer convTwo;
+            private readonly BigIntegerCoercer _convOne;
+            private readonly BigIntegerCoercer _convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -35,16 +37,16 @@ namespace com.espertech.esper.common.@internal.type
                 BigIntegerCoercer convOne,
                 BigIntegerCoercer convTwo)
             {
-                this.convOne = convOne;
-                this.convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(
                 object d1,
                 object d2)
             {
-                var s1 = convOne.CoerceBoxedBigInt(d1);
-                var s2 = convTwo.CoerceBoxedBigInt(d2);
+                var s1 = _convOne.CoerceBoxedBigInt(d1);
+                var s2 = _convTwo.CoerceBoxedBigInt(d2);
                 if (s2.Equals(BigInteger.Zero)) {
                     return null;
                 }
@@ -61,27 +63,16 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 var method = codegenMethodScope
-                    .MakeChild(typeof(BigInteger), typeof(DivideBigIntConvComputer), codegenClassScope)
+                    .MakeChild(typeof(BigInteger?), typeof(DivideBigIntConvComputer), codegenClassScope)
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<BigInteger>(
-                        "s1",
-                        convOne.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar<BigInteger>(
-                        "s2",
-                        convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
-                    .IfCondition(
-                        CodegenExpressionBuilder.EqualsIdentity(
-                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "DoubleValue"),
-                            CodegenExpressionBuilder.Constant(0)))
-                    .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-                    .MethodReturn(
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("s1"),
-                            "divide",
-                            CodegenExpressionBuilder.Ref("s2")));
-                return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
+                    .DeclareVar<BigInteger?>("s1", _convOne.CoerceBoxedBigIntCodegen(Ref("d1"), ltype))
+                    .DeclareVar<BigInteger?>("s2", _convTwo.CoerceBoxedBigIntCodegen(Ref("d2"), rtype))
+                    .IfCondition(EqualsIdentity(Ref("s2"), EnumValue(typeof(BigInteger), "Zero")))
+                    .BlockReturn(ConstantNull())
+                    .MethodReturn(Op(Ref("s1"), "/", Ref("s2")));
+                return LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }
     }

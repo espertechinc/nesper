@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string fields,
             AtomicLong milestone)
         {
-            var fieldsCurrentTs = "val0,val1,val2,val3,val4,val5,val6,val7".SplitCsv();
+            var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
             var eplCurrentTS = "@Name('s0') select " +
                                "current_timestamp.between(" +
                                fields +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.UndeployModuleContaining("s0");
 
             // test calendar field and constants
-            var fieldsConstants = "val0,val1,val2,val3".SplitCsv();
+            var fieldsConstants = new [] { "val0","val1","val2","val3" };
             var eplConstants = "@Name('s0') select " +
                                "longdateStart.between(DateTime.toCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.toCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, true) as val0, " +
                                "longdateStart.between(DateTime.toCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.toCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), true, false) as val1, " +
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fieldsCurrentTs = "val0,val1,val2,val3,val4,val5,val6,val7,val8".SplitCsv();
+                var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7","val8" };
                 var eplCurrentTS = "@Name('s0') select " +
                                    "current_timestamp.after(longdateStart) as val0, " +
                                    "current_timestamp.between(longdateStart, longdateEnd) as val1, " +
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.UndeployAll();
 
                 // test calendar field and constants
-                var fieldsConstants = "val0,val1,val2,val3,val4,val5".SplitCsv();
+                var fieldsConstants = new [] { "val0","val1","val2","val3","val4","val5" };
                 var eplConstants = "@Name('s0') select " +
                                    "longdateStart.between(DateTime.toCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.toCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val0, " +
                                    "utildateStart.between(DateTime.toCalendar('2002-05-30T09:00:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\"), DateTime.toCalendar('2002-05-30T09:01:00.000', \"yyyy-MM-dd'T'HH:mm:ss.SSS\")) as val1, " +

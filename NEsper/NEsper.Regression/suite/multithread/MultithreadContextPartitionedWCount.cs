@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public void Run(RegressionEnvironment env)
         {
-            var choices = "A,B,C,D".SplitCsv();
+            var choices = new [] { "A","B","C","D" };
             TrySend(env, 4, 1000, choices);
         }
 

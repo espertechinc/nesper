@@ -543,8 +543,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "cast(TheString, char) as c3," +
                           "cast(TheString, boolean) as c4," +
                           "cast(IntPrimitive, BigInteger) as c5," +
-                          "cast(IntPrimitive, BigDecimal) as c6," +
-                          "cast(DoublePrimitive, BigDecimal) as c7," +
+                          "cast(IntPrimitive, decimal) as c6," +
+                          "cast(DoublePrimitive, decimal) as c7," +
                           "cast(TheString, char) as c8" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -637,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // test cast with chained and null
                 epl = "@Name('s0') select cast(one as " +
                       typeof(SupportBean).Name +
-                      ").getTheString() as t0," +
+                      ").GetTheString() as t0," +
                       "cast(null, " +
                       typeof(SupportBean).Name +
                       ") as t1" +
@@ -647,7 +647,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBeanObject(new SupportBean("E1", 1)));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "t0,t1".SplitCsv(),
+                    new [] { "t0","t1" },
                     new object[] {"E1", null});
                 Assert.AreEqual(typeof(SupportBean), env.Statement("s0").EventType.GetPropertyType("t1"));
 
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBean("12", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "t0".SplitCsv(),
+                    new [] { "t0" },
                     new object[] {12});
 
                 env.UndeployAll();

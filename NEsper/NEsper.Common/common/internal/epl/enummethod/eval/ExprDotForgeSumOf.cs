@@ -82,15 +82,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         private static ExprDotEvalSumMethodFactory GetAggregatorFactory(Type evalType)
         {
+            if (evalType.IsDecimal()) {
+                return ExprDotEvalSumMethodFactoryDecimal.INSTANCE;
+            }
+
             if (evalType.IsFloatingPointClass()) {
                 return ExprDotEvalSumMethodFactoryDouble.INSTANCE;
             }
 
-            if (evalType == typeof(decimal)) {
-                return ExprDotEvalSumMethodFactoryDecimal.INSTANCE;
-            }
-
-            if (evalType == typeof(BigInteger)) {
+            if (evalType.IsBigInteger()) {
                 return ExprDotEvalSumMethodFactoryBigInteger.INSTANCE;
             }
 
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", value);
+                block.AssignCompound("sum", "+", ExprDotName(value, "Value"));
             }
 
             public void CodegenEnterObjectTypedNonNull(
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", Cast(typeof(double?), value));
+                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsDouble", value));
             }
 
             public void CodegenReturn(CodegenBlock block)
@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar<decimal>("sum", NewInstance<decimal>(Constant(0d)));
+                block.DeclareVar<decimal>("sum", Constant(0.0m));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 
@@ -198,16 +198,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenBlock block,
                 CodegenExpressionRef value)
             {
-                block.Increment("cnt")
-                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", value));
+                block.Increment("cnt");
+                block.AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", ExprDotName(value, "Value")));
             }
 
             public void CodegenEnterObjectTypedNonNull(
                 CodegenBlock block,
                 CodegenExpressionRef value)
             {
-                block.Increment("cnt")
-                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", Cast(typeof(decimal), value)));
+                block.Increment("cnt");
+                block.AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", StaticMethod(typeof(TypeExtensions), "AsDecimal", value)));
             }
 
             public void CodegenReturn(CodegenBlock block)
@@ -271,7 +271,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt")
-                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", value));
+                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", ExprDotName(value, "Value")));
             }
 
             public void CodegenEnterObjectTypedNonNull(
@@ -279,7 +279,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt")
-                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", Cast(typeof(BigInteger), value)));
+                    .AssignRef("sum", ExprDotMethod(Ref("sum"), "Add", StaticMethod(typeof(TypeExtensions), "AsBigInteger", value)));
             }
 
             public void CodegenReturn(CodegenBlock block)
@@ -342,7 +342,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", value);
+                block.AssignCompound("sum", "+", ExprDotName(value, "Value"));
             }
 
             public void CodegenEnterObjectTypedNonNull(
@@ -350,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", Cast(typeof(long), value));
+                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsLong", value));
             }
 
             public void CodegenReturn(CodegenBlock block)
@@ -409,7 +409,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", value);
+                block.AssignCompound("sum", "+", ExprDotName(value, "Value"));
             }
 
             public void CodegenEnterObjectTypedNonNull(
@@ -417,7 +417,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", Cast(typeof(int), value));
+                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsInt", value));
             }
 
             public void CodegenReturn(CodegenBlock block)

@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestRun()
         {
-            var toolsOne = new SupportQuadTreeToolUnique<MXCIFQuadTree<object>>(
+            var toolsOne = new SupportQuadTreeToolUnique<MXCIFQuadTree>(
                 MXCIF_FACTORY,
                 SupportGeneratorPointUniqueByXYDouble.INSTANCE,
                 MXCIF_FI_ADDER,
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 false);
             SupportExecRandomAddThenRemove.RunAssertion(toolsOne);
 
-            var toolsTwo = new SupportQuadTreeToolUnique<MXCIFQuadTree<object>>(
+            var toolsTwo = new SupportQuadTreeToolUnique<MXCIFQuadTree>(
                 MXCIF_FACTORY,
                 SupportGeneratorRectangleUniqueByXYWH.INSTANCE,
                 MXCIF_FI_ADDER,

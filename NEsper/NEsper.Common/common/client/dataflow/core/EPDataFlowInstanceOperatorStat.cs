@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="timeOverall">time spent submitting events</param>
         /// <param name="timePerPort">time spent submitting events per port</param>
         public EPDataFlowInstanceOperatorStat(
-            String operatorName,
-            String operatorPrettyPrint,
+            string operatorName,
+            string operatorPrettyPrint,
             int operatorNumber,
             long submittedOverallCount,
             long[] submittedPerPortCount,

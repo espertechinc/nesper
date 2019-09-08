@@ -40,45 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         [Test]
         public void TestValidateInvalid()
         {
-            try
-            {
-                Assert.That(() => identNodes[0].StreamId, Throws.Nothing);
-                Assert.Fail();
-            }
-            catch (IllegalStateException)
-            {
-                // expected
-            }
-
-            try
-            {
-                Assert.IsNull(identNodes[0].Forge.ExprEvaluator);
-                Assert.Fail();
-            }
-            catch (IllegalStateException)
-            {
-                // expected
-            }
-
-            try
-            {
-                Assert.That(() => identNodes[0].ResolvedStreamName, Throws.Nothing);
-                Assert.Fail();
-            }
-            catch (IllegalStateException)
-            {
-                // expected
-            }
-
-            try
-            {
-                Assert.That(() => identNodes[0].ResolvedPropertyName, Throws.Nothing);
-                Assert.Fail();
-            }
-            catch (IllegalStateException)
-            {
-                // expected
-            }
+            Assert.That(() => identNodes[0].StreamId, Throws.InstanceOf<IllegalStateException>());
+            Assert.That(() => identNodes[0].Forge.ExprEvaluator, Throws.InstanceOf<IllegalStateException>());
+            Assert.That(() => identNodes[0].ResolvedStreamName, Throws.InstanceOf<IllegalStateException>());
+            Assert.That(() => identNodes[0].ResolvedPropertyName, Throws.InstanceOf<IllegalStateException>());
         }
 
         [Test]
@@ -96,12 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             identNodes[2].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(2, identNodes[2].StreamId);
-            Assert.AreEqual(typeof(int?), identNodes[2].Forge.EvaluationType);
+            Assert.AreEqual(typeof(int), identNodes[2].Forge.EvaluationType);
             Assert.AreEqual("Indexed[1]", identNodes[2].ResolvedPropertyName);
 
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(0, identNodes[3].StreamId);
-            Assert.AreEqual(typeof(int?), identNodes[3].Forge.EvaluationType);
+            Assert.AreEqual(typeof(int), identNodes[3].Forge.EvaluationType);
             Assert.AreEqual("IntPrimitive", identNodes[3].ResolvedPropertyName);
 
             TryInvalidValidate(new ExprIdentNodeImpl(""));

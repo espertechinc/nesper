@@ -16,7 +16,7 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    public partial class MinMaxTypeEnum
+    public partial class MinMaxType
     {
         /// <summary>
         ///     Determines minimum using AsDouble.
@@ -75,7 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 ExprNode[] nodes,
                 Type returnType)
             {
-                return CodegenMinMax(true, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
+                return MinMaxTypeCodegen
+                    .CodegenMinMax(true, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
             }
         }
     }

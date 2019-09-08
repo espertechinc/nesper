@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy(
                 "insert into MyWindow(TheString, LongPrimitive) select Symbol, Volume from SupportMarketDataBean",
                 path);
-            env.CompileDeploy("on SupportBean_A as s0 delete from MyWindow as win where win.TheString = s0.Id", path);
+            env.CompileDeploy("on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id", path);
 
             env.CompileDeploy("@Name('consumer') select irstream TheString, LongPrimitive from MyWindow", path);
             var listenerConsumer = new SupportMTUpdateListener();

@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
     public class SupportMXCIFQuadTreeUtil
     {
-        public static readonly SupportQuadTreeUtil.Factory<MXCIFQuadTree<object>> MXCIF_FACTORY = config =>
-            MXCIFQuadTreeFactory<object>.Make(
+        public static readonly SupportQuadTreeUtil.Factory<MXCIFQuadTree> MXCIF_FACTORY = config =>
+            MXCIFQuadTreeFactory.Make(
                 config.X,
                 config.Y,
                 config.Width,
@@ -24,36 +24,36 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
                 config.LeafCapacity,
                 config.MaxTreeHeight);
 
-        public static MXCIFQuadTreeNodeLeaf<object> NavigateLeaf(
-            MXCIFQuadTree<object> tree,
+        public static MXCIFQuadTreeNodeLeaf NavigateLeaf(
+            MXCIFQuadTree tree,
             string directions)
         {
-            return (MXCIFQuadTreeNodeLeaf<object>) Navigate(tree, directions);
+            return (MXCIFQuadTreeNodeLeaf) Navigate(tree, directions);
         }
 
-        public static MXCIFQuadTreeNodeLeaf<object> NavigateLeaf(
-            MXCIFQuadTreeNode<object> node,
+        public static MXCIFQuadTreeNodeLeaf NavigateLeaf(
+            MXCIFQuadTreeNode node,
             string directions)
         {
-            return (MXCIFQuadTreeNodeLeaf<object>) Navigate(node, directions);
+            return (MXCIFQuadTreeNodeLeaf) Navigate(node, directions);
         }
 
-        public static MXCIFQuadTreeNodeBranch<object> NavigateBranch(
-            MXCIFQuadTree<object> tree,
+        public static MXCIFQuadTreeNodeBranch NavigateBranch(
+            MXCIFQuadTree tree,
             string directions)
         {
-            return (MXCIFQuadTreeNodeBranch<object>) Navigate(tree, directions);
+            return (MXCIFQuadTreeNodeBranch) Navigate(tree, directions);
         }
 
-        public static MXCIFQuadTreeNode<object> Navigate(
-            MXCIFQuadTree<object> tree,
+        public static MXCIFQuadTreeNode Navigate(
+            MXCIFQuadTree tree,
             string directions)
         {
             return Navigate(tree.Root, directions);
         }
 
-        public static MXCIFQuadTreeNode<object> Navigate(
-            MXCIFQuadTreeNode<object> current,
+        public static MXCIFQuadTreeNode Navigate(
+            MXCIFQuadTreeNode current,
             string directions)
         {
             if (string.IsNullOrEmpty(directions))
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 
             var split = directions.SplitCsv();
             for (var i = 0; i < split.Length; i++) {
-                var branch = (MXCIFQuadTreeNodeBranch<object>) current;
+                var branch = (MXCIFQuadTreeNodeBranch) current;
                 switch (split[i]) {
                     case "nw":
                         current = branch.Nw;

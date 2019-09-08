@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
-            var fields = "a_Id,b_Id".SplitCsv();
+            var fields = new [] { "a_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
@@ -132,8 +132,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                       ")";
             env.CompileDeploy(soda, epl).AddListener("s0");
 
-            var prefixes = "A,B,C".SplitCsv();
-            var fields = "a,b,c".SplitCsv();
+            var prefixes = new [] { "A","B","C" };
+            var fields = new [] { "a","b","c" };
             var count = 0;
 
             foreach (var indexes in PermutationEnumerator.Create(3)) {

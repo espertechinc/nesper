@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -61,8 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.EvaluationType,
                 typeof(ExprMathNodeForgeEval),
                 codegenClassScope);
-            var lhsType = lhs.Forge.EvaluationType;
-            var rhsType = rhs.Forge.EvaluationType;
+            var lhsType = lhs.Forge.EvaluationType.GetBoxedType();
+            var rhsType = rhs.Forge.EvaluationType.GetBoxedType();
             var block = methodNode.Block
                 .DeclareVar(
                     lhsType,

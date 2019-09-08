@@ -52,9 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(IntervalForgeOp), codegenClassScope)
-                .AddParam(typeof(long), "startTs")
-                .AddParam(typeof(long), "endTs");
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(bool?), typeof(IntervalForgeOp), codegenClassScope)
+                .AddParam(typeof(long?), "startTs")
+                .AddParam(typeof(long?), "endTs");
 
             var evaluationType = forge.ForgeTimestamp.EvaluationType;
             var block = methodNode.Block

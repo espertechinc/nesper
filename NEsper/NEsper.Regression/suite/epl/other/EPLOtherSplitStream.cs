@@ -198,8 +198,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@Name('s2') select * from MoreEvent", path).AddListener("s2", listeners[2]);
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
-            var fieldsOrderId = "oi".SplitCsv();
-            var fieldsItems = "oi,itemId".SplitCsv();
+            var fieldsOrderId = new [] { "oi" };
+            var fieldsItems = new [] { "oi","itemId" };
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fieldsOrderId,
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = "oe.OrderDetail.OrderId".SplitCsv();
+            var fieldsOrderId = new [] { "oe.OrderDetail.OrderId" };
             var epl = "on OrderBean as oe " +
                       "insert into HeaderEvent select OrderDetail.OrderId as OrderId where 1=2 " +
                       "insert into StreamOne select * from [select oe, * from OrderDetail.items] where ProductId=\"10020\" " +
@@ -356,8 +356,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string orderId,
             object[][] expected)
         {
-            var fieldsOrderId = "OrderId".SplitCsv();
-            var fieldsItems = "OrderId,itemId".SplitCsv();
+            var fieldsOrderId = new [] { "OrderId" };
+            var fieldsItems = new [] { "OrderId","itemId" };
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fieldsOrderId,

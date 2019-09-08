@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.hook.type
         /// </summary>
         /// <param name="context">contains the column name, column value and column number</param>
         /// <returns>value of column after conversion</returns>
-        Object GetColumnValue(SQLColumnValueContext context);
+        object GetColumnValue(SQLColumnValueContext context);
 
         /// <summary>
         /// Return the new value of the input parameter. To leave the value unchanged, 
@@ -41,6 +41,6 @@ namespace com.espertech.esper.common.client.hook.type
         /// </summary>
         /// <param name="context">contains the parameter name and number</param>
         /// <returns>value of parameter after conversion</returns>
-        Object GetParameterValue(SQLInputParameterContext context);
+        object GetParameterValue(SQLInputParameterContext context);
     }
 }

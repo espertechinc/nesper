@@ -66,8 +66,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0') select * from SupportBean#time(1) as sb, " +
-                          " SupportBean_S0#keepall as s0 " +
-                          " where myStaticEvaluator(sb.TheString, s0.P00)";
+                          " SupportBean_S0#keepall as S0 " +
+                          " where myStaticEvaluator(sb.TheString, S0.P00)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));

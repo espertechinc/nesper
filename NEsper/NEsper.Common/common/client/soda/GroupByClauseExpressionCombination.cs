@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("(");
-            String delimiter = "";
+            string delimiter = "";
             foreach (Expression e in _expressions)
             {
                 writer.Write(delimiter);

@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <summary>Ctor. </summary>
         /// <param name="propertyName">name of property</param>
         /// <param name="type">type</param>
-        /// <param name="writeMethod">optional write methods</param>
+        /// <param name="writeMember">optional write methods</param>
         public WriteablePropertyDescriptor(
             string propertyName,
             Type type,
-            MethodInfo writeMethod)
+            MemberInfo writeMember)
         {
             PropertyName = propertyName;
             PropertyType = type;
-            WriteMethod = writeMethod;
+            WriteMember = writeMember;
         }
 
         /// <summary>Returns property name. </summary>
@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <value>property type</value>
         public Type PropertyType { get; }
 
-        /// <summary>Returns write methods. </summary>
-        /// <value>write methods</value>
-        public MethodInfo WriteMethod { get; }
+        /// <summary>Returns write member. </summary>
+        /// <value>write member</value>
+        public MemberInfo WriteMember { get; }
 
         public bool Equals(WriteablePropertyDescriptor other)
         {

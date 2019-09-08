@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "cb,cnb,c,pct".SplitCsv();
+                var fields = new [] { "cb","cnb","c","pct" };
                 var epl =
                     "@Name('s0') select count(*,BoolPrimitive) as cb, count(*,not BoolPrimitive) as cnb, count(*) as c, count(*,BoolPrimitive)/count(*) as pct from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 var epl = "@Name('s0') select " +
                           "count(IntBoxed, BoolPrimitive) as c1," +
                           "count(distinct IntBoxed, BoolPrimitive) as c2 " +
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 string[] fields;
                 string epl;
 
-                fields = "cavedev,cavg,cmax,cmedian,cmin,cstddev,csum,cfmaxever,cfminever".SplitCsv();
+                fields = new [] { "cavedev","cavg","cmax","cmedian","cmin","cstddev","csum","cfmaxever","cfminever" };
                 epl = "@Name('s0') select " +
                       "avedev(IntBoxed, BoolPrimitive) as cavedev," +
                       "avg(IntBoxed, BoolPrimitive) as cavg, " +
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 // Test min/max-ever
                 env.UndeployAll();
-                fields = "c1,c2".SplitCsv();
+                fields = new [] { "c1","c2" };
                 epl = "@Name('s0') select " +
                       "fmax(IntBoxed, BoolPrimitive) as c1," +
                       "fmin(IntBoxed, BoolPrimitive) as c2 " +
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 // test big decimal big integer
                 env.UndeployAll();
-                fields = "c1,c2,c3".SplitCsv();
+                fields = new [] { "c1","c2","c3" };
                 epl = "@Name('s0') select " +
                       "avg(DecimalOne, Bigint < 100) as c1," +
                       "sum(DecimalOne, Bigint < 100) as c2, " +
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 RegressionEnvironment env,
                 AtomicLong milestone)
             {
-                var fields = "cavedev,cavg,cmax,cmedian,cmin,cstddev,csum".SplitCsv();
+                var fields = new [] { "cavedev","cavg","cmax","cmedian","cmin","cstddev","csum" };
                 env.SendEventBean(MakeBean(100, true));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -429,7 +429,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 bool soda,
                 AtomicLong milestone)
             {
-                var fields = "c1,c2,c3".SplitCsv();
+                var fields = new [] { "c1","c2","c3" };
                 var epl = "@Name('s0') select " +
                           "firstever(IntBoxed,BoolPrimitive) as c1, " +
                           "lastever(IntBoxed,BoolPrimitive) as c2, " +

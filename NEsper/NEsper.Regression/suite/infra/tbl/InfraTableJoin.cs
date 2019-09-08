@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString, p1".SplitCsv();
+                var fields = new [] { "TheString"," p1" };
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
                           "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";
@@ -221,8 +221,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select total as value from SupportBean_S0 as s0, varaggFC as va " +
-                        "where va.Key = s0.P00",
+                        "@Name('s0') select total as value from SupportBean_S0 as S0, varaggFC as va " +
+                        "where va.key = S0.P00",
                         path)
                     .AddListener("s0");
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create table varagg as (k0 string primary key, k1 int primary key, v1 string, total sum(long))";
                 var eplPopulate =
                     "into table varagg select sum(LongPrimitive) as total from SupportBean group by TheString, IntPrimitive";
-                var eplQuery = "select total as value from SupportBean_S0 as s0 unidirectional";
+                var eplQuery = "select total as value from SupportBean_S0 as S0 unidirectional";
 
                 string[] createIndexEmpty = { };
                 object[] preloadedEventsTwo = {
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     new object[] {"a1", 10});
 
                 env.UndeployAll();

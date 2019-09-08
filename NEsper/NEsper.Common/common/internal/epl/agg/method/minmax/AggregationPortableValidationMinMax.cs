@@ -25,19 +25,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             bool hasFilter,
             Type inputValueType,
             MinMaxTypeEnum minMax,
-            bool unbound)
+            bool isUnbound)
             : base(distinct, hasFilter, inputValueType)
 
         {
             MinMax = minMax;
-            Unbound = unbound;
+            IsUnbound = isUnbound;
         }
 
         public AggregationPortableValidationMinMax()
         {
         }
 
-        public bool Unbound { get; set; }
+        public bool IsUnbound { get; set; }
 
         public MinMaxTypeEnum MinMax { get; set; }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(@ref, "Unbound", Constant(Unbound))
+                .SetProperty(@ref, "IsUnbound", Constant(IsUnbound))
                 .SetProperty(@ref, "MinMax", Constant(MinMax));
         }
 
@@ -67,12 +67,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             if (MinMax != that.MinMax) {
                 throw new ExprValidationException(
                     "The aggregation declares " +
-                    MinMax.ExpressionText +
+                    MinMax.GetExpressionText() +
                     " and provided is " +
-                    that.MinMax.ExpressionText);
+                    that.MinMax.GetExpressionText());
             }
 
-            AggregationValidationUtil.ValidateAggregationUnbound(Unbound, that.Unbound);
+            AggregationValidationUtil.ValidateAggregationUnbound(IsUnbound, that.IsUnbound);
         }
     }
 } // end of namespace

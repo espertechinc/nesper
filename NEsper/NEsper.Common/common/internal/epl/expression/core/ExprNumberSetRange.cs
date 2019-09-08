@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprEvaluator
     {
-        public const string METHOD_HANDLENUMBERSETRANGELOWERNULL = "handleNumberSetRangeLowerNull";
-        public const string METHOD_HANDLENUMBERSETRANGEUPPERNULL = "handleNumberSetRangeUpperNull";
+        public const string METHOD_HANDLENUMBERSETRANGELOWERNULL = "HandleNumberSetRangeLowerNull";
+        public const string METHOD_HANDLENUMBERSETRANGEUPPERNULL = "HandleNumberSetRangeUpperNull";
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (!valueUpper.EvaluationType.IsPrimitive) {
                 block.IfRefNull("valueUpper")
                     .StaticMethod(typeof(ExprNumberSetRange), METHOD_HANDLENUMBERSETRANGEUPPERNULL)
-                    .AssignRef("valueUpper", EnumValue(typeof(int?), "MAX_VALUE"))
+                    .AssignRef("valueUpper", EnumValue(typeof(int), "MaxValue"))
                     .BlockEnd();
             }
 

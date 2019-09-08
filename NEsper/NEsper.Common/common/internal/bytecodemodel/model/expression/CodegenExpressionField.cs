@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 throw new ArgumentException("Null field");
             }
 
-            this._field = field;
+            _field = field;
         }
 
         public void Render(

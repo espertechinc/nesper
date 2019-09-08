@@ -8,11 +8,13 @@
 
 using System;
 using System.Reflection;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -27,19 +29,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly Type clazz;
-        private readonly MethodInfo writerMethod;
+        private readonly MemberInfo _writerMember;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="clazz">to write to</param>
-        /// <param name="writerMethod">write method</param>
+        /// <param name="writerMember">write method</param>
         public BeanEventPropertyWriter(
             Type clazz,
-            MethodInfo writerMethod)
+            MemberInfo writerMember)
         {
             this.clazz = clazz;
-            this.writerMethod = writerMethod;
+            this._writerMember = writerMember;
         }
 
         public virtual void Write(
@@ -56,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(und, writerMethod.Name, assigned);
+            return ExprDotMethod(und, _writerMember.Name, assigned);
         }
 
         public void WriteValue(
@@ -71,7 +73,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             object target)
         {
             try {
-                writerMethod.Invoke(target, values);
+                var writeMember = _writerMember;
+                if (writeMember is MethodInfo writeMethod)
+                {
+                    writeMethod.Invoke(target, values);
+                }
+                else if (writeMember is PropertyInfo writeProperty)
+                {
+                    writeProperty.SetValue(target, values[0]);
+                }
+                else
+                {
+                    throw new IllegalStateException("writeMember of invalid type");
+                }
             }
             catch (MemberAccessException e) {
                 Handle(e);
@@ -83,13 +97,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         private void Handle(Exception e)
         {
-            var message = "Unexpected exception encountered invoking setter-method '" +
-                          writerMethod +
-                          "' on class '" +
-                          clazz.Name +
-                          "' : " +
-                          e.Message;
-            Log.Error(message, e);
+            var message = new StringBuilder();
+
+            message.Append("Unexpected exception encountered ");
+
+            if (_writerMember is MethodInfo) {
+                message.Append("invoking setter-method '");
+                message.Append(_writerMember);
+                message.Append("'");
+            }
+            else if (_writerMember is PropertyInfo) {
+                message.Append("setting property '");
+                message.Append(_writerMember);
+                message.Append("'");
+            }
+
+            message.Append(" on class '");
+            message.Append(clazz.Name);
+            message.Append("' : ");
+            message.Append(e.Message);
+
+            Log.Error(message.ToString(), e);
         }
     }
 } // end of namespace

@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge,l,le".SplitCsv();
+                var fields = new [] { "g","ge","l","le" };
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive > all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as g, " +
                                "IntPrimitive >= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as ge, " +
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "vall,vany".SplitCsv();
+                var fields = new [] { "vall","vany" };
                 var stmtText = "@Name('s0') select " +
                                "IntBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
                                "IntBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "g,ge,l,le".SplitCsv();
+                var fields = new [] { "g","ge","l","le" };
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive > any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as g, " +
                                "IntPrimitive >= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as ge, " +
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "eq,neq,sqlneq,nneq".SplitCsv();
+                var fields = new [] { "eq","neq","sqlneq","nneq" };
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive=all(select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as eq, " +
                                "IntPrimitive != all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as neq, " +
@@ -310,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "r1,r2,r3,r4".SplitCsv();
+                var fields = new [] { "r1","r2","r3","r4" };
                 var stmtText = "@Name('s0') select " +
                                "IntPrimitive = SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r1, " +
                                "IntPrimitive = ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r2, " +
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "eall,eany,neall,neany,isin".SplitCsv();
+                var fields = new [] { "eall","eany","neall","neany","isin" };
                 var stmtText = "@Name('s0') select " +
                                "IntBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
                                "IntBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +

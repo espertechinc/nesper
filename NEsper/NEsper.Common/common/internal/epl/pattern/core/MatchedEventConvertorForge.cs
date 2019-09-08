@@ -83,9 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     .DeclareVar<EventBean[]>(
                         "arr" + count,
                         Cast(typeof(EventBean[]), ArrayAtIndex(Ref("buf"), Constant(indexTag))))
-                    .DeclareVar<IDictionary<object, object>>(
+                    .DeclareVar<IDictionary<string, object>>(
                         "map" + count,
-                        StaticMethod(typeof(Collections), "SingletonMap", Constant(entry.Key), Ref("arr" + count)))
+                        StaticMethod(typeof(Collections), "SingletonDataMap", Constant(entry.Key), Ref("arr" + count)))
                     .AssignArrayElement(
                         Ref("events"),
                         Constant(count),

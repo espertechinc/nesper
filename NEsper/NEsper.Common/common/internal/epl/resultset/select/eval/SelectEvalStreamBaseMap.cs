@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             var init = size == 0
-                ? StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) })
-                : NewInstance(typeof(Dictionary<object, object>));
+                ? StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) })
+                : NewInstance(typeof(Dictionary<string, object>));
             var block = methodNode.Block
-                .DeclareVar<IDictionary<object, object>>("props", init);
+                .DeclareVar<IDictionary<string, object>>("props", init);
             var count = 0;
             foreach (var forge in context.ExprForges) {
                 block.Expression(

@@ -41,15 +41,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "create window MyInfra#unique(key) as SupportMaxAmountEvent"
-                    : "create table MyInfra(key string primary key, maxAmount double)";
+                    ? "create window MyInfra#unique(Key) as SupportMaxAmountEvent"
+                    : "create table MyInfra(Key string primary key, MaxAmount double)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfra select * from SupportMaxAmountEvent", path);
 
                 var stmtText = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 " +
                                "from SupportBean#groupwin(TheString)#length(2) as sb " +
                                "group by TheString " +
-                               "having sum(IntPrimitive) > (select maxAmount from MyInfra as mw where sb.TheString = mw.Key)";
+                               "having sum(IntPrimitive) > (select MaxAmount from MyInfra as mw where sb.TheString = mw.Key)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 var fields = new [] { "c0", "c1" };

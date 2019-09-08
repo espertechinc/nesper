@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
         private static void AssertEventTypeDefault(EventType eventType)
         {
-            var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".SplitCsv();
+            var expected = new [] { "TheString","BoolBoxed","IntPrimitive","LongPrimitive","DoublePrimitive","EnumValue" };
             var propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variant schema MyVariantWJ as *;\n" +
-                          "insert into MyVariantWJ select * from SupportBean sb unidirectional, SupportBean_S0#keepall as s0;\n" +
+                          "insert into MyVariantWJ select * from SupportBean sb unidirectional, SupportBean_S0#keepall as S0;\n" +
                           "@Name('s0') select * from MyVariantWJ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"sb.TheString", "s0.Id"},
+                    new[] {"sb.TheString", "S0.Id"},
                     new object[] {"E1", 10});
 
                 env.UndeployAll();
@@ -364,7 +364,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("@Name('s0') select * from MyVariantStreamTwo").AddListener("s0");
                 var eventType = env.Statement("s0").EventType;
 
-                var expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inneritem".SplitCsv();
+                var expected = new [] { "p0","p1","p2","p3","p4","p5","indexed","mapped","inneritem" };
                 var propertyNames = eventType.PropertyNames;
                 EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
                 Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
@@ -397,14 +397,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.SendEventBean(ev1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p6,p7,p8,p9,P10".SplitCsv(),
+                    new [] { "p6","p7","p8","p9","P10" },
                     new object[] {1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
 
                 var ev2 = new SupportBeanVariantTwo();
                 env.SendEventBean(ev2);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p6,p7,p8,p9,P10".SplitCsv(),
+                    new [] { "p6","p7","p8","p9","P10" },
                     new object[] {10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
 
                 env.UndeployAll();
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 object[] events = {new SupportBean("E1", -1), new SupportBeanVariantStream("E2")};
                 env.SendEventBean(events[0]);
                 env.SendEventBean(events[1]);
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "a,b".SplitCsv(), events);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), new [] { "a","b" }, events);
                 env.UndeployModuleContaining("s0");
 
                 // test subquery
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("Id"));
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
 
-                var fields = "TheString,Id,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","Id","IntPrimitive" };
                 env.SendEventBean(new SupportBeanVariantStream("E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

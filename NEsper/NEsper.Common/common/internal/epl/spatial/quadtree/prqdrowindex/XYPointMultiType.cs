@@ -14,8 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
-    using Collection = ICollection<object>;
-
     public class XYPointMultiType : XYPoint
     {
         public XYPointMultiType(
@@ -31,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         public int Count()
         {
-            if (Multityped is Collection) return ((Collection) Multityped).Count;
+            if (Multityped is ICollection<object> objectCollection) {
+                return objectCollection.Count;
+            }
             return 1;
         }
 
@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return;
             }
 
-            if (Multityped is Collection) {
-                ((Collection) Multityped).Add(value);
+            if (Multityped is ICollection<object> objectCollection) {
+                objectCollection.Add(value);
                 return;
             }
 
@@ -55,15 +55,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         public void AddMultiType(XYPointMultiType other)
         {
-            if (other.X != X || other.Y != Y) throw new ArgumentException("Coordinate mismatch");
-            if (!(other.Multityped is Collection)) {
+            if (other.X != X || other.Y != Y) {
+                throw new ArgumentException("Coordinate mismatch");
+            }
+
+            if (!(other.Multityped is ICollection<object> otherCollection)) {
                 AddSingleValue(other.Multityped);
                 return;
             }
 
-            var otherCollection = (Collection) other.Multityped;
-            if (Multityped is Collection) {
-                ((Collection) Multityped).AddAll(otherCollection);
+            if (Multityped is ICollection<object> objectCollection) {
+                objectCollection.AddAll(otherCollection);
                 return;
             }
 
@@ -73,14 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Multityped = coll;
         }
 
-        public void CollectInto(Collection result)
+        public void CollectInto(ICollection<object> result)
         {
-            if (!(Multityped is Collection)) {
+            if (!(Multityped is ICollection<object>)) {
                 result.Add(Multityped);
                 return;
             }
 
-            result.AddAll((Collection) Multityped);
+            result.AddAll((ICollection<object>) Multityped);
         }
 
         public bool Remove(object value)
@@ -91,25 +93,28 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return true;
             }
 
-            if (Multityped is Collection) return ((Collection) Multityped).Remove(value);
+            if (Multityped is ICollection<object> objectCollection) {
+                return objectCollection.Remove(value);
+            }
             return false;
         }
 
         public bool IsEmpty()
         {
-            return Multityped == null || Multityped is Collection && ((Collection) Multityped).IsEmpty();
+            if (Multityped == null) {
+                return true;
+            }
+
+            if (Multityped is ICollection<object> objectCollection) {
+                return objectCollection.IsEmpty();
+            }
+
+            return false;
         }
 
         public override string ToString()
         {
-            return "XYPointMultiType{" +
-                   "x=" +
-                   X +
-                   ", y=" +
-                   Y +
-                   ", numValues=" +
-                   Count() +
-                   '}';
+            return $"XYPointMultiType{{x={X}, y={Y}, numValues={Count()}{'}'}";
         }
     }
 } // end of namespace

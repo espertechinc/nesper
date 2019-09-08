@@ -36,9 +36,7 @@ namespace com.espertech.esper.compat.concurrency
         /// <returns></returns>
         public static DefaultExecutorService NewMultiThreadedExecutor(int numThreads)
         {
-            return new DefaultExecutorService(
-                new TaskFactory(
-                    new MultiThreadedTaskScheduler(numThreads)));
+            return new DefaultExecutorService(new MultiThreadedTaskScheduler(numThreads));
         }
 
         /// <summary>
@@ -47,9 +45,7 @@ namespace com.espertech.esper.compat.concurrency
         /// <returns></returns>
         public static DefaultExecutorService NewSingleThreadExecutor()
         {
-            return new DefaultExecutorService(
-                new TaskFactory(
-                    new SingleThreadedTaskScheduler()));
+            return new DefaultExecutorService(new SingleThreadedTaskScheduler());
         }
         
         /// <summary>
@@ -59,18 +55,19 @@ namespace com.espertech.esper.compat.concurrency
         /// <exception cref="System.NotImplementedException"></exception>
         public static IScheduledExecutorService DefaultScheduledExecutorService()
         {
-            throw new System.NotImplementedException();
+            return new DefaultScheduledExecutorService(DefaultExecutor());
         }
 
         /// <summary>
         /// Creates a fixed thread pool executor.
         /// </summary>
-        /// <param name="numThread">The number threads.</param>
+        /// <param name="numThreads">The number threads.</param>
         /// <param name="threadFactory">the thread factory.</param>
         /// <returns></returns>
-        public static IExecutorService NewFixedThreadPool(int numThread, ThreadFactory threadFactory)
+        public static IExecutorService NewFixedThreadPool(int numThreads, ThreadFactory threadFactory)
         {
-            throw new System.NotImplementedException();
+            return new DefaultExecutorService(
+                    new MultiThreadedTaskScheduler(numThreads, threadFactory));
         }
 
         /// <summary>
@@ -80,7 +77,7 @@ namespace com.espertech.esper.compat.concurrency
         /// <exception cref="System.NotImplementedException"></exception>
         public static IExecutorService NewCachedThreadPool()
         {
-            throw new System.NotImplementedException();
+            return DefaultExecutor();
         }
     }
 }

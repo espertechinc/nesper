@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="asName">is the as-provided name of the named window</param>
         /// <returns>on-delete clause</returns>
         public static OnDeleteClause CreateOnDelete(
-            String windowName,
-            String asName)
+            string windowName,
+            string asName)
         {
             return OnDeleteClause.Create(windowName, asName);
         }
@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="asName">is the as-provided name of the named window</param>
         /// <returns>on-select clause</returns>
         public static OnSelectClause CreateOnSelect(
-            String windowName,
-            String asName)
+            string windowName,
+            string asName)
         {
             return OnSelectClause.Create(windowName, asName);
         }
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">expression</param>
         /// <returns>on-Update clause</returns>
         public static OnUpdateClause CreateOnUpdate(
-            String windowName,
-            String asName,
+            string windowName,
+            string asName,
             Expression expression)
         {
             return OnUpdateClause.Create(windowName, asName).AddAssignment(expression);

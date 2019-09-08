@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "mycontextvar".SplitCsv();
+                var fields = new [] { "mycontextvar" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context MyCtx as " +
@@ -122,22 +122,22 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "mycontextvar".SplitCsv();
+                var fields = new [] { "mycontextvar" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context MyCtx as " +
-                    "initiated by SupportBean_S0 s0 terminated by SupportBean_S1(P10 = s0.P00)",
+                    "initiated by SupportBean_S0 S0 terminated by SupportBean_S1(P10 = S0.P00)",
                     path);
                 env.CompileDeploy("context MyCtx create variable int mycontextvar = 5", path);
                 env.CompileDeploy(
-                    "context MyCtx on SupportBean(TheString = context.s0.P00) set mycontextvar = IntPrimitive",
+                    "context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
                     path);
                 env.CompileDeploy(
                     "context MyCtx on SupportBean(IntPrimitive < 0) set mycontextvar = IntPrimitive",
                     path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select mycontextvar from SupportBean_S2(P20 = context.s0.P00)",
+                    "@Name('s0') context MyCtx select mycontextvar from SupportBean_S2(P20 = context.S0.P00)",
                     path);
                 env.AddListener("s0");
 
@@ -245,16 +245,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 s0 terminated after 24 hours",
+                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated after 24 hours",
                     path);
 
-                var fields = "mycontextvar".SplitCsv();
+                var fields = new [] { "mycontextvar" };
                 env.CompileDeploy("@Name('var') context MyCtx create variable int mycontextvar = 5", path);
 
                 env.Milestone(0);
 
                 env.CompileDeploy(
-                    "@Name('upd') context MyCtx on SupportBean(TheString = context.s0.P00) set mycontextvar = IntPrimitive",
+                    "@Name('upd') context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
                     path);
                 env.AddListener("var").AddListener("upd");
 
@@ -316,11 +316,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context MyCtx as initiated by SupportBean_S0 s0 terminated after 24 hours",
+                    "create context MyCtx as initiated by SupportBean_S0 S0 terminated after 24 hours",
                     path);
                 env.CompileDeploy("@Name('var') context MyCtx create variable int mycontextvar = 5", path);
                 env.CompileDeploy(
-                    "context MyCtx on SupportBean(TheString = context.s0.P00) set mycontextvar = IntPrimitive",
+                    "context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
                     path);
                 var namePairVariable = new DeploymentIdNamePair(env.DeploymentId("var"), "mycontextvar");
 

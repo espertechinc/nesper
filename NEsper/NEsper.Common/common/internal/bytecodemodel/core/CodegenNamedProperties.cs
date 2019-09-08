@@ -51,8 +51,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Consumer<CodegenProperty> code,
             CodegenSymbolProvider symbolProvider)
         {
-            Console.WriteLine("AddPropertyWithSymbols: {0}", propertyName);
-
             var existing = _properties.Get(propertyName);
             if (existing != null) {
                 if (existing.ReturnType == returnType) {

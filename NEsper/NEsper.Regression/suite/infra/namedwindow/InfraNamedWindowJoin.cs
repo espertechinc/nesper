@@ -128,11 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 var epl = "create window MyWindowWUJ#keepall as SupportBean;\n" +
                           "insert into MyWindowWUJ select * from SupportBean;\n" +
-                          "on SupportBean_S1 as s1 delete from MyWindowWUJ where s1.P10 = TheString;\n" +
+                          "on SupportBean_S1 as S1 delete from MyWindowWUJ where S1.P10 = TheString;\n" +
                           "@Name('s0') select window(win.*) as c0," +
                           "window(win.*).where(v -> v.IntPrimitive < 2) as c1, " +
                           "window(win.*).toMap(k=>k.TheString,v->v.IntPrimitive) as c2 " +
-                          "from SupportBean_S0 as s0 unidirectional, MyWindowWUJ as win";
+                          "from SupportBean_S0 as S0 unidirectional, MyWindowWUJ as win";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 var beans = new SupportBean[3];
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     beans,
                     new[] {0, 1},
                     new[] {0, 1},
-                    "E0,E1".SplitCsv(),
+                    new [] { "E0","E1" },
                     new object[] {0, 1});
 
                 // add bean
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     beans,
                     new[] {0, 1, 2},
                     new[] {0, 1},
-                    "E0,E1,E2".SplitCsv(),
+                    new [] { "E0","E1","E2" },
                     new object[] {0, 1, 2});
 
                 // delete bean
@@ -170,13 +170,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     beans,
                     new[] {0, 2},
                     new[] {0},
-                    "E0,E2".SplitCsv(),
+                    new [] { "E0","E2" },
                     new object[] {0, 2});
 
                 // delete another bean
                 env.SendEventBean(new SupportBean_S1(13, "E0"));
                 env.SendEventBean(new SupportBean_S0(14));
-                AssertReceived(env.Listener("s0"), beans, new[] {2}, new int[0], "E2".SplitCsv(), new object[] {2});
+                AssertReceived(env.Listener("s0"), beans, new[] {2}, new int[0], new [] { "E2" }, new object[] {2});
 
                 // delete last bean
                 env.SendEventBean(new SupportBean_S1(15, "E2"));
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // compile a non-unidirectional query, join and subquery
                 env.CompileDeploy("select window(win.*) from MyWindowWUJ as win", path);
                 env.CompileDeploy(
-                    "select window(win.*) as c0 from SupportBean_S0#lastevent as s0, MyWindowWUJ as win",
+                    "select window(win.*) as c0 from SupportBean_S0#lastevent as S0, MyWindowWUJ as win",
                     path);
                 env.CompileDeploy("select (select window(win.*) from MyWindowWUJ as win) from SupportBean_S0", path);
 
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = "ssb2.s2,ssb1.s1,ssb1.i1".SplitCsv();
+                    var fields = new [] { "ssb2.s2","ssb1.S1","ssb1.i1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -480,23 +480,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 }
 
                 var stmtTextOne =
-                    "@Name('s1') select s1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
+                    "@Name('s1') select S1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
                     "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
-                    "from WindowLeave as s0 right outer join WindowEnter as s1 " +
-                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
-                    "group by s1.Location, sku " +
+                    "from WindowLeave as S0 right outer join WindowEnter as S1 " +
+                    "on S0.Id = S1.Id and S0.Location = S1.Location " +
+                    "group by S1.Location, sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.Location, sku";
+                    "order by S1.Location, sku";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo =
-                    "@Name('s2') select s1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
+                    "@Name('s2') select S1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
                     "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
-                    "from WindowEnter as s1 left outer join WindowLeave as s0 " +
-                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
-                    "group by s1.Location, sku " +
+                    "from WindowEnter as S1 left outer join WindowLeave as S0 " +
+                    "on S0.Id = S1.Id and S0.Location = S1.Location " +
+                    "group by S1.Location, sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.Location, sku";
+                    "order by S1.Location, sku";
                 env.CompileDeploy(stmtTextTwo, path);
 
                 object[][] expected = {
@@ -516,12 +516,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s2"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "loc,sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
+                    new [] { "loc","sku","avgTime","cntEnter","cntLeave","diff" },
                     expected);
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s1"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "loc,sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
+                    new [] { "loc","sku","avgTime","cntEnter","cntLeave","diff" },
                     expected);
 
                 env.UndeployAll();
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("select"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "TheString,IntPrimitive,cntBool,Symbol".SplitCsv(),
+                    new [] { "TheString","IntPrimitive","cntBool","Symbol" },
                     new[] {
                         new object[] {null, null, 0L, "c3"},
                         new object[] {"c0", 0, 2L, "c0"},
@@ -605,8 +605,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // create consumer
                 string[] fields = {"Symbol", "a", "b"};
                 epl = "@Name('s0') select irstream Symbol, a, b " +
-                      " from SupportMarketDataBean#length(10) as s0," +
-                      "MyWindowJNS as s1 where s1.a = Symbol";
+                      " from SupportMarketDataBean#length(10) as S0," +
+                      "MyWindowJNS as S1 where S1.a = Symbol";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
@@ -675,7 +675,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "on SupportMarketDataBean(Volume=0) delete from MyWindowTwo where Symbol = a2;\n" +
                     "insert into MyWindowOne select TheString as a1, IntPrimitive as b1 from SupportBean(BoolPrimitive = true);\n" +
                     "insert into MyWindowTwo select TheString as a2, IntPrimitive as b2 from SupportBean(BoolPrimitive = false);\n" +
-                    "@Name('s0') select irstream a1, b1, a2, b2 from MyWindowOne as s0, MyWindowTwo as s1 where s0.a1 = s1.a2;\n";
+                    "@Name('s0') select irstream a1, b1, a2, b2 from MyWindowOne as S0, MyWindowTwo as S1 where S0.a1 = S1.a2;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, true, "S0", 1);
@@ -746,7 +746,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "@Name('create') create window MyWindowJSN#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
                     "on SupportMarketDataBean delete from MyWindowJSN where Symbol = a;\n" +
                     "insert into MyWindowJSN select TheString as a, IntPrimitive as b from SupportBean;\n" +
-                    "@Name('s0') select irstream s0.a as a0, s0.b as b0, s1.a as a1, s1.b as b1 from MyWindowJSN as s0, MyWindowJSN as s1 where s0.a = s1.a;\n";
+                    "@Name('s0') select irstream S0.a as a0, S0.b as b0, S1.a as a1, S1.b as b1 from MyWindowJSN as S0, MyWindowJSN as S1 where S0.a = S1.a;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, "E1", 1);
@@ -787,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "on SupportMarketDataBean(Volume=0) delete from MyWindowJSITwo where Symbol = a2;\n" +
                     "insert into MyWindowJSIOne select TheString as a1, IntPrimitive as b1 from SupportBean(BoolPrimitive = true);\n" +
                     "insert into MyWindowJSITwo select TheString as a2, IntPrimitive as b2 from SupportBean(BoolPrimitive = false);\n" +
-                    "@Name('select') select irstream a1, b1, a2, b2 from MyWindowJSIOne as s0, MyWindowJSITwo as s1 where s0.a1 = s1.a2;\n";
+                    "@Name('select') select irstream a1, b1, a2, b2 from MyWindowJSIOne as S0, MyWindowJSITwo as S1 where S0.a1 = S1.a2;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 SendSupportBean(env, true, "S0", 1);

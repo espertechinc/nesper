@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
 
-            var fieldsInner = "TheString,IntPrimitive,col2".SplitCsv();
+            var fieldsInner = new [] { "TheString","IntPrimitive","col2" };
             env.SendEventBean(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col1"));
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("col2"));
 
-            var fieldsInner = "col1,col2".SplitCsv();
+            var fieldsInner = new [] { "col1","col2" };
             env.SendEventBean(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),

@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.orderBy(x -> P00) as val0," +
                                   "Contained.orderBy(x -> 10 - P00) as val1," +

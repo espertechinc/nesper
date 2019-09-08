@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                 true,
                 typeof(AggregationMultiFunctionAgentFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
-            return ExprDotMethod(factoryField, "newAgent", ConstantNull());
+            return ExprDotMethod(factoryField, "NewAgent", ConstantNull());
         }
     }
 } // end of namespace

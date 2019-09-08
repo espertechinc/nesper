@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="inputStreamNames">names of input streams for the same port</param>
         /// <param name="optionalAsName">optional alias</param>
         public DataFlowOperatorInput(
-            IList<String> inputStreamNames,
-            String optionalAsName)
+            IList<string> inputStreamNames,
+            string optionalAsName)
         {
             InputStreamNames = inputStreamNames;
             OptionalAsName = optionalAsName;

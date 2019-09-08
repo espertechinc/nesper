@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test join
                 var eplJoin =
-                    "@Name('join') select wordapprox.countMinSketchFrequency(s2.P20) as c0 from MyApproxFT, SupportBean_S2 s2 unidirectional";
+                    "@Name('join') select wordapprox.countMinSketchFrequency(S2.P20) as c0 from MyApproxFT, SupportBean_S2 S2 unidirectional";
                 env.CompileDeploy(eplJoin, path).AddListener("join");
 
                 env.Milestone(2);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test subquery
                 var eplSubquery =
-                    "@Name('subq') select (select wordapprox.countMinSketchFrequency(s2.P20) from MyApproxFT) as c0 from SupportBean_S2 s2";
+                    "@Name('subq') select (select wordapprox.countMinSketchFrequency(S2.P20) from MyApproxFT) as c0 from SupportBean_S2 S2";
                 env.CompileDeploy(eplSubquery, path).AddListener("subq");
 
                 env.Milestone(3);

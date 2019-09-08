@@ -68,19 +68,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 string epl;
 
                 epl =
-                    "@Name('s0') select * from SupportBean sbr, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 = 951";
-                TryAssertion(env, epl, "s1.mycol1", "951");
+                    "@Name('s0') select * from SupportBean sbr, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol3 = 951";
+                TryAssertion(env, epl, "S1.mycol1", "951");
 
                 epl =
-                    "@Name('s0') select * from SupportBean sbr, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 = 950 and mycol1 = '950'";
-                TryAssertion(env, epl, "s1.mycol1", "950");
+                    "@Name('s0') select * from SupportBean sbr, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol3 = 950 and mycol1 = '950'";
+                TryAssertion(env, epl, "S1.mycol1", "950");
 
                 epl =
-                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between 950 and 953";
+                    "@Name('s0') select sum(S1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol3 between 950 and 953";
                 TryAssertion(env, epl, "val", 950 + 951 + 952 + 953);
 
                 epl =
-                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = '950' and mycol3 between 950 and 953";
+                    "@Name('s0') select sum(S1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = '950' and mycol3 between 950 and 953";
                 TryAssertion(env, epl, "val", 950);
             }
         }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between RangeStart and RangeEnd";
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol3 between RangeStart and RangeEnd";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 // test coercion
                 env.UndeployAll();
                 stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between RangeStartLong and RangeEndLong";
+                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol3 between RangeStartLong and RangeEndLong";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R", "K", 10L, 12L));
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = key and mycol3 between RangeStart and RangeEnd";
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = key and mycol3 between RangeStart and RangeEnd";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 // test coercion
                 env.UndeployAll();
                 stmtText = "@Name('s0') select * from SupportBeanRange sbr, " +
-                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = key and mycol3 between RangeStartLong and RangeEndLong";
+                           " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 where mycol1 = key and mycol3 between RangeStartLong and RangeEndLong";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R", "11", 10L, 12L));
@@ -158,8 +158,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select Id, mycol3, mycol2 from " +
-                               "SupportBean_S0#keepall as s0," +
-                               " sql:MyDBWithLRU100000 ['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
+                               "SupportBean_S0#keepall as S0," +
+                               " sql:MyDBWithLRU100000 ['select mycol3, mycol2 from mytesttable_large'] as S1 where S0.Id = S1.mycol3";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send 100 events which all perform the join
@@ -190,8 +190,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select TheString, mycol3, mycol4 from " +
-                               " sql:MyDBWithLRU100000 ['select mycol3, mycol4 from mytesttable_large'] as s0, " +
-                               "SupportBean#keepall as s1 where s1.DoubleBoxed = s0.mycol3 and s1.ByteBoxed = s0.mycol4";
+                               " sql:MyDBWithLRU100000 ['select mycol3, mycol4 from mytesttable_large'] as S0, " +
+                               "SupportBean#keepall as S1 where S1.DoubleBoxed = S0.mycol3 and S1.ByteBoxed = S0.mycol4";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -222,8 +222,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select TheString, mycol3, mycol1 from " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
-                               "SupportBean as s0 on TheString = mycol1";
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 right outer join " +
+                               "SupportBean as S0 on TheString = mycol1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -261,8 +261,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select TheString, mycol3, mycol1 from " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
-                               "SupportBean as s0 on TheString = mycol1 where s1.mycol3 = s0.IntPrimitive";
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 right outer join " +
+                               "SupportBean as S0 on TheString = mycol1 where S1.mycol3 = S0.IntPrimitive";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -304,8 +304,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@Name('s0') " +
                                INDEX_CALLBACK_HOOK +
-                               "select * from SupportBean_S0 s0, " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 " +
+                               "select * from SupportBean_S0 S0, " +
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as S1 " +
                                " where mycol1 in (P00, P01, P02)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 2000; i++) {
                     env.SendEventBean(new SupportBean_S0(i, "x", "y", "815"));
-                    Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("s1.mycol3"));
+                    Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("S1.mycol3"));
                 }
 
                 var endTime = PerformanceObserver.MilliTime;
@@ -336,8 +336,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@Name('s0') " +
                                INDEX_CALLBACK_HOOK +
-                               "select * from SupportBean_S0 s0, " +
-                               " sql:MyDBWithLRU100000 ['select mycol1, mycol2, mycol3 from mytesttable_large'] as s1 " +
+                               "select * from SupportBean_S0 S0, " +
+                               " sql:MyDBWithLRU100000 ['select mycol1, mycol2, mycol3 from mytesttable_large'] as S1 " +
                                " where P00 in (mycol2, mycol1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 2000; i++) {
                     env.SendEventBean(new SupportBean_S0(i, "815"));
-                    Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("s1.mycol3"));
+                    Assert.AreEqual(815, env.Listener("s0").AssertOneGetNewAndReset().Get("S1.mycol3"));
                 }
 
                 var endTime = PerformanceObserver.MilliTime;

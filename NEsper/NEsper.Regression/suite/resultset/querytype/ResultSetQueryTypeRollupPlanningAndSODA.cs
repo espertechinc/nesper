@@ -30,112 +30,112 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         public void Run(RegressionEnvironment env)
         {
             // plain rollup
-            Validate(env, "a", "rollup(a)", new[] {"a", ""});
-            Validate(env, "a, b", "rollup(a, b)", new[] {"a,b", "a", ""});
-            Validate(env, "a, b, c", "rollup(a, b, c)", new[] {"a,b,c", "a,b", "a", ""});
-            Validate(env, "a, b, c, d", "rollup(a, b, c, d)", new[] {"a,b,c,d", "a,b,c", "a,b", "a", ""});
+            Validate(env, "A", "rollup(A)", new[] {"A", ""});
+            Validate(env, "A, B", "rollup(A, B)", new[] {"A,B", "A", ""});
+            Validate(env, "A, B, C", "rollup(A, B, C)", new[] {"A,B,C", "A,B", "A", ""});
+            Validate(env, "A, B, C, D", "rollup(A, B, C, D)", new[] {"A,B,C,D", "A,B,C", "A,B", "A", ""});
 
             // rollup with unenclosed
-            Validate(env, "a, b", "a, rollup(b)", new[] {"a,b", "a"});
-            Validate(env, "a, b, c", "a, b, rollup(c)", new[] {"a,b,c", "a,b"});
-            Validate(env, "a, b, c", "a, rollup(b, c)", new[] {"a,b,c", "a,b", "a"});
-            Validate(env, "a, b, c, d", "a, b, rollup(c, d)", new[] {"a,b,c,d", "a,b,c", "a,b"});
-            Validate(env, "a, b, c, d, e", "a, b, rollup(c, d, e)", new[] {"a,b,c,d,e", "a,b,c,d", "a,b,c", "a,b"});
+            Validate(env, "A, B", "A, rollup(B)", new[] {"A,B", "A"});
+            Validate(env, "A, B, C", "A, B, rollup(C)", new[] {"A,B,C", "A,B"});
+            Validate(env, "A, B, C", "A, rollup(B, C)", new[] {"A,B,C", "A,B", "A"});
+            Validate(env, "A, B, C, D", "A, B, rollup(C, D)", new[] {"A,B,C,D", "A,B,C", "A,B"});
+            Validate(env, "A, B, C, D, e", "A, B, rollup(C, D, e)", new[] {"A,B,C,D,e", "A,B,C,D", "A,B,C", "A,B"});
 
             // plain cube
-            Validate(env, "a", "cube(a)", new[] {"a", ""});
-            Validate(env, "a, b", "cube(a, b)", new[] {"a,b", "a", "b", ""});
-            Validate(env, "a, b, c", "cube(a, b, c)", new[] {"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
+            Validate(env, "A", "cube(A)", new[] {"A", ""});
+            Validate(env, "A, B", "cube(A, B)", new[] {"A,B", "A", "B", ""});
+            Validate(env, "A, B, C", "cube(A, B, C)", new[] {"A,B,C", "A,B", "A,C", "A", "B,C", "B", "C", ""});
             Validate(
                 env,
-                "a, b, c, d",
-                "cube(a, b, c, d)",
+                "A, B, C, D",
+                "cube(A, B, C, D)",
                 new[] {
-                    "a,b,c,d", "a,b,c", "a,b,d",
-                    "a,b", "a,c,d", "a,c", "a,d", "a",
-                    "b,c,d", "b,c", "b,d", "b",
-                    "c,d", "c", "d", ""
+                    "A,B,C,D", "A,B,C", "A,B,D",
+                    "A,B", "A,C,D", "A,C", "A,D", "A",
+                    "B,C,D", "B,C", "B,D", "B",
+                    "C,D", "C", "D", ""
                 });
 
             // cube with unenclosed
-            Validate(env, "a, b", "a, cube(b)", new[] {"a,b", "a"});
-            Validate(env, "a, b, c", "a, cube(b, c)", new[] {"a,b,c", "a,b", "a,c", "a"});
+            Validate(env, "A, B", "A, cube(B)", new[] {"A,B", "A"});
+            Validate(env, "A, B, C", "A, cube(B, C)", new[] {"A,B,C", "A,B", "A,C", "A"});
             Validate(
                 env,
-                "a, b, c, d",
-                "a, cube(b, c, d)",
-                new[] {"a,b,c,d", "a,b,c", "a,b,d", "a,b", "a,c,d", "a,c", "a,d", "a"});
-            Validate(env, "a, b, c, d", "a, b, cube(c, d)", new[] {"a,b,c,d", "a,b,c", "a,b,d", "a,b"});
+                "A, B, C, D",
+                "A, cube(B, C, D)",
+                new[] {"A,B,C,D", "A,B,C", "A,B,D", "A,B", "A,C,D", "A,C", "A,D", "A"});
+            Validate(env, "A, B, C, D", "A, B, cube(C, D)", new[] {"A,B,C,D", "A,B,C", "A,B,D", "A,B"});
 
             // plain grouping set
-            Validate(env, "a", "grouping sets(a)", new[] {"a"});
-            Validate(env, "a", "grouping sets(a)", new[] {"a"});
-            Validate(env, "a, b", "grouping sets(a, b)", new[] {"a", "b"});
-            Validate(env, "a, b", "grouping sets(a, b, (a, b), ())", new[] {"a", "b", "a,b", ""});
-            Validate(env, "a, b", "grouping sets(a, (a, b), (), b)", new[] {"a", "a,b", "", "b"});
-            Validate(env, "a, b, c", "grouping sets((a, b), (a, c), (), (b, c))", new[] {"a,b", "a,c", "", "b,c"});
-            Validate(env, "a, b", "grouping sets((a, b))", new[] {"a,b"});
-            Validate(env, "a, b, c", "grouping sets((a, b, c), ())", new[] {"a,b,c", ""});
-            Validate(env, "a, b, c", "grouping sets((), (a, b, c), (b, c))", new[] {"", "a,b,c", "b,c"});
+            Validate(env, "A", "grouping sets(A)", new[] {"A"});
+            Validate(env, "A", "grouping sets(A)", new[] {"A"});
+            Validate(env, "A, B", "grouping sets(A, B)", new[] {"A", "B"});
+            Validate(env, "A, B", "grouping sets(A, B, (A, B), ())", new[] {"A", "B", "A,B", ""});
+            Validate(env, "A, B", "grouping sets(A, (A, B), (), B)", new[] {"A", "A,B", "", "B"});
+            Validate(env, "A, B, C", "grouping sets((A, B), (A, C), (), (B, C))", new[] {"A,B", "A,C", "", "B,C"});
+            Validate(env, "A, B", "grouping sets((A, B))", new[] {"A,B"});
+            Validate(env, "A, B, C", "grouping sets((A, B, C), ())", new[] {"A,B,C", ""});
+            Validate(env, "A, B, C", "grouping sets((), (A, B, C), (B, C))", new[] {"", "A,B,C", "B,C"});
 
             // grouping sets with unenclosed
-            Validate(env, "a, b", "a, grouping sets(b)", new[] {"a,b"});
-            Validate(env, "a, b, c", "a, grouping sets(b, c)", new[] {"a,b", "a,c"});
-            Validate(env, "a, b, c", "a, grouping sets((b, c))", new[] {"a,b,c"});
+            Validate(env, "A, B", "A, grouping sets(B)", new[] {"A,B"});
+            Validate(env, "A, B, C", "A, grouping sets(B, C)", new[] {"A,B", "A,C"});
+            Validate(env, "A, B, C", "A, grouping sets((B, C))", new[] {"A,B,C"});
             Validate(
                 env,
-                "a, b, c, d",
-                "a, b, grouping sets((), c, d, (c, d))",
-                new[] {"a,b", "a,b,c", "a,b,d", "a,b,c,d"});
+                "A, B, C, D",
+                "A, B, grouping sets((), C, D, (C, D))",
+                new[] {"A,B", "A,B,C", "A,B,D", "A,B,C,D"});
 
             // multiple grouping sets
-            Validate(env, "a, b", "grouping sets(a), grouping sets(b)", new[] {"a,b"});
-            Validate(env, "a, b, c", "grouping sets(a), grouping sets(b, c)", new[] {"a,b", "a,c"});
-            Validate(env, "a, b, c, d", "grouping sets(a, b), grouping sets(c, d)", new[] {"a,c", "a,d", "b,c", "b,d"});
-            Validate(env, "a, b, c", "grouping sets((), a), grouping sets(b, c)", new[] {"b", "c", "a,b", "a,c"});
-            Validate(env, "a, b, c, d", "grouping sets(a, b, c), grouping sets(d)", new[] {"a,d", "b,d", "c,d"});
+            Validate(env, "A, B", "grouping sets(A), grouping sets(B)", new[] {"A,B"});
+            Validate(env, "A, B, C", "grouping sets(A), grouping sets(B, C)", new[] {"A,B", "A,C"});
+            Validate(env, "A, B, C, D", "grouping sets(A, B), grouping sets(C, D)", new[] {"A,C", "A,D", "B,C", "B,D"});
+            Validate(env, "A, B, C", "grouping sets((), A), grouping sets(B, C)", new[] {"B", "C", "A,B", "A,C"});
+            Validate(env, "A, B, C, D", "grouping sets(A, B, C), grouping sets(D)", new[] {"A,D", "B,D", "C,D"});
             Validate(
                 env,
-                "a, b, c, d, e",
-                "grouping sets(a, b, c), grouping sets(d, e)",
-                new[] {"a,d", "a,e", "b,d", "b,e", "c,d", "c,e"});
+                "A, B, C, D, e",
+                "grouping sets(A, B, C), grouping sets(D, e)",
+                new[] {"A,D", "A,e", "B,D", "B,e", "C,D", "C,e"});
 
             // multiple rollups
-            Validate(env, "a, b, c", "rollup(a, b), rollup(c)", new[] {"a,b,c", "a,b", "a,c", "a", "c", ""});
+            Validate(env, "A, B, C", "rollup(A, B), rollup(C)", new[] {"A,B,C", "A,B", "A,C", "A", "C", ""});
             Validate(
                 env,
-                "a, b, c, d",
-                "rollup(a, b), rollup(c, d)",
-                new[] {"a,b,c,d", "a,b,c", "a,b", "a,c,d", "a,c", "a", "c,d", "c", ""});
+                "A, B, C, D",
+                "rollup(A, B), rollup(C, D)",
+                new[] {"A,B,C,D", "A,B,C", "A,B", "A,C,D", "A,C", "A", "C,D", "C", ""});
 
             // grouping sets with rollup or cube inside
-            Validate(env, "a, b, c", "grouping sets(a, rollup(b, c))", new[] {"a", "b,c", "b", ""});
-            Validate(env, "a, b, c", "grouping sets(a, cube(b, c))", new[] {"a", "b,c", "b", "c", ""});
-            Validate(env, "a, b", "grouping sets(rollup(a, b))", new[] {"a,b", "a", ""});
-            Validate(env, "a, b", "grouping sets(cube(a, b))", new[] {"a,b", "a", "b", ""});
-            Validate(env, "a, b, c, d", "grouping sets((a, b), rollup(c, d))", new[] {"a,b", "c,d", "c", ""});
-            Validate(env, "a, b, c, d", "grouping sets(a, b, rollup(c, d))", new[] {"a", "b", "c,d", "c", ""});
+            Validate(env, "A, B, C", "grouping sets(A, rollup(B, C))", new[] {"A", "B,C", "B", ""});
+            Validate(env, "A, B, C", "grouping sets(A, cube(B, C))", new[] {"A", "B,C", "B", "C", ""});
+            Validate(env, "A, B", "grouping sets(rollup(A, B))", new[] {"A,B", "A", ""});
+            Validate(env, "A, B", "grouping sets(cube(A, B))", new[] {"A,B", "A", "B", ""});
+            Validate(env, "A, B, C, D", "grouping sets((A, B), rollup(C, D))", new[] {"A,B", "C,D", "C", ""});
+            Validate(env, "A, B, C, D", "grouping sets(A, B, rollup(C, D))", new[] {"A", "B", "C,D", "C", ""});
 
             // cube and rollup with combined expression
-            Validate(env, "a, b, c", "cube((a, b), c)", new[] {"a,b,c", "a,b", "c", ""});
-            Validate(env, "a, b, c", "rollup((a, b), c)", new[] {"a,b,c", "a,b", ""});
-            Validate(env, "a, b, c, d", "cube((a, b), (c, d))", new[] {"a,b,c,d", "a,b", "c,d", ""});
-            Validate(env, "a, b, c, d", "rollup((a, b), (c, d))", new[] {"a,b,c,d", "a,b", ""});
-            Validate(env, "a, b, c", "cube(a, (b, c))", new[] {"a,b,c", "a", "b,c", ""});
-            Validate(env, "a, b, c", "rollup(a, (b, c))", new[] {"a,b,c", "a", ""});
-            Validate(env, "a, b, c", "grouping sets(rollup((a, b), c))", new[] {"a,b,c", "a,b", ""});
+            Validate(env, "A, B, C", "cube((A, B), C)", new[] {"A,B,C", "A,B", "C", ""});
+            Validate(env, "A, B, C", "rollup((A, B), C)", new[] {"A,B,C", "A,B", ""});
+            Validate(env, "A, B, C, D", "cube((A, B), (C, D))", new[] {"A,B,C,D", "A,B", "C,D", ""});
+            Validate(env, "A, B, C, D", "rollup((A, B), (C, D))", new[] {"A,B,C,D", "A,B", ""});
+            Validate(env, "A, B, C", "cube(A, (B, C))", new[] {"A,B,C", "A", "B,C", ""});
+            Validate(env, "A, B, C", "rollup(A, (B, C))", new[] {"A,B,C", "A", ""});
+            Validate(env, "A, B, C", "grouping sets(rollup((A, B), C))", new[] {"A,B,C", "A,B", ""});
 
             // multiple cubes and rollups
             Validate(
                 env,
-                "a, b, c, d",
-                "rollup(a, b), rollup(c, d)",
+                "A, B, C, D",
+                "rollup(A, B), rollup(C, D)",
                 new[] {
-                    "a,b,c,d", "a,b,c", "a,b",
-                    "a,c,d", "a,c", "a", "c,d", "c", ""
+                    "A,B,C,D", "A,B,C", "A,B",
+                    "A,C,D", "A,C", "A", "C,D", "C", ""
                 });
-            Validate(env, "a, b", "cube(a), cube(b)", new[] {"a,b", "a", "b", ""});
-            Validate(env, "a, b, c", "cube(a, b), cube(c)", new[] {"a,b,c", "a,b", "a,c", "a", "b,c", "b", "c", ""});
+            Validate(env, "A, B", "cube(A), cube(B)", new[] {"A,B", "A", "B", ""});
+            Validate(env, "A, B, C", "cube(A, B), cube(C)", new[] {"A,B,C", "A,B", "A,C", "A", "B,C", "B", "C", ""});
         }
 
         private static void Validate(
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Assert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
             for (var i = 0; i < expectedCSV.Length; i++) {
                 var receivedCSV = ToCSV(received[i]);
-                Assert.AreEqual("Failed at row " + i, expectedCSV[i], receivedCSV);
+                Assert.AreEqual(expectedCSV[i], receivedCSV, "Failed at row " + i);
             }
         }
 

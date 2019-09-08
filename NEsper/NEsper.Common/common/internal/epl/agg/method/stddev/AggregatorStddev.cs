@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            ApplyEvalEnterNonNull(method, ExprDotMethod(Cast(typeof(object), value), "DoubleValue"));
+            ApplyEvalEnterNonNull(method, ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            ApplyEvalLeaveNonNull(method, ExprDotMethod(Cast(typeof(object), value), "DoubleValue"));
+            ApplyEvalLeaveNonNull(method, ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
         }
 
         protected override void ClearWODistinct(

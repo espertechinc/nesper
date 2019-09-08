@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "IntPrimitive".SplitCsv(),
+                new [] { "IntPrimitive" },
                 new object[] {10});
 
             env.UndeployAll();

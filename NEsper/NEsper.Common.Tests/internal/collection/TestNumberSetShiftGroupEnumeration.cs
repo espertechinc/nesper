@@ -101,10 +101,10 @@ namespace com.espertech.esper.common.@internal.collection
                 AssertSet(expected, result);
 
                 count++;
-                Assert.IsTrue(Arrays.Equals(result, expected), "Mismatch in count=" + count);
+                Assert.IsTrue(Arrays.AreEqual(result, expected), "Mismatch in count=" + count);
             }
             Assert.AreEqual(count, expectedValues.Length);
-            Assert.That(() => enumeration.Current, Throws.InstanceOf<NoSuchElementException>());
+            Assert.That(enumeration.MoveNext(), Is.False);
         }
 
         private void AssertSet(int[] expected, int[] result)

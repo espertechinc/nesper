@@ -94,36 +94,38 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the database name.
         /// </summary>
         /// <returns>database name</returns>
-        public string DatabaseName
-        {
+        public string DatabaseName {
             get => databaseName;
+            set => databaseName = value;
         }
 
         /// <summary>
         /// Sets the database name.
         /// </summary>
         /// <param name="databaseName">database name</param>
-        public void SetDatabaseName(string databaseName)
+        public SQLStream SetDatabaseName(string databaseName)
         {
             this.databaseName = databaseName;
+            return this;
         }
 
         /// <summary>
         /// Returns the SQL with optional substitution parameters in the SQL.
         /// </summary>
         /// <returns>SQL</returns>
-        public string SqlWithSubsParams
-        {
+        public string SqlWithSubsParams {
             get => sqlWithSubsParams;
+            set => sqlWithSubsParams = value;
         }
 
         /// <summary>
         /// Sets the SQL with optional substitution parameters in the SQL.
         /// </summary>
         /// <param name="sqlWithSubsParams">SQL set set</param>
-        public void SetSqlWithSubsParams(string sqlWithSubsParams)
+        public SQLStream SetSqlWithSubsParams(string sqlWithSubsParams)
         {
             this.sqlWithSubsParams = sqlWithSubsParams;
+            return this;
         }
 
         /// <summary>

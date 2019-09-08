@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestUnique()
         {
-            var tools = new SupportQuadTreeToolUnique<MXCIFQuadTree<object>>(
+            var tools = new SupportQuadTreeToolUnique<MXCIFQuadTree>(
                 MXCIF_FACTORY,
                 null,
                 MXCIF_RI_ADDERUNIQUE,

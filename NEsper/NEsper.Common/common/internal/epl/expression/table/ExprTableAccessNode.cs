@@ -156,7 +156,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
+            return MakeEvaluate(
+                GETEVENTCOLL,
+                this,
+                typeof(ICollection<EventBean>),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -271,18 +277,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public class AccessEvaluationType
         {
-            public static readonly AccessEvaluationType PLAIN = new AccessEvaluationType("evaluate");
+            public static readonly AccessEvaluationType PLAIN =
+                new AccessEvaluationType("Evaluate");
 
             public static readonly AccessEvaluationType GETEVENTCOLL =
-                new AccessEvaluationType("evaluateGetROCollectionEvents");
+                new AccessEvaluationType("EvaluateGetROCollectionEvents");
 
             public static readonly AccessEvaluationType GETSCALARCOLL =
-                new AccessEvaluationType("evaluateGetROCollectionScalar");
+                new AccessEvaluationType("EvaluateGetROCollectionScalar");
 
-            public static readonly AccessEvaluationType GETEVENT = new AccessEvaluationType("evaluateGetEventBean");
+            public static readonly AccessEvaluationType GETEVENT = 
+                new AccessEvaluationType("EvaluateGetEventBean");
 
             public static readonly AccessEvaluationType EVALTYPABLESINGLE =
-                new AccessEvaluationType("evaluateTypableSingle");
+                new AccessEvaluationType("EvaluateTypableSingle");
 
             private AccessEvaluationType(string methodName)
             {

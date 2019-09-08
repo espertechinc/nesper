@@ -111,15 +111,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create objectarray schema MyEventBeacon(p0 string, p1 long)", path);
+                env.CompileDeploy("create objectarray schema MyEventBeacon(P0 string, P1 long)", path);
                 env.CompileDeploy("@Name('s0') select * from MyEventBeacon", path).AddListener("s0");
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "" +
                     "BeaconSource -> BeaconStream<MyEventBeacon> {" +
                     "  iterations : 3," +
-                    "  p0 : 'abc'," +
-                    "  p1 : 1," +
+                    "  P0 : 'abc'," +
+                    "  P1 : 1," +
                     "}" +
                     "EventBusSink(BeaconStream) {}",
                     path);
@@ -176,11 +176,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Listener("s1").WaitForInvocation(3000, 1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new object[] {100, "abc"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "f0,f1".SplitCsv(),
+                    new [] { "f0","f1" },
                     new object[] {"GE", -1});
 
                 env.UndeployAll();

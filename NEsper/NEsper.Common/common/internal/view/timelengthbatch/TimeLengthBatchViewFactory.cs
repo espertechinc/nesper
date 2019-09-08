@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         /// <summary>
         ///     Number of events to collect before batch fires.
         /// </summary>
-        internal ExprEvaluator size;
+        internal ExprEvaluator sizeEvaluator;
 
         internal TimePeriodCompute timePeriodCompute;
 
@@ -52,9 +52,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             set => isStartEager = value;
         }
 
-        public ExprEvaluator Size {
-            get => size;
-            set => size = value;
+        public ExprEvaluator SizeEvaluator {
+            get => sizeEvaluator;
+            set => sizeEvaluator = value;
         }
 
         public int ScheduleCallbackId {
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
             var sizeValue = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
-                size,
+                sizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
             ViewUpdatedCollection viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory

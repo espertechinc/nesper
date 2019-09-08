@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "intVal,stringVal,doubleVal".SplitCsv(),
+                new [] { "intVal","stringVal","doubleVal" },
                 new object[] {1000, "E1", 1001d});
             env.UndeployAll();
         }
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     text,
                     "Column 'dummy' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [insert into SupportBean(dummy) select 3 from SupportBean]");
 
-                text = "insert into SupportBeanReadOnly(sIde) select 'E1' from MyMap";
+                text = "insert into SupportBeanReadOnly(side) select 'E1' from MyMap";
                 TryInvalidCompile(
                     env,
                     text,
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBeanReadOnly).Name +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).Name +
-                    "' with matching parameter number and expected parameter type(s) 'String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(sIde) select 'E1' from MyMap]");
+                    "' with matching parameter number and expected parameter type(s) 'String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]");
 
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into ABCStream select *, 1+1 from SupportBean", path);
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(vals, "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "LongBoxed,DoubleBoxed".SplitCsv(),
+                    new [] { "LongBoxed","DoubleBoxed" },
                     new object[] {4L, 0d});
                 env.UndeployAll();
 
@@ -674,7 +674,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNew().Get("themap"),
-                    "somefield".SplitCsv(),
+                    new [] { "somefield" },
                     "E1");
 
                 env.UndeployAll();
@@ -697,7 +697,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(vals, "MySupportMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "IntPrimitive,LongBoxed,TheString,BoolPrimitive".SplitCsv(),
+                    new [] { "IntPrimitive","LongBoxed","TheString","BoolPrimitive" },
                     new object[] {4, 100L, "E1", true});
 
                 env.UndeployAll();
@@ -833,7 +833,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "id,type,device,measurement,confIdence".SplitCsv(),
+                    new [] { "id","type","device","measurement","confIdence" },
                     new object[] {2, "A01", "DHC1000", 100.0, 5.0});
 
                 Assert.That(

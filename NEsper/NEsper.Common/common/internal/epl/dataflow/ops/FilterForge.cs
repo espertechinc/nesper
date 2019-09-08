@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     classScope)
                 .Exprnode("filter", filter)
                 .Eventtype("eventType", eventType)
-                .Constant("singleOutputPort", singleOutputPort)
+                .Constant("IsSingleOutputPort", singleOutputPort)
                 .Build();
         }
     }

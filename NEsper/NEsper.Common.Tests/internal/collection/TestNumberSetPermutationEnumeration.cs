@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
 
 using com.espertech.esper.compat.collections;
@@ -38,16 +39,10 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             Assert.AreEqual(count, expectedValues.Length);
+            Assert.That(enumeration.MoveNext(), Is.False);
 
-            try
-            {
-                Assert.That(() => enumeration.Current, Throws.InstanceOf<NoSuchElementException>());
-                Assert.Fail();
-            }
-            catch (NoSuchElementException ex)
-            {
-                // Expected
-            }
+            // Enumerators exposed via yield do not throw exceptions
+            //Assert.That(() => enumeration.Current, Throws.InstanceOf<InvalidOperationException>());
         }
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

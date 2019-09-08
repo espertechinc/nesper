@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context NineToFiveSegmented\n" +
                 "select context.NineToFive.startTime, context.SegmentedByCustomer.Key1 from BankTxn");
-            Create(env, path, "context NineToFiveSegmented select context.name, context.Id from BankTxn");
+            Create(env, path, "context NineToFiveSegmented select context.Name, context.Id from BankTxn");
 
             Create(env, path, "create context MyContext start MyStartEvent end MyEndEvent");
             Create(env, path, "create context MyContext2 initiated MyEvent(Level > 0) terminated after 10 seconds");
@@ -343,33 +343,33 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         public class CumulativePrice
         {
-            public string Venue { get; }
+            public string Venue { get; set; }
 
-            public string CcyPair { get; }
+            public string CcyPair { get; set; }
 
-            public string Side { get; }
+            public string Side { get; set; }
 
-            public double Qty { get; }
+            public double Qty { get; set; }
         }
 
         public class TrainLeaveEvent
         {
-            public int TrainId { get; }
+            public int TrainId { get; set; }
         }
 
         public class TrainEnterEvent
         {
-            public int TrainId { get; }
+            public int TrainId { get; set; }
         }
 
         public class TrafficEvent
         {
-            public double Speed { get; }
+            public double Speed { get; set; }
         }
 
         public class SensorEvent
         {
-            public double Temp { get; }
+            public double Temp { get; set; }
 
             public int Key1 { get; set; }
 
@@ -378,34 +378,34 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         public class LoginEvent
         {
-            public string LoginId { get; }
+            public string LoginId { get; set; }
 
-            public bool IsFailed { get; }
+            public bool IsFailed { get; set; }
         }
 
         public class LogoutEvent
         {
-            public string LoginId { get; }
+            public string LoginId { get; set; }
         }
 
         public class SecurityEvent
         {
-            public string CustomerName { get; }
+            public string CustomerName { get; set; }
         }
 
         public class BankTxn
         {
-            public string CustId { get; }
+            public string CustId { get; set; }
 
-            public string Account { get; }
+            public string Account { get; set; }
 
-            public long Amount { get; }
+            public long Amount { get; set; }
 
-            public string CustomerName { get; }
+            public string CustomerName { get; set; }
 
-            public bool IsExpired { get; }
+            public bool IsExpired { get; set; }
 
-            public string User { get; }
+            public string User { get; set; }
         }
 
         public class PassengerScanEvent
@@ -415,56 +415,56 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TagId = tagId;
             }
 
-            public string TagId { get; }
+            public string TagId { get; set; }
         }
 
         public class MyStartEvent
         {
-            public int Level { get; }
+            public int Level { get; set; }
 
-            public int Id { get; }
+            public int Id { get; set; }
         }
 
         public class MyEndEvent
         {
-            public int Level { get; }
+            public int Level { get; set; }
 
-            public int Id { get; }
+            public int Id { get; set; }
         }
 
         public class MyInitEvent
         {
-            public int Level { get; }
+            public int Level { get; set; }
 
-            public int Id { get; }
+            public int Id { get; set; }
         }
 
         public class MyTermEvent
         {
-            public int Level { get; }
+            public int Level { get; set; }
 
-            public int Id { get; }
+            public int Id { get; set; }
         }
 
         public class MyEvent
         {
-            public int Level { get; }
+            public int Level { get; set; }
 
-            public int Id { get; }
+            public int Id { get; set; }
         }
 
         public class MyTwoKeyInit
         {
-            public int Key1 { get; }
+            public int Key1 { get; set; }
 
-            public int Key2 { get; }
+            public int Key2 { get; set; }
         }
 
         public class MyTwoKeyTerm
         {
-            public int Key1 { get; }
+            public int Key1 { get; set; }
 
-            public int Key2 { get; }
+            public int Key2 { get; set; }
         }
     }
 } // end of namespace

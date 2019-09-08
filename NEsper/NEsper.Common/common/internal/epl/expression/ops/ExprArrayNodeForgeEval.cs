@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var children = forge.ForgeRenderableArray.ChildNodes;
             if (children.Length == 0) {
-                return StaticMethod(typeof(Collections), "EmptyList");
+                return StaticMethod(typeof(Collections), "GetEmptyList");
             }
 
             var methodNode = codegenMethodScope.MakeChild(

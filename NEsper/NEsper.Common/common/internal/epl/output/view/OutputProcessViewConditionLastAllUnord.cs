@@ -72,10 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     (oldData == null ? 0 : oldData.Length));
             }
 
-            var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
-            resultSetProcessor.ProcessOutputLimitedLastAllNonBufferedView(newData, oldData, isGenerateSynthetic);
+            var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
+            _resultSetProcessor.ProcessOutputLimitedLastAllNonBufferedView(newData, oldData, isGenerateSynthetic);
 
-            if (!CheckAfterCondition(newData, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newData, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -111,10 +111,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     (oldEvents == null ? 0 : oldEvents.Count));
             }
 
-            var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
-            resultSetProcessor.ProcessOutputLimitedLastAllNonBufferedJoin(newEvents, oldEvents, isGenerateSynthetic);
+            var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
+            _resultSetProcessor.ProcessOutputLimitedLastAllNonBufferedJoin(newEvents, oldEvents, isGenerateSynthetic);
 
-            if (!CheckAfterCondition(newEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -149,8 +149,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(".continueOutputProcessingView");
             }
 
-            var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
-            var newOldEvents = resultSetProcessor.ContinueOutputLimitedLastAllNonBufferedView(isGenerateSynthetic);
+            var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
+            var newOldEvents = _resultSetProcessor.ContinueOutputLimitedLastAllNonBufferedView(isGenerateSynthetic);
 
             ContinueOutputProcessingViewAndJoin(doOutput, forceUpdate, newOldEvents);
         }
@@ -183,8 +183,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(".continueOutputProcessingJoin");
             }
 
-            var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
-            var newOldEvents = resultSetProcessor.ContinueOutputLimitedLastAllNonBufferedJoin(isGenerateSynthetic);
+            var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
+            var newOldEvents = _resultSetProcessor.ContinueOutputLimitedLastAllNonBufferedJoin(isGenerateSynthetic);
 
             ContinueOutputProcessingViewAndJoin(doOutput, forceUpdate, newOldEvents);
         }
@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
-                resultSetProcessor,
+                _resultSetProcessor,
                 parentView,
                 _parent.IsDistinct);
         }

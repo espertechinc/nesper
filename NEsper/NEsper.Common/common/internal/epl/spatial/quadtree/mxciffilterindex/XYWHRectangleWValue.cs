@@ -10,19 +10,19 @@ using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
-    public class XYWHRectangleWValue<TL> : XYWHRectangle
+    public class XYWHRectangleWValue : XYWHRectangle
     {
         public XYWHRectangleWValue(
             double x,
             double y,
             double w,
             double h,
-            TL value)
+            object value)
             : base(x, y, w, h)
         {
             Value = value;
         }
 
-        public TL Value { get; set; }
+        public object Value { get; set; }
     }
 } // end of namespace

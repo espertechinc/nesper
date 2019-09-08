@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 .Exprnode("iterations", iterations)
                 .Exprnode("initialDelay", initialDelay)
                 .Exprnode("interval", interval)
-                .Constant("isProduceEventBean", produceEventBean)
+                .Constant("IsProduceEventBean", produceEventBean)
                 .Eventtype("outputEventType", outputEventType)
                 .Forges("propertyEvaluators", evaluatorForges)
                 .Manufacturer("manufacturer", eventBeanManufacturer)

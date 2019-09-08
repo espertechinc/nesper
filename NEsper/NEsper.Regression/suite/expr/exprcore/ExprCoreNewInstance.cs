@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "new SupportBean(\"A\",IntPrimitive) as c0, " +
                           "new SupportBean(\"B\",IntPrimitive+10), " +
                           "new SupportBean() as c2, " +
-                          "new SupportBean(\"ABC\",0).getTheString() as c3 " +
+                          "new SupportBean(\"ABC\",0).GetTheString() as c3 " +
                           "from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
                 object[][] expectedAggType = {

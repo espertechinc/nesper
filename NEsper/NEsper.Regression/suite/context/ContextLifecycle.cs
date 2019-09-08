@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path.Clear();
 
                 // test with subquery
-                var fields = "mymax".SplitCsv();
+                var fields = new [] { "mymax" };
                 var eplTwo = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
                              "context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
                              "@Name('out') context CtxSegmentedByTarget on SupportBean " +
@@ -128,14 +128,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     path,
-                    "on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1",
+                    "on SupportBean_S0 S0 merge MyWindow mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name");
 
                 // Trigger in different context
                 TryInvalidCompile(
                     env,
                     path,
-                    "context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1",
+                    "context TenToFive on SupportBean_S0 S0 merge MyWindow mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead");
 
                 // Named window not in context, trigger in different context
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     path,
-                    "context TenToFive on SupportBean_S0 s0 merge MyWindowTwo mw when matched then update set IntPrimitive = 1",
+                    "context TenToFive on SupportBean_S0 S0 merge MyWindowTwo mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared with context 'null', please use the same context instead");
 
                 env.UndeployAll();

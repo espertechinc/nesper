@@ -62,8 +62,8 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     var found = false;
                     var events = assertListener.GetNewDataListFlattened();
                     foreach (var theEvent in events) {
-                        var s0Received = theEvent.Get("s0");
-                        var s1Received = (IDictionary<string, object>) theEvent.Get("s1");
+                        var s0Received = theEvent.Get("S0");
+                        var s1Received = (IDictionary<string, object>) theEvent.Get("S1");
                         if (s0Received == eventS0 ||
                             s1Received.Get("myvarchar").Equals(MYVARCHAR_VALUES[intPrimitive - 1])) {
                             found = true;

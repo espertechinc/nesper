@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<IDictionary<string, object>>();
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
-                "Id".SplitCsv(),
+                new [] { "Id" },
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployAll();

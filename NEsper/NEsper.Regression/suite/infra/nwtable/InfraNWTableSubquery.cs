@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var stmtSubquery =
-                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = s0.P00) as c0 from SupportBean_S0 as s0";
+                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = S0.P00) as c0 from SupportBean_S0 as S0";
                 env.CompileDeploy(stmtSubquery, path).AddListener("Subq");
 
                 env.Milestone(0);
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfra select TheString as key, IntBoxed as value from SupportBean as s0";
+                    "insert into MyInfra select TheString as key, IntBoxed as value from SupportBean as S0";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendSupportBean(env, "E1", 1);
@@ -348,8 +348,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into (not does insert if key already exists)
                 var stmtTextInsertOne =
-                    "insert into MyInfraSSS select TheString as key, IntBoxed as value from SupportBean as s0" +
-                    " where not exists (select * from MyInfraSSS as win where win.Key = s0.TheString)";
+                    "insert into MyInfraSSS select TheString as key, IntBoxed as value from SupportBean as S0" +
+                    " where not exists (select * from MyInfraSSS as win where win.Key = S0.TheString)";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendSupportBean(env, "E1", 1);

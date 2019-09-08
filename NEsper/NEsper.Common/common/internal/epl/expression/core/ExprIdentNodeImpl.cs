@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 validationContext.TableCompileTimeResolver);
             resolvedStreamName = propertyInfoPair.Second;
             int streamNum = propertyInfoPair.First.StreamNum;
-            var propertyType = Boxing.GetBoxedType(propertyInfoPair.First.PropertyType);
+            var propertyType = propertyInfoPair.First.PropertyType; // GetBoxedType()
             resolvedPropertyName = propertyInfoPair.First.PropertyName;
             EventType eventType = propertyInfoPair.First.StreamEventType;
             EventPropertyGetterSPI propertyGetter;

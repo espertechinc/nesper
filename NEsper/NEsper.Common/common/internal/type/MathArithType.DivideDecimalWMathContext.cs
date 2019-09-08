@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class DivideDecimalWMathContext : Computer
         {
-            private readonly bool divisionByZeroReturnsNull;
-            private readonly MathContext mathContext;
+            private readonly bool _divisionByZeroReturnsNull;
+            private readonly MathContext _mathContext;
 
             /// <summary>
             ///     Ctor.
@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.type
                 bool divisionByZeroReturnsNull,
                 MathContext mathContext)
             {
-                this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
-                this.mathContext = mathContext;
+                this._divisionByZeroReturnsNull = divisionByZeroReturnsNull;
+                this._mathContext = mathContext;
             }
 
             public object Compute(
@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var b1 = d1.AsDecimal();
                 var b2 = d2.AsDecimal();
-                if (b2.AsDouble() == 0) {
-                    if (divisionByZeroReturnsNull) {
+                if (b2 == 0.0m) {
+                    if (_divisionByZeroReturnsNull) {
                         return null;
                     }
 
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.type
 
                 return decimal.Round(
                     decimal.Divide(b1, b2),
-                    mathContext.Precision,
-                    mathContext.RoundingMode);
+                    _mathContext.Precision,
+                    _mathContext.RoundingMode);
             }
 
             public CodegenExpression Codegen(
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 CodegenExpression math =
-                    codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(mathContext));
+                    codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(_mathContext));
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimalWMathContext), codegenClassScope)
                     .AddParam(typeof(decimal?), "b1")
@@ -75,10 +75,10 @@ namespace com.espertech.esper.common.@internal.type
                     .Block;
                 var ifZero = block.IfCondition(
                     CodegenExpressionBuilder.EqualsIdentity(
-                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b2"), "DoubleValue"),
-                        CodegenExpressionBuilder.Constant(0)));
+                        CodegenExpressionBuilder.Ref("b2"),
+                        CodegenExpressionBuilder.Constant(0.0m)));
                 {
-                    if (divisionByZeroReturnsNull) {
+                    if (_divisionByZeroReturnsNull) {
                         ifZero.BlockReturn(CodegenExpressionBuilder.ConstantNull());
                     }
                     else {
@@ -86,19 +86,22 @@ namespace com.espertech.esper.common.@internal.type
                             CodegenExpressionBuilder.NewInstance(
                                 typeof(decimal?),
                                 CodegenExpressionBuilder.Op(
-                                    CodegenExpressionBuilder.ExprDotMethod(
+                                    CodegenExpressionBuilder.ExprDotName(
                                         CodegenExpressionBuilder.Ref("b1"),
-                                        "DoubleValue"),
+                                        "Value"),
                                     "/",
-                                    CodegenExpressionBuilder.Constant(0))));
+                                    CodegenExpressionBuilder.Constant(0.0m))));
                     }
                 }
                 var method = block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("b1"),
-                        "divide",
-                        CodegenExpressionBuilder.Ref("b2"),
-                        math));
+                        math,
+                        "Apply",
+                        CodegenExpressionBuilder.Op(
+                            CodegenExpressionBuilder.Ref("b1"),
+                            "/",
+                            CodegenExpressionBuilder.Ref("b2"))));
+
                 return CodegenExpressionBuilder.LocalMethod(method, left, right);
             }
         }

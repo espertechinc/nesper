@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             IComparer<object> comparator)
         {
             // Map the sort values to the corresponding outgoing events
-            IDictionary<object, IList<EventBean>> sortToOutgoing = new Dictionary<object, IList<EventBean>>();
+            IDictionary<object, IList<EventBean>> sortToOutgoing = new Dictionary<object, IList<EventBean>>()
+                .WithNullKeySupport();
             var countOne = 0;
             foreach (var sortValues in sortValuesMultiKeys) {
                 var list = sortToOutgoing.Get(sortValues);

@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 if (!expected[i].Equals(matchesText[i])) {
                     log.Info("expected:" + expected[i]);
                     log.Info("  actual:" + expected[i]);
-                    Assert.AreEqual("Sending event " + theEvent + " row " + rowCount, expected[i], matchesText[i]);
+                    Assert.AreEqual(expected[i], matchesText[i], "Sending event " + theEvent + " row " + rowCount);
                 }
             }
 

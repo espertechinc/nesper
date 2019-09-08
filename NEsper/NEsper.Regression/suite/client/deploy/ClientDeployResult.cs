@@ -154,8 +154,8 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                var deploymentIds = "A,B,C,D,E".SplitCsv();
-                var names = "s1,s2,s3--0,s3,s3".SplitCsv();
+                var deploymentIds = new [] { "A","B","C","D","E" };
+                var names = new [] { "s1","s2","s3--0","s3","s3" };
 
                 var stmts = CreateStmts(env, deploymentIds, names);
                 for (var i = 0; i < stmts.Length; i++) {

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var evaluationType = forge.EvaluationType;
+            var evaluationType = forge.EvaluationType.GetBoxedType();
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var exprMethod = parent
                 .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                     .DeclareVar(evaluationType, PASS_NAME, expression)
                     .IfRefNull(PASS_NAME)
                     .BlockReturn(ConstantFalse())
-                    .MethodReturn(Ref(PASS_NAME));
+                    .MethodReturn(ExprDotName(Ref(PASS_NAME), "Value"));
             }
 
             return exprMethod;

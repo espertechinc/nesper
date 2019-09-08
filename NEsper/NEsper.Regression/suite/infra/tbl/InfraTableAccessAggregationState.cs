@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var b1 = MakeSendBean(env, "E1", 10);
                 EPAssertionUtil.AssertProps(
                     env.Listener("into").AssertOneGetNewAndReset(),
-                    "mywin".SplitCsv(),
+                    new [] { "mywin" },
                     new object[] {new[] {b1}});
 
                 env.Milestone(0);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var b2 = MakeSendBean(env, "E2", 20);
                 EPAssertionUtil.AssertProps(
                     env.Listener("into").AssertOneGetNewAndReset(),
-                    "mywin".SplitCsv(),
+                    new [] { "mywin" },
                     new object[] {new[] {b1, b2}});
 
                 env.Milestone(1);

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="contextName">context name</param>
         /// <param name="descriptor">context dimension descriptor</param>
         public CreateContextClause(
-            String contextName,
+            string contextName,
             ContextDescriptor descriptor)
         {
             ContextName = contextName;

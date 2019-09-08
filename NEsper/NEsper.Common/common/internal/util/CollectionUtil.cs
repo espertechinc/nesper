@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(typeof(Collections), "EmptyList");
+        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(typeof(Collections), "GetEmptyList");
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -662,7 +662,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             var method = block.IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(StaticMethod(typeof(Collections), "EmptyList"))
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList"))
                 .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
                 .BlockReturn(
                     StaticMethod(typeof(Collections), "SingletonList", ArrayAtIndex(Ref("array"), Constant(0))))

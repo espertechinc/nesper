@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public void TestToExpressionString()
         {
             castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual("cast(10,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
+            Assert.AreEqual("cast(10L,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
         }
 
         [Test]

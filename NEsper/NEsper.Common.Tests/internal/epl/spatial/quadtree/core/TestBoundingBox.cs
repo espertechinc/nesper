@@ -352,7 +352,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         public void TestTreeForPath()
         {
             var bb = new BoundingBox(0, 0, 100, 100);
-            var node = bb.TreeForPath("se,nw,ne,sw".SplitCsv());
+            var node = bb.TreeForPath(new [] { "se","nw","ne","sw" });
             var inner = node.se.nw.ne.sw.bb;
             var tree = bb.TreeForDepth(4);
             Assert.IsTrue(inner.Equals(tree.se.nw.ne.sw.bb));

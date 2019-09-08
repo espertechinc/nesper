@@ -274,14 +274,15 @@ namespace com.espertech.esper.common.client.configuration.common
             Type sqlType,
             Type desiredType)
         {
-            var typeEnum = DatabaseTypeEnum.GetEnum(desiredType.FullName);
-            if (typeEnum == null) {
-                var supported = DatabaseTypeEnum.VALUES.RenderAny();
+            try {
+                DatabaseTypeEnumExtensions.GetEnum(desiredType.FullName);
+                DataTypesMapping[sqlType] = desiredType;
+            }
+            catch (ArgumentException e) {
+                var supported = EnumHelper.GetValues<DatabaseTypeEnum>().RenderAny();
                 throw new ConfigurationException(
                     "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
-
-            DataTypesMapping[sqlType] = desiredType;
         }
 
         /// <summary>
@@ -292,7 +293,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="properties">The properties.</param>
         public void SetDatabaseDriver(
             IContainer container,
-            String driverName,
+            string driverName,
             Properties properties)
         {
             var driver = DriverConnectionFactoryDesc.ResolveDriverFromName(

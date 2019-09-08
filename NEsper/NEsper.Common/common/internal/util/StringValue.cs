@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using System.Text;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.util
 {
     public class StringValue
@@ -147,7 +149,7 @@ namespace com.espertech.esper.common.@internal.util
                 return text;
             }
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             var index = -1;
             var max = text.Length - 1;
             var skip = false;
@@ -174,6 +176,9 @@ namespace com.espertech.esper.common.@internal.util
             TextWriter writer,
             object constant)
         {
+            CompatExtensions.RenderAny(constant, writer);
+
+#if false
             if (constant == null) {
                 writer.Write("null");
                 return;
@@ -197,9 +202,13 @@ namespace com.espertech.esper.common.@internal.util
             else if (constant is decimal) {
                 writer.Write(constant + "m");
             }
+            else if (constant is bool asBool) {
+                writer.Write(asBool ? "true" : "false");
+            }
             else {
                 writer.Write(constant.ToString());
             }
+#endif
         }
 
         /// <summary>
@@ -253,7 +262,7 @@ namespace com.espertech.esper.common.@internal.util
                     if (i < len) {
                         c = s[i++];
                         if (c == 'u') {
-                            c = (char) Convert.ToInt32(s.Substring(i, i + 4), 16);
+                            c = (char) Convert.ToInt32(s.Substring(i, 4), 16);
                             i += 4;
                         } // add other cases here as desired...
                     }

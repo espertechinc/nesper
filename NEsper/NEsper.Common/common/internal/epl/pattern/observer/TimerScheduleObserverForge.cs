@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                         .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
                         .Add("ObserverTimerSchedule"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(Ref("factory"), "AllConstant", Constant(allConstantResult))
+                .SetProperty(Ref("factory"), "IsAllConstant", Constant(allConstantResult))
                 .SetProperty(Ref("factory"), "ScheduleComputer", scheduleComputer.Make(method, classScope))
                 .SetProperty(
                     Ref("factory"),

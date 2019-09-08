@@ -44,9 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
         }
 
-        public void SetNext(CompositeIndexQuery next)
+        public CompositeIndexQuery SetNext(CompositeIndexQuery next)
         {
             this.next = next;
+            return this;
         }
 
         public ICollection<EventBean> Get(

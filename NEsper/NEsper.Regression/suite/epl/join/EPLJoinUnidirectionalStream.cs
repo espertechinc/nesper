@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = "symbol,Volume,TheString,IntPrimitive".SplitCsv();
+            var fields = new [] { "symbol","Volume","TheString","IntPrimitive" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = "symbol,Volume,TheString,IntPrimitive".SplitCsv();
+            var fields = new [] { "symbol","Volume","TheString","IntPrimitive" };
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "E1", 10);
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void Try3TableOuterJoin(RegressionEnvironment env)
         {
-            var fields = "s0.Id,s1.Id,s2.Id".SplitCsv();
+            var fields = new [] { "S0.Id","S1.Id","S2.Id" };
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
             EPAssertionUtil.AssertProps(
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             env.SendEventBean(new SupportBean_S0(11, "E4"));
-            var fields = "s0.Id,s1.Id,s2.Id".SplitCsv();
+            var fields = new [] { "S0.Id","S1.Id","S2.Id" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join
                 //
-                var fields3FOJ = "P00,P10,TheString".SplitCsv();
+                var fields3FOJ = new [] { "P00","P10","TheString" };
                 var stmtText3FOJ = "@Name('s0') select P00, P10, TheString " +
                                    "from " +
                                    "SupportBean_S0#keepall " +
@@ -419,15 +419,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join with where-clause
                 //
-                var fields3FOJW = "P00,P10,TheString".SplitCsv();
+                var fields3FOJW = new [] { "P00","P10","TheString" };
                 var stmtText3FOJW = "@Name('s0') select P00, P10, TheString " +
                                     "from " +
-                                    "SupportBean_S0#keepall as s0 " +
+                                    "SupportBean_S0#keepall as S0 " +
                                     "full outer join " +
-                                    "SupportBean_S1#keepall as s1 " +
+                                    "SupportBean_S1#keepall as S1 " +
                                     "full outer join " +
                                     "SupportBean#keepall as sb " +
-                                    "where s0.P00 = s1.P10";
+                                    "where S0.P00 = S1.P10";
                 env.CompileDeployAddListenerMile(stmtText3FOJW, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean_S0(1, "X1"));
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = "symbol,cnt".SplitCsv();
+                var fields = new [] { "symbol","cnt" };
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E1", 10);
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = "cnt".SplitCsv();
+                var fields = new [] { "cnt" };
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E1", 10);
@@ -575,11 +575,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id " +
-                               "from SupportBean_S0 as s0 unidirectional " +
-                               " full outer join SupportBean_S1#keepall as s1" +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id " +
+                               "from SupportBean_S0 as S0 unidirectional " +
+                               " full outer join SupportBean_S1#keepall as S1" +
                                " on P00 = P10 " +
-                               " full outer join SupportBean_S2#keepall as s2" +
+                               " full outer join SupportBean_S2#keepall as S2" +
                                " on P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableOuterJoin(env);
@@ -591,10 +591,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id from SupportBean_S0 as s0 unidirectional " +
-                               " left outer join SupportBean_S1#keepall as s1 " +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id from SupportBean_S0 as S0 unidirectional " +
+                               " left outer join SupportBean_S1#keepall as S1 " +
                                " on P00 = P10 " +
-                               " left outer join SupportBean_S2#keepall as s2 " +
+                               " left outer join SupportBean_S2#keepall as S2 " +
                                " on P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableOuterJoin(env);
@@ -667,11 +667,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id " +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id " +
                                "from " +
-                               "SupportBean_S0 as s0 unidirectional, " +
-                               "SupportBean_S1#keepall as s1, " +
-                               "SupportBean_S2#keepall as s2 " +
+                               "SupportBean_S0 as S0 unidirectional, " +
+                               "SupportBean_S1#keepall as S1, " +
+                               "SupportBean_S2#keepall as S2 " +
                                "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
@@ -683,11 +683,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id " +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id " +
                                "from " +
-                               "SupportBean_S1#keepall as s1, " +
-                               "SupportBean_S0 as s0 unidirectional, " +
-                               "SupportBean_S2#keepall as s2 " +
+                               "SupportBean_S1#keepall as S1, " +
+                               "SupportBean_S0 as S0 unidirectional, " +
+                               "SupportBean_S2#keepall as S2 " +
                                "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
@@ -699,11 +699,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id " +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id " +
                                "from " +
-                               "SupportBean_S2#keepall as s2, " +
-                               "SupportBean_S0 as s0 unidirectional, " +
-                               "SupportBean_S1#keepall as s1 " +
+                               "SupportBean_S2#keepall as S2, " +
+                               "SupportBean_S0 as S0 unidirectional, " +
+                               "SupportBean_S1#keepall as S1 " +
                                "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
@@ -715,11 +715,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id, s1.Id, s2.Id " +
+                var stmtText = "@Name('s0') select S0.Id, S1.Id, S2.Id " +
                                "from " +
-                               "SupportBean_S1#keepall as s1, " +
-                               "SupportBean_S2#keepall as s2, " +
-                               "SupportBean_S0 as s0 unidirectional " +
+                               "SupportBean_S1#keepall as S1, " +
+                               "SupportBean_S2#keepall as S2, " +
+                               "SupportBean_S0 as S0 unidirectional " +
                                "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);

@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b0,b1,b2,c".SplitCsv();
+            var fields = new [] { "a","b0","b1","b2","c" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2, C.TheString as c " +
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SendTimer(env, 0);
 
             // the interval is not effective
-            var fields = "a,b".SplitCsv();
+            var fields = new [] { "a","b" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B.TheString as b" +
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a_Id,count_b,first_b,last_b".SplitCsv();
+            var fields = new [] { "a_Id","count_b","first_b","last_b" };
             var text = "@Name('s0') select * from TemperatureSensorEvent\n" +
                        "match_recognize (\n" +
                        "  partition by device\n" +
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b,c0,c1,c2".SplitCsv();
+            var fields = new [] { "a","b","c0","c1","c2" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B.TheString as b, " +
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b0,b1,c0,c1".SplitCsv();
+            var fields = new [] { "a","b0","b1","c0","c1" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, " +
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b0,b1,b2".SplitCsv();
+            var fields = new [] { "a","b0","b1","b2" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a0,a1,a2,a3,a4".SplitCsv();
+            var fields = new [] { "a0","a1","a2","a3","a4" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, A[3].TheString as a3, A[4].TheString as a4" +
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b0,b1,b2".SplitCsv();
+            var fields = new [] { "a","b0","b1","b2" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             SendTimer(env, 0);
 
-            var fields = "a,b0,b1,b2".SplitCsv();
+            var fields = new [] { "a","b0","b1","b2" };
             var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +

@@ -29,16 +29,20 @@ namespace com.espertech.esper.common.@internal.@event.core
 
     public class ProxyEventPropertyWriter : EventPropertyWriter
     {
+        public delegate void WriteFunc(
+            object value,
+            EventBean target);
+
         public ProxyEventPropertyWriter()
         {
         }
 
-        public ProxyEventPropertyWriter(Action<object, EventBean> writeFunction)
+        public ProxyEventPropertyWriter(WriteFunc writeFunction)
         {
             ProcWrite = writeFunction;
         }
 
-        public Action<object, EventBean> ProcWrite { get; set; }
+        public WriteFunc ProcWrite { get; set; }
 
         /// <summary>
         ///     Value to write to a property.

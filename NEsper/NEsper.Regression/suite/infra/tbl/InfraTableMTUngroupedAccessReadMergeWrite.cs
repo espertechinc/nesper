@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 try {
                     while (!shutdown) {
-                        var fields = "c1,c2,c3,c4,c5".SplitCsv();
+                        var fields = new [] { "c1","c2","c3","c4","c5" };
                         env.SendEventBean(new SupportBean_S1(0));
                         var @event = listener.AssertOneGetNewAndReset();
                         var valueOne = @event.Get("c0");

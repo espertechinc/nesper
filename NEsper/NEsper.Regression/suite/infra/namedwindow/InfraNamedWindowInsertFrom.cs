@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowTwo"),
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     new[] {new object[] {"E2", 10}, new object[] {"E3", 10}});
 
                 // test select individual fields and from an insert-from named window
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     path);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowThree"),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new[] {new object[] {"E2"}});
 
                 env.UndeployAll();
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual("A1", events[0].Get("id?"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("window"),
-                    "id?".SplitCsv(),
+                    new [] { "id?" },
                     new[] {new object[] {"A1"}, new object[] {"B1"}});
 
                 env.UndeployAll();

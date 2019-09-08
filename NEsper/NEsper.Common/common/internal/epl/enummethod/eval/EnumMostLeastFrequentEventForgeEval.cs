@@ -87,11 +87,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<IDictionary<string, object>>(
                     "items",
                     NewInstance(typeof(LinkedHashMap<string, object>)));
-            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+
+            var forEach = block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
-                .DeclareVar<object>(
+                .DeclareVar<object>( // more type erasure bullshit!!!!
                     "item",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.innerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>(
                     "existing",
                     Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("item"))))

@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EventRepresentationChoice eventRepresentationEnum,
                 AtomicLong milestone)
             {
-                var fields = "userId,keyword,sumScore".SplitCsv();
+                var fields = new [] { "userId","keyword","sumScore" };
                 var epl =
                     eventRepresentationEnum.GetAnnotationText() +
                     " create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
@@ -515,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                   "granularity 1000000";
                 env.CompileDeploy(eplCtxCRC32, path);
 
-                var fields = "c1,c2,c3,c4,c5".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4","c5" };
                 var eplStmt = "@Name('s0') context Ctx1 select IntPrimitive as c1, " +
                               "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
                               "(select P00 from SupportBean_S0#length(2)) as c5 " +

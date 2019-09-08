@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.compat.concurrency
 {
@@ -41,7 +43,9 @@ namespace com.espertech.esper.compat.concurrency
 
         public int NumSubmitted => (int) Interlocked.Read(ref _numSubmitted);
 
-        public MultiThreadedTaskScheduler(int threadCount)
+        public MultiThreadedTaskScheduler(
+            int threadCount,
+            ThreadFactory threadFactory)
         {
             _id = Guid.NewGuid();
             _tasks = new LinkedList<Task>();
@@ -49,16 +53,31 @@ namespace com.espertech.esper.compat.concurrency
             _isShutdown = false;
             _numExecuted = 0;
             _numSubmitted = 0;
-
-            _threads = Enumerable.Range(0, threadCount)
-                .Select(
-                    _ => new Thread(Run)
-                    {
-                        IsBackground = true,
-                        Name = "MultiThreadedTaskScheduler-Thread-" + _
-                    })
-                .ToList();
+            _threads = ThreadRange(threadCount, threadFactory);
             _threads.ForEach(_ => _.Start());
+        }
+
+        public MultiThreadedTaskScheduler(int threadCount)
+            : this(threadCount, DefaultThreadFactory())
+        {
+        }
+
+        private static ThreadFactory DefaultThreadFactory()
+        {
+            return _ => new Thread(_)
+            {
+                IsBackground = true,
+                Name = "MultiThreadedTaskScheduler-Thread-" + _
+            };
+        }
+
+        private List<Thread> ThreadRange(
+            int numThreads,
+            ThreadFactory threadFactory)
+        {
+            return Enumerable.Range(0, numThreads)
+                .Select(_ => threadFactory.Invoke(Run))
+                .ToList();
         }
 
         public void Dispose()
@@ -127,9 +146,8 @@ namespace com.espertech.esper.compat.concurrency
                         _tasks.RemoveFirst();
                     }
 
-                    try
-                    {
-                        task.RunSynchronously(this);
+                    try {
+                        base.TryExecuteTask(task);
                     }
                     finally
                     {

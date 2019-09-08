@@ -188,11 +188,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             // handle filtered
-            CodegenMethod methodY = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
+            CodegenMethod methodY = parent.MakeChild(typeof(ICollection<EventBean>), this.GetType(), classScope);
 
             methodY.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, methodY, symbols);
 
-            methodY.Block.DeclareVar<ArrayDeque<object>>("filtered", ConstantNull());
+            methodY.Block.DeclareVar<ArrayDeque<EventBean>>("filtered", ConstantNull());
             CodegenBlock foreachY = methodY.Block.ForEach(
                 typeof(EventBean),
                 "@event",
@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddIsNewData(methodY),
                         symbols.GetAddExprEvalCtx(methodY)));
                 foreachY.IfCondition(EqualsNull(@Ref("filtered")))
-                    .AssignRef("filtered", NewInstance(typeof(ArrayDeque<object>)))
+                    .AssignRef("filtered", NewInstance(typeof(ArrayDeque<EventBean>)))
                     .BlockEnd()
                     .ExprDotMethod(@Ref("filtered"), "Add", @Ref("@event"));
             }

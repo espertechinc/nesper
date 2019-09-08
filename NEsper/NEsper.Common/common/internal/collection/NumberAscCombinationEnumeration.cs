@@ -39,7 +39,6 @@ namespace com.espertech.esper.common.@internal.collection
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public bool MoveNext()
@@ -60,9 +59,7 @@ namespace com.espertech.esper.common.@internal.collection
             throw new NotSupportedException();
         }
 
-        object IEnumerator.Current {
-            get { return Current; }
-        }
+        object IEnumerator.Current => Current;
 
         public int[] Current {
             get {

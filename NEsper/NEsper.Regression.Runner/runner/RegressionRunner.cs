@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionRunner
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog LOG = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // References required to ensure type loading
         private static readonly Type eventTypeAvroHandlerImpl = typeof(EventTypeAvroHandlerImpl);
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionrun.Runner
                 session.Runtime = runtime;
             }
 
-            log.Info("Running test " + execution.Name());
+            LOG.Info("Running test " + execution.Name());
             execution.Run(new RegressionEnvironmentEsper(session.Configuration, session.Runtime));
         }
     }

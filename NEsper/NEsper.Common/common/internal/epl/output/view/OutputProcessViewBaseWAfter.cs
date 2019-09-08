@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -18,8 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 {
     public abstract class OutputProcessViewBaseWAfter : OutputProcessView
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        internal readonly ResultSetProcessor resultSetProcessor;
+        internal readonly AgentInstanceContext _agentInstanceContext;
+        internal readonly ResultSetProcessor _resultSetProcessor;
+        internal readonly OutputProcessViewAfterState _afterConditionState;
 
         protected OutputProcessViewBaseWAfter(
             AgentInstanceContext agentInstanceContext,
@@ -28,18 +30,18 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied)
         {
-            this.resultSetProcessor = resultSetProcessor;
-            this.agentInstanceContext = agentInstanceContext;
-            OptionalAfterConditionState = agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionAfter(
+            _resultSetProcessor = resultSetProcessor;
+            _agentInstanceContext = agentInstanceContext;
+            _afterConditionState = agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionAfter(
                 afterConditionTime,
                 afterConditionNumberOfEvents,
                 afterConditionSatisfied,
                 agentInstanceContext);
         }
 
-        public virtual OutputProcessViewAfterState OptionalAfterConditionState { get; }
+        public virtual OutputProcessViewAfterState OptionalAfterConditionState => _afterConditionState;
 
-        public override EventType EventType => resultSetProcessor.ResultEventType;
+        public override EventType EventType => _resultSetProcessor.ResultEventType;
 
         /// <summary>
         ///     Returns true if the after-condition is satisfied.
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newEvents,
             StatementContext statementContext)
         {
-            return OptionalAfterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
+            return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
         }
 
         /// <summary>
@@ -64,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> newEvents,
             StatementContext statementContext)
         {
-            return OptionalAfterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
+            return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
         }
 
         /// <summary>
@@ -77,12 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> newOldEvents,
             StatementContext statementContext)
         {
-            return OptionalAfterConditionState.CheckUpdateAfterCondition(newOldEvents, statementContext);
+            return _afterConditionState.CheckUpdateAfterCondition(newOldEvents, statementContext);
         }
 
         public override void Stop(AgentInstanceStopServices services)
         {
-            OptionalAfterConditionState?.Destroy();
+            _afterConditionState?.Destroy();
         }
     }
 } // end of namespace

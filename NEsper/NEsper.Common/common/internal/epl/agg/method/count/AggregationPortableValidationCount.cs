@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         {
             var that = (AggregationPortableValidationCount) intoTableAgg;
             AggregationValidationUtil.ValidateAggregationFilter(hasFilter, that.hasFilter);
-            if (distinct) {
+            if (IsDistinct) {
                 AggregationValidationUtil.ValidateAggregationInputType(countedValueType, that.countedValueType);
             }
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(@ref, "Ever", Constant(ever))
+                .SetProperty(@ref, "IsEver", Constant(ever))
                 .SetProperty(@ref, "HasFilter", Constant(hasFilter))
                 .SetProperty(@ref, "CountedValueType", Constant(countedValueType))
                 .SetProperty(@ref, "IgnoreNulls", Constant(ignoreNulls));

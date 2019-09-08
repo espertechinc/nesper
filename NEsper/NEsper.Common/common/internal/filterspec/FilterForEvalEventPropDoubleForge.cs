@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<object>("value", Cast(typeof(object), get))
                 .IfRefNull("value")
                 .BlockReturn(ConstantNull())
-                .MethodReturn(ExprDotMethod(Ref("value"), "DoubleValue"));
+                .MethodReturn(ExprDotMethod(Ref("value"), "AsDouble"));
 
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }

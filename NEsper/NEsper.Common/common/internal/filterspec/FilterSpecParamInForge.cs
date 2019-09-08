@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             //var param = NewAnonymousClass(
             //    method.Block,
             //    typeof(FilterSpecParam),
-            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
             //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             //param.AddMethod("GetFilterValue", getFilterValue);
@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         forge.MakeCodegen(classScope, method));
                 }
 
-                getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("values")));
+                getFilterValue.Block.BlockReturn(NewInstance<HashableMultiKey>(Ref("values")));
             }
             else {
                 getFilterValue.Block.DeclareVar<ArrayDeque<object>>(

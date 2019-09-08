@@ -10,12 +10,12 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
-    public class MXCIFQuadTreeNodeLeaf<TL> : MXCIFQuadTreeNode<TL>
+    public class MXCIFQuadTreeNodeLeaf : MXCIFQuadTreeNode
     {
         public MXCIFQuadTreeNodeLeaf(
             BoundingBox bb,
             int level,
-            TL data,
+            object data,
             int dataCount)
             : base(bb, level, data, dataCount)
         {

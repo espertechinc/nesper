@@ -13,8 +13,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -22,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 {
     public class AggregationPortableValidationPlugin : AggregationPortableValidationBase
     {
-        private string functionName;
+        private string _functionName;
 
         public AggregationPortableValidationPlugin(
             bool distinct,
@@ -30,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             : base(distinct)
 
         {
-            this.functionName = functionName;
+            this._functionName = functionName;
         }
 
         public AggregationPortableValidationPlugin()
@@ -48,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(@ref, "FunctionName", Constant(functionName));
+            method.Block.SetProperty(@ref, "FunctionName", Constant(_functionName));
         }
 
         protected override void ValidateIntoTable(
@@ -58,19 +56,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             AggregationForgeFactory factory)
         {
             AggregationPortableValidationPlugin that = (AggregationPortableValidationPlugin) intoTableAgg;
-            if (!functionName.Equals(that.functionName)) {
+            if (!_functionName.Equals(that._functionName))
+            {
                 throw new ExprValidationException(
-                    "The aggregation declares '" + functionName + "' and provided is '" + that.functionName + "'");
+                    "The aggregation declares '" + _functionName + "' and provided is '" + that._functionName + "'");
             }
         }
 
-        public string FunctionName {
-            get => functionName;
-        }
-
-        public void SetFunctionName(string functionName)
+        public string FunctionName
         {
-            this.functionName = functionName;
+            get => _functionName;
+            set => _functionName = value;
         }
     }
 } // end of namespace

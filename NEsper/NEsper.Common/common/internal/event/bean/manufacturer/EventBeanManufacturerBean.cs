@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.instantiator;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly bool hasPrimitiveTypes;
         private readonly bool[] primitiveType;
         private readonly EventBeanTypedEventFactory service;
-        private readonly MethodInfo[] writeMethodsReflection;
+        private readonly MemberInfo[] writeMembersReflection;
 
         /// <summary>
         ///     Ctor.
@@ -53,11 +54,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService)
                 .BeanInstantiator;
 
-            writeMethodsReflection = new MethodInfo[properties.Length];
+            writeMembersReflection = new MethodInfo[properties.Length];
             var primitiveTypeCheck = false;
             primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                writeMethodsReflection[i] = properties[i].WriteMethod;
+                writeMembersReflection[i] = properties[i].WriteMember;
                 primitiveType[i] = properties[i].PropertyType.IsPrimitive;
                 primitiveTypeCheck |= primitiveType[i];
             }
@@ -77,17 +78,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             if (!hasPrimitiveTypes) {
                 var parameters = new object[1];
-                for (var i = 0; i < writeMethodsReflection.Length; i++) {
+                for (var i = 0; i < writeMembersReflection.Length; i++) {
                     parameters[0] = propertyValues[i];
                     try {
-                        writeMethodsReflection[i].Invoke(outObject, parameters);
+                        var writeMember = writeMembersReflection[i];
+                        if (writeMember is MethodInfo writeMethod) {
+                            writeMethod.Invoke(outObject, parameters);
+                        }
+                        else if (writeMember is PropertyInfo writeProperty) {
+                            writeProperty.SetValue(outObject, parameters[0]);
+                        }
+                        else {
+                            throw new IllegalStateException("writeMember of invalid type");
+                        }
                     }
                     catch (MemberAccessException e) {
-                        Handle(e, writeMethodsReflection[i].Name);
+                        Handle(e, writeMembersReflection[i].Name);
                     }
                     catch (Exception e) {
                         var message = "Unexpected exception encountered invoking setter-method '" +
-                                      writeMethodsReflection[i] +
+                                      writeMembersReflection[i] +
                                       "' on class '" +
                                       beanEventType.UnderlyingType.Name +
                                       "' : " +
@@ -98,22 +108,29 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
             else {
                 var parameters = new object[1];
-                for (var i = 0; i < writeMethodsReflection.Length; i++) {
-                    if (primitiveType[i]) {
-                        if (propertyValues[i] == null) {
-                            continue;
-                        }
+                for (var i = 0; i < writeMembersReflection.Length; i++) {
+                    if (primitiveType[i] && propertyValues[i] == null) {
+                        continue;
                     }
 
                     parameters[0] = propertyValues[i];
                     try {
-                        writeMethodsReflection[i].Invoke(outObject, parameters);
+                        var writeMember = writeMembersReflection[i];
+                        if (writeMember is MethodInfo writeMethod) {
+                            writeMethod.Invoke(outObject, parameters);
+                        }
+                        else if (writeMember is PropertyInfo writeProperty) {
+                            writeProperty.SetValue(outObject, parameters[0]);
+                        }
+                        else {
+                            throw new IllegalStateException("invalid member info");
+                        }
                     }
                     catch (MemberAccessException e) {
-                        Handle(e, writeMethodsReflection[i].Name);
+                        Handle(e, writeMembersReflection[i].Name);
                     }
                     catch (Exception e) {
-                        HandleAny(e, writeMethodsReflection[i].Name);
+                        HandleAny(e, writeMembersReflection[i].Name);
                     }
                 }
             }

@@ -54,18 +54,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the chain of method invocations, each pair a method name and list of parameter expressions
         /// </summary>
         /// <returns>method chain</returns>
-        public IList<DotExpressionItem> Chain
-        {
+        public IList<DotExpressionItem> Chain {
             get => chain;
+            set => chain = value;
         }
 
         /// <summary>
         /// Sets the chain of method invocations, each pair a method name and list of parameter expressions
         /// </summary>
         /// <param name="chain">method chain</param>
-        public void SetChain(IList<DotExpressionItem> chain)
+        public StaticMethodExpression SetChain(IList<DotExpressionItem> chain)
         {
             this.chain = chain;
+            return this;
         }
 
         /// <summary>
@@ -96,18 +97,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the class name.
         /// </summary>
         /// <returns>class name</returns>
-        public string ClassName
-        {
+        public string ClassName {
             get => className;
+            set => className = value;
         }
 
         /// <summary>
         /// Sets the class name.
         /// </summary>
         /// <param name="className">class name</param>
-        public void SetClassName(string className)
+        public StaticMethodExpression SetClassName(string className)
         {
             this.className = className;
+            return this;
         }
     }
 } // end of namespace

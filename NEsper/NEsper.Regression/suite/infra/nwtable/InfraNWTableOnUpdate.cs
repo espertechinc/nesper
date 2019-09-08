@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                        " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
                        " where mywin.TheString = sb.P00;\n";
                 env.CompileDeploy(epl).AddListener("update");
-                var fields = "IntPrimitive,IntBoxed,DoublePrimitive".SplitCsv();
+                var fields = new [] { "IntPrimitive","IntBoxed","DoublePrimitive" };
 
                 env.SendEventBean(MakeSupportBean("E1", 1, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));

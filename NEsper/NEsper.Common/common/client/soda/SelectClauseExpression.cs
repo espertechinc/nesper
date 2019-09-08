@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalAsName">is the "as"-tag for the expression</param>
         public SelectClauseExpression(
             Expression expression,
-            String optionalAsName)
+            string optionalAsName)
         {
             Expression = expression;
             AsName = optionalAsName;

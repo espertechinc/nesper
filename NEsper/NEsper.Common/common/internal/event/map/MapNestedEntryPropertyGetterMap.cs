@@ -54,13 +54,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "value")
                 .Block
-                .IfNotInstanceOf("value", typeof(IDictionary<object, object>))
+
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value")
                 .BlockReturn(mapGetter.EventBeanGetCodegen(Ref("bean"), codegenMethodScope, codegenClassScope))
-                .BlockReturn(ConstantNull())
-                .DeclareVarWCast(typeof(IDictionary<object, object>), "map", "value")
-                .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope));
+
+                .IfInstanceOf("value", typeof(IDictionary<string, object>))
+                .DeclareVarWCast(typeof(IDictionary<string, object>), "map", "value")
+                .BlockReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
+
+                .MethodReturn(ConstantNull());
         }
 
         public override object HandleNestedValueFragment(object value)

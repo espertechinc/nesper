@@ -38,20 +38,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow(px pointregionquadtree(0, 0, 100, 100))",
+                    "create index MyIndex on MyWindow(Px pointregionquadtree(0, 0, 100, 100))",
                     "Index of type 'pointregionquadtree' requires 2 expressions as index columns but received 1");
 
                 // invalid column type
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((Id, py) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Id, Py) pointregionquadtree(0, 0, 100, 100))",
+                    "Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, Id) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Px, Id) pointregionquadtree(0, 0, 100, 100))",
+                    "Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type System.Object but received type System.String");
 
                 // invalid expressions for column or parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -62,118 +62,118 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(dummy, 0, 100, 100))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(dummy, 0, 100, 100))",
                     "Failed to validate create-index index-parameter expression 'dummy': Property named 'dummy' is not valid in any stream");
 
                 // invalid property use in parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(px, 0, 100, 100))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(Px, 0, 100, 100))",
                     "Index parameters may not refer to event properties");
 
                 // invalid number of parameters
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree)",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree)",
                     "Index of type 'pointregionquadtree' requires at least 4 parameters but received 0");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree('a'))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree('a'))",
                     "Index of type 'pointregionquadtree' requires at least 4 parameters but received 1");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 0, 0, 0, 0, 0))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 0, 0, 0, 0, 0))",
                     "Index of type 'pointregionquadtree' requires at least 4 parameters but received 7");
 
                 // invalid parameter type
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree('a', 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree('a', 0, 100, 100))",
+                    "Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 'a', 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 'a', 100, 100))",
+                    "Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 'a', 100))",
-                    "Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 'a', 100))",
+                    "Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type System.Number but received type System.String");
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 'a'))",
+                    "Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 'a'))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 100, 'a'))",
                     "Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type System.Int32 but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
                     "Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type System.Int32 but received type System.String");
 
                 // invalid parameter value
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((px, py) pointregionquadtree(cast(null, double), 0, 0, 0))",
+                    "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(cast(null, double), 0, 0, 0))",
                     "Failed to deploy: Invalid value for index 'MyIndex' parameter 'xMin' received null and expected non-null");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((py, px) pointregionquadtree(0, 0, -100, 0))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'width' received -100.0 and expected value>0");
+                    "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, -100, 0))",
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'width' received -100.0 and expected Value>0");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((py, px) pointregionquadtree(0, 0, 1, -200))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'height' received -200.0 and expected value>0");
+                    "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, -200))",
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'height' received -200.0 and expected Value>0");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((py, px) pointregionquadtree(0, 0, 1, 1, -1))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'leafCapacity' received -1 and expected value>=1");
+                    "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, 1, -1))",
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'leafCapacity' received -1 and expected Value>=1");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
-                    "create index MyIndex on MyWindow((py, px) pointregionquadtree(0, 0, 1, 1, 10, -1))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'maxTreeHeight' received -1 and expected value>=2");
+                    "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, 1, 10, -1))",
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'maxTreeHeight' received -1 and expected Value>=2");
 
                 // same index twice, by-name and by-columns
                 env.CompileDeploy("create window SomeWindow#keepall as SupportSpatialPoint", path);
                 env.CompileDeploy(
-                    "create index SomeWindowIdx1 on SomeWindow((px, py) pointregionquadtree(0, 0, 1, 1))",
+                    "create index SomeWindowIdx1 on SomeWindow((Px, Py) pointregionquadtree(0, 0, 1, 1))",
                     path);
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index SomeWindowIdx2 on SomeWindow((px, py) pointregionquadtree(0, 0, 1, 1))",
+                    "create index SomeWindowIdx2 on SomeWindow((Px, Py) pointregionquadtree(0, 0, 1, 1))",
                     "An index for the same columns already exists");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index SomeWindowIdx1 on SomeWindow((py, px) pointregionquadtree(0, 0, 1, 1))",
+                    "create index SomeWindowIdx1 on SomeWindow((Py, Px) pointregionquadtree(0, 0, 1, 1))",
                     "An index by name 'SomeWindowIdx1' already exists");
 
                 // non-plain column or parameter expressions
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndexInv on MyWindow((sum(px), py) pointregionquadtree(0, 0, 1, 1))",
-                    "Invalid create-index index-column expression 'sum(px)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                    "create index MyIndexInv on MyWindow((sum(Px), Py) pointregionquadtree(0, 0, 1, 1))",
+                    "Invalid create-index index-column expression 'sum(Px)': Aggregation, sub-select, previous or prior functions are not supported in this context");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndexInv on MyWindow((px, py) pointregionquadtree(count(*), 0, 1, 1))",
+                    "create index MyIndexInv on MyWindow((Px, Py) pointregionquadtree(count(*), 0, 1, 1))",
                     "Invalid create-index index-parameter expression 'count(*)': Aggregation, sub-select, previous or prior functions are not supported in this context");
 
                 env.UndeployAll();
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var epl = "@Name('mywindow') create window PointWindow#keepall as SupportSpatialPoint;\n" +
                           "insert into PointWindow select * from SupportSpatialPoint;\n" +
-                          "create index MyIndex on PointWindow((px, py) pointregionquadtree(0, 0, 100, 100));\n";
+                          "create index MyIndex on PointWindow((Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl);
 
                 try {
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column 'x' received null and expected non-null");
+                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column 'X' received null and expected non-null");
                 }
 
                 try {
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column '(x,y)' received (200.0,200.0) and expected a value within index bounding box (range-end-non-inclusive) {minX=0.0, minY=0.0, maxX=100.0, maxY=100.0}");
+                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column '(X,Y)' received (200.0d,200.0d) and expected a value within index bounding box (range-end-non-inclusive) {MinX=0.0d, MinY=0.0d, MaxX=100.0d, MaxY=100.0d}");
                 }
 
                 env.UndeployAll();
@@ -218,19 +218,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportEventRectangleWithOffset(point('a', 0).inside(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(\"a\",0).inside(rectangle(0,0,0,0))': Error valIdating left-hand-sIde function 'point', expected a number-type result for expression parameter 0 but received System.String");
+                    "Failed to validate filter expression 'point(\"a\",0).inside(rectangle(0,0,0,0))': Error validating left-hand-side function 'point', expected a number-type result for expression parameter 0 but received System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportEventRectangleWithOffset(point(0).inside(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(0).inside(rectangle(0,0,0,0))': Error valIdating left-hand-sIde method 'point', expected 2 parameters but received 1 parameters");
+                    "Failed to validate filter expression 'point(0).inside(rectangle(0,0,0,0))': Error validating left-hand-side method 'point', expected 2 parameters but received 1 parameters");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportEventRectangleWithOffset(point(0,0).inside(rectangle('a', 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(0,0).inside(rectangle(\"a\",0,0,0))': Error valIdating right-hand-sIde function 'rectangle', expected a number-type result for expression parameter 0 but received System.String");
+                    "Failed to validate filter expression 'point(0,0).inside(rectangle(\"a\",0,0,0))': Error validating right-hand-side function 'rectangle', expected a number-type result for expression parameter 0 but received System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportEventRectangleWithOffset(point(0,0).inside(rectangle(0)))",
-                    "Failed to validate filter expression 'point(0,0).inside(rectangle(0))': Error valIdating right-hand-sIde function 'rectangle', expected 4 parameters but received 1 parameters");
+                    "Failed to validate filter expression 'point(0,0).inside(rectangle(0))': Error validating right-hand-side function 'rectangle', expected 4 parameters but received 1 parameters");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportEventRectangleWithOffset(point(0,0).inside(0))",
@@ -243,10 +243,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create table PointTable(pointId string primary key, px double, py double);\n" +
-                    "create index PointIndex on PointTable((px, py) pointregionquadtree(0, 0, 100, 100));\n" +
+                    "create table PointTable(pointId string primary key, Px double, Py double);\n" +
+                    "create index PointIndex on PointTable((Px, Py) pointregionquadtree(0, 0, 100, 100));\n" +
                     "create schema RectangleEvent(rx double, ry double, w double, h double);\n" +
-                    "on RectangleEvent select pointId from PointTable where point(px, py).inside(rectangle(rx, ry, w, h));" +
+                    "on RectangleEvent select pointId from PointTable where point(Px, Py).inside(rectangle(rx, ry, w, h));" +
                     "expression myQuadtreeSettings { pointregionquadtree(0, 0, 100, 100) } \n" +
                     "select * from SupportSpatialAABB(point(0, 0, filterindex:myQuadtreeSettings).inside(rectangle(x, y, width, height)));\n";
                 env.CompileDeploy(epl).UndeployAll();
@@ -261,13 +261,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportSpatialAABB#keepall where point(0, 0, a:1).inside(rectangle(x, y, width, height))",
-                    "Error valIdating expression: Failed to validate filter expression 'point(0,0,a:1).inside(rectangle(x,y...(50 chars)': point does not accept 'a' as a named parameter");
+                    "Error validating expression: Failed to validate filter expression 'point(0,0,a:1).inside(rectangle(x,y...(50 chars)': point does not accept 'a' as a named parameter");
 
                 // not a filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB#keepall where point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height))",
-                    "Error valIdating expression: Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': The 'filterindex' named parameter can only be used in in filter expressions");
+                    "Error validating expression: Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': The 'filterindex' named parameter can only be used in in filter expressions");
 
                 // invalid index expression
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "expression myindex {pointregionquadtree(0,0,0,0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
-                    "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Invalid value for index 'myindex' parameter 'width' received 0.0 and expected value>0");
+                    "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Invalid value for index 'myindex' parameter 'width' received 0.0 and expected Value>0");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "expression myindex {pointregionquadtree(0,0,100,100).help()} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",

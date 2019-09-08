@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.client.dataflow.annotations
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class OutputTypeAttribute : Attribute
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
         public Type Type { get; set; }
-        public String TypeName { get; set; }
+        public string TypeName { get; set; }
         public int Port { get; set; }
 
         public OutputTypeAttribute(string name)

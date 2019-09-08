@@ -100,18 +100,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             NStreamQueryPlanBuilder.BestChainResult bestChain = NStreamQueryPlanBuilder.ComputeBestPath(0, queryGraph, dependencyGraph);
             Assert.AreEqual(3, bestChain.Depth);
-            Assert.IsTrue(Arrays.Equals(bestChain.Chain, new int[] { 2, 4, 3, 1 }));
+            Assert.IsTrue(Arrays.AreEqual(bestChain.Chain, new int[] { 2, 4, 3, 1 }));
 
             bestChain = NStreamQueryPlanBuilder.ComputeBestPath(3, queryGraph, dependencyGraph);
             Assert.AreEqual(4, bestChain.Depth);
-            Assert.IsTrue(Arrays.Equals(bestChain.Chain, new int[] { 4, 2, 0, 1 }));
+            Assert.IsTrue(Arrays.AreEqual(bestChain.Chain, new int[] { 4, 2, 0, 1 }));
 
             // try a stream that is not connected in any way
             queryGraph = new QueryGraphForge(6, null, false);
             bestChain = NStreamQueryPlanBuilder.ComputeBestPath(5, queryGraph, dependencyGraph);
             log.Debug(".testComputeBestPath bestChain=" + bestChain);
             Assert.AreEqual(0, bestChain.Depth);
-            Assert.IsTrue(Arrays.Equals(bestChain.Chain, new int[] { 0, 1, 2, 3, 4 }));
+            Assert.IsTrue(Arrays.AreEqual(bestChain.Chain, new int[] { 0, 1, 2, 3, 4 }));
         }
 
         [Test]
@@ -138,16 +138,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         public void TestBuildDefaultNestingOrder()
         {
             int[] result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 0);
-            Assert.IsTrue(Arrays.Equals(result, new int[] { 1, 2, 3 }));
+            Assert.IsTrue(Arrays.AreEqual(result, new int[] { 1, 2, 3 }));
 
             result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 1);
-            Assert.IsTrue(Arrays.Equals(result, new int[] { 0, 2, 3 }));
+            Assert.IsTrue(Arrays.AreEqual(result, new int[] { 0, 2, 3 }));
 
             result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 2);
-            Assert.IsTrue(Arrays.Equals(result, new int[] { 0, 1, 3 }));
+            Assert.IsTrue(Arrays.AreEqual(result, new int[] { 0, 1, 3 }));
 
             result = NStreamQueryPlanBuilder.BuildDefaultNestingOrder(4, 3);
-            Assert.IsTrue(Arrays.Equals(result, new int[] { 0, 1, 2 }));
+            Assert.IsTrue(Arrays.AreEqual(result, new int[] { 0, 1, 2 }));
         }
 
         [Test]

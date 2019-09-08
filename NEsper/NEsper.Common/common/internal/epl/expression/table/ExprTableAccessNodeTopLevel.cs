@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             throw new UnsupportedOperationException();
         }
 
-        public override Type EvaluationType => typeof(IDictionary<object, object>);
+        public override Type EvaluationType => typeof(IDictionary<string, object>);
 
         public IDictionary<string, object> RowProperties => eventType;
 

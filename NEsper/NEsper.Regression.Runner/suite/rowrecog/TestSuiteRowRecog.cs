@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             }
 
             configuration.Common.AddEventType("TemperatureSensorEvent",
-                "id,device,temp".SplitCsv(), new object[] { typeof(string), typeof(int), typeof(double) });
+                new [] { "Id","Device","Temp" }, new object[] { typeof(string), typeof(int), typeof(double) });
 
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
             configuration.Common.AddVariable("mySleepDuration", typeof(long), 100);    // msec

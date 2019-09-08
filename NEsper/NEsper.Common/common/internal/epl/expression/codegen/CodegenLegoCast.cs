@@ -37,8 +37,44 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 throw new ArgumentException("Invalid void target type for cast");
             }
 
-            if (targetType.IsPrimitive) {
-                return Cast(Boxing.GetBoxedType(targetType), value);
+            if (targetType == typeof(int)) {
+                return ExprDotMethod(value, "AsInt");
+            }
+
+            if (targetType == typeof(long)) {
+                return ExprDotMethod(value, "AsLong");
+            }
+
+            if (targetType == typeof(short)) {
+                return ExprDotMethod(value, "AsShort");
+            }
+
+            if (targetType == typeof(byte)) {
+                return ExprDotMethod(value, "AsByte");
+            }
+
+            if (targetType == typeof(decimal)) {
+                return ExprDotMethod(value, "AsDecimal");
+            }
+
+            if (targetType == typeof(double)) {
+                return ExprDotMethod(value, "AsDouble");
+            }
+
+            if (targetType == typeof(float)) {
+                return ExprDotMethod(value, "AsFloat");
+            }
+
+            if (targetType == typeof(bool)) {
+                return ExprDotMethod(value, "AsBoolean");
+            }
+
+            if (targetType == typeof(DateTime)) {
+                return ExprDotMethod(value, "AsDateTime");
+            }
+
+            if (targetType == typeof(DateTimeOffset)) {
+                return ExprDotMethod(value, "AsDateTimeOffset");
             }
 
             return Cast(targetType, value);
@@ -52,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type type = forge.EvaluationType;
+            var type = forge.EvaluationType;
             if (type == typeof(double)) {
                 block.DeclareVar(
                     type,

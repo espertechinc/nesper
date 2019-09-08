@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "     setBeanLongPrimitive999(mywin);\n";
                 env.CompileDeploy(epl).AddListener("update");
 
-                var fields = "IntPrimitive,LongPrimitive".SplitCsv();
+                var fields = new [] { "IntPrimitive","LongPrimitive" };
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertProps(
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, newevents.Length);
                 EPAssertionUtil.AssertProps(
                     newevents[0],
-                    "IntPrimitive".SplitCsv(),
+                    new [] { "IntPrimitive" },
                     new object[] {300});
                 Assert.AreEqual(1, oldevents.Length);
                 oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, newevents.Length);
                 EPAssertionUtil.AssertProps(
                     newevents[0],
-                    "IntPrimitive".SplitCsv(),
+                    new [] { "IntPrimitive" },
                     new object[] {300});
                 Assert.AreEqual(1, oldevents.Length);
                 EPAssertionUtil.AssertPropsPerRow(

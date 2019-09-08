@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public void TestToExpressionString()
         {
             notNode.AddChildNode(new SupportExprNode(true));
-            Assert.AreEqual("not True", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
+            Assert.AreEqual("not true", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
         }
 
         [Test]

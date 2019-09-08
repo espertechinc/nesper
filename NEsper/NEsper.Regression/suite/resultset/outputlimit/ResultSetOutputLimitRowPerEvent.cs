@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendEvent(env, "SYM1", 9);
 
             SendTimer(env, 1000);
-            var fields = "symbol,avgPrice".SplitCsv();
+            var fields = new [] { "symbol","avgPrice" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -1109,8 +1109,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
 
                 var epl = "@Name('s0') select irstream Volume, max(Price) as maxVol" +
-                          " from SupportMarketDataBean#sort(1, Volume desc) as s0," +
-                          "SupportBean#keepall as s1 " +
+                          " from SupportMarketDataBean#sort(1, Volume desc) as S0," +
+                          "SupportBean#keepall as S1 " +
                           "output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 

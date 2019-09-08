@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class AddDecimalConvComputer : Computer
         {
-            private readonly SimpleNumberCoercer convOne;
-            private readonly SimpleNumberCoercer convTwo;
+            private readonly SimpleNumberCoercer _convOne;
+            private readonly SimpleNumberCoercer _convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -34,16 +34,16 @@ namespace com.espertech.esper.common.@internal.type
                 SimpleNumberCoercer convOne,
                 SimpleNumberCoercer convTwo)
             {
-                this.convOne = convOne;
-                this.convTwo = convTwo;
+                this._convOne = convOne;
+                this._convTwo = convTwo;
             }
 
             public object Compute(
                 object d1,
                 object d2)
             {
-                decimal s1 = convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = convTwo.CoerceBoxed(d2).AsDecimal();
+                decimal s1 = _convOne.CoerceBoxed(d1).AsDecimal();
+                decimal s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 + s2;
             }
 
@@ -55,9 +55,9 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftAsBig = convOne.CoerceCodegen(left, ltype);
-                var rightAsBig = convTwo.CoerceCodegen(right, rtype);
-                return CodegenExpressionBuilder.ExprDotMethod(leftAsBig, "Add", rightAsBig);
+                var leftValue = _convOne.CoerceCodegen(left, ltype);
+                var rightValue = _convTwo.CoerceCodegen(right, rtype);
+                return CodegenExpressionBuilder.ExprDotMethod(leftValue, "+", rightValue);
             }
         }
     }

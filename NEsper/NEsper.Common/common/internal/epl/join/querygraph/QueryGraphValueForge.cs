@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValue), GetType(), classScope);
-            method.Block.DeclareVar<IList<object>>("items", NewInstance<List<object>>(Constant(Items.Count)));
+            method.Block.DeclareVar<IList<QueryGraphValueDesc>>("items", NewInstance<List<QueryGraphValueDesc>>(Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.ExprDotMethod(Ref("items"), "Add", Items[i].Make(method, symbols, classScope));
             }

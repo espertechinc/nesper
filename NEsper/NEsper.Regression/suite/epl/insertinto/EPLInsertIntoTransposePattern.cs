@@ -48,14 +48,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('window') create window OneWindow#time(1 day) as select TheString as alertId, this from SupportBean",
+                    "@Name('window') create window OneWindow#time(1 day) as select TheString as alertId, This from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "insert into OneWindow select '1' as alertId, stream0.quote.this as this " +
+                    "insert into OneWindow select '1' as alertId, stream0.quote.This as This " +
                     " from pattern [every quote=SupportBean(TheString='A')] as stream0",
                     path);
                 env.CompileDeploy(
-                    "insert into OneWindow select '2' as alertId, stream0.quote as this " +
+                    "insert into OneWindow select '2' as alertId, stream0.quote as This " +
                     " from pattern [every quote=SupportBean(TheString='B')] as stream0",
                     path);
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean_B("B1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id,b.Id".SplitCsv(),
+                    new [] { "a.Id","b.Id" },
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -141,13 +141,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "a.Id,b.Id".SplitCsv(),
+                    new [] { "a.Id","b.Id" },
                     new object[] {"A1", "B1"});
 
                 theEvent = env.Listener("i1").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     new object[] {eventOne, eventTwo});
 
                 env.UndeployAll();

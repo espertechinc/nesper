@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.client.module
     {
         /// <summary>Ctor. </summary>
         /// <param name="message">error message</param>
-        public ParseException(String message)
+        public ParseException(string message)
             : base(message)
         {
         }

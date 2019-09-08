@@ -16,25 +16,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 {
     public class EventsAndSortKeysPair
     {
-        private readonly EventBean[] events;
-        private readonly object[] sortKeys;
-
         public EventsAndSortKeysPair(
             EventBean[] events,
             object[] sortKeys)
         {
-            this.events = events;
-            this.sortKeys = sortKeys;
+            this.Events = events;
+            this.SortKeys = sortKeys;
         }
 
-        public EventBean[] GetEvents()
-        {
-            return events;
-        }
+        public EventBean[] Events { get; }
 
-        public object[] GetSortKeys()
-        {
-            return sortKeys;
-        }
+        public object[] SortKeys { get; }
     }
 } // end of namespace

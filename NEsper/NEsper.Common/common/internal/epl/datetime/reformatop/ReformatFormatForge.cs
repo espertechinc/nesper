@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
                 .LockOn(formatField)
-                .BlockReturn(ExprDotMethod(formatField, "format", ExprDotMethod(Ref("dtx"), "getTime")));
+                .BlockReturn(ExprDotMethod(formatField, "Format", ExprDotMethod(Ref("dtx"), "getTime")));
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var formatField = CodegenFormatFieldInit(codegenClassScope);
-            return ExprDotMethod(inner, "format", formatField);
+            return ExprDotMethod(inner, "Format", formatField);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var formatField = CodegenFormatFieldInit(codegenClassScope);
-            return ExprDotMethod(inner, "format", formatField);
+            return ExprDotMethod(inner, "Format", formatField);
         }
 
         public CodegenExpression CodegenLong(
@@ -104,10 +104,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .Block;
             var syncBlock = blockMethod.LockOn(formatField);
             if (timeAbacus.OneSecond == 1000L) {
-                syncBlock.BlockReturn(ExprDotMethod(formatField, "format", Ref("ts")));
+                syncBlock.BlockReturn(ExprDotMethod(formatField, "Format", Ref("ts")));
             }
             else {
-                syncBlock.BlockReturn(ExprDotMethod(formatField, "format", timeAbacus.ToDateCodegen(Ref("ts"))));
+                syncBlock.BlockReturn(ExprDotMethod(formatField, "Format", timeAbacus.ToDateCodegen(Ref("ts"))));
             }
 
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();

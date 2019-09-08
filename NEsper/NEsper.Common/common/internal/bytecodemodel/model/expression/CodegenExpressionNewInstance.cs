@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type clazz,
             CodegenExpression[] @params)
         {
-            this._clazz = clazz;
-            this._params = @params;
+            _clazz = clazz;
+            _params = @params;
             CodegenExpressionExtensions.AssertNonNullArgs(@params);
         }
 

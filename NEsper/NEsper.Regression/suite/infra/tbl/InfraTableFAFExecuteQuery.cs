@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var propertyNames = "p0,p1".SplitCsv();
+                var propertyNames = new [] { "p0","p1" };
                 env.CompileDeploy("@Name('create') create table MyTableINS as (p0 string, p1 int)", path);
 
                 var eplInsertInto = "insert into MyTableINS (p0, p1) select 'a', 1";
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 env.CompileDeploy(
                     "@Name('TheTable') create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))",
                     path);
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "P0".SplitCsv();
+                var fields = new [] { "P0" };
                 env.CompileDeploy(
                     "@Name('TheTable') create table MyTableSEL as (p0 string primary key, thesum sum(int))",
                     path);

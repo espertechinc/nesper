@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string epl,
             AtomicLong milestone)
         {
-            var fields = "Id".SplitCsv();
+            var fields = new [] { "Id" };
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "Id".SplitCsv();
+                var fields = new [] { "Id" };
                 var epl =
                     "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

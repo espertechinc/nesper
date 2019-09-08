@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
+            return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<EventBean>), parent, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(

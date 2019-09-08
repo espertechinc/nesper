@@ -39,18 +39,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the class name.
         /// </summary>
         /// <returns>class name</returns>
-        public string ClassName
-        {
+        public string ClassName {
             get => className;
+            set => className = value;
         }
 
         /// <summary>
         /// Sets the class name.
         /// </summary>
         /// <param name="className">class name to set</param>
-        public void SetClassName(string className)
+        public NewInstanceOperatorExpression SetClassName(string className)
         {
             this.className = className;
+            return this;
         }
 
         public override ExpressionPrecedenceEnum Precedence

@@ -59,16 +59,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 codegenClassScope);
 
             methodNode.Block
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar<IDictionary<string, object>>(
                     "values",
                     forge.innerForge.EvaluateCodegen(
-                        typeof(IDictionary<object, object>),
+                        typeof(IDictionary<string, object>),
                         methodNode,
                         exprSymbol,
                         codegenClassScope))
-                .DeclareVarNoInit(typeof(IDictionary<object, object>), "map")
+                .DeclareVarNoInit(typeof(IDictionary<string, object>), "map")
                 .IfRefNull("values")
-                .AssignRef("values", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }))
+                .AssignRef("values", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }))
                 .BlockEnd()
                 .MethodReturn(ExprDotMethod(beanFactory, "AdapterForTypedMap", @Ref("values"), mapType));
             return LocalMethod(methodNode);

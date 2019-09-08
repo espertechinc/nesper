@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,6 +16,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -47,16 +50,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                 optionalFilter,
                 sumType)
         {
-            if (sumType != typeof(BigInteger) && sumType != typeof(decimal?)) {
+            if (sumType != typeof(BigInteger)) {
                 throw new ArgumentException("Invalid type " + sumType);
             }
         }
 
         protected override CodegenExpression InitOfSum()
         {
-            return sumType == typeof(BigInteger)
-                ? StaticMethod(typeof(BigInteger), "ValueOf", Constant(0))
-                : NewInstance(typeof(decimal?), Constant(0d));
+            return EnumValue(typeof(BigInteger), "Zero");
         }
 
         protected override void ApplyAggEnterSum(
@@ -64,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type valueType,
             CodegenMethod method)
         {
-            method.Block.AssignRef(sum, ExprDotMethod(sum, "Add", valueType == sumType ? value : Cast(sumType, value)));
+            method.Block.AssignRef(sum,
+                StaticMethod(typeof(BigInteger), "Add", 
+                    sum, valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyAggLeaveSum(
@@ -72,9 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type valueType,
             CodegenMethod method)
         {
-            method.Block.AssignRef(
-                sum,
-                ExprDotMethod(sum, "subtract", valueType == sumType ? value : Cast(sumType, value)));
+            method.Block.AssignRef(sum,
+                StaticMethod(typeof(BigInteger), "Subtract",
+                    sum, valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyTableEnterSum(
@@ -83,7 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(sum, ExprDotMethod(sum, "Add", Cast(evaluationTypes[0], value)));
+            //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
+            method.Block.AssignRef(sum, 
+                StaticMethod(typeof(BigInteger), "Add", 
+                    sum, Cast(evaluationTypes[0], value)));
+            // ExprDotMethod(sum, "Add", Cast(evaluationTypes[0], value)));
         }
 
         protected override void ApplyTableLeaveSum(
@@ -92,7 +99,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(sum, ExprDotMethod(sum, "subtract", Cast(evaluationTypes[0], value)));
+            //var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
+            method.Block.AssignRef(sum,
+                StaticMethod(typeof(BigInteger), "Subtract",
+                    sum, Cast(evaluationTypes[0], value)));
         }
 
         protected override void WriteSum(
@@ -101,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (sumType == typeof(BigInteger)) {
+            if (sumType.IsBigInteger()) {
                 method.Block.StaticMethod(
                     typeof(DIOSerdeBigInteger),
                     "WriteBigInt",
@@ -109,11 +119,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                     output);
             }
             else {
-                method.Block.StaticMethod(
-                    typeof(DIOSerdeBigInteger),
-                    "WriteBigDec",
-                    RowDotRef(row, sum),
-                    output);
+                throw new IllegalStateException("Codegen can only be performed on BigIntegers");
+
+                //method.Block.StaticMethod(
+                //    typeof(DIOSerdeBigInteger),
+                //    "WriteBigDec",
+                //    RowDotRef(row, sum),
+                //    output);
             }
         }
 
@@ -123,15 +135,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (sumType == typeof(BigInteger)) {
+            if (sumType.IsBigInteger()) {
                 method.Block.AssignRef(
                     RowDotRef(row, sum),
                     StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
             }
             else {
-                method.Block.AssignRef(
-                    RowDotRef(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
+                throw new IllegalStateException("Codegen can only be performed on BigIntegers");
+                //method.Block.AssignRef(
+                //    RowDotRef(row, sum),
+                //    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
             }
         }
     }

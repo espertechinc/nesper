@@ -30,14 +30,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
         }
 
-        public Type InputValueType {
-            set => inputValueType = value;
-        }
-
-        public bool HasFilter {
-            set => hasFilter = value;
-        }
-
         protected override Type TypeOf()
         {
             return typeof(AggregationPortableValidationSum);

@@ -47,7 +47,6 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-
         /// <summary>
         /// Prepends the specified item.
         /// </summary>

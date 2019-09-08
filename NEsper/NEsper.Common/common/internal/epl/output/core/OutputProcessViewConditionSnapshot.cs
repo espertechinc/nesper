@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventBean[] newData,
             EventBean[] oldData)
         {
-            resultSetProcessor.ApplyViewResult(newData, oldData);
+            _resultSetProcessor.ApplyViewResult(newData, oldData);
 
-            if (!CheckAfterCondition(newData, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newData, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -104,9 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            resultSetProcessor.ApplyJoinResult(newEvents, oldEvents);
+            _resultSetProcessor.ApplyJoinResult(newEvents, oldEvents);
 
-            if (!CheckAfterCondition(newEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
-                resultSetProcessor,
+                _resultSetProcessor,
                 parentView,
                 parent.IsDistinct);
         }

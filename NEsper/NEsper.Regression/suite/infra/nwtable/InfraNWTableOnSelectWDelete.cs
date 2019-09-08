@@ -48,9 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
 
-                var eplSelectDelete = "@Name('s0') on SupportBean_S0 as s0 " +
+                var eplSelectDelete = "@Name('s0') on SupportBean_S0 as S0 " +
                                       "select and delete window(win.*).aggregate(0,(result,value) -> result+value.IntPrimitive) as c0 " +
-                                      "from MyInfra as win where s0.P00=win.TheString";
+                                      "from MyInfra as win where S0.P00=win.TheString";
                 env.CompileDeploy(eplSelectDelete, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

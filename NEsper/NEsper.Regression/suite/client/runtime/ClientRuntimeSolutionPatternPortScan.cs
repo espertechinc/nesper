@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 "  then delete\n" +
                 "  then insert into OutputAlerts select 'EXPIRED' as type, -1L as cnt, null as contributors;\n" +
                 "\n" +
-                // For more output: "@audit() select * from CountStream;\n" +
+                // For more output: "@Audit() select * from CountStream;\n" +
                 "@Name('output') select * from OutputAlerts;\n";
             var compiled = env.CompileWBusPublicType(epl);
             env.Deploy(compiled);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    "type,cnt".SplitCsv(),
+                    new [] { "type","cnt" },
                     new object[] {"DETECTED", 20L});
                 env.UndeployAll();
             }
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    "type,cnt".SplitCsv(),
+                    new [] { "type","cnt" },
                     new object[] {"DETECTED", 20L});
 
                 SetCurrentTime(env, "8:00:29");
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SetCurrentTime(env, "8:01:00");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    "type,cnt".SplitCsv(),
+                    new [] { "type","cnt" },
                     new object[] {"UPDATE", 20L});
 
                 env.UndeployAll();
@@ -161,13 +161,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SendEventMultiple(env, 20, "A", "B");
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    "type,cnt".SplitCsv(),
+                    new [] { "type","cnt" },
                     new object[] {"DETECTED", 20L});
 
                 SetCurrentTime(env, "8:01:00");
                 EPAssertionUtil.AssertProps(
                     listener.GetAndResetLastNewData()[0],
-                    "type,cnt".SplitCsv(),
+                    new [] { "type","cnt" },
                     new object[] {"DONE", 0L});
 
                 env.UndeployAll();

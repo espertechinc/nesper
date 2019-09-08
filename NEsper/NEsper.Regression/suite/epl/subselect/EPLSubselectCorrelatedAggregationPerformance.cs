@@ -22,11 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public void Run(RegressionEnvironment env)
         {
             var stmtText = "@Name('s0') select P00, " +
-                           "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.P00) as sumP00 " +
-                           "from SupportBean_S0 as s0";
+                           "(select sum(IntPrimitive) from SupportBean#keepall where TheString = S0.P00) as sumP00 " +
+                           "from SupportBean_S0 as S0";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = "P00,sumP00".SplitCsv();
+            var fields = new [] { "P00","sumP00" };
 
             // preload
             var max = 50000;

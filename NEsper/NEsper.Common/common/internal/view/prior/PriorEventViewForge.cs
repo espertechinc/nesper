@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(factory, "Unbound", Constant(unbound));
+            method.Block.SetProperty(factory, "IsUnbound", Constant(unbound));
         }
 
         public override string ViewName {

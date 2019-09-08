@@ -675,16 +675,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 typeof(EventBean[]),
                 "GetSelectJoinEventsHaving",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR,
-                    typeof(ISet<EventBean>),
-                    "events",
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR,
+                    typeof(ISet<MultiKey<EventBean>>), "events",
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -977,20 +972,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(void),
-                "populateSelectEventsHaving",
+                "PopulateSelectEventsHaving",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR,
-                    typeof(EventBean[]),
-                    "events",
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "result",
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR,
+                    typeof(EventBean[]), "events",
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "result",
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1080,22 +1069,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(void),
-                "populateSelectEventsHavingWithOrderBy",
+                "PopulateSelectEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR,
-                    typeof(OrderByProcessor),
-                    NAME_ORDERBYPROCESSOR,
-                    typeof(EventBean[]),
-                    "events",
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "result",
-                    typeof(IList<object>),
-                    "optSortKeys",
+                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR,
+                    typeof(EventBean[]), "events",
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "result",
+                    typeof(IList<object>), "optSortKeys",
                     typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
@@ -1171,20 +1153,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(void),
-                "populateSelectJoinEventsHavingCodegen",
+                "PopulateSelectJoinEventsHavingCodegen",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR,
-                    typeof(ISet<object>),
-                    "events",
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "result",
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, 
+                    typeof(ISet<MultiKey<EventBean>>), "events",
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "result",
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1272,22 +1248,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 typeof(void),
                 "populateSelectJoinEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR,
-                    typeof(OrderByProcessor),
-                    NAME_ORDERBYPROCESSOR,
-                    typeof(ISet<object>),
-                    "events",
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "result",
-                    typeof(IList<object>),
-                    "sortKeys",
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR,
+                    typeof(ISet<object>), "events",
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "result",
+                    typeof(IList<object>), "sortKeys",
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1301,7 +1269,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             IList<EventBean> result,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var length = events != null ? events.Count : 0;
+            var length = events?.Count ?? 0;
             if (length == 0) {
                 return;
             }
@@ -1766,7 +1734,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     events.Ref,
                     ExprDotMethod(
                         REF_ORDERBYPROCESSOR,
-                        "sortWGroupKeys",
+                        "SortWGroupKeys",
                         events,
                         currentGenerators,
                         keys,
@@ -1848,7 +1816,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         "newEventsArr",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
@@ -1863,7 +1831,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "oldEventsArr",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 REF_AGENTINSTANCECONTEXT));
@@ -1883,10 +1851,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool sorting,
             bool selectRStream)
         {
-            block.DeclareVar<IList<object>>("newEvents", NewInstance(typeof(List<object>)))
-                .DeclareVar<IList<object>>(
-                    "oldEvents",
-                    selectRStream ? NewInstance(typeof(List<object>)) : ConstantNull());
+            block
+                .DeclareVar<IList<EventBean>>("newEvents", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<EventBean>>("oldEvents", selectRStream ? NewInstance(typeof(List<EventBean>)) : ConstantNull());
 
             block.DeclareVar<IList<object>>("newEventsSortKey", ConstantNull())
                 .DeclareVar<IList<object>>("oldEventsSortKey", ConstantNull());

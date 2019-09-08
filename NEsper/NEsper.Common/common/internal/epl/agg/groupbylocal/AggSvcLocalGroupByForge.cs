@@ -627,7 +627,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 .ForEach(typeof(AggSvcLocalGroupLevelKeyPair), "removedKey", REF_REMOVEDKEYS)
                 .ExprDotMethod(
                     ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, ExprDotName(Ref("removedKey"), "Level")),
-                    "remove",
+                    "Remove",
                     ExprDotName(Ref("removedKey"), "Key"))
                 .BlockEnd()
                 .ExprDotMethod(REF_REMOVEDKEYS, "Clear");

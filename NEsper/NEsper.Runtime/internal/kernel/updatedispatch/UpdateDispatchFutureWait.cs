@@ -51,14 +51,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
         /// <value>true for completed, false if not</value>
         public bool IsCompleted
         {
-            get { return _isCompleted; }
+            get => _isCompleted;
+            set => _isCompleted = value;
         }
 
         /// <summary>Hand a later future to the dispatch to use for indicating completion via notify. </summary>
         /// <param name="later">is the later dispatch</param>
-        public void SetLater(UpdateDispatchFutureWait later)
+        public UpdateDispatchFutureWait SetLater(UpdateDispatchFutureWait later)
         {
             _later = later;
+            return this;
         }
 
         public void Execute()

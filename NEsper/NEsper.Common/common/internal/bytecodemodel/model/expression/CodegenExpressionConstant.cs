@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionConstant(object constant)
         {
-            this._constant = constant;
+            _constant = constant;
         }
 
         public void Render(

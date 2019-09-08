@@ -255,9 +255,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select window(s0.*) as rows, sb " +
-                          "from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
-                          "where sb.TheString = s0.P00";
+                var epl = "@Name('s0') select window(S0.*) as rows, sb " +
+                          "from SupportBean#keepall as sb, SupportBean_S0#keepall as S0 " +
+                          "where sb.TheString = S0.P00";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "K1", "V1"));

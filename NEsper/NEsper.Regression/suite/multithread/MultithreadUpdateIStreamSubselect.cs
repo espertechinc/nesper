@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as s0 where s0.P00 = sb.TheString)");
+                "@Name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as S0 where S0.P00 = sb.TheString)");
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
 

@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                "l1.lvl1,l1.l2.lvl2,l1.l2.l3.lvl3,l1.l2.l3.l4.lvl4".SplitCsv(),
+                new [] { "l1.lvl1","l1.l2.lvl2","l1.l2.l3.lvl3","l1.l2.l3.l4.lvl4" },
                 new object[] {1, 2, 3, 4});
             SupportEventTypeAssertionUtil.AssertConsistency(@event);
             SupportEventTypeAssertionUtil.AssertFragments(@event, typename.Equals(BEAN_TYPENAME), false, "l1.l2");
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                       "from " +
                       typename;
             env.CompileDeploy(epl).AddListener("s0");
-            var fields = "c0,exists_c0,c1,exists_c1,c2,exists_c2,c3,exists_c3".SplitCsv();
+            var fields = new [] { "c0","exists_c0","c1","exists_c1","c2","exists_c2","c3","exists_c3" };
 
             var eventType = env.Statement("s0").EventType;
             foreach (var property in fields) {

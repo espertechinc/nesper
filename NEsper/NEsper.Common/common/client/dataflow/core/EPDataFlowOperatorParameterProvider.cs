@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// </summary>
         /// <param name="context">operator and parameter information</param>
         /// <returns>value</returns>
-        Object Provide(EPDataFlowOperatorParameterProviderContext context);
+        object Provide(EPDataFlowOperatorParameterProviderContext context);
     }
 }

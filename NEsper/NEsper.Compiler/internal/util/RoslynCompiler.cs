@@ -167,6 +167,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
             }
 
+            Console.WriteLine("EmitToImage: {0}", assemblyName);
+            foreach (var syntaxTreePair in syntaxTreePairs) {
+                Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
+            }
+
             var assemblyData = EmitToImage(compilation);
 
 #if DIAGNOSTICS
@@ -211,21 +216,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 return stream.ToArray();
             }
-        }
-
-        public static void DeleteAll()
-        {
-#if false
-            lock (MetadataCacheBindings) {
-                foreach (var metadataAssembly in MetadataCacheBindings.Keys) {
-                    try {
-                        File.Delete(metadataAssembly.Location);
-                    }
-                    catch {
-                    }
-                }
-            }
-#endif
         }
 
         struct CacheBinding

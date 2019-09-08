@@ -1,14 +1,13 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
 namespace com.espertech.esper.regressionlib.support.bookexample
 {
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
-    // http://esper.codehaus.org                                                          /
-    // ---------------------------------------------------------------------------------- /
-    // The software in this package is published under the terms of the GPL license       /
-    // a copy of which has been included with this distribution in the license.txt file.  /
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-
     public class OrderBeanFactory
     {
         public static OrderBean MakeEventOne()
@@ -27,7 +26,9 @@ namespace com.espertech.esper.regressionlib.support.bookexample
         {
             var order = new OrderWithItems(
                 "PO200902",
-                new[] {new OrderItem("B001", "10022", 5, 99.50)});
+                new[] {
+                    new OrderItem("B001", "10022", 5, 99.50)
+                });
 
             return new OrderBean(order, GetBookDesc(), new GameDesc[0]);
         }
@@ -49,7 +50,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new GameDesc(
                         "GA01",
                         "Castlevania",
-                        "EIdos",
+                        "Eidos",
                         new[] {
                             new Review(100, "best game ever"),
                             new Review(101, "good platformer")
@@ -73,7 +74,8 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                         new[] {
                             new Review(201, "great book")
                         }),
-                    new BookDesc("10032", "Red Planet", "Robert A Heinlein", 13.00d, new Review[0])
+                    new BookDesc(
+                        "10032", "Red Planet", "Robert A Heinlein", 13.00d, new Review[0])
                 },
                 new GameDesc[0]);
         }
@@ -98,7 +100,12 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new[] {
                         new Review(10, "great book")
                     }),
-                new BookDesc("10022", "Stranger in a Strange Land", "Robert A Heinlein", 27.00d, new Review[0])
+                new BookDesc(
+                    "10022",
+                    "Stranger in a Strange Land",
+                    "Robert A Heinlein",
+                    27.00d,
+                    new Review[0])
             };
         }
     }

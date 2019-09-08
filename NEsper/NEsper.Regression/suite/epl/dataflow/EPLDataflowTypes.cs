@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
                 var outputOne = new MySupportBeanOutputOp();
-                var outputTwo = new SupportGenericOutputOpWPort<SupportBean>();
+                var outputTwo = new SupportGenericOutputOpWPort();
                 var options =
                     new EPDataFlowInstantiationOptions()
                         .WithOperatorProvider(new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));

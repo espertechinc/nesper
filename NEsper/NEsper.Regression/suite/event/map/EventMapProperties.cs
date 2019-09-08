@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 5, beans[1], p0});
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d".SplitCsv(),
+                    new [] { "a","b","c","d" },
                     new object[] {1, 2, 5, beans[1]});
                 eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"v1"});
                 Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
                 env.UndeployAll();
@@ -112,14 +112,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"v1"});
                 Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
                 env.UndeployModuleContaining("s0");
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                    "@Name('s0') select outerTwo.mapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
+                    "@Name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
                 env.AddListener("s0");
 
                 var eventOuterTwo = EventMapCore.MakeMap(
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"yOne"});
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a"));
 
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 3, n0Bean1, n0Bean2});
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 3, n0Bean1, n0Bean2});
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("a"));
 
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 var eventResult = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     eventResult,
-                    "a,b,c,d".SplitCsv(),
+                    new [] { "a","b","c","d" },
                     new object[] {1, 2, 3, n0Bean1});
                 var valueE = (IDictionary<string, object>[]) eventResult.Get("e");
                 Assert.AreEqual(valueE[0], n0Bean2[0]);

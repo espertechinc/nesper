@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -73,9 +74,9 @@ namespace com.espertech.esper.common.@internal.schedule
             _optionalTimeZone = null;
         }
 
-        public CronParameter OptionalDayOfMonthOperator { get; }
+        public CronParameter OptionalDayOfMonthOperator { get; set; }
 
-        public CronParameter OptionalDayOfWeekOperator { get; }
+        public CronParameter OptionalDayOfWeekOperator { get; set; }
 
         /// <summary>
         ///     Return map of ordered set of valid schedule values for minute, hour, day, month etc. units
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.schedule
         public override string ToString()
         {
             var buffer = new StringBuilder();
-            foreach (var element in ScheduleUnit.Values) {
+            foreach (var element in EnumHelper.GetValues<ScheduleUnit>()) {
                 if (!UnitValues.ContainsKey(element)) {
                     continue;
                 }
@@ -170,7 +171,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                // Commpare value by value
+                // Compare value by value
                 if (mySet.Any(i => !otherSet.Contains(i))) {
                     return false;
                 }
@@ -229,7 +230,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     unitValues.Keys.RenderAny());
             }
 
-            foreach (var unit in ScheduleUnit.Values) {
+            foreach (var unit in EnumHelper.GetValues<ScheduleUnit>()) {
                 if (unit == ScheduleUnit.SECONDS && !unitValues.ContainsKey(unit)) // Seconds are optional
                 {
                     continue;
@@ -268,11 +269,11 @@ namespace com.espertech.esper.common.@internal.schedule
                 var values = UnitValues.Get(unit);
                 var valuesExpr = ConstantNull();
                 if (values != null) {
-                    valuesExpr = NewInstance<SortedSet<object>>(
+                    valuesExpr = NewInstance<SortedSet<int>>(
                         StaticMethod(
                             typeof(CompatExtensions),
                             "AsList",
-                            Constant(IntArrayUtil.ToBoxedArray(values))));
+                            Constant(IntArrayUtil.ToArray(values))));
                 }
 
                 method.Block.Expression(

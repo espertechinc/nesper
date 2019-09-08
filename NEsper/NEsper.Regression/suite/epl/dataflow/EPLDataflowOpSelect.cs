@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var result = capture.GetAndReset()[0].UnwrapIntoArray<EventBean>();
             EPAssertionUtil.AssertPropsPerRow(
                 result,
-                "MyString,total".SplitCsv(),
+                new [] { "MyString","total" },
                 new[] {new object[] {"one", 1}, new object[] {"two", 3}});
 
             instance.Cancel();
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
                 EPAssertionUtil.AssertPropsPerRow(
                     capture.Current.UnwrapIntoArray<EventBean>(),
-                    "TheString,sumInt".SplitCsv(),
+                    new [] { "TheString","sumInt" },
                     new[] {new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
 
                 instance.Cancel();
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(60000 + 5000);
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "sumInt".SplitCsv(),
+                    new [] { "sumInt" },
                     new object[] {14});
 
                 emitter.Submit(new SupportBean("E4", 3));
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(120000 + 5000);
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "sumInt".SplitCsv(),
+                    new [] { "sumInt" },
                     new object[] {14 + 9});
 
                 instance.Cancel();
@@ -325,20 +325,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "sumInt".SplitCsv(),
+                    new [] { "sumInt" },
                     new object[] {2});
 
                 env.AdvanceTime(10000);
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E2", 5));
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "sumInt".SplitCsv(),
+                    new [] { "sumInt" },
                     new object[] {7});
 
                 env.AdvanceTime(65000);
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "sumInt".SplitCsv(),
+                    new [] { "sumInt" },
                     new object[] {5});
 
                 instance.Cancel();
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "P00,P11".SplitCsv(),
+                    new [] { "P00","P11" },
                     new object[] {"S0_1", null});
 
                 instance.Cancel();
@@ -392,9 +392,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     return;
                 }
 
-                TryAssertionJoinOrder(env, "from S2#lastevent as s2, S1#lastevent as s1, S0#lastevent as s0");
-                TryAssertionJoinOrder(env, "from S0#lastevent as s0, S1#lastevent as s1, S2#lastevent as s2");
-                TryAssertionJoinOrder(env, "from S1#lastevent as s1, S2#lastevent as s2, S0#lastevent as s0");
+                TryAssertionJoinOrder(env, "from S2#lastevent as S2, S1#lastevent as S1, S0#lastevent as S0");
+                TryAssertionJoinOrder(env, "from S0#lastevent as S0, S1#lastevent as S1, S2#lastevent as S2");
+                TryAssertionJoinOrder(env, "from S1#lastevent as S1, S2#lastevent as S2, S0#lastevent as S0");
             }
 
             private void TryAssertionJoinOrder(
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
                             "select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
-                            "  select: (select s0.Id as s0Id, s1.Id as s1Id, s2.Id as s2Id " +
+                            "  select: (select S0.Id as S0Id, S1.Id as S1Id, S2.Id as S2Id " +
                             fromClause +
                             ")\n" +
                             "}\n" +
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual(1, capture.Current.Length);
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "s0Id,s1Id,s2Id".SplitCsv(),
+                    new [] { "s0Id","s1Id","s2Id" },
                     new object[] {1, 10, 100});
 
                 instance.Cancel();

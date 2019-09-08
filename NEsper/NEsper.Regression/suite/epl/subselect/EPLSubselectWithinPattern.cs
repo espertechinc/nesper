@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean_S0(exists (select * from SupportBean_S1))",
-                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
+                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
 
                 TryInvalidCompile(
                     env,

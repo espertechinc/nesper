@@ -68,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             SupportBean_S0 expectedS0,
             SupportBean_S1 expectedS1)
         {
-            Assert.AreSame(expectedS0, receivedEvent.Get("s0"));
-            Assert.AreSame(expectedS1, receivedEvent.Get("s1"));
+            Assert.AreSame(expectedS0, receivedEvent.Get("S0"));
+            Assert.AreSame(expectedS1, receivedEvent.Get("S1"));
         }
 
         private static void SendEvent(
@@ -86,10 +86,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string whereClause)
         {
             var joinStatement = "@Name('s0') select * from " +
-                                "SupportBean_S0#length(5) as s0 " +
+                                "SupportBean_S0#length(5) as S0 " +
                                 "left outer join " +
-                                "SupportBean_S1#length(5) as s1" +
-                                " on s0.P00 = s1.P10 " +
+                                "SupportBean_S1#length(5) as S1" +
+                                " on S0.P00 = S1.P10 " +
                                 whereClause;
             env.CompileDeployAddListenerMileZero(joinStatement, "s0");
         }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.P11 is not null");
+                SetupStatement(env, "where S1.P11 is not null");
                 TryWhereNotNull(env);
                 env.UndeployAll();
             }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.P11 is not null");
+                SetupStatement(env, "where S1.P11 is not null");
                 TryWhereNotNull(env);
                 env.UndeployAll();
             }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.P11 is null");
+                SetupStatement(env, "where S1.P11 is null");
                 TryWhereNull(env);
                 env.UndeployAll();
             }
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.P11 is null");
+                SetupStatement(env, "where S1.P11 is null");
                 TryWhereNull(env);
                 env.UndeployAll();
             }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s0.P01 = s1.P11 or s1.P11 is null");
+                SetupStatement(env, "where S0.P01 = S1.P11 or S1.P11 is null");
 
                 var eventS0 = new SupportBean_S0(0, "0", "[a]");
                 SendEvent(eventS0, env);
@@ -164,8 +164,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Assert.AreEqual(3, env.Listener("s0").LastNewData.Length);
                 var received = new object[3];
                 for (var i = 0; i < 3; i++) {
-                    Assert.AreSame(s0, env.Listener("s0").LastNewData[i].Get("s0"));
-                    received[i] = env.Listener("s0").LastNewData[i].Get("s1");
+                    Assert.AreSame(s0, env.Listener("s0").LastNewData[i].Get("S0"));
+                    received[i] = env.Listener("s0").LastNewData[i].Get("S1");
                 }
 
                 EPAssertionUtil.AssertEqualsAnyOrder(new object[] {s1Bean1, s1Bean3, s1Bean4}, received);
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s0.P01 = s1.P11");
+                SetupStatement(env, "where S0.P01 = S1.P11");
 
                 var eventsS0 = new SupportBean_S0[15];
                 var eventsS1 = new SupportBean_S1[15];

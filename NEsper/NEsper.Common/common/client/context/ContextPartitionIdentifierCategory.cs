@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.client.context
 
         /// <summary>Ctor. </summary>
         /// <param name="label">of category</param>
-        public ContextPartitionIdentifierCategory(String label)
+        public ContextPartitionIdentifierCategory(string label)
         {
             Label = label;
         }
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.context
             return Label.Equals(((ContextPartitionIdentifierCategory) other).Label);
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "ContextPartitionIdentifierCategory{" +
                    "label='" +

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(EnumTakeForgeEval),
                     scope,
                     codegenClassScope)
@@ -84,8 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <param name="enumcoll">collection</param>
         /// <param name="size">size</param>
         /// <returns>collection</returns>
-        public static ICollection<object> EvaluateEnumTakeMethod(
-            ICollection<object> enumcoll,
+        public static ICollection<T> EvaluateEnumTakeMethod<T>(
+            ICollection<T> enumcoll,
             int size)
         {
             if (CompatExtensions.IsEmpty(enumcoll)) {
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (size <= 0) {
-                return Collections.GetEmptyList<object>();
+                return Collections.GetEmptyList<T>();
             }
 
             if (enumcoll.Count < size) {
@@ -104,8 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return Collections.SingletonList(enumcoll.First());
             }
 
-            var result = new List<object>(size);
-            foreach (object next in enumcoll) {
+            var result = new List<T>(size);
+            foreach (var next in enumcoll) {
                 if (result.Count >= size) {
                     break;
                 }

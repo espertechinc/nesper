@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean for ",
-                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an Identifier but found end-of-input at line 1 column 29");
+                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found EOF at line 1 column 29");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "E8", 10d, SupportEnum.ENUM_VALUE_1); // D
                 SendTimer(env, 3000);
                 Assert.AreEqual(4, env.Listener("s0").NewDataList.Count);
-                var fields = "TheString,DoubleBoxed,EnumValue".SplitCsv();
+                var fields = new [] { "TheString","DoubleBoxed","EnumValue" };
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
                     fields,

@@ -27,12 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
     ///         As the tree can be polymorphic users should not hold on to the root node as it could change.
     ///     </para>
     /// </summary>
-    public class MXCIFQuadTree<TL>
+    public class MXCIFQuadTree
     {
         internal MXCIFQuadTree(
             int leafCapacity,
             int maxTreeHeight,
-            MXCIFQuadTreeNode<TL> root)
+            MXCIFQuadTreeNode root)
         {
             LeafCapacity = leafCapacity;
             MaxTreeHeight = maxTreeHeight;
@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 
         public int MaxTreeHeight { get; }
 
-        public MXCIFQuadTreeNode<TL> Root { get; set; }
+        public MXCIFQuadTreeNode Root { get; set; }
 
         public void Clear()
         {
-            Root = new MXCIFQuadTreeNodeLeaf<TL>(Root.Bb, Root.Level, default(TL), 0);
+            Root = new MXCIFQuadTreeNodeLeaf(Root.Bb, Root.Level, null, 0);
         }
     }
 } // end of namespace

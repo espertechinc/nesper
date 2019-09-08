@@ -58,13 +58,13 @@ namespace com.espertech.esper.common.client
         /// the value of a property as an EventBean or array of EventBean
         /// </returns>
         /// <throws>PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed</throws>
-        Object GetFragment(EventBean eventBean);
+        object GetFragment(EventBean eventBean);
     }
 
     public class ProxyEventPropertyGetter : EventPropertyGetter
     {
-        public Func<EventBean, Object> ProcGet { get; set; }
-        public Func<EventBean, Object> ProcGetFragment { get; set; }
+        public Func<EventBean, object> ProcGet { get; set; }
+        public Func<EventBean, object> ProcGetFragment { get; set; }
         public Func<EventBean, bool> ProcIsExistsProperty { get; set; }
 
         /// <summary>

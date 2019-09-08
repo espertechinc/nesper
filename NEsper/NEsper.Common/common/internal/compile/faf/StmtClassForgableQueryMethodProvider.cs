@@ -94,10 +94,10 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 var queryInformationals = FAFQueryInformationals.From(
                     _namespaceScope.SubstitutionParamsByNumber,
                     _namespaceScope.SubstitutionParamsByName);
-                propQueryInformationals
-                    .GetterBlock
-                    .BlockReturn(queryInformationals.Make(
-                        propQueryInformationals, classScope));
+
+                queryInformationals.Make(
+                    propQueryInformationals.GetterBlock,
+                    classScope);
 
                 // add get-statement-fields method
                 var propSubstitutionFieldSetter = CodegenProperty.MakePropertyNode(

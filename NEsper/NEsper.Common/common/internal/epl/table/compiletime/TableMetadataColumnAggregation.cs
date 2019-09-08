@@ -39,15 +39,15 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             OptionalEnumerationType = optionalEnumerationType;
         }
 
-        public int Column { get; private set; }
+        public int Column { get; set; }
 
-        public AggregationPortableValidation AggregationPortableValidation { get; private set; }
+        public AggregationPortableValidation AggregationPortableValidation { get; set; }
 
-        public string AggregationExpression { get; private set; }
+        public string AggregationExpression { get; set; }
 
-        public bool IsMethodAgg { get; private set; }
+        public bool IsMethodAgg { get; set; }
 
-        public EPType OptionalEnumerationType { get; private set; }
+        public EPType OptionalEnumerationType { get; set; }
 
         protected override CodegenExpression Make(
             CodegenMethodScope parent,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                     "AggregationPortableValidation",
                     AggregationPortableValidation.Make(method, symbols, classScope))
                 .SetProperty(Ref("col"), "AggregationExpression", Constant(AggregationExpression))
-                .SetProperty(Ref("col"), "MethodAgg", Constant(IsMethodAgg))
+                .SetProperty(Ref("col"), "IsMethodAgg", Constant(IsMethodAgg))
                 .SetProperty(
                     Ref("col"),
                     "OptionalEnumerationType",

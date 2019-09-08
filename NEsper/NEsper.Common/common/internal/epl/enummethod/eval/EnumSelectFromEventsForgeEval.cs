@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
+                .BlockReturn(StaticMethod(typeof(CompatExtensions), "Unwrap", new [] { typeof(object) }, EnumForgeCodegenNames.REF_ENUMCOLL))
                 .DeclareVar<ArrayDeque<object>>(
                     "result",
                     NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));

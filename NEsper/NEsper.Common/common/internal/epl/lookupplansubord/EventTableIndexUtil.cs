@@ -264,11 +264,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 rangeProps.Add(new IndexedPropDesc(rangePropertyName, null));
             }
 
-            var indexCandidates =
-                (IDictionary<IndexMultiKey, EventTableIndexEntryBase>) FindCandidates(
-                    tablesAvailable,
-                    hashProps,
-                    rangeProps);
+            var indexCandidates = FindCandidates(
+                tablesAvailable,
+                hashProps,
+                rangeProps) as IDictionary<IndexMultiKey, T>;
 
             // handle hint
             if (optionalIndexHintInstructions != null) {
@@ -290,8 +289,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             return GetBestCandidate(indexCandidates);
         }
 
-        private static Pair<IndexMultiKey, EventTableIndexEntryBase> GetBestCandidate(
-            IDictionary<IndexMultiKey, EventTableIndexEntryBase> indexCandidates)
+        private static Pair<IndexMultiKey, EventTableIndexEntryBase> GetBestCandidate<T>(
+            IDictionary<IndexMultiKey, T> indexCandidates)
+            where T : EventTableIndexEntryBase
         {
             // take the table that has a unique index
             IList<IndexMultiKey> indexes = new List<IndexMultiKey>();

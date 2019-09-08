@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
 namespace com.espertech.esper.common.@internal.type
@@ -17,63 +16,74 @@ namespace com.espertech.esper.common.@internal.type
     /// Notice: value ranges are the same as the "crontab" standard values.
     /// </summary>
     [Serializable]
-    public class ScheduleUnit
+    public enum ScheduleUnit
     {
         /// <summary> Second.</summary>
-        public static readonly ScheduleUnit SECONDS = new ScheduleUnit(0, 59);
+        SECONDS,
 
         /// <summary> Minute.</summary>
-        public static readonly ScheduleUnit MINUTES = new ScheduleUnit(0, 59);
+        MINUTES,
 
         /// <summary> Hour.</summary>
-        public static readonly ScheduleUnit HOURS = new ScheduleUnit(0, 23);
+        HOURS,
 
         /// <summary> Day of month.</summary>
-        public static readonly ScheduleUnit DAYS_OF_MONTH = new ScheduleUnit(1, 31);
+        DAYS_OF_MONTH,
 
         /// <summary> Month.</summary>
-        public static readonly ScheduleUnit MONTHS = new ScheduleUnit(1, 12);
+        MONTHS,
 
         /// <summary> Day of week.</summary>
-        public static readonly ScheduleUnit DAYS_OF_WEEK = new ScheduleUnit(0, 6);
+        DAYS_OF_WEEK
+    }
 
-        /// <summary>
-        /// Available constant values from this class
-        /// </summary>
-        public static readonly ScheduleUnit[] Values = new ScheduleUnit[] {
-            SECONDS,
-            MINUTES,
-            HOURS,
-            DAYS_OF_MONTH,
-            MONTHS,
-            DAYS_OF_WEEK
-        };
-
-        private readonly int min_;
-        private readonly int max_;
-
-        ScheduleUnit(
-            int min,
-            int max)
-        {
-            this.min_ = min;
-            this.max_ = max;
-        }
-
+    public static class ScheduleUnitExtensions
+    {
         /// <summary> Returns minimum valid value for the unit.</summary>
         /// <returns> minimum unit value
         /// </returns>
-        public int Min()
+        public static int Min(this ScheduleUnit value)
         {
-            return min_;
+            switch (value) {
+                case ScheduleUnit.SECONDS:
+                    return 0;
+                case ScheduleUnit.MINUTES:
+                    return 0;
+                case ScheduleUnit.HOURS:
+                    return 0;
+                case ScheduleUnit.DAYS_OF_MONTH:
+                    return 1;
+                case ScheduleUnit.MONTHS:
+                    return 1;
+                case ScheduleUnit.DAYS_OF_WEEK:
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
         }
 
         /// <summary> Returns minimum valid value for the unit.</summary>
         /// <returns> maximum unit value
         /// </returns>
-        public int Max()
+        public static int Max(this ScheduleUnit value)
         {
-            return max_;
+            switch (value)
+            {
+                case ScheduleUnit.SECONDS:
+                    return 59;
+                case ScheduleUnit.MINUTES:
+                    return 59;
+                case ScheduleUnit.HOURS:
+                    return 23;
+                case ScheduleUnit.DAYS_OF_MONTH:
+                    return 31;
+                case ScheduleUnit.MONTHS:
+                    return 12;
+                case ScheduleUnit.DAYS_OF_WEEK:
+                    return 6;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
         }
     }
 }

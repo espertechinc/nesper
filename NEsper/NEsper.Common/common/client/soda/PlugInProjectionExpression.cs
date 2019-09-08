@@ -73,36 +73,38 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the function name.
         /// </summary>
         /// <returns>name of function</returns>
-        public string FunctionName
-        {
+        public string FunctionName {
             get => functionName;
+            set => functionName = value;
         }
 
         /// <summary>
         /// Sets the function name.
         /// </summary>
         /// <param name="functionName">name of function</param>
-        public void SetFunctionName(string functionName)
+        public PlugInProjectionExpression SetFunctionName(string functionName)
         {
             this.functionName = functionName;
+            return this;
         }
 
         /// <summary>
         /// Returns true for distinct.
         /// </summary>
         /// <returns>boolean indicating distinct or not</returns>
-        public bool IsDistinct
-        {
+        public bool IsDistinct {
             get => isDistinct;
+            set => isDistinct = value;
         }
 
         /// <summary>
         /// Set to true for distinct.
         /// </summary>
         /// <param name="distinct">indicating distinct or not</param>
-        public void SetDistinct(bool distinct)
+        public PlugInProjectionExpression SetDistinct(bool distinct)
         {
             isDistinct = distinct;
+            return this;
         }
     }
 } // end of namespace

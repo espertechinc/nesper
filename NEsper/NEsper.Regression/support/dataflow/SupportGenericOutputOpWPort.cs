@@ -13,16 +13,17 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.common.@internal.support;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.regressionlib.support.dataflow
 {
-    public class SupportGenericOutputOpWPort<T> : DataFlowOperatorForge,
+    public class SupportGenericOutputOpWPort : DataFlowOperatorForge,
         DataFlowOperatorFactory,
         DataFlowOperator
     {
-        private IList<T> received = new List<T>();
+        private IList<SupportBean> received = new List<SupportBean>();
         private IList<int?> receivedPorts = new List<int?>();
 
         public void InitializeFactory(DataFlowOpFactoryInitializeContext context)
@@ -31,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
 
         public DataFlowOperator Operator(DataFlowOpInitializeContext context)
         {
-            return new SupportGenericOutputOpWPort<T>();
+            return new SupportGenericOutputOpWPort();
         }
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
@@ -44,12 +45,12 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(SupportGenericOutputOpWPort<T>));
+            return NewInstance(typeof(SupportGenericOutputOpWPort));
         }
 
         public void OnInput(
             int port,
-            T @event)
+            SupportBean @event)
         {
             lock (this) {
                 received.Add(@event);
@@ -57,14 +58,14 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             }
         }
 
-        public Pair<IList<T>, IList<int?>> GetAndReset()
+        public Pair<IList<SupportBean>, IList<int?>> GetAndReset()
         {
             lock (this) {
                 var resultEvents = received;
                 var resultPorts = receivedPorts;
-                received = new List<T>();
+                received = new List<SupportBean>();
                 receivedPorts = new List<int?>();
-                return new Pair<IList<T>, IList<int?>>(resultEvents, resultPorts);
+                return new Pair<IList<SupportBean>, IList<int?>>(resultEvents, resultPorts);
             }
         }
     }

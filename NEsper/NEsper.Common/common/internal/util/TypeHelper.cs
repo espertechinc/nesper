@@ -370,6 +370,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (typeName == typeof(BigInteger).FullName ||
                 typeName == "Biginteger" ||
+                typeName == "BigInteger" ||
                 typeName == "Bigint")
             {
                 return typeof(BigInteger?).FullName;
@@ -525,7 +526,7 @@ namespace com.espertech.esper.common.@internal.util
                 type == typeof(double) ||
                 type == typeof(float) ||
                 type == typeof(decimal) ||
-                type == typeof(BigInteger))
+                type== typeof(BigInteger))
             {
                 return true;
             }
@@ -687,7 +688,7 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce.AsLong();
             }
 
-            if (resultBoxedType == typeof(BigInteger))
+            if (resultBoxedType== typeof(BigInteger?))
             {
                 return numToCoerce.AsBigInteger();
             }
@@ -740,7 +741,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsLong", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(BigInteger))
+            if (targetTypeBoxed == typeof(BigInteger?))
             {
                 return StaticMethod(typeof(TypeExtensions), "AsBigInteger", exprReturningBoxed);
             }
@@ -793,7 +794,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsLong", expr);
             }
 
-            if (targetTypeBoxed == typeof(BigInteger))
+            if (targetTypeBoxed == typeof(BigInteger?))
             {
                 return StaticMethod(typeof(TypeExtensions), "AsBigInteger", expr);
             }
@@ -1340,7 +1341,7 @@ namespace com.espertech.esper.common.@internal.util
                 return "guid";
             }
 
-            if (type == typeof(BigInteger))
+            if (type == typeof(BigInteger?))
             {
                 return "Bigint";
             }
@@ -1421,7 +1422,7 @@ namespace com.espertech.esper.common.@internal.util
                 return "guid";
             }
 
-            if (type == typeof(BigInteger))
+            if (type== typeof(BigInteger))
             {
                 return "Bigint";
             }
@@ -1832,7 +1833,7 @@ namespace com.espertech.esper.common.@internal.util
                 return SimpleTypeParserFunctions.ParseInt32(text);
             }
 
-            if (classBoxed == typeof(BigInteger))
+            if (classBoxed == typeof(BigInteger?))
             {
                 return SimpleTypeParserFunctions.ParseBigInteger(text);
             }

@@ -18,6 +18,6 @@ namespace com.espertech.esper.regressionlib.support.bean
             Val = val;
         }
 
-        public string Val { get; }
+        public virtual string Val { get; }
     }
 } // end of namespace

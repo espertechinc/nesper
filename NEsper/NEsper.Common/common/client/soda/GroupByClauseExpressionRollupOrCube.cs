@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write("rollup(");
             }
 
-            String delimiter = "";
+            string delimiter = "";
             foreach (GroupByClauseExpression child in _expressions)
             {
                 writer.Write(delimiter);

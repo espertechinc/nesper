@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalAsName">tag name of the filtered events</param>
         public ContextDescriptorConditionFilter(
             Filter filter,
-            String optionalAsName)
+            string optionalAsName)
         {
             Filter = filter;
             OptionalAsName = optionalAsName;

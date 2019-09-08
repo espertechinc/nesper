@@ -33,9 +33,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var complex = SupportBeanComplexProps.MakeDefaultBean();
                 Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
 
-                var epl = "@Name('s0') select Nested.Nested, s1.Indexed[0], Nested.Indexed[1] from " +
+                var epl = "@Name('s0') select Nested.Nested, S1.Indexed[0], Nested.Indexed[1] from " +
                           "SupportBeanComplexProps#length(3) Nested, " +
-                          "SupportBeanCombinedProps#length(3) s1" +
+                          "SupportBeanCombinedProps#length(3) S1" +
                           " where Mapped('keyOne') = Indexed[2].Mapped('2ma').Value and" +
                           " Indexed[0].Mapped('0ma').Value = '0ma0'";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
                 Assert.AreSame(complex.Nested, theEvent.Get("Nested.Nested"));
-                Assert.AreSame(combined.GetIndexed(0), theEvent.Get("s1.Indexed[0]"));
+                Assert.AreSame(combined.GetIndexed(0), theEvent.Get("S1.Indexed[0]"));
                 Assert.AreEqual(complex.GetIndexed(1), theEvent.Get("Nested.Indexed[1]"));
 
                 env.UndeployAll();
@@ -57,9 +57,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from " +
-                          "SupportBeanComplexProps#length(3) s0" +
+                          "SupportBeanComplexProps#length(3) S0" +
                           " left outer join " +
-                          "SupportBeanCombinedProps#length(3) s1" +
+                          "SupportBeanCombinedProps#length(3) S1" +
                           " on Mapped('keyOne') = Indexed[2].Mapped('2ma').Value";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -72,9 +72,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Assert.AreEqual(complex.GetMapped("keyOne"), combined.GetIndexed(2).GetMapped("2ma").Value);
 
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("simple", theEvent.Get("s0.simpleProperty"));
-                Assert.AreSame(complex, theEvent.Get("s0"));
-                Assert.AreSame(combined, theEvent.Get("s1"));
+                Assert.AreEqual("Simple", theEvent.Get("S0.SimpleProperty"));
+                Assert.AreSame(complex, theEvent.Get("S0"));
+                Assert.AreSame(combined, theEvent.Get("S1"));
 
                 env.UndeployAll();
             }

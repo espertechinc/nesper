@@ -48,6 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         public void TestExprCoreMathDivisionRules()
         {
             RegressionSession session = RegressionRunner.Session();
+            session.Configuration.Common.AddImportType(typeof(BigIntegerHelper));
             session.Configuration.Compiler.Expression.IntegerDivision = true;
             session.Configuration.Compiler.Expression.DivisionByZeroReturnsNull = true;
             session.Configuration.Common.AddEventType("SupportBean", typeof(SupportBean));

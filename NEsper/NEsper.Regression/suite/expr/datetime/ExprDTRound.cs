@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DtoDate.roundCeiling('msec') as val0," +
                                   "DtoDate.roundCeiling('sec') as val1," +
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DtoDate.roundFloor('msec') as val0," +
                                   "DtoDate.roundFloor('sec') as val1," +
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DtoDate.roundHalf('msec') as val0," +
                                   "DtoDate.roundHalf('sec') as val1," +

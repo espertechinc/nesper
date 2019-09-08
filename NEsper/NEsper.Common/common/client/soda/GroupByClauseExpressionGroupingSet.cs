@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("grouping sets(");
-            String delimiter = "";
+            string delimiter = "";
             foreach (GroupByClauseExpression child in _expressions)
             {
                 writer.Write(delimiter);

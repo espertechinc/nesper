@@ -120,7 +120,7 @@ namespace com.espertech.esper.compat.concurrency
                     }
 
                     try {
-                        task.RunSynchronously(this);
+                        base.TryExecuteTask(task);
                     }
                     finally {
                         Interlocked.Increment(ref _numExecuted);

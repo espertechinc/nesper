@@ -75,16 +75,16 @@ namespace com.espertech.esper.common.@internal.util
             Add(graph, "1_1", "R2");
             Add(graph, "A", "R1");
             Add(graph, "A", "R2");
-            EPAssertionUtil.AssertEqualsExactOrder("R1,R2,1_1,A".SplitCsv(), GraphUtil.GetTopDownOrder(graph).ToArray());
+            EPAssertionUtil.AssertEqualsExactOrder(new [] { "R1","R2","1_1","A" }, GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "R1", "R2");
-            EPAssertionUtil.AssertEqualsExactOrder("R2,1_1,R1,A".SplitCsv(), GraphUtil.GetTopDownOrder(graph).ToArray());
+            EPAssertionUtil.AssertEqualsExactOrder(new [] { "R2","1_1","R1","A" }, GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "1_1", "A");
-            EPAssertionUtil.AssertEqualsExactOrder("R2,R1,A,1_1".SplitCsv(), GraphUtil.GetTopDownOrder(graph).ToArray());
+            EPAssertionUtil.AssertEqualsExactOrder(new [] { "R2","R1","A","1_1" }, GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "0", "1_1");
-            EPAssertionUtil.AssertEqualsExactOrder("R2,R1,A,1_1,0".SplitCsv(), GraphUtil.GetTopDownOrder(graph).ToArray());
+            EPAssertionUtil.AssertEqualsExactOrder(new [] { "R2","R1","A","1_1","0" }, GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "R1", "0");
             TryInvalid(graph, "Circular dependency detected between [0, R1, A, 1_1]");
@@ -153,42 +153,42 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(0, GraphUtil.GetTopDownOrder(graph).Count);
 
             Add(graph, "1_1", "1");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "1,1_1".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), new [] { "1","1_1" });
 
             Add(graph, "1_1_1", "1_1");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "1,1_1,1_1_1".SplitCsv());
+                new [] { "1","1_1","1_1_1" });
 
             Add(graph, "0_1", "0");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "0,0_1,1,1_1,1_1_1".SplitCsv());
+                new [] { "0","0_1","1","1_1","1_1_1" });
 
             Add(graph, "1_2", "1");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "0,0_1,1,1_1,1_1_1,1_2".SplitCsv());
+                new [] { "0","0_1","1","1_1","1_1_1","1_2" });
 
             Add(graph, "1_1_2", "1_1");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "0,0_1,1,1_1,1_1_1,1_1_2,1_2".SplitCsv());
+                new [] { "0","0_1","1","1_1","1_1_1","1_1_2","1_2" });
 
             Add(graph, "1_2_1", "1_2");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
+                new [] { "0","0_1","1","1_1","1_1_1","1_1_2","1_2","1_2_1" });
 
             Add(graph, "0", "R");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "1,1_1,1_1_1,1_1_2,1_2,1_2_1,R,0,0_1".SplitCsv());
+                new [] { "1","1_1","1_1_1","1_1_2","1_2","1_2_1","R","0","0_1" });
 
             Add(graph, "1", "R");
             EPAssertionUtil.AssertEqualsExactOrder(
                 GraphUtil.GetTopDownOrder(graph).ToArray(),
-                "R,0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
+                new [] { "R","0","0_1","1","1_1","1_1_1","1_1_2","1_2","1_2_1" });
         }
     }
 } // end of namespace

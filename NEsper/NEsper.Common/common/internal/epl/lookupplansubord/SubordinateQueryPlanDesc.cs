@@ -12,16 +12,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public class SubordinateQueryPlanDesc
     {
-        public SubordinateQueryPlanDesc(
-            SubordTableLookupStrategyFactory lookupStrategyFactory,
-            SubordinateQueryIndexDesc[] indexDescs)
+        public SubordinateQueryPlanDesc()
         {
-            LookupStrategyFactory = lookupStrategyFactory;
-            IndexDescs = indexDescs;
         }
 
-        public SubordTableLookupStrategyFactory LookupStrategyFactory { get; private set; }
+        public SubordTableLookupStrategyFactory LookupStrategyFactory { get; set; }
 
-        public SubordinateQueryIndexDesc[] IndexDescs { get; private set; }
+        public SubordinateQueryIndexDesc[] IndexDescs { get; set; }
     }
 }

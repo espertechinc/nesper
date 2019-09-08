@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "create constant variable aggvar_ungrouped (total count(*))",
-                    "Incorrect syntax near '(' expecting an Identifier but found an opening parenthesis '(' at line 1 column 42 [");
+                    "Incorrect syntax near '(' expecting an identifier but found an opening parenthesis '(' at line 1 column 42 [");
                 // invalid type
                 TryInvalidCompile(
                     env,

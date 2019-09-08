@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S3#length(1000)) as IdS3, (select Id from SupportBean_S4#length(1000)) as IdS4 from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 where s0.Id = s1.Id";
+                    "@Name('s0') select (select Id from SupportBean_S3#length(1000)) as IdS3, (select Id from SupportBean_S4#length(1000)) as IdS4 from SupportBean_S0#keepall as S0, SupportBean_S1#keepall as S1 where S0.Id = S1.Id";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -285,7 +285,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select (select Id from SupportBean_S1) from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window (applies to correlated or non-fully-aggregated subqueries) [");
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window (applies to correlated or non-fully-aggregated subqueries) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -300,12 +300,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select (select Id from SupportBean_S1#lastevent where (sum(Id) = 5)) as IdS1 from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Aggregation functions are not supported within subquery filters, consIder using a having-clause or insert-into instead [select (select Id from SupportBean_S1#lastevent where (sum(Id) = 5)) as IdS1 from SupportBean_S0]");
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Aggregation functions are not supported within subquery filters, consider using a having-clause or insert-into instead [select (select Id from SupportBean_S1#lastevent where (sum(Id) = 5)) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))",
-                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))]");
+                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,col".SplitCsv();
+                var fields = new [] { "TheString","col" };
                 var epl =
                     "@Name('s0') select TheString, (select P00 from SupportBean_S0#lastevent()) as col from SupportBean";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

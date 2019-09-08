@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             AtomicLong milestone,
             string pattern)
         {
-            var fields = "a0,a1,b0,b1,c".SplitCsv();
+            var fields = new [] { "a0","a1","b0","b1","c" };
             var text = "@Name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,b0,c,d0,e".SplitCsv();
+                var fields = new [] { "a","b0","c","d0","e" };
                 var text = "@Name('s0') select * from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as a, B[0].TheString as b0, C.TheString as c, D[0].TheString as d0, E.TheString as e" +
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOne = "a0,a1,a2,b".SplitCsv();
+                var fieldsOne = new [] { "a0","a1","a2","b" };
                 var epl = "@Name('s0') select * from SupportBean " +
                           "match_recognize (" +
                           " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b" +
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E7", "E8", "E9", "E11"});
                 env.UndeployAll();
 
-                var fieldsTwo = "a[0].TheString,a[1].TheString,b.TheString".SplitCsv();
+                var fieldsTwo = new [] { "a[0].TheString","a[1].TheString","b.TheString" };
                 var eplTwo = "@Name('s0') select * from SupportBean " +
                              "match_recognize (" +
                              " measures A as a, B as b " +

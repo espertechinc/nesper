@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         /// </summary>
         protected internal ExprEvaluator size;
 
-        public ExprEvaluator Size {
+        public ExprEvaluator SizeEvaluator {
+            get => size;
             set => size = value;
         }
 

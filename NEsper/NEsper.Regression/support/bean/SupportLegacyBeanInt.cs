@@ -22,6 +22,11 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public int IntPrimitive => fieldIntPrimitive;
 
+        public int GetIntPrimitive()
+        {
+            return fieldIntPrimitive;
+        }
+
         public int ReadIntPrimitive()
         {
             return fieldIntPrimitive;

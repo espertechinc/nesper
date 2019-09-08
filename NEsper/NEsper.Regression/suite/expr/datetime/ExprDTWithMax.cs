@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5,val6,val7".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
                 var eplFragment = "@Name('s0') select " +
                                   "DtoDate.withMax('msec') as val0," +
                                   "DtoDate.withMax('sec') as val1," +

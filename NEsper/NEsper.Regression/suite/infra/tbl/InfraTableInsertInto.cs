@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("create").Advance(),
-                "p0,p1".SplitCsv(),
+                new [] { "p0","p1" },
                 new object[] {"a", "b"});
             env.UndeployAll();
         }
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pKey0,pkey1,c0".SplitCsv();
+                var fields = new [] { "pKey0","pkey1","c0" };
                 var path = new RegressionPath();
 
                 var eplCreateTable =
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"}
                     });
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"}
                     });
@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"}
                     });
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"}
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"}
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "pkey".SplitCsv(),
+                    new [] { "pkey" },
                     new[] {
                         new object[] {"E1"}
                     });
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "pkey,col".SplitCsv(),
+                    new [] { "pkey","col" },
                     new object[] {"E4", 0});
 
                 env.UndeployAll();
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[][] tableOneRows,
                 object[][] tableTwoRows)
             {
-                var fields = "pkey,col".SplitCsv();
+                var fields = new [] { "pkey","col" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("createOne"), fields, tableOneRows);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("createTwo"), fields, tableTwoRows);
             }
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S1 insert into MyTableIIF select TheString as pKey0, IntPrimitive as pkey1 from MyWindow",
                     path);
-                var fields = "pKey0,pkey1".SplitCsv();
+                var fields = new [] { "pKey0","pkey1" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
 
@@ -483,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pkey,thesum".SplitCsv();
+                var fields = new [] { "pkey","thesum" };
                 var epl = "@Name('create') create table MyTableIIK(" +
                           "pkey string primary key," +
                           "thesum sum(int));\n";

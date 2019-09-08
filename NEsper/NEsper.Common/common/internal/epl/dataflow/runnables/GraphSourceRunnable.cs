@@ -69,9 +69,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.Runnables
             catch (ThreadInterruptedException ex) {
                 Log.Debug("Interruped runnable: " + ex.Message, ex);
             }
-            catch (EPException) {
-                throw;
-            }
             catch (Exception ex) {
                 Log.Error("Exception encountered: " + ex.Message, ex);
                 HandleException(ex);

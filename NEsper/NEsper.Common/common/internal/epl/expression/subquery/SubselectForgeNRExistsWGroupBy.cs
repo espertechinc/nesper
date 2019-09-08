@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 Not(
                     ExprDotMethodChain(aggService)
                         .Add("GetGroupKeys", symbols.GetAddExprEvalCtx(method))
-                        .Add("isEmpty")));
+                        .Add("IsEmpty")));
             return LocalMethod(method);
         }
     }

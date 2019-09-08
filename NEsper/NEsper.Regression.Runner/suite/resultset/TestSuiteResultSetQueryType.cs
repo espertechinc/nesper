@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportConcatWManagedAggregationFunctionForge));
 
             var mfAggConfig = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "sc".SplitCsv(),
+                new [] { "sc" },
                 typeof(SupportAggMFMultiRTForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(mfAggConfig);
 

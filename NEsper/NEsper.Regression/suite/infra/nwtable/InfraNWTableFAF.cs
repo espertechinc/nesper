@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(MakeBean("E3", 0, 11));
 
                 query = "select distinct LongPrimitive from MyInfra order by LongPrimitive asc";
-                fields = "LongPrimitive".SplitCsv();
+                fields = new [] { "LongPrimitive" };
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
@@ -637,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "ProductOwnerDetails",
                     new[] {"ProductId=Product1", "Owner=Petar"});
 
-                var fields = "WinProduct.ProductId".SplitCsv();
+                var fields = new [] { "WinProduct.ProductId" };
                 EventBean[] queryResults;
                 queryResults = env.CompileExecuteFAF(
                         "" +
@@ -720,10 +720,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var queryAgg =
                     "select w1.Key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.KeyJoin = w2.KeyJoin GROUP BY w1.Key order by w1.Key";
-                var fieldsAgg = "w1.Key,sum(value)".SplitCsv();
+                var fieldsAgg = new [] { "w1.Key","sum(value)" };
                 var queryNoagg =
                     "select w1.Key, w2.Value from Infra1 w1, Infra2 w2 where w1.KeyJoin = w2.KeyJoin and value = 1 order by w1.Key";
-                var fieldsNoagg = "w1.Key,w2.Value".SplitCsv();
+                var fieldsNoagg = new [] { "w1.Key","w2.Value" };
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);
@@ -1681,7 +1681,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileExecuteFAF("insert into MyInfraThree select 'a' as p0, 1 as p1", path);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("InfraThree"),
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new[] {new object[] {"a", 1}});
 
                 // try enum-value insert
@@ -1703,7 +1703,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     path);
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("enumwin").Advance(),
-                    "mode".SplitCsv(),
+                    new [] { "mode" },
                     new object[] {SupportEnum.ENUM_VALUE_2});
 
                 // try insert-into with values-keyword and explicit column names
@@ -1737,7 +1737,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileExecuteFAF(eplValuesWithoutCols, path);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("InfraThree"),
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new[] {new object[] {"b", 2}});
 
                 env.UndeployAll();

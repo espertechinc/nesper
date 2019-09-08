@@ -22,9 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     {
         private bool max;
 
-        public void SetMax(bool max)
+        public bool Max {
+            get => max;
+            set => max = value;
+        }
+
+        public AggregationTAAReaderSortedMinMaxBy SetMax(bool max)
         {
             this.max = max;
+            return this;
         }
 
         public object GetValue(

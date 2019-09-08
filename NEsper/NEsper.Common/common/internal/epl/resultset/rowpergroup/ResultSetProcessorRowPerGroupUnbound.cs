@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             };
 
             return instance.Methods.AddMethod(
-                typeof(UniformPair<>),
+                typeof(UniformPair<EventBean[]>),
                 "ProcessViewResultNewDepthOneUnboundCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),

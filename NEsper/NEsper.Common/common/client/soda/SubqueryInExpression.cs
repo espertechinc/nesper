@@ -60,18 +60,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for not-in, or false for in-lookup.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool IsNotIn
-        {
+        public bool IsNotIn {
             get => notIn;
+            set => notIn = value;
         }
 
         /// <summary>
         /// Set to true for not-in, or false for in-lookup.
         /// </summary>
         /// <param name="notIn">true for not-in</param>
-        public void SetNotIn(bool notIn)
+        public SubqueryInExpression SetNotIn(bool notIn)
         {
             this.notIn = notIn;
+            return this;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -99,18 +100,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lookup statement object model.
         /// </summary>
         /// <returns>lookup model</returns>
-        public EPStatementObjectModel Model
-        {
+        public EPStatementObjectModel Model {
             get => model;
+            set => model = value;
         }
 
         /// <summary>
         /// Sets the lookup statement object model.
         /// </summary>
         /// <param name="model">is the lookup model to set</param>
-        public void SetModel(EPStatementObjectModel model)
+        public SubqueryInExpression SetModel(EPStatementObjectModel model)
         {
             this.model = model;
+            return this;
         }
     }
 } // end of namespace

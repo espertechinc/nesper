@@ -313,7 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     if (insertIntoTargetType != null &&
                         fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i] &&
-                        (targetFragment == null || targetFragment != null && targetFragment.IsNative)) {
+                        (targetFragment == null || targetFragment?.IsNative == true)) {
                         var getter = ((EventTypeSPI) eventTypeStream).GetGetterSPI(propertyName);
                         var returnType = eventTypeStream.GetPropertyType(propertyName);
                         exprForges[i] = new ExprEvalByGetter(streamNum, getter, returnType);
@@ -322,7 +322,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                              expressionReturnTypes[i] is Type &&
                              fragmentType.FragmentType.UnderlyingType ==
                              ((Type) expressionReturnTypes[i]).GetElementType() &&
-                             (targetFragment == null || targetFragment != null && targetFragment.IsNative)) {
+                             (targetFragment == null || targetFragment?.IsNative == true)) {
                         // same for arrays: may need to unwrap the fragment if the target type has this underlying type
                         var getter = ((EventTypeSPI) eventTypeStream).GetGetterSPI(propertyName);
                         var returnType = eventTypeStream.GetPropertyType(propertyName);

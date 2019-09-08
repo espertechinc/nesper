@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string".SplitCsv();
+                var fields = new [] { "a_string","b_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b0_string,b1_string,b2_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b0_string","b1_string","b2_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, " +
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b0_string,b1_string,b2_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b0_string","b1_string","b2_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, " +
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string,c_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string, " +
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,a_value,b_value".SplitCsv();
+                var fields = new [] { "a_string","a_value","b_value" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString" +
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string,c_string,d_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string","d_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string, D.TheString as d_string " +
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string,c_string,d_string".SplitCsv();
+                var fields = new [] { "a_string","b_string","c_string","d_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string, D.TheString as d_string " +
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a0,b,a1".SplitCsv();
+                var fields = new [] { "a0","b","a1" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +

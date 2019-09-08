@@ -565,14 +565,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0')select prev(1, s0) as result, " +
-                          "prevtail(0, s0) as tailresult," +
-                          "prevwindow(s0) as windowresult," +
-                          "prevcount(s0) as countresult " +
-                          "from SupportBean_S0#length(2) as s0";
+                var epl = "@Name('s0') select " +
+                          "prev(1, S0) as result, " +
+                          "prevtail(0, S0) as tailresult," +
+                          "prevwindow(S0) as windowresult," +
+                          "prevcount(S0) as countresult " +
+                          "from SupportBean_S0#length(2) as S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "result,tailresult,windowresult,countresult".SplitCsv();
+                var fields = new [] { "result","tailresult","windowresult","countresult" };
 
                 var e1 = new SupportBean_S0(1);
                 env.SendEventBean(e1);
@@ -614,7 +615,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0')select irstream count(*) as total, " +
+                var epl = "@Name('s0') select irstream count(*) as total, " +
                           "prev(" +
                           typeof(ExprCorePrevious).Name +
                           ".intToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
@@ -630,7 +631,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0')select irstream count(*) as total, " +
+                var epl = "@Name('s0') select irstream count(*) as total, " +
                           "prev(count(*) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -652,7 +653,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "from SupportMarketDataBean#groupwin(Symbol, Feed)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "symbol,Feed,prevPrice,tailPrice,countPrice,windowPrice".SplitCsv();
+                var fields = new [] { "symbol","Feed","prevPrice","tailPrice","countPrice","windowPrice" };
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10, 0L, "F1"));
                 EPAssertionUtil.AssertProps(

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             Assert.IsFalse(env.Listener("StmtMetrics").IsInvoked);
 
             SendTimer(env, 8000);
-            var fields = "statementName,numOutputIStream,numInput".SplitCsv();
+            var fields = new [] { "statementName","numOutputIStream","numInput" };
             EPAssertionUtil.AssertProps(
                 env.Listener("StmtMetrics").AssertOneGetNewAndReset(),
                 fields,

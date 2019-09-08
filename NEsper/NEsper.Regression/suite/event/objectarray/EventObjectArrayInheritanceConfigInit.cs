@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.Statement("s" + i).AddListener(listeners[i]);
             }
 
-            var fields = "vbase,v1,v2,va,vb".SplitCsv();
+            var fields = new [] { "vbase","v1","v2","va","vb" };
 
             var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent");
             Assert.AreEqual("base", type.PropertyDescriptors[0].PropertyName);
@@ -52,15 +52,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             Assert.AreEqual(3, type.PropertyDescriptors.Length);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("SubBEvent");
-            Assert.AreEqual("[base, sub1, suba, subb]", type.PropertyNames.RenderAny());
+            Assert.AreEqual("[\"base\", \"sub1\", \"suba\", \"subb\"]", type.PropertyNames.RenderAny());
             Assert.AreEqual(4, type.PropertyDescriptors.Length);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub1Event");
-            Assert.AreEqual("[base, sub1]", type.PropertyNames.RenderAny());
+            Assert.AreEqual("[\"base\", \"sub1\"]", type.PropertyNames.RenderAny());
             Assert.AreEqual(2, type.PropertyDescriptors.Length);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub2Event");
-            Assert.AreEqual("[base, sub2]", type.PropertyNames.RenderAny());
+            Assert.AreEqual("[\"base\", \"sub2\"]", type.PropertyNames.RenderAny());
             Assert.AreEqual(2, type.PropertyDescriptors.Length);
 
             env.SendEventObjectArray(new object[] {"a", "b", "x"}, "SubAEvent"); // base, sub1, suba

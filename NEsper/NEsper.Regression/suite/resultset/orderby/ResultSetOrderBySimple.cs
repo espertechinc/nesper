@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 Assert.AreEqual(2, received.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new[] {new object[] {"A2"}, new object[] {"A1"}});
 
                 env.UndeployAll();
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 Assert.AreEqual(3, receivedThree.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     receivedThree,
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new[] {new object[] {"A3"}, new object[] {"A2"}, new object[] {"A1"}});
 
                 env.UndeployAll();

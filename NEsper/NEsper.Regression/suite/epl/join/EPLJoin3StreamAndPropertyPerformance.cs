@@ -72,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Statement where all streams are reachable from each other via properties
                 var stmt = "@Name('s0') select * from " +
-                           "SupportBean_A()#length(1000000) s1," +
-                           "SupportBean_B()#length(1000000) s2," +
-                           "SupportBean_C()#length(1000000) s3" +
-                           " where s1.Id=s2.Id and s2.Id=s3.Id and s1.Id=s3.Id";
+                           "SupportBean_A()#length(1000000) S1," +
+                           "SupportBean_B()#length(1000000) S2," +
+                           "SupportBean_C()#length(1000000) S3" +
+                           " where S1.Id=S2.Id and S2.Id=S3.Id and S1.Id=S3.Id";
                 TryJoinPerf3Streams(env, stmt);
             }
         }
@@ -86,10 +86,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
                 var stmt = "@Name('s0') select * from " +
-                           "SupportBean_A#length(1000000) s1," +
-                           "SupportBean_B#length(1000000) s2," +
-                           "SupportBean_C#length(1000000) s3" +
-                           " where s1.Id=s2.Id and s2.Id=s3.Id"; // ==> therefore s1.Id = s3.Id
+                           "SupportBean_A#length(1000000) S1," +
+                           "SupportBean_B#length(1000000) S2," +
+                           "SupportBean_C#length(1000000) S3" +
+                           " where S1.Id=S2.Id and S2.Id=S3.Id"; // ==> therefore S1.Id = S3.Id
                 TryJoinPerf3Streams(env, stmt);
             }
         }
@@ -102,10 +102,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
                 var epl = "@Name('s0') select * from " +
-                          "SupportBean_A#length(1000000) s1," +
-                          "SupportBean_B#length(1000000) s2," +
-                          "SupportBean_C#length(1000000) s3" +
-                          " where s1.Id=s2.Id"; // ==> stream s3 no properties supplied, full s3 scan
+                          "SupportBean_A#length(1000000) S1," +
+                          "SupportBean_B#length(1000000) S2," +
+                          "SupportBean_C#length(1000000) S3" +
+                          " where S1.Id=S2.Id"; // ==> stream s3 no properties supplied, full s3 scan
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // preload s3 with just 1 event

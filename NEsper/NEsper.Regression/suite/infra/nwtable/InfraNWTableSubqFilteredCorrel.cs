@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E2", -2));
 
                 var consumeEpl =
-                    "@Name('consume') select (select IntPrimitive from MyInfra(IntPrimitive<0) sw where s0.P00=sw.TheString) as val from S0 s0";
+                    "@Name('consume') select (select IntPrimitive from MyInfra(IntPrimitive<0) sw where S0.P00=sw.TheString) as val from S0 s0";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

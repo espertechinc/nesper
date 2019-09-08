@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.client.annotation
     {
         /// <summary>Returns the simple class name (using imports) or fully-qualified class name of the hook. </summary>
         /// <returns>class name</returns>
-        public virtual String Hook { get; set; }
+        public virtual string Hook { get; set; }
 
         /// <summary>Returns hook type. </summary>
         /// <returns>hook type</returns>

@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.soda
     {
         public override void WriteEPL(TextWriter writer)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (MatchRecognizeRegEx node in Children)
             {
                 writer.Write(delimiter);

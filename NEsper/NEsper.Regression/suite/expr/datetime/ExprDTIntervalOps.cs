@@ -367,11 +367,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.before(b, 'abc') from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(b,\"abc\")': Error valIdating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String ");
+                    "Failed to validate select-clause expression 'a.before(b,\"abc\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String ");
                 TryInvalidCompile(
                     env,
                     "select a.before(b, 1, 'def') from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(b,1,\"def\")': Error valIdating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String ");
+                    "Failed to validate select-clause expression 'a.before(b,1,\"def\")': Error validating date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String ");
                 TryInvalidCompile(
                     env,
                     "select a.before(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",

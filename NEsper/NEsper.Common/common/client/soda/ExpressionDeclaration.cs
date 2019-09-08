@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.client.soda
 
                 if (ParameterNames != null && !ParameterNames.IsEmpty())
                 {
-                    writer.Write(" => ");
+                    writer.Write(" -> ");
                 }
             }
 

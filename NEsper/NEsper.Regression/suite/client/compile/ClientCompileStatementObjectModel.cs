@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.soda;
@@ -75,7 +76,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.AreEqual(
                     "insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " +
                     typeof(SupportBean).Name +
-                    "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10 seconds order by line",
+                    "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output " +
+                    "every 10.0d seconds " +
+                    "order by line",
                     model.ToEPL());
                 env.CopyMayFail(model);
             }
@@ -179,11 +182,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     var eplAfter = modelBefore.ToEPL();
 
                     if (expected == null) {
-                        Assert.AreEqual(failText, epl, eplAfter);
+                        Assert.AreEqual(epl, eplAfter, failText);
                     }
                     else {
                         var expectedEPL = "select * from pattern [" + expected + "]";
-                        Assert.AreEqual(failText, expectedEPL, eplAfter);
+                        Assert.AreEqual(expectedEPL, eplAfter, failText);
                     }
 
                     // get where clause root expression of both models

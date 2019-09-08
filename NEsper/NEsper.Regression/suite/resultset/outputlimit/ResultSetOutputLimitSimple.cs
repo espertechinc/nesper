@@ -1027,9 +1027,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var epl =
                     "create window MyWindow#keepall as SupportBean_S0;\n" +
                     "insert into MyWindow select * from SupportBean_S0;\n" +
-                    "@Name('s0') select myWindow.Id as c0, s1.Id as c1\n" +
-                    "from SupportBean_S1 as s1 unidirectional, MyWindow as myWindow\n" +
-                    "where myWindow.P00 = s1.P10\n" +
+                    "@Name('s0') select myWindow.Id as c0, S1.Id as c1\n" +
+                    "from SupportBean_S1 as S1 unidirectional, MyWindow as myWindow\n" +
+                    "where myWindow.P00 = S1.P10\n" +
                     "output first every 1 minutes;";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1634,7 +1634,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                  "SupportMarketDataBean#keepall as m where s.TheString = m.Symbol output snapshot every 3 events order by Symbol asc";
                 env.CompileDeploy(selectStmt).AddListener("s0");
 
-                foreach (var symbol in "s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11".SplitCsv()) {
+                foreach (var symbol in new [] { "s0","s1","s2","s3","s4","s5","s6","s7","s8","s9","s10","s11" }) {
                     env.SendEventBean(new SupportMarketDataBean(symbol, 0, 0L, ""));
                 }
 

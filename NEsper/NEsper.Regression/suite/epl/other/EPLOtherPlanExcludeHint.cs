@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupsubord;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
@@ -59,10 +60,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var schema =
                     "create schema AEvent as " +
-                    typeof(AEvent).Name +
+                    typeof(AEvent).MaskTypeName() +
                     ";\n" +
                     "create schema BEvent as " +
-                    typeof(BEvent).Name +
+                    typeof(BEvent).MaskTypeName() +
                     ";\n";
                 var path = new RegressionPath();
                 env.CompileDeploy(schema, path);
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as s0 where s1.P10 = P00) from SupportBean_S1 as s1",
+                    "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as S0 where S1.P10 = P00) from SupportBean_S1 as S1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
                 Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subq.TableLookupStrategy);
@@ -95,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') on SupportBean_S1 as s1 select * from S0Window as s0 where s1.P10 = s0.P00",
+                    "@hint('exclude_plan(true)') on SupportBean_S1 as S1 select * from S0Window as S0 where S1.P10 = S0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
                 Assert.AreEqual(typeof(SubordWMatchExprLookupStrategyAllFilteredForge).Name, onExpr.StrategyName);
@@ -112,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env.Runtime.EventTypeService.GetEventTypePreconfigured("SupportBean_S0"),
                     env.Runtime.EventTypeService.GetEventTypePreconfigured("SupportBean_S1")
                 };
-                var epl = "select * from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 ";
+                var epl = "select * from SupportBean_S0#keepall as S0, SupportBean_S1#keepall as S1 ";
                 var planFullTableScan = SupportQueryPlanBuilder.Start(2)
                     .SetIndexFullTableScan(0, "i0")
                     .SetIndexFullTableScan(1, "i1")

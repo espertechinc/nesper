@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 RegressionEnvironment env,
                 EventRepresentationChoice representation)
             {
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 var path = new RegressionPath();
                 var schema = "create " +
                              representation.GetOutputTypeCreateSchemaName() +
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var underlying = (Pair<SupportBean, object>) result.Underlying;
                 EPAssertionUtil.AssertProps(
                     result,
-                    "dummy,TheString,IntPrimitive".SplitCsv(),
+                    new [] { "dummy","TheString","IntPrimitive" },
                     new object[] {1, "OI1", 10});
                 Assert.AreEqual("OI1", underlying.First.TheString);
 
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultTwo = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultTwo,
-                    "IntOne,intTwo".SplitCsv(),
+                    new [] { "IntOne","intTwo" },
                     new object[] {10, 11});
                 Assert.AreEqual(11, (int) ((SupportBeanNumeric) resultTwo.Underlying).IntTwo);
                 env.UndeployModuleContaining("s0");
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id,b.Id".SplitCsv(),
+                    new [] { "a.Id","b.Id" },
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -350,7 +350,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean_B("B1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id,b.Id".SplitCsv(),
+                    new [] { "a.Id","b.Id" },
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "result".SplitCsv(),
+                    new [] { "result" },
                     new object[] {"NestedValue"});
 
                 env.UndeployAll();

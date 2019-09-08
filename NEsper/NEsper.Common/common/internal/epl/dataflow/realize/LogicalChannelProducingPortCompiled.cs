@@ -59,12 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     parent,
                     symbols,
                     classScope)
-                .Constant("producingOpNum", ProducingOpNum)
-                .Constant("producingOpPrettyPrint", ProducingOpPrettyPrint)
-                .Constant("streamName", StreamName)
-                .Constant("streamNumber", StreamNumber)
+                .Constant("ProducingOpNum", ProducingOpNum)
+                .Constant("ProducingOpPrettyPrint", ProducingOpPrettyPrint)
+                .Constant("StreamName", StreamName)
+                .Constant("StreamNumber", StreamNumber)
                 .Method("graphTypeDesc", method => GraphTypeDesc.Make(method, symbols, classScope))
-                .Constant("hasPunctuation", HasPunctuation)
+                .Constant("HasPunctuation", HasPunctuation)
                 .Build();
         }
 

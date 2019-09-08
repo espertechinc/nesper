@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.hook.expr
             int contextPartitionId,
             string runtimeUri,
             string functionName,
-            Object statementUserObject,
+            object statementUserObject,
             EventBeanService eventBeanService)
         {
             StatementName = statementName;

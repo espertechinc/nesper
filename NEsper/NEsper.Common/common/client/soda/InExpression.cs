@@ -95,18 +95,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for the not-in expression, or false for an in-expression.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool NotIn
-        {
+        public bool NotIn {
             get => notIn;
+            set => notIn = value;
         }
 
         /// <summary>
         /// Set to true to indicate this is a not-in expression.
         /// </summary>
         /// <param name="notIn">true for not-in, false for in-expression</param>
-        public void SetNotIn(bool notIn)
+        public InExpression SetNotIn(bool notIn)
         {
             this.notIn = notIn;
+            return this;
         }
 
         /// <summary>

@@ -133,11 +133,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var type = typeof(T);
             var chronoUnit = EnumValue(typeof(ChronoUnit), field.GetName());
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return ExprDotMethod(val, "truncatedTo", chronoUnit);
+                return ExprDotMethod(val, "TruncatedTo", chronoUnit);
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return ExprDotMethodChain(val).Add("plus", Constant(1), chronoUnit).Add("truncatedTo", chronoUnit);
+                return ExprDotMethodChain(val)
+                    .Add("Plus", Constant(1), chronoUnit)
+                    .Add("TruncatedTo", chronoUnit);
             }
 
             throw new EPException("Round-half operation not supported for " + type.Name);

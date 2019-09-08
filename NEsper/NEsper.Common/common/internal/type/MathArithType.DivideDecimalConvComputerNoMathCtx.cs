@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpressionRef s2,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenExpressionBuilder.ExprDotMethod(s1, "Divide", s2);
+                return CodegenExpressionBuilder.Op(s1, "/", s2);
             }
         }
     }

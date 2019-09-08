@@ -97,14 +97,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context MyContext " +
-                    "  initiated by distinct(s0.TheString) SupportBean(IntPrimitive = 0) s0" +
-                    "  terminated by SupportBean(TheString = s0.TheString and IntPrimitive = 1)",
+                    "  initiated by distinct(S0.TheString) SupportBean(IntPrimitive = 0) S0" +
+                    "  terminated by SupportBean(TheString = S0.TheString and IntPrimitive = 1)",
                     path);
 
-                var fields = "TheString,LongPrimitive,cnt".SplitCsv();
+                var fields = new [] { "TheString","LongPrimitive","cnt" };
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
-                    "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.s0.TheString)",
+                    "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.S0.TheString)",
                     path);
                 env.AddListener("s0");
 
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "terminated SupportBean_S1"; // any S1 ends the contexts
                 env.EplToModelCompileDeploy(epl, path);
 
-                var fields = "id,P00,P01,cnt".SplitCsv();
+                var fields = new [] { "id","P00","P01","cnt" };
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
                     "select Id, P00, P01, count(*) as cnt " +

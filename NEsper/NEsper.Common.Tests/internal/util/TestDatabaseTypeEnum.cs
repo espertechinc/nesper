@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < types.Length; i++) {
                 var val = (DatabaseTypeEnum) types[i][1];
-                Assert.AreEqual(val, DatabaseTypeEnum.GetEnum((string) types[i][0]));
+                Assert.AreEqual(val, DatabaseTypeEnumExtensions.GetEnum((string) types[i][0]));
             }
         }
 
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < types.Length; i++) {
                 var val = (DatabaseTypeEnum) types[i][0];
-                Assert.AreEqual(types[i][1], val.Binding.DataType);
-                Assert.AreEqual(types[i][1], val.BoxedType);
+                Assert.AreEqual(types[i][1], val.GetBinding().DataType);
+                Assert.AreEqual(types[i][1], val.GetBoxedType());
             }
         }
     }

@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type clazz,
             CodegenExpression expression)
         {
-            this._clazz = clazz;
-            this._expression = expression;
+            _clazz = clazz;
+            _expression = expression;
         }
 
         public void Render(

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestDimension()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(1000, 100000, 9000, 900000);
+            var tree = MXCIFQuadTreeFactory.Make(1000, 100000, 9000, 900000);
 
             try
             {
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             }
             catch (Exception ex)
             {
-                Assert.AreEqual(ex.Message, "Rectangle (10.0,90.0,1.0,1.0) not in {minX=1000.0, minY=100000.0, maxX=10000.0, maxY=1000000.0}");
+                Assert.AreEqual(ex.Message, "Rectangle (10.0d,90.0d,1.0d,1.0d) not in {MinX=1000.0d, MinY=100000.0d, MaxX=10000.0d, MaxY=1000000.0d}");
             }
 
             try
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestRemoveNonExistent()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 20, 20);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 20, 20);
             Delete(10, 61, 1, 1, tree);
             Set(10, 60, 1, 1, "R1", tree);
             Delete(10, 61, 1, 1, tree);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSubdivideAddMany()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 2, 3);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 2, 3);
             Set(0, 0, 1, 1, "R1", tree);
             Set(1, 2, 1, 1, "R2", tree);
             Set(3, 2, 1, 1, "R3", tree);
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSubdivideMerge()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 3, 2);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
             Assert.AreEqual(1, tree.Root.Level);
             Set(10, 10, 0.01, 0.01, "R1", tree);
             Set(9.9, 10, 0.01, 0.01, "R2", tree);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Set(10, 10, 0.01, 0.01, "R4", tree);
             Set(10, 9.9, 0.01, 0.01, "R5", tree);
             Set(9.9, 10, 0.01, 0.01, "R6", tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf<object>>(tree.Root);
+            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
             AssertCollect(tree, 9, 10, 1, 1, "R4,R6");
             AssertCollect(tree, 10, 9, 1, 1, "R4,R5");
             AssertCollect(tree, 10, 10, 1, 1, "R4");
@@ -124,14 +124,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "R4,R5,R6");
 
             Set(10, 10, 0.01, 0.01, "R7", tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf<object>>(tree.Root);
+            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
 
             Set(9.9, 9.9, 0.01, 0.01, "R8", tree);
 
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf<object>);
+            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
             Assert.AreEqual(1, tree.Root.Level);
             Assert.AreEqual(4, NavigateLeaf(tree, "nw").Count);
-            var collection = (IList<XYWHRectangleWValue<object>>) NavigateLeaf(tree, "nw").Data;
+            var collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "nw").Data;
             Assert.AreEqual(4, collection.Count);
             Compare(10, 10, 0.01, 0.01, "R7", collection[0]);
             Compare(9.9, 10, 0.01, 0.01, "R6", collection[1]);
@@ -172,14 +172,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollectAll(tree, "R8,R13");
 
             Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
-            collection = (IList<XYWHRectangleWValue<object>>) NavigateLeaf(tree, "").Data;
+            collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "").Data;
             Assert.AreEqual(2, collection.Count);
             Compare(10, 10, 0.01, 0.01, "R13", collection[0]);
             Compare(9.9, 9.9, 0.01, 0.01, "R8", collection[1]);
 
             Delete(9.9, 9.9, 0.01, 0.01, tree);
             Delete(10, 10, 0.01, 0.01, tree);
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf<object>>(tree.Root);
+            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
             Assert.AreEqual(0, NavigateLeaf(tree, "").Count);
             AssertCollectAll(tree, "");
         }
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSubdivideMultiChild()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 4, 3);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 4, 3);
             Set(60, 11, 1, 1, "R1", tree);
             Set(60, 40, 1, 1, "R2", tree);
             Set(70, 30, 1, 1, "R3", tree);
@@ -201,17 +201,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Assert.AreEqual(2, ne.Level);
 
             var nw = NavigateLeaf(ne, "nw");
-            var collection = (IList<XYWHRectangleWValue<object>>) nw.Data;
+            var collection = (IList<XYWHRectangleWValue>) nw.Data;
             Compare(60, 11, 1, 1, "R1", collection[0]);
             Compare(60, 10, 1, 1, "R4", collection[1]);
             Assert.AreEqual(2, nw.Count);
 
             var se = NavigateLeaf(ne, "se");
-            Compare(90, 45, 1, 1, "R5", (XYWHRectangleWValue<object>) se.Data);
+            Compare(90, 45, 1, 1, "R5", (XYWHRectangleWValue) se.Data);
             Assert.AreEqual(1, se.Count);
 
             var sw = NavigateLeaf(ne, "sw");
-            collection = (IList<XYWHRectangleWValue<object>>) sw.Data;
+            collection = (IList<XYWHRectangleWValue>) sw.Data;
             Compare(60, 40, 1, 1, "R2", collection[0]);
             Compare(70, 30, 1, 1, "R3", collection[1]);
             Assert.AreEqual(2, sw.Count);
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Delete(60, 40, 1, 1, tree);
 
             var root = NavigateLeaf(tree, "");
-            collection = (IList<XYWHRectangleWValue<object>>) root.Data;
+            collection = (IList<XYWHRectangleWValue>) root.Data;
             Assert.AreEqual(3, root.Count);
             Assert.AreEqual(3, collection.Count);
             Compare(60, 10, 1, 1, "R4", collection[0]);
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSubdivideSingleMerge()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 3, 2);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
             Set(65, 75, 1, 1, "R1", tree);
             Set(81, 60, 1, 1, "R2", tree);
             Set(80, 60, 1, 1, "R3", tree);
@@ -239,9 +239,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollect(tree, 60, 60, 20.5, 20.5, "R1,R3,R4");
             AssertCollectAll(tree, "R1,R2,R3,R4");
 
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf<object>);
+            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
             Assert.AreEqual(4, NavigateLeaf(tree, "se").Count);
-            var collection = (IList<XYWHRectangleWValue<object>>) NavigateLeaf(tree, "se").Data;
+            var collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "se").Data;
             Assert.AreEqual(4, collection.Count);
             Compare(65, 75, 1, 1, "R1", collection[0]);
             Compare(81, 60, 1, 1, "R2", collection[1]);
@@ -263,7 +263,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 
             AssertCollectAll(tree, "R2,R4");
             Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
-            collection = (IList<XYWHRectangleWValue<object>>) NavigateLeaf(tree, "").Data;
+            collection = (IList<XYWHRectangleWValue>) NavigateLeaf(tree, "").Data;
             Assert.AreEqual(2, collection.Count);
             Compare(81, 60, 1, 1, "R2", collection[0]);
             Compare(80, 61, 1, 1, "R4", collection[1]);
@@ -272,13 +272,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSuperslim()
         {
-            var tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100, 1, 100);
+            var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 1, 100);
             Set(10, 90, 0.1, 0.2, "R1", tree);
             Set(10, 95, 0.3, 0.4, "R2", tree);
             var ne = NavigateLeaf(tree, "sw,sw,sw,ne");
-            Compare(10, 90, 0.1, 0.2, "R1", (XYWHRectangleWValue<object>) ne.Data);
+            Compare(10, 90, 0.1, 0.2, "R1", (XYWHRectangleWValue) ne.Data);
             var se = NavigateLeaf(tree, "sw,sw,sw,se");
-            Compare(10, 95, 0.3, 0.4, "R2", (XYWHRectangleWValue<object>) se.Data);
+            Compare(10, 95, 0.3, 0.4, "R2", (XYWHRectangleWValue) se.Data);
         }
 
         private static void Delete(
@@ -286,9 +286,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double y,
             double width,
             double height,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
-            MXCIFQuadTreeFilterIndexDelete<object>.Delete(x, y, width, height, tree);
+            MXCIFQuadTreeFilterIndexDelete.Delete(x, y, width, height, tree);
         }
     }
 } // end of namespace

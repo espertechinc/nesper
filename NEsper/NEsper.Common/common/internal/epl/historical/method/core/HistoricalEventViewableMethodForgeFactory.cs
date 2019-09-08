@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             Type methodProviderClass = null;
             Type beanClass;
-            LinkedHashMap<string, object> oaType = null;
+            IDictionary<string, object> oaType = null;
             IDictionary<string, object> mapType = null;
             var isCollection = false;
             var isIterator = false;
@@ -185,14 +185,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                             methodStreamSpec.MethodName,
                             variableMetaData,
                             classpathImportService,
-                            typeof(IDictionary<object, object>));
+                            typeof(IDictionary<string, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
                             methodStreamSpec.MethodName,
                             methodStreamSpec.ClassName,
                             classpathImportService,
-                            typeof(IDictionary<object, object>));
+                            typeof(IDictionary<string, object>));
                     }
 
                     mapTypeName = metadata.TypeName;
@@ -211,18 +211,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                             methodStreamSpec.MethodName,
                             variableMetaData,
                             classpathImportService,
-                            typeof(LinkedHashMap<object, object>));
+                            typeof(IDictionary<string, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
                             methodStreamSpec.MethodName,
                             methodStreamSpec.ClassName,
                             classpathImportService,
-                            typeof(LinkedHashMap<object, object>));
+                            typeof(IDictionary<string, object>));
                     }
 
                     oaTypeName = metadata.TypeName;
-                    oaType = (LinkedHashMap<string, object>) metadata.TypeMetadata;
+                    oaType = (IDictionary<string, object>) metadata.TypeMetadata;
                 }
 
                 // Determine event type from class and method name

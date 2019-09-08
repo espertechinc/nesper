@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestNonUnique()
         {
-            SupportQuadTreeToolNonUnique<MXCIFQuadTree<object>> tools = new SupportQuadTreeToolNonUnique<MXCIFQuadTree<object>>(
+            SupportQuadTreeToolNonUnique<MXCIFQuadTree> tools = new SupportQuadTreeToolNonUnique<MXCIFQuadTree>(
                 MXCIF_FACTORY,
                 SupportGeneratorRectangleNonUniqueIntersecting.INSTANCE,
                 MXCIF_RI_ADDERNONUNIQUE,

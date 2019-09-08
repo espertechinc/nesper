@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="message">error message</param>
         /// <param name="dataFlowName">data flow name</param>
         public EPDataFlowExecutionException(
-            String message,
-            String dataFlowName)
+            string message,
+            string dataFlowName)
             : base(message)
         {
             DataFlowName = dataFlowName;
@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="cause">cuase</param>
         /// <param name="dataFlowName">data flow name</param>
         public EPDataFlowExecutionException(
-            String message,
+            string message,
             Exception cause,
-            String dataFlowName)
+            string dataFlowName)
             : base(message, cause)
         {
             DataFlowName = dataFlowName;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="dataFlowName">data flow name</param>
         public EPDataFlowExecutionException(
             Exception cause,
-            String dataFlowName)
+            string dataFlowName)
             : base(cause)
         {
             DataFlowName = dataFlowName;

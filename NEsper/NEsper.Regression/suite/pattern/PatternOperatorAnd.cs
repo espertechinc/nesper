@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean_B("B_last"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id,b.Id".SplitCsv(),
+                    new [] { "a.Id","b.Id" },
                     new object[] {"A1", "B_last"});
 
                 env.UndeployAll();

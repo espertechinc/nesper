@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.collection
             var maxNumPermutation = Faculty(numElements);
 
             for (var currentPermutation = 0; currentPermutation < maxNumPermutation; currentPermutation++) {
-                var element = GetPermutation(numElements, currentPermutation, factors);
-                yield return element;
+                yield return GetPermutation(numElements, currentPermutation, factors);
             }
         }
 

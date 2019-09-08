@@ -102,36 +102,38 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool Distinct
-        {
+        public bool Distinct {
             get => distinct;
+            set => distinct = value;
         }
 
         /// <summary>
         /// Set the distinct flag indicating the projection considers distinct values only.
         /// </summary>
         /// <param name="distinct">true for distinct, false for not distinct</param>
-        public void SetDistinct(bool distinct)
+        public MaxProjectionExpression SetDistinct(bool distinct)
         {
             this.distinct = distinct;
+            return this;
         }
 
         /// <summary>
         /// Returns true for max-ever
         /// </summary>
         /// <returns>indicator for "ever"</returns>
-        public bool IsEver
-        {
+        public bool IsEver {
             get => ever;
+            set => ever = value;
         }
 
         /// <summary>
         /// Set to true for max-ever
         /// </summary>
         /// <param name="ever">indicator for "ever"</param>
-        public void SetEver(bool ever)
+        public MaxProjectionExpression SetEver(bool ever)
         {
             this.ever = ever;
+            return this;
         }
     }
 } // end of namespace

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.client.context
             return other is ContextPartitionIdentifierHash && _hash == ((ContextPartitionIdentifierHash) other)._hash;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "ContextPartitionIdentifierHash{" +
                    "hash=" +

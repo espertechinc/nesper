@@ -459,10 +459,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             method.Block.DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                 .DeclareVar(ResultType, "result", NewArrayByLength(ResultType.GetElementType(), Ref("size")))
                 .ForLoopIntSimple("i", Ref("size"))
+                .ExprDotMethod(Ref("events"), "MoveNext")
                 .AssignArrayElement(
                     eps,
                     Constant(StreamNumber),
-                    Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "Next")))
+                    Cast(typeof(EventBean), ExprDotName(Ref("events"), "Current")))
                 .AssignArrayElement(
                     "result",
                     Ref("i"),

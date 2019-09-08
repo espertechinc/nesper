@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.CodegenLegoCompareEquals;
@@ -56,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForge lhs,
             ExprForge rhs)
         {
-            var lhsType = lhs.EvaluationType;
-            var rhsType = rhs.EvaluationType;
+            var lhsType = lhs.EvaluationType.GetBoxedType();
+            var rhsType = rhs.EvaluationType.GetBoxedType();
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),

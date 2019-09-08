@@ -2828,7 +2828,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ExprNode[] expressions,
             StatementSpecUnMapContext unmapContext)
         {
-            return UnmapExpressionDeep(expressions, unmapContext);
+            return UnmapExpressionDeep((IList<ExprNode>) expressions, unmapContext);
         }
 
         private static IList<Expression> UnmapExpressionDeep(
@@ -3329,7 +3329,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                             subPropAccessor.AggregateAccessMultiValueNode.ChildNodes,
                             unmapContext);
                         var functionName = subPropAccessor.AggregateAccessMultiValueNode.AggregationFunctionName;
-                        if (AggregationAccessorLinearType.FromString(functionName) != null && @params.IsEmpty()) {
+                        if (AggregationAccessorLinearTypeExtensions.FromString(functionName) != null && @params.IsEmpty()) {
                             @params.Add(new WildcardExpression());
                         }
 

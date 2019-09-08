@@ -10,7 +10,7 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    public partial class MinMaxTypeEnum
+    public partial class MinMaxType
     {
         /// <summary>
         ///     Executes child expression nodes and compares results.

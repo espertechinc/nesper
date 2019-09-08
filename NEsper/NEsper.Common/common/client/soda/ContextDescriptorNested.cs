@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (CreateContextClause context in Contexts)
             {
                 writer.Write(delimiter);

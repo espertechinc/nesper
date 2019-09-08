@@ -30,19 +30,37 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         private bool isUsingBuiltinProperties;
         private EventType builtinPropertiesEventType;
 
-        public void SetWhenExpression(ExprEvaluator whenExpression)
+        public ExprEvaluator WhenExpression {
+            get => whenExpression;
+            set => whenExpression = value;
+        }
+
+        public VariableReadWritePackage VariableReadWritePackage {
+            get => variableReadWritePackage;
+            set => variableReadWritePackage = value;
+        }
+
+        public bool IsUsingBuiltinProperties {
+            get => isUsingBuiltinProperties;
+            set => isUsingBuiltinProperties = value;
+        }
+
+        public OutputConditionPolledExpressionFactory SetWhenExpression(ExprEvaluator whenExpression)
         {
             this.whenExpression = whenExpression;
+            return this;
         }
 
-        public void SetVariableReadWritePackage(VariableReadWritePackage variableReadWritePackage)
+        public OutputConditionPolledExpressionFactory SetVariableReadWritePackage(VariableReadWritePackage variableReadWritePackage)
         {
             this.variableReadWritePackage = variableReadWritePackage;
+            return this;
         }
 
-        public void SetUsingBuiltinProperties(bool usingBuiltinProperties)
+        public OutputConditionPolledExpressionFactory SetUsingBuiltinProperties(bool usingBuiltinProperties)
         {
             isUsingBuiltinProperties = usingBuiltinProperties;
+            return this;
         }
 
         public OutputConditionPolled MakeFromState(
@@ -76,14 +94,6 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             OutputConditionPolledExpressionState state =
                 new OutputConditionPolledExpressionState(0, 0, 0, 0, lastOutputTimestamp);
             return new OutputConditionPolledExpression(this, state, agentInstanceContext, builtinProperties);
-        }
-
-        public ExprEvaluator WhenExpression {
-            get => whenExpression;
-        }
-
-        public VariableReadWritePackage VariableReadWritePackage {
-            get => variableReadWritePackage;
         }
 
         private void InitType(AgentInstanceContext agentInstanceContext)

@@ -136,8 +136,8 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
 
             AddEventTypeUDF(
-                "MyItemProducerEventBeanArray", 
-                "MyItem", 
+                "MyItemProducerEventBeanArray",
+                "MyItem",
                 "MyItemProducerEventBeanArray", configuration);
             AddEventTypeUDF(
                 "MyItemProducerEventBeanCollection",
@@ -146,13 +146,13 @@ namespace com.espertech.esper.regressionrun.suite.client
                 configuration);
             AddEventTypeUDF(
                 "MyItemProducerInvalidNoType",
-                null, 
-                "MyItemProducerEventBeanArray", 
+                null,
+                "MyItemProducerEventBeanArray",
                 configuration);
             AddEventTypeUDF(
-                "MyItemProducerInvalidWrongType", 
+                "MyItemProducerInvalidWrongType",
                 "dummy",
-                "MyItemProducerEventBeanArray", 
+                "MyItemProducerEventBeanArray",
                 configuration);
 
             configurationCompiler.AddPlugInAggregationFunctionForge(
@@ -174,11 +174,11 @@ namespace com.espertech.esper.regressionrun.suite.client
             configurationCompiler.AddPlugInAggregationFunctionForge("nonExistAggFuncForge", "com.NoSuchClass");
 
             var configGeneral = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "ss,sa,sc,se1,se2,ee".SplitCsv(),
+                new [] { "ss","sa","sc","se1","se2","ee" },
                 typeof(SupportAggMFMultiRTForge));
             configurationCompiler.AddPlugInAggregationMultiFunction(configGeneral);
             var codegenTestAccum = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "collectEvents".SplitCsv(),
+                new [] { "collectEvents" },
                 typeof(SupportAggMFEventsAsListForge));
             configurationCompiler.AddPlugInAggregationMultiFunction(codegenTestAccum);
 

@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 RegressionEnvironment env,
                 AtomicLong milestone)
             {
-                var fields = "a,b0,b1".SplitCsv();
+                var fields = new [] { "a","b0","b1" };
 
                 env.SendEventBean(new SupportRecogBean("A1", 1));
                 EPAssertionUtil.AssertPropsPerRow(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,b0,b1".SplitCsv();
+                var fields = new [] { "a","b0","b1" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string".SplitCsv();
+                var fields = new [] { "a_string","b_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a0,b,a1".SplitCsv();
+                var fields = new [] { "a0","b","a1" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,a_value,b_value".SplitCsv();
+                var fields = new [] { "a_string","a_value","b_value" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString" +
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a_string,b_string".SplitCsv();
+                var fields = new [] { "a_string","b_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +

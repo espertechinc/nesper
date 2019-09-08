@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                "E1,E2,E3".SplitCsv(),
+                new [] { "E1","E2","E3" },
                 1,
                 5,
                 12);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,12", "E1,2"));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                "E1,E2,E3".SplitCsv(),
+                new [] { "E1","E2","E3" },
                 2,
                 12,
                 12);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 new SupportBean_ST0_Container(Collections.SingletonList(new SupportBean_ST0(null, null))));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                "E1,E2,E3".SplitCsv(),
+                new [] { "E1","E2","E3" },
                 null,
                 null,
                 null);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.SendEventBean(SupportCollection.MakeString("E2,E1,E3"));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
-                "E1,E2,E3".SplitCsv(),
+                new [] { "E1","E2","E3" },
                 1,
                 2,
                 3);
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.SendEventBean(SupportCollection.MakeString("E1"));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
-                "E1".SplitCsv(),
+                new [] { "E1" },
                 1);
 
             env.SendEventBean(SupportCollection.MakeString(null));

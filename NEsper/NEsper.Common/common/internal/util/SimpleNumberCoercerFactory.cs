@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Diagnostics;
 using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -45,6 +47,11 @@ namespace com.espertech.esper.common.@internal.util
             Type fromType,
             Type resultBoxedType)
         {
+            var trueBoxedType = resultBoxedType.GetBoxedType();
+            if (trueBoxedType != resultBoxedType) {
+                Debug.Assert(trueBoxedType != resultBoxedType);
+            }
+
             if (fromType == resultBoxedType) {
                 return CoercerNull.INSTANCE;
             }

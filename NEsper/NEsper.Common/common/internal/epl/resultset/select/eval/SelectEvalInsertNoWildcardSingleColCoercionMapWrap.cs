@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope,
                 wrapper,
                 "AdapterForTypedMap",
-                typeof(IDictionary<object, object>));
+                typeof(IDictionary<string, object>));
         }
 
         public static CodegenExpression ProcessFirstColCodegen(

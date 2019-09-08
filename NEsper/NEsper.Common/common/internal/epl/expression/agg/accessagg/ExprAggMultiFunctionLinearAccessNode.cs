@@ -368,7 +368,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             ExprValidationContext validationContext)
         {
             var message = "For tables columns, the " +
-                          stateType.Name.ToLowerInvariant() +
+                          stateType.GetName().ToLowerInvariant() +
                           " aggregation function requires the 'window(*)' declaration";
             if (stateType != AggregationAccessorLinearType.WINDOW) {
                 throw new ExprValidationException(message);

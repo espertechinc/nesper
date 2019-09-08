@@ -43,6 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             catch (TargetException e) {
                 exceptionHandler.HandleException(targetObject, fastMethod, e, parameters);
             }
+            catch (TargetInvocationException e) {
+                exceptionHandler.HandleException(targetObject, fastMethod, e, parameters);
+            }
             catch (MemberAccessException e) {
                 exceptionHandler.HandleException(targetObject, fastMethod, e, parameters);
             }

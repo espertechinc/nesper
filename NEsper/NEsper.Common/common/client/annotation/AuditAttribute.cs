@@ -15,25 +15,22 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public class AuditAttribute : Attribute
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AuditAttribute" /> class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public AuditAttribute(string value)
-        {
-            Value = value;
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="AuditAttribute" /> class.
-        /// </summary>
         public AuditAttribute()
         {
             Value = "*";
         }
 
         /// <summary>
-        ///     Comma-separated list of keywords (not case-sentitive), see <see cref="AuditEnum" /> for a list of keywords.
+        ///     Initializes a new instance of the <see cref="AuditAttribute" /> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public AuditAttribute(string value = "*")
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        ///     Comma-separated list of keywords (not case-sensitive), see <see cref="AuditEnum" /> for a list of keywords.
         /// </summary>
         /// <value>The value.</value>
         /// <returns>comma-separated list of audit keywords</returns>

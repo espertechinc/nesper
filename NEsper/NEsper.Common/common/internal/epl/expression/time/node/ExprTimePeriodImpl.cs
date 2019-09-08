@@ -155,19 +155,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
-            var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
-            timeClass.AddMethod("timePeriodEval", evalMethod);
+            //var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
+            //var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
+            //timeClass.AddMethod("timePeriodEval", evalMethod);
 
-            //var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
-            //var timeClass = NewInstance<ProxyTimePeriodEval>(evalMethod);
+            var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
+            var timeClass = NewInstance<ProxyTimePeriodEval>(evalMethod);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
-            var exprMethod = evalMethod.MakeChildWithScope(typeof(TimePeriod), GetType(), exprSymbol, classScope)
+            //var exprMethod = evalMethod.MakeChildWithScope(typeof(TimePeriod), GetType(), exprSymbol, classScope);
+            var exprMethod = method.MakeChild(typeof(TimePeriod), GetType(), classScope)
                 .AddParam(PARAMS);
 
             CodegenExpression expression = forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
-            exprSymbol.DerivedSymbolsCodegen(evalMethod, exprMethod.Block, classScope);
+            //exprSymbol.DerivedSymbolsCodegen(evalMethod, exprMethod.Block, classScope);
+            exprSymbol.DerivedSymbolsCodegen(exprMethod, exprMethod.Block, classScope);
             exprMethod.Block.MethodReturn(expression);
 
             evalMethod.Block.BlockReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));

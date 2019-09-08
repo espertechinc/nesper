@@ -55,10 +55,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             string dbname)
         {
             var stmtText = "@Name('s0') select rstream myvarchar from " +
-                           "SupportBean_S0#length(1000) as s0," +
+                           "SupportBean_S0#length(1000) as S0," +
                            " sql:" +
                            dbname +
-                           "['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
+                           "['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // 1000 events should enter the window fast, no joins
@@ -89,10 +89,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AdvanceTime(0);
 
             var stmtText = "@Name('s0') select istream myvarchar from " +
-                           "SupportBean_S0#time(1 sec) as s0," +
+                           "SupportBean_S0#time(1 sec) as S0," +
                            " sql:" +
                            dbname +
-                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
+                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // Send 100 events which all fireStatementStopped a join
@@ -119,10 +119,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             string dbname)
         {
             var stmtText = "@Name('s0') select Id, mycol3, mycol2 from " +
-                           "SupportBean_S0#keepall as s0," +
+                           "SupportBean_S0#keepall as S0," +
                            " sql:" +
                            dbname +
-                           "['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
+                           "['select mycol3, mycol2 from mytesttable_large'] as S1 where S0.Id = S1.mycol3";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 20; i++) {
@@ -144,10 +144,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             string dbname)
         {
             var stmtText = "@Name('s0') select myint from " +
-                           "SupportBean_S0 as s0," +
+                           "SupportBean_S0 as S0," +
                            " sql:" +
                            dbname +
-                           " ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
+                           " ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 100; i++) {

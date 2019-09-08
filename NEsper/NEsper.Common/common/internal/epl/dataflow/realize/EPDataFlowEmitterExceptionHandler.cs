@@ -63,16 +63,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             object[] parameters)
         {
             log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
+            HandleExceptionCommon(targetObject, fastMethod, ex.InnerException, parameters);
+        }
 
-            if (OptionalExceptionHandler != null) {
-                OptionalExceptionHandler.Handle(
-                    new EPDataFlowExceptionContext(
-                        DataFlowName,
-                        OperatorName,
-                        OperatorNumber,
-                        OperatorPrettyPrint,
-                        ex.InnerException));
-            }
+        public void HandleException(
+            object targetObject,
+            MethodInfo fastMethod,
+            TargetInvocationException ex,
+            object[] parameters)
+        {
+            log.Error("Exception encountered: " + ex.InnerException?.Message, ex.InnerException);
+            HandleExceptionCommon(targetObject, fastMethod, ex.InnerException, parameters);
         }
 
         public void HandleException(
@@ -82,16 +83,22 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             object[] parameters)
         {
             log.Error("Exception encountered: " + ex.Message, ex);
+            HandleExceptionCommon(targetObject, fastMethod, ex, parameters);
+        }
 
-            if (OptionalExceptionHandler != null) {
-                OptionalExceptionHandler.Handle(
-                    new EPDataFlowExceptionContext(
-                        DataFlowName,
-                        OperatorName,
-                        OperatorNumber,
-                        OperatorPrettyPrint,
-                        ex));
-            }
+        internal void HandleExceptionCommon(
+            object targetObject,
+            MethodInfo fastMethod,
+            Exception ex,
+            object[] parameters)
+        {
+            OptionalExceptionHandler?.Handle(
+                new EPDataFlowExceptionContext(
+                    DataFlowName,
+                    OperatorName,
+                    OperatorNumber,
+                    OperatorPrettyPrint,
+                    ex));
         }
 
         public void HandleAudit(

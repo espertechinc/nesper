@@ -7,19 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationHelper
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static StringBuilder AppendClassName(
             StringBuilder builder,
             Type clazz)
         {
+            Log.Debug("AppendClassName: {0}", clazz.FullName);
+
             if (clazz == typeof(void)) {
                 return builder.Append("void");
             } else if (clazz == typeof(short)) {

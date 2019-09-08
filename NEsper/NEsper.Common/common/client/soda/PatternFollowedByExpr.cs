@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            String delimiter = "";
+            string delimiter = "";
             int childNum = 0;
             foreach (PatternExpr child in Children)
             {

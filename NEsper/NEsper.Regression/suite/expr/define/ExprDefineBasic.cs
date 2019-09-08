@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             env.CompileDeploy(epl).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
-                "val1".SplitCsv(),
+                new [] { "val1" },
                 new[] {
                     typeof(ICollection<object>), typeof(ICollection<object>)
                 });
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.SendEventBean(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0, c1".SplitCsv(),
+                    new [] { "c0"," c1" },
                     new object[] {2, 4});
                 env.UndeployAll();
 
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.SendEventBean(new SupportBean("E2", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString, b.TheString".SplitCsv(),
+                    new [] { "a.TheString"," b.TheString" },
                     new object[] {"E1", "E2"});
 
                 env.UndeployAll();
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fieldsInner = "col1,col2".SplitCsv();
+                var fieldsInner = new [] { "col1","col2" };
                 var epl = "@Name('s0') expression gettotal {" +
                           " x -> case " +
                           "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 env.CompileDeploy("@Name('s1') select val0.col1 as c1, val0.col2 as c2 from OtherStream", path)
                     .AddListener("s1");
-                var fieldsConsume = "c1,c2".SplitCsv();
+                var fieldsConsume = new [] { "c1","c2" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertPropsMap(
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.SendEventBean(new SupportBean_ST0("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "scalar()".SplitCsv(),
+                    new [] { "scalar()" },
                     new object[] {1});
 
                 env.UndeployAll();
@@ -980,7 +980,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val1".SplitCsv(),
+                    new [] { "val1" },
                     new[] {
                         typeof(ICollection<object>)
                     });
@@ -1068,19 +1068,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var eplDeclare = "" +
                                  "@Name('s0') expression one {x1 => x1.Contained.where(y -> y.P00 < 10) } " +
                                  "expression two {x2 => one(x2).where(y -> y.P00 > 1)  } " +
-                                 "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as s0c";
+                                 "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as S0c";
                 TryAssertionOneParameterLambdaReturn(env, eplDeclare);
 
                 var eplAliasWParen = "" +
                                      "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
                                      "expression two alias for {one().where(y -> y.P00 > 1)}" +
-                                     "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
+                                     "select one as val1, two as val2 from SupportBean_ST0_Container as S0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasWParen);
 
                 var eplAliasNoParen = "" +
                                       "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
                                       "expression two alias for {one.where(y -> y.P00 > 1)}" +
-                                      "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
+                                      "select one as val1, two as val2 from SupportBean_ST0_Container as S0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasNoParen);
             }
 
@@ -1092,7 +1092,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val1,val2".SplitCsv(),
+                    new [] { "val1","val2" },
                     new[] {
                         typeof(ICollection<object>),
                         typeof(ICollection<object>)
@@ -1139,7 +1139,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fields = "val1,val2".SplitCsv();
+                var fields = new [] { "val1","val2" };
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -1179,7 +1179,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('var') create variable int myvar = 2", path);
 
-                var fields = "val1,val2,val3".SplitCsv();
+                var fields = new [] { "val1","val2","val3" };
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -1250,13 +1250,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc(str)': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error valIdating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str]");
+                    "Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str]");
 
                 epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
 
                 epl =
                     "expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=sb.IntPrimitive)} select abc() from SupportBean sb";
@@ -1269,7 +1269,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
 
                 epl = "expression abc {x -> IntPrimitive} select abc() from SupportBean";
                 TryInvalidCompile(
@@ -1293,7 +1293,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
 
                 epl = "expression abc {x->x} select abc(1) from SupportBean sb";
                 TryInvalidCompile(
@@ -1312,7 +1312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error valIdating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
+                    "Error validating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
             }
         }
     }

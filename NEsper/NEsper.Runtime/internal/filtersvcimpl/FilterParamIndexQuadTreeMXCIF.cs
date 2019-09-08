@@ -24,13 +24,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     public class FilterParamIndexQuadTreeMXCIF : FilterParamIndexLookupableBase
     {
         private readonly IReaderWriterLock _readWriteLock;
-        private readonly MXCIFQuadTree<object> _quadTree;
+        private readonly MXCIFQuadTree _quadTree;
         private readonly FilterSpecLookupableAdvancedIndex _advancedIndex;
 
-        private static readonly QuadTreeCollector<EventEvaluator, ICollection<FilterHandle>> COLLECTOR =
-            new ProxyQuadTreeCollector<EventEvaluator, ICollection<FilterHandle>>()
+        private static readonly QuadTreeCollector<ICollection<FilterHandle>> COLLECTOR =
+            new ProxyQuadTreeCollector<ICollection<FilterHandle>>()
             {
-                ProcCollectInto = (@event, eventEvaluator, c) => eventEvaluator.MatchEvent(@event, c)
+                ProcCollectInto = (@event, eventEvaluator, c) => ((EventEvaluator) eventEvaluator).MatchEvent(@event, c)
             };
 
         public FilterParamIndexQuadTreeMXCIF(IReaderWriterLock readWriteLock, ExprFilterSpecLookupable lookupable)
@@ -39,7 +39,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             _readWriteLock = readWriteLock;
             _advancedIndex = (FilterSpecLookupableAdvancedIndex) lookupable;
             var quadTreeConfig = _advancedIndex.QuadTreeConfig;
-            _quadTree = MXCIFQuadTreeFactory<object>.Make(
+            _quadTree = MXCIFQuadTreeFactory.Make(
                 quadTreeConfig.X,
                 quadTreeConfig.Y,
                 quadTreeConfig.Width,
@@ -52,27 +52,26 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var y = _advancedIndex.Y.Get(theEvent).AsDouble();
             var width = _advancedIndex.Width.Get(theEvent).AsDouble();
             var height = _advancedIndex.Height.Get(theEvent).AsDouble();
-            MXCIFQuadTreeFilterIndexCollect<EventEvaluator, ICollection<FilterHandle>>
+            MXCIFQuadTreeFilterIndexCollect<ICollection<FilterHandle>>
                 .CollectRange(_quadTree, x, y, width, height, theEvent, matches, COLLECTOR);
         }
 
         public override EventEvaluator Get(object filterConstant)
         {
             var rect = (XYWHRectangle) filterConstant;
-            return MXCIFQuadTreeFilterIndexGet<EventEvaluator>
-                .Get(rect.X, rect.Y, rect.W, rect.H, _quadTree);
+            return (EventEvaluator) MXCIFQuadTreeFilterIndexGet.Get(rect.X, rect.Y, rect.W, rect.H, _quadTree);
         }
 
         public override void Put(object filterConstant, EventEvaluator evaluator)
         {
             var rect = (XYWHRectangle) filterConstant;
-            MXCIFQuadTreeFilterIndexSet<EventEvaluator>.Set(rect.X, rect.Y, rect.W, rect.H, evaluator, _quadTree);
+            MXCIFQuadTreeFilterIndexSet.Set(rect.X, rect.Y, rect.W, rect.H, evaluator, _quadTree);
         }
 
         public override void Remove(object filterConstant)
         {
             var rect = (XYWHRectangle) filterConstant;
-            MXCIFQuadTreeFilterIndexDelete<EventEvaluator>.Delete(rect.X, rect.Y, rect.W, rect.H, _quadTree);
+            MXCIFQuadTreeFilterIndexDelete.Delete(rect.X, rect.Y, rect.W, rect.H, _quadTree);
         }
 
         public override int CountExpensive => MXCIFQuadTreeFilterIndexCount.Count(_quadTree);

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary> Ctor.</summary>
         /// <param name="message">error message
         /// </param>
-        public ConfigurationException(String message)
+        public ConfigurationException(string message)
             : base(message)
         {
         }
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <param name="cause">inner exception
         /// </param>
         public ConfigurationException(
-            String message,
+            string message,
             Exception cause)
             : base(message, cause)
         {

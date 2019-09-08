@@ -340,37 +340,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SendEvent(env, SYMBOL_DELL, 50L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"DELL", 1L, 1d});
 
                 SendEvent(env, SYMBOL_DELL, 51L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"DELL", 2L, 1.5d});
 
                 SendEvent(env, SYMBOL_DELL, 52L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"DELL", 3L, 2d});
 
                 SendEvent(env, "IBM", 52L);
                 var events = env.Listener("s0").LastNewData;
                 EPAssertionUtil.AssertProps(
                     events[0],
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"DELL", 2L, 2d});
                 EPAssertionUtil.AssertProps(
                     events[1],
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"IBM", 1L, 1d});
                 env.Listener("s0").Reset();
 
                 SendEvent(env, SYMBOL_DELL, 53L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "symbol,cnt,val".SplitCsv(),
+                    new [] { "symbol","cnt","val" },
                     new object[] {"DELL", 2L, 2.5d});
 
                 env.UndeployAll();
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
                 var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +

@@ -961,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var stmtTextSet =
-                    "@Name('s0') on SupportBean_S0 as s0str set var1SS = (select P10 from SupportBean_S1#lastevent), var2SS = (select P11||s0str.P01 from SupportBean_S1#lastevent)";
+                    "@Name('s0') on SupportBean_S0 as S0str set var1SS = (select P10 from SupportBean_S1#lastevent), var2SS = (select P11||s0str.P01 from SupportBean_S1#lastevent)";
                 env.CompileDeploy(stmtTextSet);
                 string[] fieldsVar = {"var1SS", "var2SS"};
                 EPAssertionUtil.AssertPropsPerRow(

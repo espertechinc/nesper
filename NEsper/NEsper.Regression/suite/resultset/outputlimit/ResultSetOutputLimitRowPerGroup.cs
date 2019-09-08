@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             string statementText)
         {
-            var fields = "TheString,value".SplitCsv();
+            var fields = new [] { "TheString","value" };
             var epl = "create window MyWindow#keepall as SupportBean;\n" +
                       "insert into MyWindow select * from SupportBean;\n" +
                       "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -878,7 +878,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Listener("s0").GetAndResetDataListsFlattened(),
-                "mySum,myAvg".SplitCsv(),
+                new [] { "mySum","myAvg" },
                 new[] {new object[] {newSumOne, newAvgOne}, new object[] {newSumTwo, newAvgTwo}},
                 new[] {new object[] {oldSumOne, oldAvgOne}, new object[] {oldSumTwo, oldAvgTwo}});
         }
@@ -988,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var fields = "TheString,value".SplitCsv();
+                var fields = new [] { "TheString","value" };
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1044,7 +1044,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,value".SplitCsv();
+                var fields = new [] { "TheString","value" };
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1083,7 +1083,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,value".SplitCsv();
+                var fields = new [] { "TheString","value" };
                 var path = new RegressionPath();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
@@ -1470,10 +1470,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var fields = "symbol,maxVol".SplitCsv();
+                var fields = new [] { "symbol","maxVol" };
                 var epl = "@Name('s0') select irstream Symbol, max(Price) as maxVol" +
-                          " from SupportMarketDataBean#sort(1, Volume desc) as s0," +
-                          "SupportBean#keepall as s1 " +
+                          " from SupportMarketDataBean#sort(1, Volume desc) as S0," +
+                          "SupportBean#keepall as S1 " +
                           "group by Symbol output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1568,7 +1568,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                  "group by Symbol output snapshot every 1 seconds order by Symbol asc";
                 env.CompileDeploy(selectStmt).AddListener("s0");
 
-                foreach (var theString in "ABC,IBM,MSFT".SplitCsv()) {
+                foreach (var theString in new [] { "ABC","IBM","MSFT" }) {
                     env.SendEventBean(new SupportBean(theString, 1));
                 }
 
@@ -1624,7 +1624,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,sum(Price)".SplitCsv();
+                var fields = new [] { "symbol","sum(Price)" };
                 var statementString =
                     "@Name('s0') select irstream Symbol, sum(Price) from SupportMarketDataBean#length(5) group by Symbol output all every 5 events";
                 env.CompileDeploy(statementString).AddListener("s0");
@@ -1662,7 +1662,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,sum(Price)".SplitCsv();
+                var fields = new [] { "symbol","sum(Price)" };
                 var epl =
                     "@Name('s0') select irstream Symbol, sum(Price) from SupportMarketDataBean#length(5) group by Symbol output every 5 events";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1705,7 +1705,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var fields = "symbol,maxVol".SplitCsv();
+                var fields = new [] { "symbol","maxVol" };
                 var epl = "@Name('s0') select irstream Symbol, max(Price) as maxVol" +
                           " from SupportMarketDataBean#time(1 sec) " +
                           "group by Symbol output every 1 seconds";

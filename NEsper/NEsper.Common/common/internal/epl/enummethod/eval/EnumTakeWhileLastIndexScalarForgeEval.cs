@@ -150,10 +150,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "EmptyList"));
+                StaticMethod(typeof(Collections), "GetEmptyList"));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
-            block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
+            block
+                .DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<object[]>(
                     "all",
                     StaticMethod(
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach,
                 forge.innerExpression.EvaluationType,
                 innerValue);
-            forEach.Expression(ExprDotMethod(Ref("result"), "addFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
+            forEach.Expression(ExprDotMethod(Ref("result"), "AddFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
             block.MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

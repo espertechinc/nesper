@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "myrate".SplitCsv();
+            var fields = new [] { "myrate" };
 
             SendTimer(env, 1000);
             SendEvent(env);
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "myrate,myqtyrate".SplitCsv();
+                var fields = new [] { "myrate","myqtyrate" };
                 var epl =
                     "@Name('s0') select RATE(LongPrimitive) as myrate, RATE(LongPrimitive, IntPrimitive) as myqtyrate from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");

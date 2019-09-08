@@ -31,6 +31,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             this.timeAbacus = timeAbacus;
         }
 
+        public ExprEvaluator SecondsEvaluator {
+            get => secondsEvaluator;
+            set => secondsEvaluator = value;
+        }
+
+        public TimeAbacus TimeAbacus {
+            get => timeAbacus;
+            set => timeAbacus = value;
+        }
+
         public long DeltaAdd(
             long fromTime,
             EventBean[] eventsPerStream,
@@ -74,14 +84,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             return new TimePeriodComputeConstGivenDeltaEval(msec);
         }
 
-        public void SetSecondsEvaluator(ExprEvaluator secondsEvaluator)
+        public TimePeriodComputeNCGivenExprEval SetSecondsEvaluator(ExprEvaluator secondsEvaluator)
         {
             this.secondsEvaluator = secondsEvaluator;
+            return this;
         }
 
-        public void SetTimeAbacus(TimeAbacus timeAbacus)
+        public TimePeriodComputeNCGivenExprEval SetTimeAbacus(TimeAbacus timeAbacus)
         {
             this.timeAbacus = timeAbacus;
+            return this;
         }
 
         private long Eval(

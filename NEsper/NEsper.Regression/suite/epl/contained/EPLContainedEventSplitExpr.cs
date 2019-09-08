@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             env.CompileDeployWBusPublicType(types, path);
 
             string stmtText;
-            var fields = "word".SplitCsv();
+            var fields = new [] { "word" };
 
             // test single-row method
             stmtText = "@Name('s0') select * from MySentenceEvent[splitSentence" +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             SendMySentenceEvent(env, eventRepresentationEnum, "I am");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "char".SplitCsv(),
+                new [] { "char" },
                 new[] {
                     new object[] {"I"},
                     new object[] {"a"},
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 Assert.AreEqual("WordEvent", env.Statement("s0").EventType.Name);
 
                 var rows = new GenericRecord[3];
-                var words = "this,is,avro".SplitCsv();
+                var words = new [] { "this","is","avro" };
                 for (var i = 0; i < words.Length; i++) {
                     rows[i] = new GenericRecord(
                         ((AvroEventType) env.Statement("s0").EventType).SchemaAvro.AsRecordSchema());

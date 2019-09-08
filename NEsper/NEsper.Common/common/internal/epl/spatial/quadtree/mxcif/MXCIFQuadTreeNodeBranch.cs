@@ -10,22 +10,22 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
-    public class MXCIFQuadTreeNodeBranch<L> : MXCIFQuadTreeNode<L>
+    public class MXCIFQuadTreeNodeBranch : MXCIFQuadTreeNode
     {
-        public MXCIFQuadTreeNode<L> Ne { get; internal set; }
-        public MXCIFQuadTreeNode<L> Nw { get; internal set; }
-        public MXCIFQuadTreeNode<L> Se { get; internal set; }
-        public MXCIFQuadTreeNode<L> Sw { get; internal set; }
+        public MXCIFQuadTreeNode Ne { get; internal set; }
+        public MXCIFQuadTreeNode Nw { get; internal set; }
+        public MXCIFQuadTreeNode Se { get; internal set; }
+        public MXCIFQuadTreeNode Sw { get; internal set; }
 
         public MXCIFQuadTreeNodeBranch(
             BoundingBox bb,
             int level,
-            L data,
+            object data,
             int dataCount,
-            MXCIFQuadTreeNode<L> nw,
-            MXCIFQuadTreeNode<L> ne,
-            MXCIFQuadTreeNode<L> sw,
-            MXCIFQuadTreeNode<L> se)
+            MXCIFQuadTreeNode nw,
+            MXCIFQuadTreeNode ne,
+            MXCIFQuadTreeNode sw,
+            MXCIFQuadTreeNode se)
             : base(bb, level, data, dataCount)
         {
             Nw = nw;

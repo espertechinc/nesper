@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="engineURI">engine URI</param>
         public MetricsExecutorThreaded(string engineURI)
         {
-            _threadPool = new DedicatedExecutorService("Metrics", 1);
+            _threadPool = Executors.NewSingleThreadExecutor();
         }
 
         public void Execute(

@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 classScope);
             method.Block.IfCondition(ExprDotMethod(events, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "Get", Constant(0))));
+                .MethodReturn(Cast(typeof(EventBean), ArrayAtIndex(events, Constant(0))));
             return LocalMethod(method);
         }
 

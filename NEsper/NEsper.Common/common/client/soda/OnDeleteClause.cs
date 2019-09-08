@@ -15,6 +15,7 @@ namespace com.espertech.esper.common.client.soda
     /// A clause to delete from a named window based on a triggering event arriving and
     /// correlated to the named window events to be deleted.
     /// </summary>
+    [Serializable]
     public class OnDeleteClause : OnClause
     {
         /// <summary>
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.client.soda
         /// on-delete clause
         /// </returns>
         public static OnDeleteClause Create(
-            String windowName,
-            String optionalAsName)
+            string windowName,
+            string optionalAsName)
         {
             return new OnDeleteClause(windowName, optionalAsName);
         }
@@ -45,8 +46,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="windowName">is the named window name</param>
         /// <param name="optionalAsName">is the as-provided name of the named window</param>
         public OnDeleteClause(
-            String windowName,
-            String optionalAsName)
+            string windowName,
+            string optionalAsName)
         {
             WindowName = windowName;
             OptionalAsName = optionalAsName;

@@ -22,8 +22,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             var stmtText = "@Name('s0') select myint from " +
                            " sql:MyDBLowerCase ['" +
                            sql +
-                           "] as s0," +
-                           "SupportBean#length(100) as s1";
+                           "] as S0," +
+                           "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("myint"));

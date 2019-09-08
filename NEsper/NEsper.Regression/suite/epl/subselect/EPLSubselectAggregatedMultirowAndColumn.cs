@@ -172,33 +172,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             // correlated group-by not allowed
             epl =
-                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.Id) from SupportBean_S0 as s0";
+                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.Id) from SupportBean_S0 as S0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.Id) from SupportBean_S0 as s0]");
+                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.Id) from SupportBean_S0 as S0]");
             epl =
-                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.getP00()) from SupportBean_S0 as s0";
+                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.getP00()) from SupportBean_S0 as S0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.getP00()' against stream 1 is not)");
+                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 'S0.getP00()' against stream 1 is not)");
 
             // aggregations not allowed in group-by
             epl =
-                "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from SupportBean_S0 as s0";
+                "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from SupportBean_S0 as S0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have an aggregation function [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from SupportBean_S0 as s0]");
+                "Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have an aggregation function [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by sum(IntPrimitive)) from SupportBean_S0 as S0]");
 
             // "prev" not allowed in group-by
             epl =
-                "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from SupportBean_S0 as s0";
+                "select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from SupportBean_S0 as S0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from SupportBean_S0 as s0]");
+                "Failed to plan subquery number 1 querying SupportBean: Group-by expressions in a subselect may not have a function that requires view resources (prior, prev) [select (select IntPrimitive, sum(LongPrimitive) from SupportBean#keepall group by prev(1, IntPrimitive)) from SupportBean_S0 as S0]");
         }
     }
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "(select TheString as c0, sum(IntPrimitive) as c1 " +
                 " from SupportBean#keepall " +
                 " group by TheString) as subq " +
-                "from SupportBean_S0 as s0";
+                "from SupportBean_S0 as S0";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.SendEventBean(new SupportBean("P1", 100));
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                               "(select TheString as c0, sum(IntPrimitive) as c1 " +
                               "from SupportBean#keepall " +
                               "group by TheString) as subq " +
-                              "from SupportBean_S0 as s0";
+                              "from SupportBean_S0 as S0";
             env.CompileDeploy(eplNoDelete, path).AddListener("s0").MilestoneInc(milestone);
             RunAssertionNoDelete(env, fieldName, fields);
             env.UndeployAll();
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                       "insert into MyWindow select * from SupportBean;\n" +
                       "on SupportBean_S1 delete from MyWindow where Id = IntPrimitive;\n" +
                       "@Name('s0') @Hint('disable_reclaim_group') select (select TheString as c0, sum(IntPrimitive) as c1 " +
-                      " from MyWindow group by TheString) as subq from SupportBean_S0 as s0";
+                      " from MyWindow group by TheString) as subq from SupportBean_S0 as S0";
             env.CompileDeploy(epl, path).AddListener("s0").MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean_S0(1));
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                 "    IntPrimitive * 1000 as c3, sum(LongPrimitive) as c4 " +
                                 " from SupportBean#keepall " +
                                 " group by TheString, IntPrimitive) as subq " +
-                                "from SupportBean_S0 as s0";
+                                "from SupportBean_S0 as S0";
             env.CompileDeploy(eplMultiGroup, path).AddListener("s0");
 
             SendSBEventAndTrigger(env, "G1", 1, 100L);
@@ -407,10 +407,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var eplEnumCorrelated = "@Name('s0') select " +
                                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
                                     " from SupportBean#keepall " +
-                                    " where IntPrimitive = s0.Id " +
+                                    " where IntPrimitive = S0.Id " +
                                     " group by TheString" +
                                     " having sum(IntPrimitive) > 10).take(100) as subq " +
-                                    "from SupportBean_S0 as s0";
+                                    "from SupportBean_S0 as S0";
             env.CompileDeployAddListenerMileZero(eplEnumCorrelated, "s0");
 
             env.SendEventBean(new SupportBean_S0(1));
@@ -463,9 +463,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var eplEnumCorrelated = "@Name('s0') select " +
                                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
                                     " from SupportBean#keepall " +
-                                    " where IntPrimitive = s0.Id " +
+                                    " where IntPrimitive = S0.Id " +
                                     " group by TheString).take(100) as subq " +
-                                    "from SupportBean_S0 as s0";
+                                    "from SupportBean_S0 as S0";
             env.CompileDeployAddListenerMileZero(eplEnumCorrelated, "s0");
 
             env.SendEventBean(new SupportBean_S0(1));
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             // test correlated
             var eplTwo = "@Name('s0') select " +
-                         "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow where TheString = s0.P00 group by TheString).take(10) as e1 from SupportBean_S0 as s0";
+                         "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow where TheString = S0.P00 group by TheString).take(10) as e1 from SupportBean_S0 as S0";
             env.CompileDeploy(eplTwo, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -651,7 +651,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
                                     " from SupportBean#keepall " +
                                     " group by TheString).take(100) as subq " +
-                                    "from SupportBean_S0 as s0";
+                                    "from SupportBean_S0 as S0";
             env.CompileDeploy(eplEnumUnfiltered).AddListener("s0").Milestone(0);
 
             env.SendEventBean(new SupportBean_S0(1));
@@ -696,7 +696,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                   " from SupportBean#keepall " +
                                   " where IntPrimitive > 100 " +
                                   " group by TheString).take(100) as subq " +
-                                  "from SupportBean_S0 as s0";
+                                  "from SupportBean_S0 as S0";
             env.CompileDeployAddListenerMile(eplEnumFiltered, "s0", 1);
 
             env.SendEventBean(new SupportBean_S0(1));

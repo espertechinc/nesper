@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             env.SendEventBean(new SupportBean("E1", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "cnt".SplitCsv(),
+                new [] { "cnt" },
                 new object[] {expected});
         }
     }

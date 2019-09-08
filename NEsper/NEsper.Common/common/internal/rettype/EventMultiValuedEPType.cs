@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.rettype
     /// </summary>
     public class EventMultiValuedEPType : EPType
     {
-        internal EventMultiValuedEPType(
+        public EventMultiValuedEPType(
             Type container,
             EventType component)
         {

@@ -17,16 +17,16 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Default number of milliseconds for default timeouts.
         /// </summary>
-        public const int DefaultTimeout = 50000;
+        public const int DefaultTimeout = 5000;
 
         /// <summary>
         /// Number of milliseconds until read locks timeout
         /// </summary>
-        public const int DefaultReaderTimeout = 50000;
+        public const int DefaultReaderTimeout = 5000;
 
         /// <summary>
         /// Number of milliseconds until write locks timeout
         /// </summary>
-        public const int DefaultWriterTimeout = 50000;
+        public const int DefaultWriterTimeout = 5000;
     }
 }

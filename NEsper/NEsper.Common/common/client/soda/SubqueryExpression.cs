@@ -51,18 +51,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lookup statement object model.
         /// </summary>
         /// <returns>lookup model</returns>
-        public EPStatementObjectModel Model
-        {
+        public EPStatementObjectModel Model {
             get => model;
+            set => model = value;
         }
 
         /// <summary>
         /// Sets the lookup statement object model.
         /// </summary>
         /// <param name="model">is the lookup model to set</param>
-        public void SetModel(EPStatementObjectModel model)
+        public SubqueryExpression SetModel(EPStatementObjectModel model)
         {
             this.model = model;
+            return this;
         }
     }
 } // end of namespace

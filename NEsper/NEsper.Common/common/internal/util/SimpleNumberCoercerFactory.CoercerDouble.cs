@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression param,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(double), typeof(double?), "AsDouble", param, type);
+                return CodegenCoerceNonNull(
+                    typeof(double), typeof(double?), "AsDouble", param, type);
             }
 
             public static CodegenExpression CodegenDoubleMayNullBoxedIncludeBig(
@@ -69,14 +70,14 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                if (valueType == typeof(BigInteger) || valueType == typeof(decimal)) {
-                    return CodegenExpressionBuilder.ExprDotMethod(value, "DoubleValue");
+                if (valueType.IsBigInteger() || valueType.IsDecimal()) {
+                    return CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble");
                 }
 
                 return CodegenCoerceMayNull(
                     typeof(double),
                     typeof(double?),
-                    "AsDouble",
+                    "AsBoxedDouble",
                     value,
                     valueType,
                     codegenMethodScope,

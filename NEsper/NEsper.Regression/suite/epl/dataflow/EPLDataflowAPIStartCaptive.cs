@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "p0,p1".SplitCsv();
+            var fields = new [] { "p0","p1" };
 
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlow " +

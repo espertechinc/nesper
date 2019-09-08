@@ -15,31 +15,31 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
-    public class MXCIFQuadTreeFilterIndexSet<TL>
+    public class MXCIFQuadTreeFilterIndexSet
     {
         public static void Set(
             double x,
             double y,
             double width,
             double height,
-            TL value,
-            MXCIFQuadTree<object> tree)
+            object value,
+            MXCIFQuadTree tree)
         {
-            MXCIFQuadTreeNode<object> root = tree.Root;
+            MXCIFQuadTreeNode root = tree.Root;
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y, width, height);
             tree.Root = SetOnNode(x, y, width, height, value, root, tree);
         }
 
-        private static MXCIFQuadTreeNode<object> SetOnNodeWithRect(
+        private static MXCIFQuadTreeNode SetOnNodeWithRect(
             double x,
             double y,
             double width,
             double height,
-            XYWHRectangleWValue<TL> value,
-            MXCIFQuadTreeNode<object> node,
-            MXCIFQuadTree<object> tree)
+            XYWHRectangleWValue value,
+            MXCIFQuadTreeNode node,
+            MXCIFQuadTree tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 var count = SetOnNodeWithRect(leaf, x, y, width, height, value);
                 leaf.IncCount(count);
 
@@ -50,21 +50,21 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             AddToBranchWithRect(branch, x, y, width, height, value, tree);
             return node;
         }
 
-        private static MXCIFQuadTreeNode<object> SetOnNode(
+        private static MXCIFQuadTreeNode SetOnNode(
             double x,
             double y,
             double width,
             double height,
-            TL value,
-            MXCIFQuadTreeNode<object> node,
-            MXCIFQuadTree<object> tree)
+            object value,
+            MXCIFQuadTreeNode node,
+            MXCIFQuadTree tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 var count = SetOnNode(leaf, x, y, width, height, value);
                 leaf.IncCount(count);
 
@@ -75,19 +75,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             AddToBranch(branch, x, y, width, height, value, tree);
             return node;
         }
 
         private static void AddToBranchWithRect(
-            MXCIFQuadTreeNodeBranch<object> branch,
+            MXCIFQuadTreeNodeBranch branch,
             double x,
             double y,
             double width,
             double height,
-            XYWHRectangleWValue<TL> value,
-            MXCIFQuadTree<object> tree)
+            XYWHRectangleWValue value,
+            MXCIFQuadTree tree)
         {
             switch (branch.Bb.GetQuadrantApplies(x, y, width, height)) {
                 case QuadrantAppliesEnum.NW:
@@ -112,18 +112,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                     break;
 
                 default:
-                    throw new IllegalStateException("Quandrant not applies to any");
+                    throw new IllegalStateException("Quadrant not applies to any");
             }
         }
 
         private static void AddToBranch(
-            MXCIFQuadTreeNodeBranch<object> branch,
+            MXCIFQuadTreeNodeBranch branch,
             double x,
             double y,
             double width,
             double height,
-            TL value,
-            MXCIFQuadTree<object> tree)
+            object value,
+            MXCIFQuadTree tree)
         {
             switch (branch.Bb.GetQuadrantApplies(x, y, width, height)) {
                 case QuadrantAppliesEnum.NW:
@@ -152,9 +152,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             }
         }
 
-        private static MXCIFQuadTreeNode<object> Subdivide(
-            MXCIFQuadTreeNodeLeaf<object> leaf,
-            MXCIFQuadTree<object> tree)
+        private static MXCIFQuadTreeNode Subdivide(
+            MXCIFQuadTreeNodeLeaf leaf,
+            MXCIFQuadTree tree)
         {
             var w = (leaf.Bb.MaxX - leaf.Bb.MinX) / 2d;
             var h = (leaf.Bb.MaxY - leaf.Bb.MinY) / 2d;
@@ -165,18 +165,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             var bbNE = new BoundingBox(minx + w, miny, leaf.Bb.MaxX, miny + h);
             var bbSW = new BoundingBox(minx, miny + h, minx + w, leaf.Bb.MaxY);
             var bbSE = new BoundingBox(minx + w, miny + h, leaf.Bb.MaxX, leaf.Bb.MaxY);
-            var nw = new MXCIFQuadTreeNodeLeaf<object>(bbNW, leaf.Level + 1, null, 0);
-            var ne = new MXCIFQuadTreeNodeLeaf<object>(bbNE, leaf.Level + 1, null, 0);
-            var sw = new MXCIFQuadTreeNodeLeaf<object>(bbSW, leaf.Level + 1, null, 0);
-            var se = new MXCIFQuadTreeNodeLeaf<object>(bbSE, leaf.Level + 1, null, 0);
-            var branch = new MXCIFQuadTreeNodeBranch<object>(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
+            var nw = new MXCIFQuadTreeNodeLeaf(bbNW, leaf.Level + 1, null, 0);
+            var ne = new MXCIFQuadTreeNodeLeaf(bbNE, leaf.Level + 1, null, 0);
+            var sw = new MXCIFQuadTreeNodeLeaf(bbSW, leaf.Level + 1, null, 0);
+            var se = new MXCIFQuadTreeNodeLeaf(bbSE, leaf.Level + 1, null, 0);
+            var branch = new MXCIFQuadTreeNodeBranch(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
 
             var rectangles = leaf.Data;
-            if (rectangles is XYWHRectangleWValue<TL> asRectangle) {
+            if (rectangles is XYWHRectangleWValue asRectangle) {
                 Subdivide(asRectangle, branch, tree);
             }
             else {
-                var collection = (ICollection<XYWHRectangleWValue<TL>>) rectangles;
+                var collection = (ICollection<XYWHRectangleWValue>) rectangles;
                 foreach (var rectangle in collection) {
                     Subdivide(rectangle, branch, tree);
                 }
@@ -186,9 +186,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         private static void Subdivide(
-            XYWHRectangleWValue<TL> rectangle,
-            MXCIFQuadTreeNodeBranch<object> branch,
-            MXCIFQuadTree<object> tree)
+            XYWHRectangleWValue rectangle,
+            MXCIFQuadTreeNodeBranch branch,
+            MXCIFQuadTree tree)
         {
             var x = rectangle.X;
             var y = rectangle.Y;
@@ -217,12 +217,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         private static int SetOnNodeWithRect(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
-            XYWHRectangleWValue<TL> value)
+            XYWHRectangleWValue value)
         {
             if (!value.CoordinateEquals(x, y, width, height)) {
                 throw new IllegalStateException();
@@ -232,33 +232,33 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         private static int SetOnNode(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
-            TL value)
+            object value)
         {
             var currentValue = node.Data;
             if (currentValue == null) {
-                node.Data = new XYWHRectangleWValue<TL>(x, y, width, height, value);
+                node.Data = new XYWHRectangleWValue(x, y, width, height, value);
                 return 1;
             }
 
-            if (currentValue is XYWHRectangleWValue<TL> otherXY) {
+            if (currentValue is XYWHRectangleWValue otherXY) {
                 if (otherXY.CoordinateEquals(x, y, width, height)) {
                     otherXY.Value = value;
                     return 0;
                 }
 
-                var collectionX = new List<XYWHRectangleWValue<TL>>();
+                var collectionX = new List<XYWHRectangleWValue>();
                 collectionX.Add(otherXY);
-                collectionX.Add(new XYWHRectangleWValue<TL>(x, y, width, height, value));
+                collectionX.Add(new XYWHRectangleWValue(x, y, width, height, value));
                 node.Data = collectionX;
                 return 1;
             }
 
-            var collection = (ICollection<XYWHRectangleWValue<TL>>) currentValue;
+            var collection = (ICollection<XYWHRectangleWValue>) currentValue;
             foreach (var other in collection) {
                 if (other.CoordinateEquals(x, y, width, height)) {
                     other.Value = value;
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 }
             }
 
-            collection.Add(new XYWHRectangleWValue<TL>(x, y, width, height, value));
+            collection.Add(new XYWHRectangleWValue(x, y, width, height, value));
             return 1;
         }
     }

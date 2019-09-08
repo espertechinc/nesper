@@ -21,9 +21,9 @@ namespace com.espertech.esper.common.client.hook.type
         /// <param name="sql">sql</param>
         /// <param name="fields">columns and their types</param>
         public SQLOutputRowTypeContext(
-            String db,
-            String sql,
-            IDictionary<String, Object> fields)
+            string db,
+            string sql,
+            IDictionary<string, object> fields)
         {
             Db = db;
             Sql = sql;

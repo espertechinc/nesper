@@ -604,7 +604,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         propertyDesc,
                         new BeanEventPropertyWriter(
                             Stem.Clazz,
-                            writable.WriteMethod)));
+                            writable.WriteMember)));
             }
 
             writerMap = writers;

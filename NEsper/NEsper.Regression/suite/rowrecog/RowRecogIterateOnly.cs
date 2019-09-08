@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a".SplitCsv();
+                var fields = new [] { "a" };
                 var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
                            "match_recognize (" +
                            "  measures A.TheString as a" +
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a".SplitCsv();
+                var fields = new [] { "a" };
                 var text = "@Hint('iterate_only') @Name('s0') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
                            "  measures A.TheString as a" +
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,cat".SplitCsv();
+                var fields = new [] { "a","cat" };
                 var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
                            "  partition by cat" +

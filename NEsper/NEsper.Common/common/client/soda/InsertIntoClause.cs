@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Creates the insert-into clause. </summary>
         /// <param name="streamName">the name of the stream to insert into</param>
         /// <returns>clause</returns>
-        public static InsertIntoClause Create(String streamName)
+        public static InsertIntoClause Create(string streamName)
         {
             return new InsertIntoClause(streamName);
         }
@@ -62,19 +62,19 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Ctor. </summary>
         /// <param name="streamName">is the stream name to insert into</param>
-        public InsertIntoClause(String streamName)
+        public InsertIntoClause(string streamName)
         {
             StreamSelector = StreamSelector.ISTREAM_ONLY;
             StreamName = streamName;
-            ColumnNames = new List<String>();
+            ColumnNames = new List<string>();
         }
 
         /// <summary>Ctor. </summary>
         /// <param name="streamName">is the stream name to insert into</param>
         /// <param name="columnNames">column names</param>
         public InsertIntoClause(
-            String streamName,
-            String[] columnNames)
+            string streamName,
+            string[] columnNames)
         {
             StreamSelector = StreamSelector.ISTREAM_ONLY;
             StreamName = streamName;
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columnNames">column names</param>
         /// <param name="streamSelector">selector for either insert stream (the default) or remove stream or both</param>
         public InsertIntoClause(
-            String streamName,
+            string streamName,
             IList<string> columnNames,
             StreamSelector streamSelector)
         {
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Add a column name to the insert-into clause. </summary>
         /// <param name="columnName">to add</param>
-        public void Add(String columnName)
+        public void Add(string columnName)
         {
             ColumnNames.Add(columnName);
         }
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.client.soda
             if (ColumnNames.Count > 0)
             {
                 writer.Write("(");
-                String delimiter = "";
+                string delimiter = "";
                 foreach (var name in ColumnNames)
                 {
                     writer.Write(delimiter);

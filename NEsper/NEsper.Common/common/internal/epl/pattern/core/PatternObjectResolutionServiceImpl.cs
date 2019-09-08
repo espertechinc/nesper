@@ -133,7 +133,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
             object result;
             try {
-                result = TypeHelper.Instantiate(forgeClass);
+                if (forgeClass == typeof(string)) {
+                    result = string.Empty;
+                }
+                else {
+                    result = TypeHelper.Instantiate(forgeClass);
+                }
             }
             catch (MemberAccessException e) {
                 var message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;

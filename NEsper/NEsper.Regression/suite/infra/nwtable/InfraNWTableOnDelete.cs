@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('Select') select irstream MyInfra.a as a, b from MyInfra as s1";
+                var stmtTextSelect = "@Name('Select') select irstream MyInfra.a as a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("Select");
 
                 // Delete all events, no result expected

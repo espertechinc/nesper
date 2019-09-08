@@ -46,19 +46,19 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the lookup statement object model.
         /// </summary>
         /// <returns>lookup model</returns>
-        public EPStatementObjectModel Model { get; private set; }
+        public EPStatementObjectModel Model { get; set; }
 
         /// <summary>
         ///     Returns the operator.
         /// </summary>
         /// <returns>operator</returns>
-        public string Operator { get; private set; }
+        public string Operator { get; set; }
 
         /// <summary>
         ///     Returns true for ALL, false for ANY.
         /// </summary>
         /// <returns>all/any flag</returns>
-        public bool IsAll { get; private set; }
+        public bool IsAll { get; set; }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -82,27 +82,30 @@ namespace com.espertech.esper.common.client.soda
         ///     Sets the lookup statement object model.
         /// </summary>
         /// <param name="model">is the lookup model to set</param>
-        public void SetModel(EPStatementObjectModel model)
+        public SubqueryQualifiedExpression SetModel(EPStatementObjectModel model)
         {
             Model = model;
+            return this;
         }
 
         /// <summary>
         ///     Sets the operator.
         /// </summary>
         /// <param name="operator">op</param>
-        public void SetOperator(string @operator)
+        public SubqueryQualifiedExpression SetOperator(string @operator)
         {
             Operator = @operator;
+            return this;
         }
 
         /// <summary>
         ///     Set to true for ALL, false for ANY.
         /// </summary>
         /// <param name="all">true for ALL</param>
-        public void SetAll(bool all)
+        public SubqueryQualifiedExpression SetAll(bool all)
         {
             IsAll = all;
+            return this;
         }
     }
 } // end of namespace

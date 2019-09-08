@@ -19,23 +19,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 {
     public class SupportPointRegionQuadTreeFilterIndexUtil
     {
-        private static readonly QuadTreeCollector<string, IDictionary<int, string>> MAP_COLLECTOR =
-            new ProxyQuadTreeCollector<string, IDictionary<int, string>>(
+        private static readonly QuadTreeCollector<IDictionary<int, string>> MAP_COLLECTOR =
+            new ProxyQuadTreeCollector<IDictionary<int, string>>(
                 (
                     @event,
                     s,
                     target) => {
-                        var num = int.Parse(s.Substring(1));
+                        var num = int.Parse(((string) s).Substring(1));
                         if (target.ContainsKey(num))
                         {
                             throw new IllegalStateException();
                         }
 
-                        target.Put(num, s);
+                        target.Put(num, (string) s);
                     });
 
-        private static readonly QuadTreeCollector<string, ICollection<object>> COLLECTION_COLLECTOR =
-            new ProxyQuadTreeCollector<string, ICollection<object>>(
+        private static readonly QuadTreeCollector<ICollection<object>> COLLECTION_COLLECTOR =
+            new ProxyQuadTreeCollector<ICollection<object>>(
                 (
                     @event,
                     s,

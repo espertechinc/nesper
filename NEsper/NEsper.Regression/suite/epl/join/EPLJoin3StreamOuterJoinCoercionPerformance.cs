@@ -52,12 +52,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) s1 " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                               "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
+                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
                                " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
+                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
@@ -88,12 +88,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) s1 " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                               "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
+                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
                                " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
+                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
@@ -125,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s1.IntBoxed as v1, s2.LongBoxed as v2, s3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) s1 " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                               "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) s2 on s1.IntBoxed=s2.LongBoxed " +
+                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
                                " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) s3 on s1.IntBoxed=s3.DoubleBoxed";
+                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
@@ -165,10 +165,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var stmtText = "@Name('s0') select * from " +
                                "SupportBeanRange#keepall sbr " +
                                " left outer join " +
-                               "SupportBean_ST0#keepall s0 on s0.Key0=sbr.Key" +
+                               "SupportBean_ST0#keepall S0 on S0.Key0=sbr.Key" +
                                " left outer join " +
-                               "SupportBean_ST1#keepall s1 on s1.Key1=s0.Key0" +
-                               " where s0.P00 between sbr.RangeStartLong and sbr.RangeEndLong";
+                               "SupportBean_ST1#keepall S1 on S1.Key1=S0.Key0" +
+                               " where S0.P00 between sbr.RangeStartLong and sbr.RangeEndLong";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload

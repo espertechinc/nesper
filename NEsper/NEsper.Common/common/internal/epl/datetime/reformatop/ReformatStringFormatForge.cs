@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_DATE_TIME"), "format", inner);
+            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_DATE_TIME"), "Format", inner);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_ZONED_DATE_TIME"), "format", inner);
+            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_ZONED_DATE_TIME"), "Format", inner);
         }
 
         public Type ReturnType => typeof(string);
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         private CodegenExpression ActionCodegen(CodegenExpression date)
         {
-            return ExprDotMethod(NewInstance(typeof(SimpleDateFormat)), "format", date);
+            return ExprDotMethod(NewInstance(typeof(SimpleDateFormat)), "Format", date);
         }
     }
 } // end of namespace

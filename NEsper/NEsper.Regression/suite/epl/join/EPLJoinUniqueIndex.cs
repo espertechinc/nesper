@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // test no where clause with unique on multiple props, exact specification of where-clause
             IndexAssertionEventSend assertSendEvents = () => {
-                var fields = "ssb1.s1,ssb2.s2".SplitCsv();
+                var fields = new [] { "ssb1.S1","ssb2.S2" };
                 env.SendEventBean(new SupportSimpleBeanTwo("E1", 1, 3, 10));
                 env.SendEventBean(new SupportSimpleBeanTwo("E2", 1, 2, 0));
                 env.SendEventBean(new SupportSimpleBeanTwo("E3", 1, 3, 9));
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     milestone,
                     caseEnum,
                     "D2,L2,I2",
-                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.s2 between 'E3' and 'E4'",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.S2 between 'E3' and 'E4'",
                     true,
                     assertSendEvents);
                 RunAssertion(env, milestone, caseEnum, "L2", "where ssb2.L2 = ssb1.L1", true, assertSendEvents);

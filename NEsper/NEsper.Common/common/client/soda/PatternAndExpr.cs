@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (PatternExpr child in Children)
             {
                 writer.Write(delimiter);

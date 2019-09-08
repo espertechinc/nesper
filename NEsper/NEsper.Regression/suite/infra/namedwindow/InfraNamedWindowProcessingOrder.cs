@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 epl += "@Name('select') select irstream prop1, prop2 from NamedWin;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("select");
 
-                var fields = "prop1,prop2".SplitCsv();
+                var fields = new [] { "prop1","prop2" };
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
                     env.SendEventObjectArray(new object[] {"dummyValue"}, "StartValueEvent");
                 }

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
 
-            var op = new DefaultSupportSourceOp(new object[] {new EPException("My-Exception-Is-Here")});
+            var op = new DefaultSupportSourceOp(new object[] {new EPRuntimeException("My-Exception-Is-Here")});
             var options = new EPDataFlowInstantiationOptions();
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(op));
             var handler = new MyExceptionHandler();
@@ -44,6 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             df.Start();
             Sleep(100);
+            Sleep(10000);
             Assert.AreEqual(EPDataFlowState.COMPLETE, df.State);
 
             Assert.AreEqual(1, MyExceptionHandler.Contexts.Count);

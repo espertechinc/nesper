@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public class AddBigIntConvComputer : Computer
         {
-            private readonly BigIntegerCoercer convOne;
-            private readonly BigIntegerCoercer convTwo;
+            private readonly BigIntegerCoercer _convOne;
+            private readonly BigIntegerCoercer _convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -33,16 +33,16 @@ namespace com.espertech.esper.common.@internal.type
                 BigIntegerCoercer convOne,
                 BigIntegerCoercer convTwo)
             {
-                this.convOne = convOne;
-                this.convTwo = convTwo;
+                this._convOne = convOne;
+                this._convTwo = convTwo;
             }
 
             public object Compute(
                 object d1,
                 object d2)
             {
-                var s1 = convOne.CoerceBoxedBigInt(d1);
-                var s2 = convTwo.CoerceBoxedBigInt(d2);
+                var s1 = _convOne.CoerceBoxedBigInt(d1);
+                var s2 = _convTwo.CoerceBoxedBigInt(d2);
                 return s1 + s2;
             }
 
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftAsBig = convOne.CoerceBoxedBigIntCodegen(left, ltype);
-                var rightAsBig = convTwo.CoerceBoxedBigIntCodegen(right, rtype);
+                var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype);
+                var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype);
                 return CodegenExpressionBuilder.ExprDotMethod(leftAsBig, "Add", rightAsBig);
             }
         }

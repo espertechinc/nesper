@@ -22,4 +22,34 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+
+    public class ProxyEventBeanUpdateHelperNoCopy : EventBeanUpdateHelperNoCopy
+    {
+        public delegate string[] UpdatedPropertiesFunc();
+        public delegate bool IsRequiresStream2InitialValueEventFunc();
+        public delegate void UpdateNoCopyFunc(
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public UpdatedPropertiesFunc ProcUpdatedProperties { get; set; }
+        public IsRequiresStream2InitialValueEventFunc ProcIsRequiresStream2InitialValueEvent { get; set; }
+        public UpdateNoCopyFunc ProcUpdateNoCopy { get; set; }
+
+        public string[] UpdatedProperties {
+            get => ProcUpdatedProperties?.Invoke();
+        }
+
+        public bool IsRequiresStream2InitialValueEvent {
+            get => ProcIsRequiresStream2InitialValueEvent.Invoke();
+        }
+
+        public void UpdateNoCopy(
+            EventBean matchingEvent,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            ProcUpdateNoCopy?.Invoke(matchingEvent, eventsPerStream, exprEvaluatorContext);
+        }
+    }
 } // end of namespace

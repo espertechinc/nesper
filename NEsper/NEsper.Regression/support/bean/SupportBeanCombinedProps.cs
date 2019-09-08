@@ -14,7 +14,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.regressionlib.support.bean
 {
     /// <summary>
-    ///     indexed[0].mapped('0ma').value = 0ma0
+    ///     indexed[0].Mapped('0ma').value = 0ma0
     /// </summary>
     [Serializable]
     public class SupportBeanCombinedProps

@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLOuterFullJoin3Stream
     {
-        private static readonly string[] FIELDS = {"s0.P00", "s0.P01", "s1.P10", "s1.P11", "s2.P20", "s2.P21"};
+        private static readonly string[] FIELDS = {"S0.P00", "S0.P01", "S1.P10", "S1.P11", "S2.P20", "S2.P21"};
 
         public static IList<RegressionExecution> Executions()
         {
@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             var newEvents = env.Listener("s0").LastNewData;
             env.Listener("s0").Reset();
-            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"s0", "s1", "s2"});
+            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"S0", "S1", "S2"});
         }
 
         internal class EPLJoinFullJoin2SidesMulticolumn : RegressionExecution
@@ -476,13 +476,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11, s2.Id, s2.P20, s2.P21".SplitCsv();
+                var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
 
                 var epl = eventRepresentationEnum.GetAnnotationText() +
                           " @Name('s0') select * from " +
-                          "SupportBean_S0#length(1000) as s0 " +
-                          " full outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
-                          " full outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s0.P01 = s2.P21";
+                          "SupportBean_S0#length(1000) as S0 " +
+                          " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
+                          " full outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 and S0.P01 = S2.P21";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S1(10, "A_1", "B_1"));
@@ -600,9 +600,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// s0
                 /// </summary>
                 var joinStatement = "@Name('s0') select * from " +
-                                    "SupportBean_S0#length(1000) as s0 " +
-                                    " full outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
-                                    " full outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
+                                    "SupportBean_S0#length(1000) as S0 " +
+                                    " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
+                                    " full outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
                 TryAssertsFullJoin_2sides(env);

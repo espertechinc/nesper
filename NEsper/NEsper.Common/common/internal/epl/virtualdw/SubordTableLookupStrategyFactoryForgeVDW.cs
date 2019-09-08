@@ -96,16 +96,16 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             builder
                 .Expression("indexHashedProps", IndexedPropDesc.MakeArray(_hashAndRanges.HashedProps))
                 .Expression("indexBtreeProps", IndexedPropDesc.MakeArray(_hashAndRanges.BtreeProps))
-                .Constant("nwOnTrigger", _nwOnTrigger)
-                .Constant("numOuterStreams", _outerStreams.Length)
+                .Constant("IsNwOnTrigger", _nwOnTrigger)
+                .Constant("NumOuterStreams", _outerStreams.Length)
                 .Expression(
                     "hashEvals",
                     ExprNodeUtilityCodegen.CodegenEvaluators(hashes, builder.Method(), GetType(), classScope))
-                .Constant("hashCoercionTypes", hashTypes)
+                .Constant("HashCoercionTypes", hashTypes)
                 .Expression(
                     "rangeEvals",
                     QueryGraphValueEntryRangeForge.MakeArray(ranges, builder.Method(), symbols, classScope))
-                .Constant("rangeCoercionTypes", rangesTypes);
+                .Constant("RangeCoercionTypes", rangesTypes);
             return builder.Build();
         }
 

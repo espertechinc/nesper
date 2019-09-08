@@ -118,7 +118,6 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 statementName = statementName.Trim();
-
                 statementNames.Add(statementName);
 
                 // Determine table access nodes
@@ -165,7 +164,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     annotations,
                     statementType,
                     contextDescriptor,
-                    raw.IntoTableSpec == null ? null : raw.IntoTableSpec.Name,
+                    raw.IntoTableSpec?.Name,
                     compilable,
                     optionalModuleName);
                 var specCompiled = StatementRawCompiler.Compile(

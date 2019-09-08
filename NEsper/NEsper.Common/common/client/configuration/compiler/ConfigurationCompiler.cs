@@ -328,6 +328,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             AddPlugInSingleRowFunction(entry);
         }
 
+        /// <summary>
+        ///     Add single-row function with configurations.
+        /// </summary>
+        /// <param name="functionName">EPL name of function</param>
+        /// <param name="clazz">the class containing the function</param>
+        /// <param name="methodName">providing method name</param>
+        /// <param name="valueCache">value cache settings</param>
+        /// <param name="filterOptimizable">settings whether subject to optimizations</param>
+        /// <param name="rethrowExceptions">whether to rethrow exceptions</param>
+
         public void AddPlugInSingleRowFunction(
             string functionName,
             Type clazz,
@@ -341,7 +351,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 clazz.FullName,
                 methodName,
                 valueCache,
-                filterOptimizable);
+                filterOptimizable,
+                rethrowExceptions);
         }
 
         /// <summary>

@@ -26,8 +26,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             string[] fields = {"myint"};
             var stmtText = "@Name('s0') select istream myint from " +
-                           " sql:MyDBWithPooledWithLRU100 ['select myint from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as s0," +
-                           "SupportBean as s1";
+                           " sql:MyDBWithPooledWithLRU100 ['select myint from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S0," +
+                           "SupportBean as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             SendSupportBeanEvent(env, 10);

@@ -14,13 +14,11 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.type
 {
-    /// <summary>
-    /// </summary>
     [Serializable]
     public class StringPatternSetLike : StringPatternSet
     {
-        private readonly string likeString;
-        private readonly LikeUtil likeUtil;
+        private readonly string _likeString;
+        private readonly LikeUtil _likeUtil;
 
         /// <summary>
         /// Ctor.
@@ -28,8 +26,8 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="likeString">pattern to match</param>
         public StringPatternSetLike(string likeString)
         {
-            this.likeString = likeString;
-            likeUtil = new LikeUtil(likeString, '\\', false);
+            this._likeString = likeString;
+            _likeUtil = new LikeUtil(likeString, '\\', false);
         }
 
         /// <summary>
@@ -43,12 +41,12 @@ namespace com.espertech.esper.common.@internal.type
                 return false;
             }
 
-            return likeUtil.Compare(stringToMatch);
+            return _likeUtil.Compare(stringToMatch);
         }
 
         protected bool Equals(StringPatternSetLike other)
         {
-            return string.Equals(likeString, other.likeString);
+            return string.Equals(_likeString, other._likeString);
         }
 
         public override bool Equals(object obj)
@@ -70,7 +68,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            return (likeString != null ? likeString.GetHashCode() : 0);
+            return (_likeString != null ? _likeString.GetHashCode() : 0);
         }
     }
 } // end of namespace

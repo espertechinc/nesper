@@ -559,7 +559,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('s0') on SupportBean_S0 as s0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by rollup(mw.TheString);\n";
+                          "@Name('s0') on SupportBean_S0 as S0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by rollup(mw.TheString);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "c0", "c1", "c2" };

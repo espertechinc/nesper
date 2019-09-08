@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select P00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.Id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowTwo as S0 where sb.IntPrimitive = S0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create window MyWindowThree#keepall as SupportBean_S0;\n" +
                     "insert into MyWindowThree select * from SupportBean_S0;\n" +
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select P00 from MyWindowThree as s0 where sb.IntPrimitive = s0.Id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowThree as S0 where sb.IntPrimitive = S0.Id) as val0 " +
                     "from SupportBean as sb;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

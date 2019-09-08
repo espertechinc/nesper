@@ -24,60 +24,60 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestNext()
         {
-            int[][] expectedValues4 = new int[][] {
-                new int[] {0, 1, 2, 3}, // 0
-                new int[] {0, 1, 3, 2},
-                new int[] {0, 2, 1, 3},
-                new int[] {0, 2, 3, 1},
-                new int[] {0, 3, 1, 2},
-                new int[] {0, 3, 2, 1}, // 5
+            int[][] expectedValues4 = new[] {
+                new[] {0, 1, 2, 3}, // 0
+                new[] {0, 1, 3, 2},
+                new[] {0, 2, 1, 3},
+                new[] {0, 2, 3, 1},
+                new[] {0, 3, 1, 2},
+                new[] {0, 3, 2, 1}, // 5
 
-                new int[] {1, 0, 2, 3}, // 6
-                new int[] {1, 0, 3, 2}, // 7
-                new int[] {1, 2, 0, 3}, // 8
-                new int[] {1, 2, 3, 0},
-                new int[] {1, 3, 0, 2},
-                new int[] {1, 3, 2, 0}, // 11
+                new[] {1, 0, 2, 3}, // 6
+                new[] {1, 0, 3, 2}, // 7
+                new[] {1, 2, 0, 3}, // 8
+                new[] {1, 2, 3, 0},
+                new[] {1, 3, 0, 2},
+                new[] {1, 3, 2, 0}, // 11
 
-                new int[] {2, 0, 1, 3}, // 12
-                new int[] {2, 0, 3, 1},
-                new int[] {2, 1, 0, 3},
-                new int[] {2, 1, 3, 0},
-                new int[] {2, 3, 0, 1},
-                new int[] {2, 3, 1, 0}, // 17
+                new[] {2, 0, 1, 3}, // 12
+                new[] {2, 0, 3, 1},
+                new[] {2, 1, 0, 3},
+                new[] {2, 1, 3, 0},
+                new[] {2, 3, 0, 1},
+                new[] {2, 3, 1, 0}, // 17
 
-                new int[] {3, 0, 1, 2}, // 18
-                new int[] {3, 0, 2, 1},
-                new int[] {3, 1, 0, 2},
-                new int[] {3, 1, 2, 0}, // 21
-                new int[] {3, 2, 0, 1},
-                new int[] {3, 2, 1, 0}
+                new[] {3, 0, 1, 2}, // 18
+                new[] {3, 0, 2, 1},
+                new[] {3, 1, 0, 2},
+                new[] {3, 1, 2, 0}, // 21
+                new[] {3, 2, 0, 1},
+                new[] {3, 2, 1, 0}
             };
-            tryPermutation(4, expectedValues4);
+            TryPermutation(4, expectedValues4);
 
-            int[][] expectedValues3 = new int[][] {
-                new int[] {0, 1, 2},
-                new int[] {0, 2, 1},
-                new int[] {1, 0, 2},
-                new int[] {1, 2, 0},
-                new int[] {2, 0, 1},
-                new int[] {2, 1, 0}
+            int[][] expectedValues3 = new[] {
+                new[] {0, 1, 2},
+                new[] {0, 2, 1},
+                new[] {1, 0, 2},
+                new[] {1, 2, 0},
+                new[] {2, 0, 1},
+                new[] {2, 1, 0}
             };
-            tryPermutation(3, expectedValues3);
+            TryPermutation(3, expectedValues3);
 
-            int[][] expectedValues2 = new int[][] {
-                new int[] {0, 1},
-                new int[] {1, 0}
+            int[][] expectedValues2 = new[] {
+                new[] {0, 1},
+                new[] {1, 0}
             };
-            tryPermutation(2, expectedValues2);
+            TryPermutation(2, expectedValues2);
 
-            int[][] expectedValues1 = new int[][] {
-                new int[]{0}
+            int[][] expectedValues1 = new[] {
+                new[]{0}
             };
-            tryPermutation(1, expectedValues1);
+            TryPermutation(1, expectedValues1);
         }
 
-        private void tryPermutation(
+        private void TryPermutation(
             int numElements,
             int[][] expectedValues)
         {
@@ -114,16 +114,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             Assert.AreEqual(count, expectedValues.Length);
-
-            try
-            {
-                Assert.IsNotNull(enumeration.Current);
-                Assert.Fail();
-            }
-            catch (NoSuchElementException ex)
-            {
-                // Expected
-            }
+            Assert.That(enumeration.MoveNext(), Is.False);
         }
 
         [Test]
@@ -133,26 +124,26 @@ namespace com.espertech.esper.common.@internal.collection
             int[] result = PermutationEnumerator.GetPermutation(4, 21, factors);
 
             Log.Debug(".testGetPermutation result=" + result.RenderAny());
-            Assert.IsTrue(Arrays.Equals(result, new int[] { 3, 1, 2, 0 }));
+            Assert.IsTrue(Arrays.AreEqual(result, new[] { 3, 1, 2, 0 }));
         }
 
         [Test]
         public void TestGetFactors()
         {
             int[] factors = PermutationEnumerator.GetFactors(5);
-            Assert.IsTrue(Arrays.Equals(factors, new int[] { 24, 6, 2, 1, 0 }));
+            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 24, 6, 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(4);
-            Assert.IsTrue(Arrays.Equals(factors, new int[] { 6, 2, 1, 0 }));
+            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 6, 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(3);
-            Assert.IsTrue(Arrays.Equals(factors, new int[] { 2, 1, 0 }));
+            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(2);
-            Assert.IsTrue(Arrays.Equals(factors, new int[] { 1, 0 }));
+            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(1);
-            Assert.IsTrue(Arrays.Equals(factors, new int[] { 0 }));
+            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 0 }));
 
             //Log.debug(".testGetFactors " + Arrays.toString(factors));
         }

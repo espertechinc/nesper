@@ -482,10 +482,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var milestone = new AtomicLong();
 
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 s0 terminated by SupportBean_S1(Id=s0.Id)",
+                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated by SupportBean_S1(Id=S0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.Id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -591,7 +591,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1".SplitCsv();
+                var fields = new [] { "c1" };
                 var epl = "create context MyContext as " +
                           "initiated by SupportBean_S0 " +
                           "terminated by SupportBean_S1;\n" +
@@ -655,13 +655,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context EveryNowAndThen as " +
-                    "initiated by SupportBean_S0 as s0 " +
-                    "terminated by SupportBean_S1(P10 = s0.P00)",
+                    "initiated by SupportBean_S0 as S0 " +
+                    "terminated by SupportBean_S1(P10 = S0.P00)",
                     path);
 
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.s0.P00 as c1, sum(IntPrimitive) as c2 " +
+                    "@Name('s0') context EveryNowAndThen select context.S0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated",
                     path);
                 env.AddListener("s0");
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplGrouped =
                     "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean;\n";
                 env.CompileDeploy(eplContext + eplGrouped).AddListener("S1");
-                var fields = "c1,c2,c3".SplitCsv();
+                var fields = new [] { "c1","c2","c3" };
 
                 env.SendEventBean(new SupportBean("G1", 1));
                 Assert.IsFalse(env.Listener("S1").GetAndClearIsInvoked());
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
-                var fields = "Id".SplitCsv();
+                var fields = new [] { "Id" };
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +
@@ -870,13 +870,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
-                                 "initiated by pattern [every s0=SupportBean_S0 -> s1=SupportBean_S1(Id = s0.Id)]" +
+                                 "initiated by pattern [every S0=SupportBean_S0 -> S1=SupportBean_S1(Id = S0.Id)]" +
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
                 var fields = new [] { "c1","c2","c3","c4" };
                 var eplGrouped = "@Name('S1') context CtxInitiated " +
-                                 "select TheString as c1, sum(IntPrimitive) as c2, context.s0.P00 as c3, context.s1.P10 as c4 from SupportBean";
+                                 "select TheString as c1, sum(IntPrimitive) as c2, context.S0.P00 as c3, context.S1.P10 as c4 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
 
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -986,7 +986,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "terminated after 1 minutes";
                 env.CompileDeploy(eplCtx, path);
 
-                var fields = "c1,c2,c3".SplitCsv();
+                var fields = new [] { "c1","c2","c3" };
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
                     "select context.a.Id as c1, context.b.Id as c2, TheString as c3 from SupportBean",
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "terminated after 1 minutes";
                 env.CompileDeploy(ctxEPL, path);
 
-                var fields = "c1".SplitCsv();
+                var fields = new [] { "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean select sum(LongPrimitive) as c1 from SupportBean(IntPrimitive = context.sb.IntPrimitive)",
                     path);
@@ -1456,7 +1456,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "c1,c2,c3".SplitCsv();
+                var fields = new [] { "c1","c2","c3" };
                 var eplGrouped =
                     "@Name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
@@ -1523,7 +1523,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1".SplitCsv();
+                var fields = new [] { "c1" };
                 var path = new RegressionPath();
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
 
@@ -1625,7 +1625,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
                     "@Name('s0') context EveryMinute " +
                     "select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated order by TheString asc",
@@ -1866,7 +1866,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("@Name('var') create variable int myvar = 0", path);
                 env.CompileDeploy(
                     "create context EverySupportBeanS0 as " +
-                    "initiated by SupportBean_S0 as s0 " +
+                    "initiated by SupportBean_S0 as S0 " +
                     "terminated after 1 min",
                     path);
 
@@ -1907,7 +1907,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "terminated after 3 min",
                     path);
 
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
                     "@Name('s0') @IterableUnbound context EveryMinute select TheString as c1, sum(IntPrimitive) as c2 from SupportBean",
                     path);
@@ -2236,7 +2236,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
                     path);
 
-                var fields = "col1,col2,col3,col4,col5".SplitCsv();
+                var fields = new [] { "col1","col2","col3","col4","col5" };
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive " +
                     "select prev(TheString) as col1, prevwindow(sb) as col2, prevtail(TheString) as col3, prior(1, TheString) as col4, sum(IntPrimitive) as col5 " +

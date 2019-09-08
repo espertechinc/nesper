@@ -22,4 +22,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+
+    public class ProxyHavingClauseEvaluator : HavingClauseEvaluator
+    {
+        public delegate bool EvaluateHavingFunc(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public EvaluateHavingFunc ProcEvaluateHaving { get; set; }
+
+        public ProxyHavingClauseEvaluator()
+        {
+        }
+
+        public ProxyHavingClauseEvaluator(EvaluateHavingFunc procEvaluateHaving)
+        {
+            ProcEvaluateHaving = procEvaluateHaving;
+        }
+
+        public bool EvaluateHaving(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return ProcEvaluateHaving.Invoke(eventsPerStream, isNewData, exprEvaluatorContext);
+        }
+    }
 } // end of namespace

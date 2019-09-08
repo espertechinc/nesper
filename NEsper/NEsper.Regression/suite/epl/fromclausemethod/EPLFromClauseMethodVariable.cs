@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     env.CompileDeploy(epl);
                     EPAssertionUtil.AssertProps(
                         env.GetEnumerator("s0").Advance(),
-                        "field1,field2".SplitCsv(),
+                        new [] { "field1","field2" },
                         new object[] {"a", "b"});
                     env.UndeployAll();
                 }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     path);
                 env.CompileDeploy(
                     "context MyContext " +
-                    "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.make()",
+                    "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.Make()",
                     path);
                 env.CompileDeploy(
                         "@Name('s0') context MyContext " +
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.postfix=P00";
+                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=P00";
                 env.CompileDeploy(soda, modifyEPL);
 
                 var epl = "@Name('s0') select Id as c0 from SupportBean as sb, " +
@@ -227,12 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 Postfix = postfix;
             }
 
-            public string Postfix { get; private set; }
-
-            public void SetPostfix(string postfix)
-            {
-                Postfix = postfix;
-            }
+            public string Postfix { get; set; }
 
             public SupportBean_A FetchABean(int intPrimitive)
             {

@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenRelational op,
             CodegenExpression rhs)
         {
-            this._lhs = lhs;
-            this._op = op;
-            this._rhs = rhs;
+            _lhs = lhs;
+            _op = op;
+            _rhs = rhs;
         }
 
         public void Render(

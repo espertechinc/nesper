@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         typeof(EventBean[]),
                         ExprDotMethod(
                             Ref("matchedEvents"),
-                            "getMatchingEventAsObjectByTag",
+                            "GetMatchingEventAsObjectByTag",
                             Constant(_resultEventAsName))))
                 .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("events")
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                             classScope)))
                 .BlockEnd()
                 .IfRefNullReturnNull("value")
-                .MethodReturn(ExprDotMethod(Ref("value"), "DoubleValue"));
+                .MethodReturn(ExprDotMethod(Ref("value"), "AsDouble"));
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
 

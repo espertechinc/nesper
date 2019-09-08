@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        "pKey0,pkey1".SplitCsv(),
+                        new [] { "pKey0","pkey1" },
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Statement("create").GetEnumerator(),
-                        "pKey0,pkey1".SplitCsv(),
+                        new [] { "pKey0","pkey1" },
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        "pKey0,pkey1".SplitCsv(),
+                        new [] { "pKey0","pkey1" },
                         new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
                 }
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pKey0,pkey1,c0".SplitCsv();
+                var fields = new [] { "pKey0","pkey1","c0" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('s1') create table MyTableMultiKey(pKey0 string primary key, pkey1 int primary key, c0 long)",
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pKey0,c0".SplitCsv();
+                var fields = new [] { "pKey0","c0" };
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('s0') create table MyTableSingleKey(pKey0 string primary key, c0 int)", path);
                 env.CompileDeploy(

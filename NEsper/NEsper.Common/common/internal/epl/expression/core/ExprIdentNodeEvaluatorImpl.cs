@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.@event.variant;
 
 using System;
 
+using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -121,7 +123,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(castTargetType, this.GetType(), codegenClassScope);
+            // NOTE: Must use boxed variant because we return null.
+            CodegenMethod method = codegenMethodScope.MakeChild(
+                castTargetType.GetBoxedType(), this.GetType(), codegenClassScope);
             CodegenBlock block = method.Block;
 
             if (useUnderlying) {

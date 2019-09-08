@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 RegressionEnvironment env,
                 AtomicLong milestone)
             {
-                var fields = "a,b0,b1,lastb".SplitCsv();
+                var fields = new [] { "a","b0","b1","lastb" };
                 SendTimer(1000, env);
                 env.SendEventBean(new SupportRecogBean("A1", 1));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -177,10 +177,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = "a,b0,b1,lastb".SplitCsv();
+                var fields = new [] { "a","b0","b1","lastb" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            "  pattern (A B*) " +
                            "  INTERVAL 10 seconds " +
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var fields = "a,b0,b1,lastb".SplitCsv();
+                var fields = new [] { "a","b0","b1","lastb" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "a,b0,b1".SplitCsv(),
+                    new [] { "a","b0","b1" },
                     new[] {new object[] {"A1", "B1", null}});
 
                 env.UndeployAll();

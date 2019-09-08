@@ -37,20 +37,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         [Test]
         public void TestGetter()
         {
-            ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "getIntPrimitive");
+            ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
             Assert.AreEqual(10, getter.Get(unitTestBean));
 
-            getter = MakeGetter(typeof(SupportBean), "getTheString");
+            getter = MakeGetter(typeof(SupportBean), "GetTheString");
             Assert.AreEqual("a", getter.Get(unitTestBean));
 
-            getter = MakeGetter(typeof(SupportBean), "getDoubleBoxed");
+            getter = MakeGetter(typeof(SupportBean), "GetDoubleBoxed");
             Assert.AreEqual(null, getter.Get(unitTestBean));
         }
 
         [Test]
         public void TestPerformance()
         {
-            ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "getIntPrimitive");
+            ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
 
             log.Info(".testPerformance Starting test");
 

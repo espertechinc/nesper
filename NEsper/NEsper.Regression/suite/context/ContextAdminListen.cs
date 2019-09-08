@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var name = "MyContextStartS0EndS1";
                 var path = new RegressionPath();
                 var contextEPL =
-                    "@Name('ctx') create context MyContextStartS0EndS1 start SupportBean_S0 as s0 end SupportBean_S1";
+                    "@Name('ctx') create context MyContextStartS0EndS1 start SupportBean_S0 as S0 end SupportBean_S1";
                 env.CompileDeploy(contextEPL, path);
                 var depIdCtx = env.DeploymentId("ctx");
 
@@ -138,12 +138,12 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context MyContextStartEnd start SupportBean_S0 as s0 end SupportBean_S1";
+                var epl = "create context MyContextStartEnd start SupportBean_S0 as S0 end SupportBean_S1";
                 RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEnd");
 
                 epl = "create context MyContextStartEndWithNeverEnding " +
                       "context NeverEndingStory start @now, " +
-                      "context ABSession start SupportBean_S0 as s0 end SupportBean_S1";
+                      "context ABSession start SupportBean_S0 as S0 end SupportBean_S1";
                 RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEndWithNeverEnding");
             }
         }
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var api = env.Runtime.ContextPartitionService;
 
-                var epl = "@Name('ctx') create context MyContext start SupportBean_S0 as s0 end SupportBean_S1";
+                var epl = "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1";
                 var listeners = new SupportContextListener[3];
                 for (var i = 0; i < listeners.Length; i++) {
                     listeners[i] = new SupportContextListener(env);
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 Assert.AreEqual(1, allocated.Count);
                 var nested = (ContextPartitionIdentifierNested) allocated[0].Identifier;
                 EPAssertionUtil.AssertEqualsExactOrder(
-                    "E1".SplitCsv(),
+                    new [] { "E1" },
                     ((ContextPartitionIdentifierPartitioned) nested.Identifiers[1]).Keys);
                 Assert.AreEqual(1, listener.GetAndReset().Count);
 
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyContext start SupportBean_S0 as s0 end SupportBean_S1",
+                    "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1",
                     path);
                 var depIdCtx = env.DeploymentId("ctx");
                 listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));

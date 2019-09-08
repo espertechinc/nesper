@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test no output limit
-                var fields = "TheString, IntPrimitive, minval".SplitCsv();
+                var fields = new [] { "TheString"," IntPrimitive"," minval" };
                 var epl =
                     "@Name('s0') select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "Volume,Symbol,Price,mycount".SplitCsv();
+                var fields = new [] { "Volume","Symbol","Price","mycount" };
                 var epl = "@Name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price";

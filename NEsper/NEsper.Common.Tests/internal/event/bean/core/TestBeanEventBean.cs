@@ -126,10 +126,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
             Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
 
-            Assert.AreEqual("0ma0", eventBean.Get("array[0].Mapped('0ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("array[1].Mapped('1mb').Value"));
-            Assert.AreEqual("0ma0", eventBean.Get("array[0].mapprop('0ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("array[1].mapprop('1mb').Value"));
+            Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
+            Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
+            Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapprop('0ma').Value"));
+            Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapprop('1mb').Value"));
 
             TryInvalidGet(eventBean, "dummy");
             TryInvalidGet(eventBean, "dummy[1]");
@@ -141,11 +141,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual(
                 typeof(SupportBeanCombinedProps.NestedLevOne),
                 ((EventBean) eventBean.GetFragment("Indexed[0]")).EventType.UnderlyingType);
-            Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("array[0]")).Get("nestLevOneVal"));
-            Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("array[2]?")).Get("nestLevOneVal"));
-            Assert.IsNull(eventBean.GetFragment("array[3]?"));
-            Assert.IsNull(eventBean.GetFragment("array[4]?"));
-            Assert.IsNull(eventBean.GetFragment("array[5]?"));
+            Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("Array[0]")).Get("NestLevOneVal"));
+            Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("Array[2]?")).Get("NestLevOneVal"));
+            Assert.IsNull(eventBean.GetFragment("Array[3]?"));
+            Assert.IsNull(eventBean.GetFragment("Array[4]?"));
+            Assert.IsNull(eventBean.GetFragment("Array[5]?"));
 
             var eventText = SupportEventTypeAssertionUtil.Print(eventBean);
             //System.out.println(eventText);
@@ -163,28 +163,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             SupportEventTypeAssertionUtil.AssertConsistency(eventBean);
 
             // generic interogation : iterable, List and Map
-            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("iterableNested"));
+            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("IterableNested"));
             Assert.AreEqual(
                 typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
-                eventBean.EventType.GetPropertyType("iterableNested[0]"));
-            Assert.AreEqual(typeof(IEnumerable<int>), eventBean.EventType.GetPropertyType("iterableInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("iterableInteger[0]"));
-            Assert.AreEqual(typeof(IList<object>), eventBean.EventType.GetPropertyType("listNested"));
-            Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), eventBean.EventType.GetPropertyType("listNested[0]"));
-            Assert.AreEqual(typeof(IList<int>), eventBean.EventType.GetPropertyType("listInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("listInteger[0]"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventBean.EventType.GetPropertyType("mapNested"));
-            Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), eventBean.EventType.GetPropertyType("mapNested('a')"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventBean.EventType.GetPropertyType("mapInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("mapInteger('a')"));
-            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("iterableUndefined"));
-            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("iterableObject"));
-            Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("iterableUndefined[0]"));
-            Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("iterableObject[0]"));
+                eventBean.EventType.GetPropertyType("IterableNested[0]"));
+            Assert.AreEqual(typeof(IEnumerable<int>), eventBean.EventType.GetPropertyType("IterableInteger"));
+            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("IterableInteger[0]"));
+            Assert.AreEqual(typeof(IList<object>), eventBean.EventType.GetPropertyType("ListNested"));
+            Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), eventBean.EventType.GetPropertyType("ListNested[0]"));
+            Assert.AreEqual(typeof(IList<int>), eventBean.EventType.GetPropertyType("ListInteger"));
+            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("ListInteger[0]"));
+            Assert.AreEqual(typeof(IDictionary<string, object>), eventBean.EventType.GetPropertyType("MapNested"));
+            Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), eventBean.EventType.GetPropertyType("MapNested('a')"));
+            Assert.AreEqual(typeof(IDictionary<string, object>), eventBean.EventType.GetPropertyType("MapInteger"));
+            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("MapInteger('a')"));
+            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("IterableUndefined"));
+            Assert.AreEqual(typeof(IEnumerable<object>), eventBean.EventType.GetPropertyType("IterableObject"));
+            Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("IterableUndefined[0]"));
+            Assert.AreEqual(typeof(object), eventBean.EventType.GetPropertyType("IterableObject[0]"));
 
             Assert.AreEqual(
                 new EventPropertyDescriptor(
-                    "iterableNested",
+                    "IterableNested",
                     typeof(IEnumerable<object>),
                     typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                     false,
@@ -192,13 +192,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     true,
                     false,
                     true),
-                eventBean.EventType.GetPropertyDescriptor("iterableNested"));
+                eventBean.EventType.GetPropertyDescriptor("IterableNested"));
             Assert.AreEqual(
-                new EventPropertyDescriptor("iterableInteger", typeof(IEnumerable<int>), typeof(int), false, false, true, false, false),
-                eventBean.EventType.GetPropertyDescriptor("iterableInteger"));
+                new EventPropertyDescriptor("IterableInteger", typeof(IEnumerable<int>), typeof(int), false, false, true, false, false),
+                eventBean.EventType.GetPropertyDescriptor("IterableInteger"));
             Assert.AreEqual(
                 new EventPropertyDescriptor(
-                    "listNested",
+                    "ListNested",
                     typeof(IList<object>),
                     typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                     false,
@@ -206,13 +206,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     true,
                     false,
                     true),
-                eventBean.EventType.GetPropertyDescriptor("listNested"));
+                eventBean.EventType.GetPropertyDescriptor("ListNested"));
             Assert.AreEqual(
-                new EventPropertyDescriptor("listInteger", typeof(IList<object>), typeof(int?), false, false, true, false, false),
-                eventBean.EventType.GetPropertyDescriptor("listInteger"));
+                new EventPropertyDescriptor("ListInteger", typeof(IList<object>), typeof(int?), false, false, true, false, false),
+                eventBean.EventType.GetPropertyDescriptor("ListInteger"));
             Assert.AreEqual(
                 new EventPropertyDescriptor(
-                    "mapNested",
+                    "MapNested",
                     typeof(IDictionary<string, object>),
                     typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                     false,
@@ -220,32 +220,32 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     false,
                     true,
                     false),
-                eventBean.EventType.GetPropertyDescriptor("mapNested"));
+                eventBean.EventType.GetPropertyDescriptor("MapNested"));
             Assert.AreEqual(
-                new EventPropertyDescriptor("mapInteger", typeof(IDictionary<string, object>), typeof(int?), false, false, false, true, false),
-                eventBean.EventType.GetPropertyDescriptor("mapInteger"));
+                new EventPropertyDescriptor("MapInteger", typeof(IDictionary<string, object>), typeof(int?), false, false, false, true, false),
+                eventBean.EventType.GetPropertyDescriptor("MapInteger"));
             Assert.AreEqual(
-                new EventPropertyDescriptor("iterableUndefined", typeof(IEnumerable<object>), typeof(object), false, false, true, false, false),
-                eventBean.EventType.GetPropertyDescriptor("iterableUndefined"));
+                new EventPropertyDescriptor("IterableUndefined", typeof(IEnumerable<object>), typeof(object), false, false, true, false, false),
+                eventBean.EventType.GetPropertyDescriptor("IterableUndefined"));
             Assert.AreEqual(
-                new EventPropertyDescriptor("iterableObject", typeof(IEnumerable<object>), typeof(object), false, false, true, false, false),
-                eventBean.EventType.GetPropertyDescriptor("iterableObject"));
+                new EventPropertyDescriptor("IterableObject", typeof(IEnumerable<object>), typeof(object), false, false, true, false, false),
+                eventBean.EventType.GetPropertyDescriptor("IterableObject"));
 
-            AssertNestedCollection(eventBean, "iterableNested", "I");
-            AssertNestedCollection(eventBean, "listNested", "L");
-            AssertNestedElement(eventBean, "mapNested('a')", "MN1"); // note that property descriptors do not indicate Map-values are fragments
-            AssertNestedElement(eventBean, "mapNested('b')", "MN2");
-            AssertNestedElement(eventBean, "listNested[0]", "LN1");
-            AssertNestedElement(eventBean, "listNested[1]", "LN2");
-            AssertNestedElement(eventBean, "iterableNested[0]", "IN1");
-            AssertNestedElement(eventBean, "iterableNested[1]", "IN2");
+            AssertNestedCollection(eventBean, "IterableNested", "I");
+            AssertNestedCollection(eventBean, "ListNested", "L");
+            AssertNestedElement(eventBean, "MapNested('a')", "MN1"); // note that property descriptors do not indicate Map-values are fragments
+            AssertNestedElement(eventBean, "MapNested('b')", "MN2");
+            AssertNestedElement(eventBean, "ListNested[0]", "LN1");
+            AssertNestedElement(eventBean, "ListNested[1]", "LN2");
+            AssertNestedElement(eventBean, "IterableNested[0]", "IN1");
+            AssertNestedElement(eventBean, "IterableNested[1]", "IN2");
 
-            Assert.IsNull(eventBean.EventType.GetFragmentType("iterableInteger"));
-            Assert.IsNull(eventBean.EventType.GetFragmentType("listInteger"));
-            Assert.IsNull(eventBean.EventType.GetFragmentType("iterableInteger[0]"));
-            Assert.IsNull(eventBean.EventType.GetFragmentType("listInteger[0]"));
-            Assert.IsNull(eventBean.EventType.GetFragmentType("mapNested"));
-            Assert.IsNull(eventBean.EventType.GetFragmentType("mapInteger"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("IterableInteger"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("ListInteger"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("IterableInteger[0]"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("ListInteger[0]"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("MapNested"));
+            Assert.IsNull(eventBean.EventType.GetFragmentType("MapInteger"));
         }
 
         [Test]

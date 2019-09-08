@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(ez EventZero)", path);
 
-            var fields = "ez.e0_0,ez.e0_1".SplitCsv();
+            var fields = new [] { "ez.e0_0","ez.e0_1" };
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#lastevent" +
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(e1_0 string, ez EventZero[])", path);
 
-            var fields = "e1_0,ez[0].e0_0,ez[0].e0_1,ez[1].e0_0,ez[1].e0_1".SplitCsv();
+            var fields = new [] { "e1_0","ez[0].e0_0","ez[0].e0_1","ez[1].e0_0","ez[1].e0_1" };
             env.CompileDeploy(
                     "@Name('s0')" +
                     "expression thequery {" +
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(ez EventZero[])", path);
 
-            var fields = "e0_0".SplitCsv();
+            var fields = new [] { "e0_0" };
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall where Id between 10 and 20) as ez " +
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema EventOne(sbarr SupportBean_S0[])", path);
 
-            var fields = "P00".SplitCsv();
+            var fields = new [] { "P00" };
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#keepall " +
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema EventOne(sb SupportBean_S0)", path);
 
-            var fields = "sb.P00".SplitCsv();
+            var fields = new [] { "sb.P00" };
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#length(2) " +
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                "OrderId,items[0].name,items[0].Price".SplitCsv(),
+                new [] { "OrderId","items[0].name","items[0].Price" },
                 new object[] {"001", "i1", 10d});
 
             var underlying = (EventBean[]) @event.Get("items");
@@ -343,7 +343,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "create " + representation.GetOutputTypeCreateSchemaName() + " schema OuterType(n0 Nested)",
                     path);
 
-                var fields = "n0.p0,n0.p1".SplitCsv();
+                var fields = new [] { "n0.p0","n0.p1" };
                 env.CompileDeploy(
                         "@Name('out') " +
                         "expression computeNested {\n" +

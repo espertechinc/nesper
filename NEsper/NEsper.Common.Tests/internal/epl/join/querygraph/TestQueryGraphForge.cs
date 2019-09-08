@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
             string[] expectedOne = new string[] { "P00" };
             string[] expectedTwo = new string[] { "P20" };
-            Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2)));
-            Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2)));
+            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2)));
+            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2)));
 
             // test with 5 streams, connect all streams to all streams
             queryGraph = new QueryGraphForge(5, null, false);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 queryGraph.AddStrictEquals(1, null, null, 2, null, null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 queryGraph.AddStrictEquals(1, "a", null, 1, "b", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 queryGraph.AddStrictEquals(2, "P22", null, 3, "P31", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // success
             }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 queryGraph.AddStrictEquals(2, "P22", null, 3, "P31", null);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // success
             }
@@ -185,10 +185,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             string[] expectedOne = new string[] { "P11", "P12" };
             string[] expectedTwo = new string[] { "P01", "P02" };
-            Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
-            Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
-            Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));
-            Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 1)));
+            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
+            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
+            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));
+            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 1)));
         }
 
         private IDictionary<string, object> CreateType(string propCSV)

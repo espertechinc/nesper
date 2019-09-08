@@ -25,9 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             env.CompileDeploy(
                 "@Name('s0') select istream * \n" +
-                "  from SupportBean(TheString='s0')#length(1000000) as s0,\n" +
-                "       SupportBean(TheString='s1')#length(1000000) as s1\n" +
-                "where s0.LongPrimitive = s1.LongPrimitive\n"
+                "  from SupportBean(TheString='s0')#length(1000000) as S0,\n" +
+                "       SupportBean(TheString='s1')#length(1000000) as S1\n" +
+                "where S0.LongPrimitive = S1.LongPrimitive\n"
             );
             TrySendAndReceive(env, 4, env.Statement("s0"), 1000);
             TrySendAndReceive(env, 2, env.Statement("s0"), 2000);

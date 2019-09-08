@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "insert into MyInfra select IntPrimitive as numericKey, TheString as value from SupportBean",
                     path);
 
-                var epl = "@Name('out') on SupportBean_S0 as s0 select value from MyInfra where value = P00";
+                var epl = "@Name('out') on SupportBean_S0 as S0 select value from MyInfra where value = P00";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 SendSupportBean(env, "E1", 1);
@@ -838,7 +838,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "on SupportBean_A select * from MyInfraInvalid where sum(IntPrimitive) > 100",
-                    "Error valIdating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
+                    "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -973,7 +973,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplInsert, path);
                 env.CompileDeploy("on SupportBean_S1 as S1 delete from MyInfraWA where S1.P10 = TheString", path);
 
-                var epl = "@Name('select') on SupportBean_S0 as s0 " +
+                var epl = "@Name('select') on SupportBean_S0 as S0 " +
                           "select window(win.*) as c0," +
                           "window(win.*).where(v -> v.IntPrimitive < 2) as c1, " +
                           "window(win.*).toMap(k=>k.TheString,v->v.IntPrimitive) as c2 " +
@@ -994,7 +994,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     beans,
                     new[] {0, 1},
                     new[] {0, 1},
-                    "E0,E1".SplitCsv(),
+                    new [] { "E0","E1" },
                     new object[] {0, 1});
 
                 // add bean
@@ -1006,7 +1006,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     beans,
                     new[] {0, 1, 2},
                     new[] {0, 1},
-                    "E0,E1,E2".SplitCsv(),
+                    new [] { "E0","E1","E2" },
                     new object[] {0, 1, 2});
 
                 env.Milestone(0);
@@ -1020,7 +1020,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     beans,
                     new[] {0, 2},
                     new[] {0},
-                    "E0,E2".SplitCsv(),
+                    new [] { "E0","E2" },
                     new object[] {0, 2});
 
                 // delete another bean
@@ -1032,7 +1032,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     beans,
                     new[] {2},
                     new int[0],
-                    "E2".SplitCsv(),
+                    new [] { "E2" },
                     new object[] {2});
 
                 env.Milestone(1);
@@ -1068,7 +1068,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = "ssb2.S2,ssb1.S1,ssb1.I1".SplitCsv();
+                    var fields = new [] { "ssb2.S2","ssb1.S1","ssb1.I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1296,7 +1296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // rel op
                 object[] preloadedEventsRelOp = {new SupportSimpleBeanOne("E1", 10, 11, 12)};
                 IndexAssertionEventSend relOpAssertion = () => {
-                    var fields = "ssb2.S2,ssb1.S1,ssb1.I1".SplitCsv();
+                    var fields = new [] { "ssb2.S2","ssb1.S1","ssb1.I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("EX", 0, 0, 0));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),

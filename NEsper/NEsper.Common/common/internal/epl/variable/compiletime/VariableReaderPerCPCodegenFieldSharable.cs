@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         public Type Type()
         {
-            return typeof(IDictionary<string, object>);
+            return typeof(IDictionary<int, VariableReader>);
         }
 
         public CodegenExpression InitCtorScoped()

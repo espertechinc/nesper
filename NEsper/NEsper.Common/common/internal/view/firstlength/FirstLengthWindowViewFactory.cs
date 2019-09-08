@@ -42,15 +42,13 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set => this.eventType = value;
         }
 
-        public ExprEvaluator Size {
-            set { this.size = value; }
+        public ExprEvaluator SizeEvaluator {
+            set => this.size = value;
         }
 
-        public string ViewName {
-            get => ViewEnum.FIRST_LENGTH_WINDOW.GetViewName();
-        }
+        public string ViewName => ViewEnum.FIRST_LENGTH_WINDOW.GetViewName();
     }
 } // end of namespace

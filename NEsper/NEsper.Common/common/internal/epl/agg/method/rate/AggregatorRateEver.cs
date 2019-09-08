@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                 .MethodReturn(
                     Op(
                         Op(
-                            Op(ExprDotMethod(points, "Size"), "*", Constant(factory.TimeAbacus.OneSecond)),
+                            Op(ExprDotName(points, "Count"), "*", Constant(factory.TimeAbacus.OneSecond)),
                             "*",
                             Constant(1d)),
                         "/",

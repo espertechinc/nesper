@@ -16,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     /// A clause to Update a named window based on a triggering event arriving and correlated
     /// to the named window events to be updated.
     /// </summary>
+    [Serializable]
     public class OnUpdateClause : OnClause
     {
         /// <summary>
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalAsName">is the optional as-provided name</param>
         /// <returns>on-Update clause without assignments</returns>
         public static OnUpdateClause Create(
-            String windowName,
-            String optionalAsName)
+            string windowName,
+            string optionalAsName)
         {
             return new OnUpdateClause(windowName, optionalAsName);
         }
@@ -45,8 +46,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="windowName">is the named window name</param>
         /// <param name="optionalAsName">is the as-provided name of the named window</param>
         public OnUpdateClause(
-            String windowName,
-            String optionalAsName)
+            string windowName,
+            string optionalAsName)
         {
             WindowName = windowName;
             OptionalAsName = optionalAsName;

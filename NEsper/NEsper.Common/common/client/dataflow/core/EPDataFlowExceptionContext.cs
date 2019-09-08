@@ -22,10 +22,10 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="operatorPrettyPrint">pretty-print of operator</param>
         /// <param name="throwable">cause</param>
         public EPDataFlowExceptionContext(
-            String dataFlowName,
-            String operatorName,
-            Object operatorNumber,
-            Object operatorPrettyPrint,
+            string dataFlowName,
+            string operatorName,
+            object operatorNumber,
+            object operatorPrettyPrint,
             Exception throwable)
         {
             DataFlowName = dataFlowName;

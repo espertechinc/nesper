@@ -20,9 +20,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionRef(string @ref)
         {
-            if (@ref == "refSet0") {
-                Console.WriteLine("stop");
-            }
             _ref = @ref;
         }
 

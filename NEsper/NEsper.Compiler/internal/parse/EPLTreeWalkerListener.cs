@@ -2083,7 +2083,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitBuiltin_firstlastwindow(EsperEPL2GrammarParser.Builtin_firstlastwindowContext ctx)
         {
-            var stateType = AggregationAccessorLinearType.FromString(ctx.firstLastWindowAggregation().q.Text);
+            var stateType = AggregationAccessorLinearTypeExtensions.FromString(ctx.firstLastWindowAggregation().q.Text);
             ExprNode expr = new ExprAggMultiFunctionLinearAccessNode(stateType);
             ASTExprHelper.ExprCollectAddSubNodes(expr, ctx.firstLastWindowAggregation().expressionListWithNamed(), astExprNodeMap);
             if (ctx.firstLastWindowAggregation().chainedFunction() != null)

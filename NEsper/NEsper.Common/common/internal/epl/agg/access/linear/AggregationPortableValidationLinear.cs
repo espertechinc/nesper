@@ -28,12 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             ContainedEventType = containedEventType;
         }
 
-        public EventType ContainedEventType { get; private set; }
-
-        public void SetContainedEventType(EventType containedEventType)
-        {
-            ContainedEventType = containedEventType;
-        }
+        public EventType ContainedEventType { get; set; }
 
         public void ValidateIntoTableCompatible(
             string tableExpression,

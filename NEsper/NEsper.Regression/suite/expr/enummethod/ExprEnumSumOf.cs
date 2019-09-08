@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl = "@Name('s0') select " +
                           "{1d, 2d}.sumOf() as c0," +
-                          "{BigInteger.ValueOf(1), BigInteger.ValueOf(2)}.sumOf() as c1, " +
+                          "{BigIntegerHelper.ValueOf(1), BigIntegerHelper.ValueOf(2)}.sumOf() as c1, " +
                           "{1L, 2L}.sumOf() as c2, " +
                           "{1L, 2L, null}.sumOf() as c3 " +
                           " from SupportBean";

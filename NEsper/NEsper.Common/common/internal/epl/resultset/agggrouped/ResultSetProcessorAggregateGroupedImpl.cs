@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
     ///     This processor does perform grouping by computing MultiKey group-by keys for each row.
     ///     The processor generates one row for each event entering (new event) and one row for each event leaving (old event).
     ///     <para />
-    ///     Aggregation state is a table of rows held by aggegation service where the row key is the group-by MultiKey.
+    ///     Aggregation state is a table of rows held by aggregation service where the row key is the group-by MultiKey.
     /// </summary>
     public class ResultSetProcessorAggregateGroupedImpl
     {
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 .ForEach(typeof(MultiKey<EventBean>), "aNewEvent", REF_NEWDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewEvent"), "Array")))
+                    ExprDotName(Ref("aNewEvent"), "Array"))
                 .DeclareVar<object>(
                     "mk",
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 .ForEach(typeof(MultiKey<EventBean>), "anOldEvent", REF_OLDDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("anOldEvent"), "Array")))
+                    ExprDotName(Ref("anOldEvent"), "Array"))
                 .DeclareVar<object>(
                     "mk",
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()))
@@ -422,11 +422,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .DeclareVar<int>("cpid", ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"));
 
                 {
-                    var forLoop = methodNode.Block.ForEach(typeof(MultiKey<object>), "row", Ref("resultSet"));
+                    var forLoop = methodNode.Block
+                        .ForEach(typeof(MultiKey<EventBean>), "row", Ref("resultSet"));
                     forLoop.Increment("countInputRows")
                         .DeclareVar<EventBean[]>(
                             "eventsPerStream",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")))
+                            ExprDotName(Ref("row"), "Array"))
                         .ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -481,14 +482,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(EventBean[]),
                 "GenerateOutputEventsJoin",
                 CodegenNamedParam.From(
-                    typeof(ISet<object>),
-                    "resultSet",
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE),
+                    typeof(ISet<MultiKey<EventBean>>), "resultSet",
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorAggregateGroupedImpl),
                 classScope,
                 code);
@@ -520,7 +517,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .AssignArrayElement(
                         Ref("eventsPerStream"),
                         Constant(0),
-                        Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
+                        ExprDotName(Ref("it"), "Current"))
                     .DeclareVar<object>(
                         "groupKey",
                         LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -533,7 +530,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .BlockEnd();
             }
 
-            method.Block.DeclareVar<ArrayDeque<object>>(
+            method.Block.DeclareVar<ArrayDeque<EventBean>>(
                     "deque",
                     StaticMethod(
                         typeof(ResultSetProcessorUtil),
@@ -550,7 +547,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             var iterator = parent
-                .MakeChild(typeof(IEnumerator<object>), typeof(ResultSetProcessorAggregateGroupedImpl), classScope)
+                .MakeChild(typeof(IEnumerator<EventBean>), typeof(ResultSetProcessorAggregateGroupedImpl), classScope)
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
@@ -574,7 +571,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             iterator.Block.DeclareVar<EventBean[]>(
                     "eventsPerStream",
                     NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar<IList<object>>("outgoingEvents", NewInstance(typeof(List<object>)))
+                .DeclareVar<IList<EventBean>>("outgoingEvents", NewInstance(typeof(List<EventBean>)))
                 .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)));
 
             {
@@ -750,14 +747,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .DeclareVarNoInit(typeof(EventBean[]), "eventsPerStream");
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(MultiKey<object>), "row", Ref("outputEvents"));
+                    var forEach = methodNode.Block
+                        .ForEach(typeof(MultiKey<EventBean>), "row", Ref("outputEvents"));
+
                     forEach.ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
                             ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                             ConstantNull())
-                        .AssignRef("eventsPerStream", Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")));
+                        .AssignRef("eventsPerStream", ExprDotName(Ref("row"), "Array"));
 
                     if (forge.OptionalHavingNode != null) {
                         forEach.IfCondition(
@@ -801,7 +800,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedJoinUnkeyed",
                 CodegenNamedParam.From(
-                    typeof(ISet<object>), "outputEvents",
+                    typeof(ISet<MultiKey<EventBean>>), "outputEvents",
                     typeof(object[]), "groupByKeys",
                     typeof(bool), NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
@@ -953,7 +952,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .DeclareVar<int>("count", Constant(0));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(MultiKey<object>), "row", Ref("outputEvents"));
+                    var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "row", Ref("outputEvents"));
                     forEach.DeclareVar<object>("groupKey", ArrayAtIndex(Ref("groupByKeys"), Ref("count")))
                         .ExprDotMethod(
                             REF_AGGREGATIONSVC,
@@ -963,7 +962,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             ConstantNull())
                         .DeclareVar<EventBean[]>(
                             "eventsPerStream",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")));
+                            ExprDotName(Ref("row"), "Array"));
 
                     if (forge.OptionalHavingNode != null) {
                         forEach.IfCondition(
@@ -1008,7 +1007,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedJoinPerKey",
                 CodegenNamedParam.From(
-                    typeof(ISet<object>), "outputEvents",
+                    typeof(ISet<MultiKey<EventBean>>), "outputEvents",
                     typeof(object[]), "groupByKeys",
                     typeof(bool), NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
@@ -1138,10 +1137,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenMethod method)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -1160,12 +1159,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 instance);
             var generateOutputBatchedJoinPerKey = GenerateOutputBatchedJoinPerKeyCodegen(forge, classScope, instance);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, EventBean>>(
                     "lastPerGroupNew",
-                    NewInstance(typeof(LinkedHashMap<object, object>)))
-                .DeclareVar<IDictionary<object, object>>(
+                    NewInstance(typeof(LinkedHashMap<object, EventBean>)))
+                .DeclareVar<IDictionary<object, EventBean>>(
                     "lastPerGroupOld",
-                    forge.IsSelectRStream ? NewInstance(typeof(LinkedHashMap<object, object>)) : ConstantNull());
+                    forge.IsSelectRStream ? NewInstance(typeof(LinkedHashMap<object, EventBean>)) : ConstantNull());
 
             method.Block.DeclareVar<IDictionary<object, object>>("newEventsSortKey", ConstantNull())
                 .DeclareVar<IDictionary<object, object>>("oldEventsSortKey", ConstantNull());
@@ -1246,7 +1246,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
@@ -1261,7 +1261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             "oldEventsArr",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 REF_AGENTINSTANCECONTEXT));
@@ -1306,7 +1306,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     ConstantNull(),
                     Constant(-1)));
 
-            method.Block.DeclareVar<IList<object>>("newEvents", NewInstance(typeof(List<object>)));
+            method.Block.DeclareVar<IList<EventBean>>("newEvents", NewInstance(typeof(List<EventBean>)));
             method.Block.DeclareVar<IList<object>>("newEventsSortKey", ConstantNull());
             if (forge.IsSorting) {
                 method.Block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)));
@@ -1336,7 +1336,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")))
                             .DeclareVar<int>("count", Constant(0));
                         {
-                            var forloop = ifNewData.ForEach(typeof(MultiKey<object>), "aNewData", Ref("newData"));
+                            var forloop = ifNewData.ForEach(typeof(MultiKey<EventBean>), "aNewData", Ref("newData"));
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
@@ -1353,7 +1353,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -1371,7 +1371,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")))
                             .DeclareVar<int>("count", Constant(0));
                         {
-                            var forloop = ifOldData.ForEach(typeof(MultiKey<object>), "aOldData", Ref("oldData"));
+                            var forloop = ifOldData.ForEach(typeof(MultiKey<EventBean>), "aOldData", Ref("oldData"));
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
@@ -1388,7 +1388,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -1442,7 +1442,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")))
                             .DeclareVar<int>("count", Constant(0));
                         {
-                            var forloop = ifNewData.ForEach(typeof(MultiKey<object>), "aNewData", Ref("newData"));
+                            var forloop = ifNewData.ForEach(typeof(MultiKey<EventBean>), "aNewData", Ref("newData"));
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
@@ -1475,7 +1475,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             forloop.IfCondition(Ref("pass"))
@@ -1487,7 +1487,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")))
                             .DeclareVar<int>("count", Constant(0));
                         {
-                            var forloop = ifOldData.ForEach(typeof(MultiKey<object>), "aOldData", Ref("oldData"));
+                            var forloop = ifOldData.ForEach(typeof(MultiKey<EventBean>), "aOldData", Ref("oldData"));
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
@@ -1520,7 +1520,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             forloop.IfCondition(Ref("pass"))
@@ -1553,7 +1553,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
@@ -1646,7 +1646,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")))
                         .DeclareVar<int>("count", Constant(0));
                     {
-                        ifOldData.ForEach(typeof(MultiKey<object>), "anOldData", Ref("oldData"))
+                        ifOldData.ForEach(typeof(MultiKey<EventBean>), "anOldData", Ref("oldData"))
                             .DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                             .DeclareVar<EventBean[]>(
                                 "eventsPerStream",
@@ -1689,13 +1689,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 method.Block.WhileLoop(ExprDotMethod(Ref("entryEnumerator"), "MoveNext"))
                     .DeclareVar<KeyValuePair<object, EventBean[]>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, EventBean[]>), ExprDotName(Ref("entryEnumerator"), "Current")))
+                        ExprDotName(Ref("entryEnumerator"), "Current"))
                     .IfCondition(
                         Not(ExprDotMethod(Ref("workCollection"), "ContainsKey", ExprDotName(Ref("entry"), "Key"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
+                        ExprDotName(Ref("entry"), "Value"),
                         ConstantTrue(),
                         REF_ISSYNTHESIZE,
                         Ref("newEvents"),
@@ -1799,12 +1799,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 instance);
             var generateOutputBatchedViewPerKey = GenerateOutputBatchedViewPerKeyCodegen(forge, classScope, instance);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, EventBean>>(
                     "lastPerGroupNew",
-                    NewInstance(typeof(LinkedHashMap<object, object>)))
-                .DeclareVar<IDictionary<object, object>>(
+                    NewInstance(typeof(LinkedHashMap<object, EventBean>)))
+                .DeclareVar<IDictionary<object, EventBean>>(
                     "lastPerGroupOld",
-                    forge.IsSelectRStream ? NewInstance(typeof(LinkedHashMap<object, object>)) : ConstantNull());
+                    forge.IsSelectRStream ? NewInstance(typeof(LinkedHashMap<object, EventBean>)) : ConstantNull());
 
             method.Block.DeclareVar<IDictionary<object, object>>("newEventsSortKey", ConstantNull())
                 .DeclareVar<IDictionary<object, object>>("oldEventsSortKey", ConstantNull());
@@ -1820,13 +1821,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_VIEWEVENTSLIST);
+                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -1892,7 +1893,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
@@ -1907,7 +1908,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             "oldEventsArr",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 REF_AGENTINSTANCECONTEXT));
@@ -1952,7 +1953,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     ConstantNull(),
                     Constant(-1)));
 
-            method.Block.DeclareVar<IList<object>>("newEvents", NewInstance(typeof(List<object>)));
+            method.Block.DeclareVar<IList<EventBean>>("newEvents", NewInstance(typeof(List<EventBean>)));
             method.Block.DeclareVar<IList<object>>("newEventsSortKey", ConstantNull());
             if (forge.IsSorting) {
                 method.Block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)));
@@ -1968,10 +1969,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                     forEach.DeclareVar<EventBean[]>(
                             "newData",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                            ExprDotName(Ref("pair"), "First"))
                         .DeclareVar<EventBean[]>(
                             "oldData",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                            ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2000,7 +2001,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -2038,7 +2039,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -2071,10 +2072,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                     forEach.DeclareVar<EventBean[]>(
                             "newData",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                            ExprDotName(Ref("pair"), "First"))
                         .DeclareVar<EventBean[]>(
                             "oldData",
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                            ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2128,7 +2129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             forloop.IfCondition(Ref("pass"))
@@ -2176,7 +2177,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     "pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             forloop.IfCondition(Ref("pass"))
@@ -2213,7 +2214,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
@@ -2268,10 +2269,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2348,13 +2349,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 method.Block.WhileLoop(ExprDotMethod(Ref("entryEnumerator"), "MoveNext"))
                     .DeclareVar<KeyValuePair<object, EventBean[]>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, EventBean[]>), ExprDotName(Ref("entryEnumerator"), "Current")))
+                        ExprDotName(Ref("entryEnumerator"), "Current"))
                     .IfCondition(
                         Not(ExprDotMethod(Ref("workCollection"), "ContainsKey", ExprDotName(Ref("entry"), "Key"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
+                        ExprDotName(Ref("entry"), "Value"),
                         ConstantTrue(),
                         REF_ISSYNTHESIZE,
                         Ref("newEvents"),
@@ -2393,10 +2394,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2459,13 +2460,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, EventBean>),
+                        typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("keysAndEvents"))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
+                        ExprDotName(Ref("entry"), "Value"),
                         REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
                         Ref("resultEvents"),
@@ -2616,20 +2617,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedViewUnkeyed",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    "outputEvents",
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(ICollection<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys",
-                    typeof(EventBean[]),
-                    "eventsPerStream"),
+                    typeof(EventBean[]), "outputEvents",
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(ICollection<EventBean>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys",
+                    typeof(EventBean[]), "eventsPerStream"),
                 typeof(ResultSetProcessorAggregateGrouped),
                 classScope,
                 code);

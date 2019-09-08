@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.util
                 return ByteTypeCaster;
             }
 
-            if (targetType == typeof(BigInteger)) {
+            if (targetType.IsBigInteger()) {
                 return BigIntegerTypeCaster;
             }
 

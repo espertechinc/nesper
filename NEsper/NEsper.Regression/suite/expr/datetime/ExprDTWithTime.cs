@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startTime = "2002-05-30T09:00:00.000";
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-            var fields = "val0,val1,val2,val3".SplitCsv();
+            var fields = new [] { "val0","val1","val2","val3" };
             epl = "@Name('s0') select " +
                   "current_timestamp.withTime(varhour, varmin, varsec, varmsec) as val0," +
                   "DtoDate.withTime(varhour, varmin, varsec, varmsec) as val1," +

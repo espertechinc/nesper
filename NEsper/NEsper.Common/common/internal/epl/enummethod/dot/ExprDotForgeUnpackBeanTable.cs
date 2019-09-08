@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             methodNode.Block
                 .IfRefNullReturnNull("target")
                 .MethodReturn(
-                    ExprDotMethod(eventToPublic, "convertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
+                    ExprDotMethod(eventToPublic, "ConvertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
             return LocalMethod(methodNode, inner);
         }
 

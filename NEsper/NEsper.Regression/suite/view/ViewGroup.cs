@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate data window declaration: Invalid use of the 'groupwin' view, the view requires one or more child views to group, or consIder using the group-by clause");
+                    "Failed to validate data window declaration: Invalid use of the 'groupwin' view, the view requires one or more child views to group, or consider using the group-by clause");
 
                 epl = "select * from SupportBean#keepall#groupwin(TheString)#length(2)";
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p1,sp2".SplitCsv();
+                var fields = new [] { "p1","sp2" };
                 var epl = "@Name('s0') select p1,sum(p2) as sp2 from OAEventStringInt#groupwin(p1)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1024,7 +1024,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 22));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
@@ -1043,7 +1043,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 3));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
@@ -1062,7 +1062,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 25));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {23.0}, new object[] {24.0}, new object[] {25.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
@@ -1070,7 +1070,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
@@ -1089,7 +1089,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 6));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {4.0}, new object[] {5.0}, new object[] {6.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
@@ -1097,7 +1097,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Price".SplitCsv(),
+                    new [] { "Price" },
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,

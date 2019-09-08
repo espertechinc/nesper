@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SendMDEvent(env, "DELL", 20, 0L);
                 SendTimer(env, 1000);
 
-                var fields = "symbol,sumPrice".SplitCsv();
+                var fields = new [] { "Symbol","sumPrice" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
                     fields,

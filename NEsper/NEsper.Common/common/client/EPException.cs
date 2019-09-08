@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client
         /// <summary> Ctor.</summary>
         /// <param name="message">error message
         /// </param>
-        public EPException(String message)
+        public EPException(string message)
             : base(message)
         {
         }
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client
         /// <param name="cause">inner exception
         /// </param>
         public EPException(
-            String message,
+            string message,
             Exception cause)
             : base(message, cause)
         {

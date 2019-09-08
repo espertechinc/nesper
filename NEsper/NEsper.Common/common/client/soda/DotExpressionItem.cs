@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="parameters">are optional and should only be provided if this chain item is a method;Parameters are expressions for parameters to the method (use only for methods and not for properties unless mapped property). </param>
         /// <param name="isProperty">true if this is a nested property name</param>
         public DotExpressionItem(
-            String name,
+            string name,
             IList<Expression> parameters,
             bool isProperty)
         {
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write("(");
                     if (!item.Parameters.IsEmpty())
                     {
-                        String delimiter = "";
+                        string delimiter = "";
                         foreach (var param in item.Parameters)
                         {
                             writer.Write(delimiter);

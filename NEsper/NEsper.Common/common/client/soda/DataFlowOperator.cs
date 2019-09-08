@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.soda
     public class DataFlowOperator
     {
         private IList<AnnotationPart> annotations;
-        private String operatorName;
+        private string operatorName;
         private IList<DataFlowOperatorInput> input;
         private IList<DataFlowOperatorOutput> output;
         private IList<DataFlowOperatorParameter> parameters;
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.client.soda
             if (!input.IsEmpty())
             {
                 writer.Write("(");
-                String delimiter = "";
+                string delimiter = "";
                 foreach (DataFlowOperatorInput inputItem in input)
                 {
                     writer.Write(delimiter);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.client.soda
             if (!output.IsEmpty())
             {
                 writer.Write(" -> ");
-                String delimiter = "";
+                string delimiter = "";
                 foreach (DataFlowOperatorOutput outputItem in output)
                 {
                     writer.Write(delimiter);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.client.soda
             {
                 writer.Write(" {");
                 formatter.BeginDataFlowOperatorDetails(writer);
-                String delimiter = ",";
+                string delimiter = ",";
                 int count = 0;
                 foreach (DataFlowOperatorParameter parameter in parameters)
                 {
@@ -154,9 +154,9 @@ namespace com.espertech.esper.common.client.soda
         {
             if (inputItem.InputStreamNames.Count > 1)
             {
-                String delimiterNames = "";
+                string delimiterNames = "";
                 writer.Write("(");
-                foreach (String name in inputItem.InputStreamNames)
+                foreach (string name in inputItem.InputStreamNames)
                 {
                     writer.Write(delimiterNames);
                     writer.Write(name);
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write("<");
-            String typeDelimiter = "";
+            string typeDelimiter = "";
             foreach (DataFlowOperatorOutputType type in types)
             {
                 writer.Write(typeDelimiter);

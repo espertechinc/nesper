@@ -45,15 +45,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            OrderedDictionary<IComparable, object> sort = new OrderedDictionary<IComparable, object>();
+            OrderedDictionary<object, object> sort = new OrderedDictionary<object, object>();
             bool hasColl = false;
 
             ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
             object[] props = resultEvent.Properties;
 
-            ICollection<object> values = (ICollection<object>) enumcoll;
-            foreach (object next in values) {
+            foreach (object next in enumcoll) {
                 props[0] = next;
 
                 IComparable comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);

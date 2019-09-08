@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             RegressionEnvironment env,
             string epl)
         {
-            var fields = "flag".SplitCsv();
+            var fields = new [] { "flag" };
             env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
 
             env.SendEventBean(new SupportSelectorWithListEvent("1"));
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean("E4", 16));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a[0].Id,a[1].Id,b.TheString".SplitCsv(),
+                    new [] { "a[0].Id","a[1].Id","b.TheString" },
                     new object[] {"E1", "E2", "E4"});
                 env.UndeployAll();
 
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean("E14", 26));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a[0].Id,a[1].Id,b.TheString,c.TheString".SplitCsv(),
+                    new [] { "a[0].Id","a[1].Id","b.TheString","c.TheString" },
                     new object[] {"E10", "E11", "E12", "E14"});
 
                 env.UndeployAll();
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 // try define-clause
-                var fieldsOne = "a_array[0].TheString,a_array[1].TheString,b.TheString".SplitCsv();
+                var fieldsOne = new [] { "a_array[0].TheString","a_array[1].TheString","b.TheString" };
                 var textOne = "@Name('s0') select * from SupportBean " +
                               "match_recognize (" +
                               " measures A as a_array, B as b " +
@@ -509,7 +509,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "allOfX".SplitCsv(),
+                    new [] { "allOfX" },
                     new[] {typeof(bool?)});
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -763,7 +763,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventMap(@event, "MySchema");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "mymax".SplitCsv(),
+                    new [] { "mymax" },
                     new object[] {1.0});
 
                 env.UndeployAll();
@@ -875,7 +875,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val1,val2,val3,val4".SplitCsv();
+                var fields = new [] { "val1","val2","val3","val4" };
                 var epl = "@Name('s0') select " +
                           "SupportBean_ST0_Container.makeSampleList().where(x -> x.P00 < 5) as val1, " +
                           "SupportBean_ST0_Container.makeSampleArray().where(x -> x.P00 < 5) as val2, " +
@@ -919,7 +919,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test UDF returning scalar values collection
-                fields = "val0,val1,val2,val3".SplitCsv();
+                fields = new [] { "val0","val1","val2","val3" };
                 var eplScalar = "@Name('s0') select " +
                                 "SupportCollection.makeSampleListString().where(x -> x != 'E1') as val0, " +
                                 "SupportCollection.makeSampleArrayString().where(x -> x != 'E1') as val1, " +

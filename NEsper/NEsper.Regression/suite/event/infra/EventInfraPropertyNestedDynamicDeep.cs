@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var propertyNames = "n1,n2,n3,n4,n5,n6".SplitCsv();
+            var propertyNames = new [] { "n1","n2","n3","n4","n5","n6" };
             var eventType = env.Statement("s0").EventType;
             foreach (var propertyName in propertyNames) {
                 Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                       ")";
             env.CompileDeploy(soda, epl).AddListener("s0");
 
-            var fields = "a,b".SplitCsv();
+            var fields = new [] { "a","b" };
             var beans = new SupportBean[4];
             for (var i = 0; i < beans.Length; i++) {
                 beans[i] = new SupportBean("E" + i, i);

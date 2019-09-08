@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprMinMaxRowNodeForgeEval : ExprEvaluator
     {
-        private readonly MinMaxTypeEnum.Computer computer;
+        private readonly MinMaxType.Computer computer;
 
         private readonly ExprMinMaxRowNodeForge forge;
 
@@ -33,31 +33,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForge[] forges)
         {
             this.forge = forge;
-            if (forge.EvaluationType == typeof(BigInteger)) {
+            if (forge.EvaluationType.IsBigInteger()) {
                 var convertors = new BigIntegerCoercer[evaluators.Length];
                 for (var i = 0; i < evaluators.Length; i++) {
                     convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigInteger(forges[i].EvaluationType);
                 }
 
-                computer = new MinMaxTypeEnum.ComputerBigIntCoerce(
+                computer = new MinMaxType.ComputerBigIntCoerce(
                     evaluators,
                     convertors,
                     forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX);
             }
-            else if (forge.EvaluationType.GetBoxedType() == typeof(decimal?)) {
+            else if (forge.EvaluationType.IsDecimal()) {
                 if (forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                    computer = new MinMaxTypeEnum.MaxComputerDecimalCoerce(evaluators);
+                    computer = new MinMaxType.MaxComputerDecimalCoerce(evaluators);
                 }
                 else {
-                    computer = new MinMaxTypeEnum.MinComputerDecimalCoerce(evaluators);
+                    computer = new MinMaxType.MinComputerDecimalCoerce(evaluators);
                 }
             }
             else {
                 if (forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                    computer = new MinMaxTypeEnum.MaxComputerDoubleCoerce(evaluators);
+                    computer = new MinMaxType.MaxComputerDoubleCoerce(evaluators);
                 }
                 else {
-                    computer = new MinMaxTypeEnum.MinComputerDoubleCoerce(evaluators);
+                    computer = new MinMaxType.MinComputerDoubleCoerce(evaluators);
                 }
             }
         }
@@ -85,13 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var nodes = forge.ForgeRenderable.ChildNodes;
 
             CodegenExpression expression;
-            if (resultType == typeof(BigInteger)) {
+            if (resultType.IsBigInteger()) {
                 var convertors = new BigIntegerCoercer[nodes.Length];
                 for (var i = 0; i < nodes.Length; i++) {
                     convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigInteger(nodes[i].Forge.EvaluationType);
                 }
 
-                expression = MinMaxTypeEnum.ComputerBigIntCoerce.Codegen(
+                expression = MinMaxType.ComputerBigIntCoerce.Codegen(
                     forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX,
                     codegenMethodScope,
                     exprSymbol,
@@ -99,9 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     nodes,
                     convertors);
             }
-            else if (resultType.GetBoxedType() == typeof(decimal?)) {
+            else if (resultType.IsDecimal()) {
                 if (forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                    expression = MinMaxTypeEnum.MaxComputerDecimalCoerce.Codegen(
+                    expression = MinMaxType.MaxComputerDecimalCoerce.Codegen(
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope,
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         resultType);
                 }
                 else {
-                    expression = MinMaxTypeEnum.MinComputerDecimalCoerce.Codegen(
+                    expression = MinMaxType.MinComputerDecimalCoerce.Codegen(
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope,
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
             else {
                 if (forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                    expression = MinMaxTypeEnum.MaxComputerDoubleCoerce.Codegen(
+                    expression = MinMaxType.MaxComputerDoubleCoerce.Codegen(
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope,
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         resultType);
                 }
                 else {
-                    expression = MinMaxTypeEnum.MinComputerDoubleCoerce.Codegen(
+                    expression = MinMaxType.MinComputerDoubleCoerce.Codegen(
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope,

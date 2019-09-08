@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="statementName">statement name</param>
         /// <param name="agentInstanceId">agent instance id</param>
         public VirtualDataWindowEventConsumerRemove(
-            String namedWindowName,
-            Object consumerObject,
-            String statementName,
+            string namedWindowName,
+            object consumerObject,
+            string statementName,
             int agentInstanceId)
             : base(namedWindowName, consumerObject, statementName, agentInstanceId)
         {

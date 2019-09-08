@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             bool isNot,
             CodegenExpression expression)
         {
-            this._isNot = isNot;
+            _isNot = isNot;
             Expression = expression;
         }
 

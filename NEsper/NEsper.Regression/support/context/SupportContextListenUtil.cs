@@ -73,12 +73,12 @@ namespace com.espertech.esper.regressionlib.support.context
                     var allocated = (ContextStateEventContextPartitionAllocated) @event;
                     if (allocated.Identifier is ContextPartitionIdentifierInitiatedTerminated) {
                         var ident = (ContextPartitionIdentifierInitiatedTerminated) allocated.Identifier;
-                        Assert.IsNotNull(ident.Properties.Get("s0"));
+                        Assert.IsNotNull(ident.Properties.Get("S0"));
                     }
                     else if (allocated.Identifier is ContextPartitionIdentifierNested) {
                         var nested = (ContextPartitionIdentifierNested) allocated.Identifier;
                         var ident = (ContextPartitionIdentifierInitiatedTerminated) nested.Identifiers[1];
-                        Assert.IsNotNull(ident.Properties.Get("s0"));
+                        Assert.IsNotNull(ident.Properties.Get("S0"));
                     }
                 }
             };

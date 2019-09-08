@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 " from SupportMarketDataBean",
                 path);
 
-            var stmtTextDelete = "on SupportBean_A as s0 delete from MyWindow as win where win.TheString = s0.Id";
+            var stmtTextDelete = "on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id";
             env.CompileDeploy(stmtTextDelete, path);
 
             TrySend(env, path, listenerWindow, 4, 1000, 8);

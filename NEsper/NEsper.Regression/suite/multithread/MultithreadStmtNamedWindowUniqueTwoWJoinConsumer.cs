@@ -62,9 +62,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 config);
             runtime.Initialize();
 
-            var epl = "create window EventOneWindow#unique(key) as EventOne;\n" +
+            var epl = "create window EventOneWindow#unique(Key) as EventOne;\n" +
                       "insert into EventOneWindow select * from EventOne;\n" +
-                      "create window EventTwoWindow#unique(key) as EventTwo;\n" +
+                      "create window EventTwoWindow#unique(Key) as EventTwo;\n" +
                       "insert into EventTwoWindow select * from EventTwo;\n" +
                       "@Name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
             var deployed = CompileDeploy(epl, runtime, config);
@@ -131,8 +131,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long? previousIdE1 = null;
             long? previousIdE2 = null;
             foreach (var events in delivered) {
-                var idE1 = events[0].Get("e1.instance").AsLong();
-                var idE2 = events[0].Get("e2.instance").AsLong();
+                var idE1 = events[0].Get("e1.Instance").AsLong();
+                var idE2 = events[0].Get("e2.Instance").AsLong();
                 // comment-in when needed: System.out.println("Received " + IdE1 + " " + IdE2);
 
                 if (previousIdE1 != null) {

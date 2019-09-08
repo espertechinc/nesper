@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:30.000GMT-0:00");
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "sb".SplitCsv(),
+                new [] { "sb" },
                 new[] {
                     new object[] {b2},
                     new object[] {b3}

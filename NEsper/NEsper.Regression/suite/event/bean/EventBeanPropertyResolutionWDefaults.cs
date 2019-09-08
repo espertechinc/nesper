@@ -70,40 +70,40 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select `seconds`, `order` from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select `Seconds`, `Order` from SomeKeywords").AddListener("s0");
 
                 object theEvent = new SupportBeanReservedKeyword(1, 2);
                 env.SendEventBean(theEvent, "SomeKeywords");
                 var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(1, eventBean.Get("seconds"));
-                Assert.AreEqual(2, eventBean.Get("order"));
+                Assert.AreEqual(1, eventBean.Get("Seconds"));
+                Assert.AreEqual(2, eventBean.Get("Order"));
 
                 env.UndeployAll();
                 env.CompileDeploy("@Name('s0') select * from `Order`").AddListener("s0");
 
                 env.SendEventBean(theEvent, "Order");
                 eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(1, eventBean.Get("seconds"));
-                Assert.AreEqual(2, eventBean.Get("order"));
+                Assert.AreEqual(1, eventBean.Get("Seconds"));
+                Assert.AreEqual(2, eventBean.Get("Order"));
 
                 env.UndeployAll();
-                env.CompileDeploy("@Name('s0') select timestamp.`hour` as val from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select Timestamp.`Hour` as val from SomeKeywords").AddListener("s0");
 
                 var bean = new SupportBeanReservedKeyword(1, 2);
                 bean.Timestamp = new SupportBeanReservedKeyword.Inner();
                 bean.Timestamp.Hour = 10;
-                env.SendEventBean(bean, "SomeKeywords");
+                env.SendEventBean(bean, "" + "SomeKeywords" + "");
                 eventBean = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.AreEqual(10, eventBean.Get("val"));
                 env.UndeployAll();
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-                        "@Name('s0') select `candIdate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+                        "@Name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
-                defValues.Put("candIdate book", "Enders Game");
+                defValues.Put("candidate book", "Enders Game");
                 defValues.Put("XML Message Type", "book");
                 defValues.Put("select", 100);
                 defValues.Put("children's books", new[] {50, 51});
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.CompileDeploy("insert into DerivedStream select customer,`from` from MyEvent", path);
                 env.CompileDeploy("create window TheWindow#firstunique(customer,`from`) as DerivedStream", path);
                 env.CompileDeploy(
-                    "on pattern [a=TheWindow -> timer:interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`",
+                    "on pattern [a=TheWindow -> timer:interval(12 hours)] as S0 delete from TheWindow as S1 where S0.a.`from`=S1.`from`",
                     path);
 
                 // test escape in column name

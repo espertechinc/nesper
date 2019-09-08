@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="name">variable name</param>
         /// <param name="expression">expression</param>
         public MatchRecognizeDefine(
-            String name,
+            string name,
             Expression expression)
         {
             Name = name;

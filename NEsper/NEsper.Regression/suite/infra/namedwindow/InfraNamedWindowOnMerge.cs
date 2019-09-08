@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum)
         {
-            var fields = "col1,col2".SplitCsv();
+            var fields = new [] { "col1","col2" };
             var epl = eventRepresentationEnum.GetAnnotationText() +
                       " create schema MyEvent as (in1 string, in2 int);\n";
             epl += eventRepresentationEnum.GetAnnotationText() +
@@ -209,11 +209,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             SendOrderEvent(env, eventRepresentationEnum, "O2", "P2", 3, 300, false);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Statement("nwProd").GetEnumerator(),
-                "ProductId,TotalPrice".SplitCsv(),
+                new [] { "ProductId","TotalPrice" },
                 new[] {new object[] {"P1", 21d}, new object[] {"P2", 3d}});
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Statement("nwOrd").GetEnumerator(),
-                "OrderId,Quantity".SplitCsv(),
+                new [] { "OrderId","Quantity" },
                 new[] {new object[] {"O1", 200}, new object[] {"O2", 300}});
 
             var module = "create schema StreetCarCountSchema (streetId string, carcount int);" +
@@ -333,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "update set mywin.set_DoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
                     path);
                 env.AddListener("merge");
-                var fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".SplitCsv();
+                var fields = new [] { "IntPrimitive","DoublePrimitive","DoubleBoxed" };
 
                 env.SendEventBean(MakeSupportBean("E1", 10, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));

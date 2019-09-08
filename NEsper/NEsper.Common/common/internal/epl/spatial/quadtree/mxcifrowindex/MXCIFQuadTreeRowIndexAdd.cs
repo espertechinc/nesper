@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double width,
             double height,
             object value,
-            MXCIFQuadTree<object> tree,
+            MXCIFQuadTree tree,
             bool unique,
             string indexName)
         {
@@ -50,19 +50,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             return true;
         }
 
-        private static MXCIFQuadTreeNode<object> AddToNode(
+        private static MXCIFQuadTreeNode AddToNode(
             double x,
             double y,
             double width,
             double height,
             object value,
-            MXCIFQuadTreeNode<object> node,
-            MXCIFQuadTree<object> tree,
+            MXCIFQuadTreeNode node,
+            MXCIFQuadTree tree,
             bool unique,
             string indexName)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object>) {
-                var leaf = (MXCIFQuadTreeNodeLeaf<object>) node;
+            if (node is MXCIFQuadTreeNodeLeaf) {
+                var leaf = (MXCIFQuadTreeNodeLeaf) node;
 
                 if (leaf.Count < tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
                     // can be multiple as value can be a collection
@@ -77,19 +77,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 node = Subdivide(leaf, tree, unique, indexName);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             AddToBranch(branch, x, y, width, height, value, tree, unique, indexName);
             return node;
         }
 
         private static void AddToBranch(
-            MXCIFQuadTreeNodeBranch<object> branch,
+            MXCIFQuadTreeNodeBranch branch,
             double x,
             double y,
             double width,
             double height,
             object value,
-            MXCIFQuadTree<object> tree,
+            MXCIFQuadTree tree,
             bool unique,
             string indexName)
         {
@@ -115,9 +115,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             }
         }
 
-        private static MXCIFQuadTreeNode<object> Subdivide(
-            MXCIFQuadTreeNodeLeaf<object> leaf,
-            MXCIFQuadTree<object> tree,
+        private static MXCIFQuadTreeNode Subdivide(
+            MXCIFQuadTreeNodeLeaf leaf,
+            MXCIFQuadTree tree,
             bool unique,
             string indexName)
         {
@@ -130,11 +130,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var bbNE = new BoundingBox(minx + w, miny, leaf.Bb.MaxX, miny + h);
             var bbSW = new BoundingBox(minx, miny + h, minx + w, leaf.Bb.MaxY);
             var bbSE = new BoundingBox(minx + w, miny + h, leaf.Bb.MaxX, leaf.Bb.MaxY);
-            MXCIFQuadTreeNode<object> nw = new MXCIFQuadTreeNodeLeaf<object>(bbNW, leaf.Level + 1, null, 0);
-            MXCIFQuadTreeNode<object> ne = new MXCIFQuadTreeNodeLeaf<object>(bbNE, leaf.Level + 1, null, 0);
-            MXCIFQuadTreeNode<object> sw = new MXCIFQuadTreeNodeLeaf<object>(bbSW, leaf.Level + 1, null, 0);
-            MXCIFQuadTreeNode<object> se = new MXCIFQuadTreeNodeLeaf<object>(bbSE, leaf.Level + 1, null, 0);
-            var branch = new MXCIFQuadTreeNodeBranch<object>(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
+            MXCIFQuadTreeNode nw = new MXCIFQuadTreeNodeLeaf(bbNW, leaf.Level + 1, null, 0);
+            MXCIFQuadTreeNode ne = new MXCIFQuadTreeNodeLeaf(bbNE, leaf.Level + 1, null, 0);
+            MXCIFQuadTreeNode sw = new MXCIFQuadTreeNodeLeaf(bbSW, leaf.Level + 1, null, 0);
+            MXCIFQuadTreeNode se = new MXCIFQuadTreeNodeLeaf(bbSE, leaf.Level + 1, null, 0);
+            var branch = new MXCIFQuadTreeNodeBranch(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
 
             var data = leaf.Data;
             if (data is XYWHRectangleMultiType) {
@@ -153,8 +153,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         private static void Subdivide(
             XYWHRectangleMultiType rectangle,
-            MXCIFQuadTreeNodeBranch<object> branch,
-            MXCIFQuadTree<object> tree,
+            MXCIFQuadTreeNodeBranch branch,
+            MXCIFQuadTree tree,
             bool unique,
             string indexName)
         {
@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         public static int AddToData(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,

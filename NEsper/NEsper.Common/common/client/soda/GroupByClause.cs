@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Creates a group-by clause from property names.</summary>
         /// <param name="properties">a list of one or more property names</param>
         /// <returns>group-by clause consisting of the properties</returns>
-        public static GroupByClause Create(params String[] properties)
+        public static GroupByClause Create(params string[] properties)
         {
             return new GroupByClause(properties);
         }
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Ctor.</summary>
         /// <param name="properties">is a list of property names</param>
-        public GroupByClause(params String[] properties)
+        public GroupByClause(params string[] properties)
             : this()
         {
             foreach (string property in properties)
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (GroupByClauseExpression child in _groupByExpressions)
             {
                 writer.Write(delimiter);

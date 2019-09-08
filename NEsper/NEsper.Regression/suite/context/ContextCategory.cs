@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Runtime.ContextPartitionService.GetContextStatementNames(
                         deploymentIdContext,
                         "CategoryContext");
-                EPAssertionUtil.AssertEqualsExactOrder(statementNames, "s0".SplitCsv());
+                EPAssertionUtil.AssertEqualsExactOrder(statementNames, new [] { "s0" });
                 Assert.AreEqual(
                     1,
                     env.Runtime.ContextPartitionService.GetContextNestingLevel(deploymentIdContext, "CategoryContext"));
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1,c2,c3,c4,c5".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4","c5" };
                 var epl = "@Name('CTX') create context CtxCategory " +
                           "group by IntPrimitive > 0 as cat1," +
                           "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var first = (ContextPartitionIdentifierCategory) descs[0];
                 var second = (ContextPartitionIdentifierCategory) descs[1];
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    "cat1,cat2".SplitCsv(),
+                    new [] { "cat1","cat2" },
                     new object[] {first.Label, second.Label});
 
                 var desc = partitionAdmin.GetIdentifier(depIdCtx, "CtxCategory", 0);

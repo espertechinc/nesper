@@ -85,7 +85,7 @@ namespace com.espertech.esper.compat
             if (type == typeof(double) || type == typeof(double?)) return typeof(double?);
             if (type == typeof(decimal) || type == typeof(decimal?)) return typeof(decimal?);
             if (type == typeof(float) || type == typeof(float?)) return typeof(float?);
-            if (type == typeof(BigInteger) || type == typeof(BigInteger)) return typeof(BigInteger?);
+            if (type == typeof(BigInteger) || type == typeof(BigInteger?)) return typeof(BigInteger?);
 
             Type boxed;
             if (BoxedTable.TryGetValue(type, out boxed))

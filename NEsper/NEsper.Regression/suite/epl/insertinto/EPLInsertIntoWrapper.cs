@@ -48,13 +48,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("i1").AssertOneGetNewAndReset(),
-                    "TheString,IntPrimitive,p0".SplitCsv(),
+                    new [] { "TheString","IntPrimitive","p0" },
                     new object[] {"E1", 1, 1});
 
                 env.SendEventBean(new SupportEventContainsSupportBean(new SupportBean("E2", 2)));
                 EPAssertionUtil.AssertProps(
                     env.Listener("i2").AssertOneGetNewAndReset(),
-                    "TheString,IntPrimitive,p0".SplitCsv(),
+                    new [] { "TheString","IntPrimitive","p0" },
                     new object[] {"E2", 2, null});
 
                 env.UndeployAll();

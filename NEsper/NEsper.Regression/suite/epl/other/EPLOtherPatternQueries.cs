@@ -120,32 +120,32 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
-                    .AddWithAsProvidedName("s0.Id", "idS0")
-                    .AddWithAsProvidedName("s1.Id", "idS1");
+                    .AddWithAsProvidedName("S0.Id", "idS0")
+                    .AddWithAsProvidedName("S1.Id", "idS1");
                 PatternExpr pattern = Patterns.Or()
-                    .Add(Patterns.EveryFilter("SupportBean_S0", "s0"))
+                    .Add(Patterns.EveryFilter("SupportBean_S0", "S0"))
                     .Add(
-                        Patterns.EveryFilter("SupportBean_S1", "s1")
+                        Patterns.EveryFilter("SupportBean_S1", "S1")
                     );
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model.WhereClause = Expressions.Or()
                     .Add(
                         Expressions.And()
-                            .Add(Expressions.IsNotNull("s0.Id"))
-                            .Add(Expressions.Lt("s0.Id", 100))
+                            .Add(Expressions.IsNotNull("S0.Id"))
+                            .Add(Expressions.Lt("S0.Id", 100))
                     )
                     .Add(
                         Expressions.And()
-                            .Add(Expressions.IsNotNull("s1.Id"))
-                            .Add(Expressions.Ge("s1.Id", 100))
+                            .Add(Expressions.IsNotNull("S1.Id"))
+                            .Add(Expressions.Ge("S1.Id", 100))
                     );
                 model = env.CopyMayFail(model);
 
                 var reverse = model.ToEPL();
-                var stmtText = "select s0.Id as idS0, s1.Id as idS1 " +
-                               "from pattern [every s0=SupportBean_S0" +
-                               " or every s1=SupportBean_S1] " +
-                               "where s0.Id is not null and s0.Id<100 or s1.Id is not null and s1.Id>=100";
+                var stmtText = "select S0.Id as idS0, S1.Id as idS1 " +
+                               "from pattern [every S0=SupportBean_S0" +
+                               " or every S1=SupportBean_S1] " +
+                               "where S0.Id is not null and S0.Id<100 or S1.Id is not null and S1.Id>=100";
                 Assert.AreEqual(stmtText, reverse);
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -171,10 +171,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id as idS0, s1.Id as idS1 " +
-                               "from pattern [every s0=SupportBean_S0" +
-                               " or every s1=SupportBean_S1] " +
-                               "where s0.Id is not null and s0.Id<100 or s1.Id is not null and s1.Id>=100";
+                var stmtText = "@Name('s0') select S0.Id as idS0, S1.Id as idS1 " +
+                               "from pattern [every S0=SupportBean_S0" +
+                               " or every S1=SupportBean_S1] " +
+                               "where S0.Id is not null and S0.Id<100 or S1.Id is not null and S1.Id>=100";
                 var model = env.EplToModel(stmtText);
                 model = env.CopyMayFail(model);
 
@@ -204,10 +204,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id as idS0, s1.Id as idS1 " +
-                               "from pattern [every s0=SupportBean_S0" +
-                               " or every s1=SupportBean_S1] " +
-                               "where (s0.Id is not null and s0.Id < 100) or (s1.Id is not null and s1.Id >= 100)";
+                var stmtText = "@Name('s0') select S0.Id as idS0, S1.Id as idS1 " +
+                               "from pattern [every S0=SupportBean_S0" + 
+                               " or every S1=SupportBean_S1] " +
+                               "where (S0.Id is not null and S0.Id < 100) or (S1.Id is not null and S1.Id >= 100)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
@@ -231,9 +231,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select sum(s0.Id) as sumS0, sum(s1.Id) as sumS1, sum(s0.Id + s1.Id) as sumS0S1 " +
-                    "from pattern [every s0=SupportBean_S0" +
-                    " or every s1=SupportBean_S1]";
+                    "@Name('s0') select sum(S0.Id) as sumS0, sum(S1.Id) as sumS1, sum(S0.Id + S1.Id) as sumS0S1 " +
+                    "from pattern [every S0=SupportBean_S0" +
+                    " or every S1=SupportBean_S1]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select irstream a.Id as IdA, b.Id as IdB, " +
+                var stmtText = "@Name('s0') select irstream a.Id as idA, b.Id as idB, " +
                                "a.P00 as P00A, b.P00 as P00B from pattern [every a=SupportBean_S0" +
                                " -> every b=SupportBean_S0(P00=a.P00)]#time(1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -290,8 +290,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream * from pattern [every(s0=SupportMarketDataBean(Symbol='S0') and " +
-                    "s1=SupportMarketDataBean(Symbol='S1'))]#length(1)";
+                    "@Name('s0') select irstream * from pattern [every(S0=SupportMarketDataBean(Symbol='S0') and " +
+                    "S1=SupportMarketDataBean(Symbol='S1'))]#length(1)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.Milestone(0);
@@ -304,8 +304,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var eventTwo = MakeMarketDataEvent("S1");
                 env.SendEventBean(eventTwo);
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
-                Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
+                Assert.AreEqual(eventOne.Symbol, @event.Get("S0.Symbol"));
+                Assert.AreEqual(eventTwo.Symbol, @event.Get("S1.Symbol"));
                 env.Listener("s0").Reset();
 
                 env.Milestone(2);
@@ -318,11 +318,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(eventFour);
 
                 @event = env.Listener("s0").LastOldData[0];
-                Assert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
-                Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
+                Assert.AreEqual(eventOne.Symbol, @event.Get("S0.Symbol"));
+                Assert.AreEqual(eventTwo.Symbol, @event.Get("S1.Symbol"));
                 @event = env.Listener("s0").LastNewData[0];
-                Assert.AreEqual(eventFour.Symbol, @event.Get("s0.Symbol"));
-                Assert.AreEqual(eventThree.Symbol, @event.Get("s1.Symbol"));
+                Assert.AreEqual(eventFour.Symbol, @event.Get("S0.Symbol"));
+                Assert.AreEqual(eventThree.Symbol, @event.Get("S1.Symbol"));
 
                 env.UndeployAll();
             }

@@ -9,9 +9,6 @@
 using System;
 using System.Text.RegularExpressions;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.@internal.type
 {
     /// <summary>
@@ -20,8 +17,8 @@ namespace com.espertech.esper.common.@internal.type
     [Serializable]
     public class StringPatternSetRegex : StringPatternSet
     {
-        private readonly string patternText;
-        private readonly Regex pattern;
+        private readonly string _patternText;
+        private readonly Regex _pattern;
 
         /// <summary>
         /// Ctor.
@@ -29,8 +26,8 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="patternText">regex to match</param>
         public StringPatternSetRegex(string patternText)
         {
-            this.patternText = patternText;
-            this.pattern = new Regex(patternText);
+            this._patternText = patternText;
+            this._pattern = new Regex(patternText);
         }
 
         /// <summary>
@@ -40,7 +37,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>true for match</returns>
         public bool Match(string stringToMatch)
         {
-            return pattern.IsMatch(stringToMatch);
+            return _pattern.IsMatch(stringToMatch);
         }
 
         public override bool Equals(object o)
@@ -50,14 +47,14 @@ namespace com.espertech.esper.common.@internal.type
 
             StringPatternSetRegex that = (StringPatternSetRegex) o;
 
-            if (!patternText.Equals(that.patternText)) return false;
+            if (!_patternText.Equals(that._patternText)) return false;
 
             return true;
         }
 
         public override int GetHashCode()
         {
-            return patternText.GetHashCode();
+            return _patternText.GetHashCode();
         }
     }
 } // end of namespace

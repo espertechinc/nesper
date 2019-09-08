@@ -84,18 +84,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  TheString = 'a'," +
-                    "  TheInt: 1," +
-                    "  IsTheBool: true," +
-                    "  TheLongOne: 1L," +
-                    "  TheLongTwo: 2," +
-                    "  TheLongThree: null," +
-                    "  TheDoubleOne: 1d," +
-                    "  TheDoubleTwo: 2," +
-                    "  TheFloatOne: 1f," +
-                    "  TheFloatTwo: 2," +
-                    "  TheStringWithSetter: 'b'," +
-                    "  TheSystemProperty: systemProperties('log4j.configuration')" +
+                    "  theString = 'a'," +
+                    "  theInt: 1," +
+                    "  isTheBool: true," +
+                    "  theLongOne: 1L," +
+                    "  theLongTwo: 2," +
+                    "  theLongThree: null," +
+                    "  theDoubleOne: 1d," +
+                    "  theDoubleTwo: 2," +
+                    "  theFloatOne: 1f," +
+                    "  theFloatTwo: 2," +
+                    "  theStringWithSetter: 'b'," +
+                    "  theSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];
@@ -118,20 +118,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
-                    "  TheStringArray: ['a', \"b\"],\n" +
-                    "  TheIntArray: [1, 2, 3],\n" +
-                    "  TheObjectArray: ['a', 1],\n" +
-                    "  TheMap: {\n" +
+                    "  theStringArray: ['a', \"b\"],\n" +
+                    "  theIntArray: [1, 2, 3],\n" +
+                    "  theObjectArray: ['a', 1],\n" +
+                    "  theMap: {\n" +
                     "    a : 10,\n" +
                     "    b : 'xyz'\n" +
                     "  },\n" +
-                    "  TheInnerOp: {\n" +
+                    "  theInnerOp: {\n" +
                     "    fieldOne: 'x',\n" +
                     "    fieldTwo: 2\n" +
                     "  },\n" +
-                    "  TheInnerOpInterface: {\n" +
+                    "  theInnerOpInterface: {\n" +
                     "    class: '" +
-                    typeof(MyOperatorTwoInterfaceImplTwo).Name +
+                    typeof(MyOperatorTwoInterfaceImplTwo).FullName +
                     "'\n" +
                     "  },\n" + // NOTE the last comma here, it's acceptable
                     "}");
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", 1}, instanceTwo.TheObjectArray);
                 EPAssertionUtil.AssertPropsMap(
                     instanceTwo.TheMap,
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     10,
                     "xyz");
                 Assert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);

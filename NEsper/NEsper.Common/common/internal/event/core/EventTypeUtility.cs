@@ -309,22 +309,31 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator,
             CodegenClassScope classScope)
         {
-            var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyWriter));
-            var write = CodegenMethod.MakeMethod(typeof(void), generator, classScope)
-                .AddParam(
-                    CodegenNamedParam.From(typeof(object), "value", typeof(EventBean), "bean"));
-            anonymous.AddMethod("Write", write);
-
             evaluationType = evaluationType.GetBoxedType();
 
-            write.Block
-                .DeclareVar(
-                    eventType.UnderlyingType,
-                    "und",
-                    Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
-                .DeclareVar(evaluationType, "eval", Cast(evaluationType, Ref("value")))
-                .Expression(writer.WriteCodegen(Ref("eval"), Ref("und"), Ref("bean"), write, classScope));
-            return anonymous;
+            var write = new CodegenExpressionLambda(method.Block)
+                .WithParam<object>("value")
+                .WithParam<EventBean>("bean")
+                .WithBody(
+                    block => block
+                        .DeclareVar(
+                            eventType.UnderlyingType,
+                            "und",
+                            Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
+                        .DeclareVar(evaluationType, "eval", Cast(evaluationType, Ref("value")))
+                        .Expression(writer.WriteCodegen(
+                            Ref("eval"), 
+                            Ref("und"), 
+                            Ref("bean"),
+                            method, 
+                            classScope)));
+
+            return NewInstance<ProxyEventPropertyWriter>(write);
+
+            //var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyWriter));
+            //var write = CodegenMethod.MakeMethod(typeof(void), generator, classScope)
+            //    .AddParam(CodegenNamedParam.From(typeof(object), "value", typeof(EventBean), "bean"));
+            //anonymous.AddMethod("Write", write);
         }
 
         public static CodegenExpression CodegenGetterMayMultiKeyWCoerce(

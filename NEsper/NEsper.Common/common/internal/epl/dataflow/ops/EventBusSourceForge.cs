@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                             builder.Method(),
                             symbols,
                             classScope)))
-                .Constant("submitEventBean", submitEventBean);
+                .Constant("IsSubmitEventBean", submitEventBean);
             return builder.Build();
         }
     }

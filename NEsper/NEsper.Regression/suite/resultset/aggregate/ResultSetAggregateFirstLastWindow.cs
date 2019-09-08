@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "TheString,firststring,firstint,laststring,lastint,allint".SplitCsv();
+            var fields = new [] { "TheString","firststring","firstint","laststring","lastint","allint" };
 
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "f0,f1,f2,f3,l0,l1,l2,l3".SplitCsv();
+            var fields = new [] { "f0","f1","f2","f3","l0","l1","l2","l3" };
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "firststring,firstint,laststring,lastint,allint".SplitCsv();
+            var fields = new [] { "firststring","firstint","laststring","lastint","allint" };
 
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length(5) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,firststring,firstint,laststring,lastint,allint".SplitCsv();
+                var fields = new [] { "TheString","firststring","firstint","laststring","lastint","allint" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean.win:length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "firststring,firstint,laststring,lastint,allint".SplitCsv();
+                var fields = new [] { "firststring","firstint","laststring","lastint","allint" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "@Name('s0') on SupportBean(TheString like 'B%') select last(mw.IntPrimitive) as li, max(mw.IntPrimitive) as mi from MyWindowOne mw;";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "li,mi".SplitCsv();
+                var fields = new [] { "li","mi" };
 
                 env.SendEventBean(new SupportBean("A1", 10));
                 env.SendEventBean(new SupportBean("B1", -1));
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                var fields = "p0,p1,p2,n0,n1,n2,l1,l2,l3".SplitCsv();
+                var fields = new [] { "p0","p1","p2","n0","n1","n2","l1","l2","l3" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 epl = "@Name('s0') select first(IntPrimitive, indexvar) as f0 from SupportBean#keepall";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                var fields = "f0".SplitCsv();
+                var fields = new [] { "f0" };
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E1", 11));
                 env.Listener("s0").Reset();
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select Id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "id,w".SplitCsv();
+                var fields = new [] { "id","w" };
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 EPAssertionUtil.AssertProps(
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#length(2) as sa";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "si,wi".SplitCsv();
+                var fields = new [] { "si","wi" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
@@ -780,7 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "si,wi".SplitCsv();
+                var fields = new [] { "si","wi" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -864,7 +864,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 RegressionEnvironment env,
                 bool isCheckStatic)
             {
-                var fields = "f1,f2,w1,l1".SplitCsv();
+                var fields = new [] { "f1","f2","w1","l1" };
                 SupportStaticMethodLib.Invocations.Clear();
 
                 var beanOne = SendEvent(env, "E1", 10d, 100);
@@ -898,7 +898,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "order by ast, bst";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "ast,bst,fas,was,las,fbs,wbs,lbs".SplitCsv();
+                var fields = new [] { "ast","bst","fas","was","las","fbs","wbs","lbs" };
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
@@ -980,7 +980,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "on sa.Id = sb.Id";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "aId,bId,fb,wb,lb".SplitCsv();
+                var fields = new [] { "aId","bId","fb","wb","lb" };
 
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertProps(
@@ -1031,7 +1031,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length_batch(2) as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "fs,ws,ls".SplitCsv();
+                var fields = new [] { "fs","ws","ls" };
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -1090,7 +1090,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length_batch(6) as sb group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,fi,wi,li".SplitCsv();
+                var fields = new [] { "TheString","fi","wi","li" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
@@ -1146,7 +1146,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
 
-                var fields = "firststring,windowstring,laststring".SplitCsv();
+                var fields = new [] { "firststring","windowstring","laststring" };
                 epl = "@Name('s0') select " +
                       "first(TheString) as firststring, " +
                       "window(TheString) as windowstring, " +
@@ -1168,7 +1168,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "firststring,windowstring,laststring".SplitCsv();
+                var fields = new [] { "firststring","windowstring","laststring" };
                 var epl = "create window MyWindowThree#keepall as select * from SupportBean;\n" +
                           "insert into MyWindowThree select * from SupportBean;\n" +
                           "on SupportBean_A delete from MyWindowThree where TheString = Id;\n" +
@@ -1273,13 +1273,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var q = env.Runtime.FireAndForgetService.PrepareQuery(qc);
                 EPAssertionUtil.AssertPropsPerRow(
                     q.Execute().Array,
-                    "f,w,l".SplitCsv(),
+                    new [] { "f","w","l" },
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12), 12}});
 
                 env.SendEventBean(new SupportBean("E1", 13));
                 EPAssertionUtil.AssertPropsPerRow(
                     q.Execute().Array,
-                    "f,w,l".SplitCsv(),
+                    new [] { "f","w","l" },
                     new[] {new object[] {10, IntArray(10, 20, 30, 31, 11, 12, 13), 13}});
 
                 qc = env.CompileFAF(
@@ -1291,8 +1291,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     new object[] {"E2", 20, IntArray(20), 20},
                     new object[] {"E3", 30, IntArray(30, 31), 31}
                 };
-                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, "s,f,w,l".SplitCsv(), expected);
-                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, "s,f,w,l".SplitCsv(), expected);
+                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new [] { "s","f","w","l" }, expected);
+                EPAssertionUtil.AssertPropsPerRow(q.Execute().Array, new [] { "s","f","w","l" }, expected);
 
                 env.UndeployAll();
             }
@@ -1385,7 +1385,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "f1,f2,f3,l1,l2,l3".SplitCsv();
+                var fields = new [] { "f1","f2","f3","l1","l2","l3" };
 
                 var beanOne = SendEvent(env, "E1", 1d, 1);
                 EPAssertionUtil.AssertProps(

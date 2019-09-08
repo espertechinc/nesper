@@ -64,9 +64,9 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     var found = false;
                     var events = assertListener.GetNewDataListFlattened();
                     foreach (var theEvent in events) {
-                        var s0Received = theEvent.Get("s0");
-                        var s1Received = theEvent.Get("s1");
-                        //ThreadLogUtil.info("received", event.Get("s0"), event.Get("s1"));
+                        var s0Received = theEvent.Get("S0");
+                        var s1Received = theEvent.Get("S1");
+                        //ThreadLogUtil.info("received", event.Get("S0"), event.Get("S1"));
                         if (s0Received == eventS0 && s1Received == eventS1) {
                             found = true;
                         }

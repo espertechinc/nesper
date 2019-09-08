@@ -74,16 +74,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     var ident = (string) newEvents[0].Get("TheString");
 
                     processEvent.RouteEventBean(new RoutedBeanEvent(ident), BEAN_TYPENAME);
-                    processEvent.RouteEventMap(Collections.SingletonDataMap("ident", ident), MAP_TYPENAME);
+                    processEvent.RouteEventMap(Collections.SingletonDataMap("Ident", ident), MAP_TYPENAME);
                     processEvent.RouteEventObjectArray(new object[] {ident}, OA_TYPENAME);
 
-                    var xml = "<Myevent ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
+                    var xml = "<Myevent Ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
                     processEvent.RouteEventXMLDOM(SupportXML.GetDocument(xml).DocumentElement, XML_TYPENAME);
 
                     var avroSchema = AvroSchemaUtil
                         .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
                     var datum = new GenericRecord(avroSchema.AsRecordSchema());
-                    datum.Put("ident", ident);
+                    datum.Put("Ident", ident);
                     processEvent.RouteEventAvro(datum, AVRO_TYPENAME);
                 };
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 foreach (var name in new[] { "map", "bean", "oa", "xml", "avro" }) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
-                    Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("ident"));
+                    Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));
                 }
 
                 env.UndeployAll();

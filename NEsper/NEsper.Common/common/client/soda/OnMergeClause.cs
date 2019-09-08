@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -15,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     ///     A clause to insert, update or delete to/from a named window based on a triggering event arriving and correlated to
     ///     the named window events to be updated.
     /// </summary>
+    [Serializable]
     public class OnMergeClause : OnClause
     {
         /// <summary>

@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var milestone = new AtomicLong();
 
-                var fields = "sbs,sbi,sbri".SplitCsv();
+                var fields = new [] { "sbs","sbi","sbri" };
                 var epl =
                     "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where IntPrimitive between RangeStartLong and RangeEndLong";
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select Volume from " +
-                                    "SupportMarketDataBean#length(3) as s0," +
-                                    "SupportBean#length(3) as s1 " +
-                                    " where s0.Volume = s1.IntPrimitive";
+                                    "SupportMarketDataBean#length(3) as S0," +
+                                    "SupportBean#length(3) as S1 " +
+                                    " where S0.Volume = S1.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
                 SendBeanEvent(env, 100);
                 SendMarketEvent(env, 100);

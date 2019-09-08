@@ -215,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A1"});
 
                 env.Milestone(1);
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A3", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A3"});
 
                 env.Milestone(3);
@@ -244,12 +244,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A4"});
                 env.SendEventBean(new SupportBean("A5", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A5"});
 
                 env.Milestone(5);
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A7", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A7"});
 
                 env.UndeployAll();
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B1"});
 
                 env.MilestoneInc(milestone);
@@ -613,14 +613,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B3", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A3", "B3"});
 
                 env.SendEventBean(new SupportBean("A4", 1));
                 env.SendEventBean(new SupportBean("B4", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A4", "B4"});
 
                 env.MilestoneInc(milestone);
@@ -635,7 +635,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B6", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A6", "B6"});
 
                 env.MilestoneInc(milestone);
@@ -675,7 +675,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", null});
 
                 env.MilestoneInc(milestone);
@@ -683,7 +683,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {null, "B1"});
 
                 env.MilestoneInc(milestone);
@@ -699,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {null, "B4"});
 
                 env.MilestoneInc(milestone);
@@ -707,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {null, "B5"});
 
                 env.MilestoneInc(milestone);
@@ -748,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A1"});
 
                 env.MilestoneInc(milestone);
@@ -761,7 +761,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A3", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A3"});
 
                 env.MilestoneInc(milestone);
@@ -774,7 +774,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString".SplitCsv(),
+                    new [] { "a.TheString" },
                     new object[] {"A4"});
 
                 env.MilestoneInc(milestone);
@@ -815,7 +815,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B1"});
 
                 env.MilestoneInc(milestone);
@@ -839,7 +839,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A4", "B4"});
 
                 env.SendEventBean(new SupportBean("A5", 3));
@@ -880,7 +880,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B2", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B2"});
 
                 env.MilestoneInc(milestone);
@@ -895,7 +895,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B3", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A3", "B3"});
 
                 env.MilestoneInc(milestone);
@@ -908,7 +908,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A2", "B5"});
 
                 env.SendEventBean(new SupportBean("A5", 2));
@@ -921,7 +921,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B7", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A6", "B7"});
 
                 env.UndeployAll();
@@ -959,12 +959,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B1"});
                 env.SendEventBean(new SupportBean("B2", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B2"});
 
                 env.MilestoneInc(milestone);
@@ -979,7 +979,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A1", "B4"});
 
                 env.MilestoneInc(milestone);
@@ -988,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new object[] {"A3", "B5"});
 
                 env.MilestoneInc(milestone);
@@ -1002,7 +1002,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var events = env.Listener("s0").GetAndResetLastNewData();
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     events,
-                    "a.TheString,b.TheString".SplitCsv(),
+                    new [] { "a.TheString","b.TheString" },
                     new[] {
                         new object[] {"A1", "B7"},
                         new object[] {"A3", "B7"}
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a.TheString,a.IntPrimitive".SplitCsv();
+                var fields = new [] { "a.TheString","a.IntPrimitive" };
 
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 var epl = "@Name('s0') select * from pattern [every-distinct(TheString, 1 month) a=SupportBean]";

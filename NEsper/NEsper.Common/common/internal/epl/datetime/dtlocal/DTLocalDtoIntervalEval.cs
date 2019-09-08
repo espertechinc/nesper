@@ -86,8 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
         public static CodegenExpression Codegen(
             DTLocalDtoIntervalForge forge,
-            CodegenExpressionRef start,
-            CodegenExpressionRef end,
+            CodegenExpression start,
+            CodegenExpression end,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)

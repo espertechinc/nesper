@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         private static void TryAssertionMultiIdx(RegressionEnvironment env)
         {
-            var fields = "s0.Id,s1.Id".SplitCsv();
+            var fields = new [] { "S0.Id","S1.Id" };
 
             // single row tests
             env.SendEventBean(new SupportBean_S1(101, "a", "b", "c", "d"));
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         private static void TryAssertionSingleIdx(RegressionEnvironment env)
         {
-            var fields = "s0.Id,s1.Id".SplitCsv();
+            var fields = new [] { "S0.Id","S1.Id" };
 
             // single row tests
             env.SendEventBean(new SupportBean_S0(100, "a", "c"));
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 SupportQueryPlanIndexHook.Reset();
                 var epl = INDEX_CALLBACK_HOOK +
-                          "select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall as s1 " +
+                          "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where P00 not in (P10, P11)";
                 env.CompileDeploy(epl);
 
@@ -310,12 +310,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall as s1 " +
+                          "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
                 TryAssertionMultiIdx(env);
                 env.UndeployAll();
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var eplNamedWindow = "@Name('s0') " +
                                      INDEX_CALLBACK_HOOK +
-                                     "on SupportBean_S0 as s0 select * from S1Window as s1 " +
+                                     "on SupportBean_S0 as S0 select * from S1Window as S1 " +
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplNamedWindow, path).AddListener("s0");
 
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var eplTable = "@Name('s0') " +
                                INDEX_CALLBACK_HOOK +
-                               "on SupportBean_S0 as s0 select * from S1Table as s1 " +
+                               "on SupportBean_S0 as S0 select * from S1Table as S1 " +
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplTable, path).AddListener("s0");
 
@@ -372,11 +372,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select s0.Id as c0," +
-                          "(select * from SupportBean_S1#keepall as s1 " +
-                          "  where s0.P00 in (s1.P10, SupportBean_S1.P11) and s0.P01 in (s1.P12, SupportBean_S1.P13))" +
+                          "select S0.Id as c0," +
+                          "(select * from SupportBean_S1#keepall as S1 " +
+                          "  where S0.P00 in (S1.P10, SupportBean_S1.P11) and S0.P01 in (S1.P12, SupportBean_S1.P13))" +
                           ".selectFrom(a->SupportBean_S1.Id) as c1 " +
-                          "from SupportBean_S0 as s0";
+                          "from SupportBean_S0 as S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test coercion absence - types the same
                 var eplCoercion = INDEX_CALLBACK_HOOK +
                                   "select *," +
-                                  "(select * from SupportBean_S0#keepall as s0 where sb.LongPrimitive in (Id)) from SupportBean as sb";
+                                  "(select * from SupportBean_S0#keepall as S0 where sb.LongPrimitive in (Id)) from SupportBean as sb";
                 env.CompileDeploy(eplCoercion);
                 var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
                 Assert.AreEqual(
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select * from SupportBean_S0#keepall as s0, SupportBean_S1 as s1 unidirectional " +
+                          "select * from SupportBean_S0#keepall as S0, SupportBean_S1 as S1 unidirectional " +
                           "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var eplNamedWindow = "@Name('s0') " +
                                      INDEX_CALLBACK_HOOK +
-                                     "on SupportBean_S1 as s1 select * from S0Window as s0 " +
+                                     "on SupportBean_S1 as S1 select * from S0Window as S0 " +
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplNamedWindow, path).AddListener("s0");
 
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var eplTable = "@Name('s0') " +
                                INDEX_CALLBACK_HOOK +
-                               "on SupportBean_S1 as s1 select * from S0Table as s0 " +
+                               "on SupportBean_S1 as S1 select * from S0Table as S0 " +
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
                 env.CompileDeploy(eplTable, path).AddListener("s0");
 
@@ -522,11 +522,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select s1.Id as c0," +
-                          "(select * from SupportBean_S0#keepall as s0 " +
-                          "  where s0.P00 in (s1.P10, SupportBean_S1.P11) and s0.P01 in (s1.P12, SupportBean_S1.P13))" +
+                          "select S1.Id as c0," +
+                          "(select * from SupportBean_S0#keepall as S0 " +
+                          "  where S0.P00 in (S1.P10, SupportBean_S1.P11) and S0.P01 in (S1.P12, SupportBean_S1.P13))" +
                           ".selectFrom(a->SupportBean_S0.Id) as c1 " +
-                          " from SupportBean_S1 as s1";
+                          " from SupportBean_S1 as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
@@ -593,7 +593,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test coercion absence - types the same
                 var eplCoercion = INDEX_CALLBACK_HOOK +
                                   "select *," +
-                                  "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (s0.Id)) from SupportBean_S0 as s0";
+                                  "(select * from SupportBean#keepall as sb where sb.LongPrimitive in (S0.Id)) from SupportBean_S0 as S0";
                 env.CompileDeploy(eplCoercion);
                 var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
                 Assert.AreEqual(
@@ -610,9 +610,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall as s1 " +
+                          "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where P10 in ('a', 'b')";
-                var fields = "s0.Id,s1.Id".SplitCsv();
+                var fields = new [] { "S0.Id","S1.Id" };
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
@@ -645,9 +645,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 var epl = "@Name('s0') " +
                           INDEX_CALLBACK_HOOK +
-                          "select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall as s1 " +
+                          "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where 'a' in (P10, P11)";
-                var fields = "s0.Id,s1.Id".SplitCsv();
+                var fields = new [] { "S0.Id","S1.Id" };
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
@@ -679,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var types = new EventType[3];
                 var epl =
-                    "@Name('s0') select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall, SupportBean_S2#keepall ";
+                    "@Name('s0') select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall, SupportBean_S2#keepall ";
 
                 // 3-stream join with in-multiindex directional
                 var planInMidx = new InKeywordTableLookupPlanMultiIdxForge(
@@ -781,7 +781,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var types = new EventType[2];
-                var epl = "select * from SupportBean_S0 as s0 unidirectional, SupportBean_S1#keepall ";
+                var epl = "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall ";
                 var fullTableScan = SupportQueryPlanBuilder.Start(2)
                     .SetIndexFullTableScan(1, "a")
                     .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("a")))
@@ -835,7 +835,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             SupportExprNodeFactory.MakeIdentExprNode("P00")))
                     .Get();
                 var eplOuterJoin =
-                    "select * from SupportBean_S0 as s0 unidirectional full outer join SupportBean_S1#keepall ";
+                    "select * from SupportBean_S0 as S0 unidirectional full outer join SupportBean_S1#keepall ";
                 TryAssertion(env, eplOuterJoin + "where P00 in (P11, P12)", planInMultiOuter);
 
                 var planInMultiWConst = SupportQueryPlanBuilder.Start(2)

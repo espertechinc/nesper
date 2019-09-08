@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.bean.instantiator;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly bool hasPrimitiveTypes;
         private readonly bool[] primitiveType;
         private readonly WriteablePropertyDescriptor[] properties;
-        private readonly MethodInfo[] writeMethodsReflection;
+        private readonly MemberInfo[] writeMembersReflection;
 
         /// <summary>
         ///     Ctor.
@@ -58,12 +59,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService);
 
-            writeMethodsReflection = new MethodInfo[properties.Length];
+            writeMembersReflection = new MemberInfo[properties.Length];
 
             var primitiveTypeCheck = false;
             primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                writeMethodsReflection[i] = properties[i].WriteMethod;
+                writeMembersReflection[i] = properties[i].WriteMember;
                 primitiveType[i] = properties[i].PropertyType.IsPrimitive;
                 primitiveTypeCheck |= primitiveType[i];
             }
@@ -91,9 +92,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             var makeUndLambda = new CodegenExpressionLambda(init.Block)
                 .WithParam<object[]>("properties");
             init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
-                "makeUndLambda", makeUndLambda);
+                "makeUndFunc",
+                makeUndLambda);
             MakeUnderlyingCodegen(
-                codegenMethodScope, makeUndLambda.Block, codegenClassScope);
+                codegenMethodScope,
+                makeUndLambda.Block,
+                codegenClassScope);
 
             var makeLambda = new CodegenExpressionLambda(init.Block)
                 .WithParam<object[]>("properties");
@@ -102,7 +106,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 .ReturnMethodOrBlock(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
 
             init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
-                "makeLambda", makeLambda);
+                "makeFunc",
+                makeLambda);
 
             var manufacturer = NewInstance<ProxyEventBeanManufacturer>(Ref("makeFunc"), Ref("makeUndFunc"));
 
@@ -135,20 +140,40 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     Cast(beanEventType.UnderlyingType, beanInstantiator.Make(method, codegenClassScope)))
                 .DeclareVar<object>("value", ConstantNull());
 
-            for (var i = 0; i < writeMethodsReflection.Length; i++) {
+            for (var i = 0; i < writeMembersReflection.Length; i++) {
                 block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
 
-                Type targetType = writeMethodsReflection[i].GetParameters()[0].ParameterType;
-                CodegenExpression value;
-                if (targetType.IsPrimitive) {
-                    var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);
-                    value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
+                var writeMember = writeMembersReflection[i];
+                Type targetType;
+
+                if (writeMember is MethodInfo writeMethod) {
+                    targetType = writeMethod.GetParameters()[0].ParameterType;
+                }
+                else if (writeMember is PropertyInfo writeProperty) {
+                    targetType = writeProperty.PropertyType;
                 }
                 else {
-                    value = Cast(targetType, Ref("value"));
+                    throw new IllegalStateException("writeMember of invalid type");
                 }
 
-                var set = ExprDotMethod(Ref("und"), writeMethodsReflection[i].Name, value);
+                CodegenExpression value;
+                //if (targetType.IsPrimitive) {
+                //    var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);
+                //    value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
+                //}
+                //else {
+                    value = Cast(targetType, Ref("value"));
+                //}
+
+                CodegenExpression set = null;
+
+                if (writeMember is MethodInfo) {
+                    set = ExprDotMethod(Ref("und"), writeMember.Name, value);
+                }
+                else if (writeMember is PropertyInfo) {
+                    set = SetProperty(Ref("und"), writeMember.Name, value);
+                }
+
                 if (primitiveType[i]) {
                     block.IfRefNotNull("value").Expression(set).BlockEnd();
                 }

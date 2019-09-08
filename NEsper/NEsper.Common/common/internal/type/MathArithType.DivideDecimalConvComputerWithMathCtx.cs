@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.type
     {
         public class DivideDecimalConvComputerWithMathCtx : DivideDecimalConvComputerBase
         {
-            private readonly MathContext mathContext;
+            private readonly MathContext _mathContext;
 
             public DivideDecimalConvComputerWithMathCtx(
                 SimpleNumberCoercer convOne,
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.type
                 MathContext mathContext)
                 : base(convOne, convTwo, divisionByZeroReturnsNull)
             {
-                this.mathContext = mathContext;
+                _mathContext = mathContext;
             }
 
             public override object DoDivide(
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.type
             {
                 return decimal.Round(
                     decimal.Divide(s1, s2),
-                    mathContext.Precision,
-                    mathContext.RoundingMode);
+                    _mathContext.Precision,
+                    _mathContext.RoundingMode);
             }
 
             public override CodegenExpression DoDivideCodegen(
@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpressionRef s2,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpression math =
-                    codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(mathContext));
-                return CodegenExpressionBuilder.ExprDotMethod(s1, "Divide", s2, math);
+                CodegenExpression math = codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(_mathContext));
+                return CodegenExpressionBuilder.ExprDotMethod(
+                    math, "Apply", CodegenExpressionBuilder.Op(s1, "/", s2));
             }
         }
     }

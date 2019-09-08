@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var path = new RegressionPath();
             var epl = "@Name('create-ctx') create context SegmentedByCustomer " +
-                      "  initiated by SupportBean_S0 s0 " +
+                      "  initiated by SupportBean_S0 S0 " +
                       "  terminated by SupportBean_S1(P00 = P10);" +
                       "" +
                       "@Name('create-infra') context SegmentedByCustomer\n" +
@@ -317,13 +317,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean_S0(0, "E2"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "mymax".SplitCsv(),
+                new [] { "mymax" },
                 new object[] {20});
 
             env.SendEventBean(new SupportBean_S0(0, "E1"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "mymax".SplitCsv(),
+                new [] { "mymax" },
                 new object[] {10});
 
             env.MilestoneInc(milestone);
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean_S0(0, "E3"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "mymax".SplitCsv(),
+                new [] { "mymax" },
                 new object[] {null});
 
             env.UndeployAll();
@@ -425,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("@Name('s0') select count(*) as cnt from MyWindow", path);
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("s0").Advance(),
-                    "cnt".SplitCsv(),
+                    new [] { "cnt" },
                     new object[] {0L});
 
                 env.UndeployAll();

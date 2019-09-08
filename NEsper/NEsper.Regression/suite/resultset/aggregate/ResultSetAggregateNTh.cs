@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "TheString,int1,int2".SplitCsv();
+            var fields = new [] { "TheString","int1","int2" };
 
             env.SendEventBean(new SupportBean("G1", 10));
             env.SendEventBean(new SupportBean("G2", 11));

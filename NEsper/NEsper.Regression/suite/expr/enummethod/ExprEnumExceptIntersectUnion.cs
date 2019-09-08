@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "Failed to validate select-clause expression 'Contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
 
                 epl =
-                    "select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
+                    "select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall S1";
                 TryInvalidCompile(
                     env,
                     epl,

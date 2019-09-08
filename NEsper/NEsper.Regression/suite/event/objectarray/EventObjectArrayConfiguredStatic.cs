@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             env.SendEventObjectArray(new object[] {bean, "abc", Collections.SingletonMap("key", "value")}, "MyOAType");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNew(),
-                "bean,TheString,map('key'),bean.TheString".SplitCsv(),
+                new [] { "bean","TheString","map('key')","bean.TheString" },
                 new object[] {bean, "abc", "value", "E1"});
 
             env.UndeployAll();

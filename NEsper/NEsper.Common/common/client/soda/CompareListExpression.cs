@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns all flag, true for ALL and false for ANY.
         /// </summary>
         /// <returns>indicator if all or any</returns>
-        public bool IsAll { get; private set; }
+        public bool IsAll { get; set; }
 
         /// <summary>
         ///     Returns all flag, true for ALL and false for ANY.
@@ -67,9 +67,10 @@ namespace com.espertech.esper.common.client.soda
         ///     Sets all flag, true for ALL and false for ANY.
         /// </summary>
         /// <param name="all">indicator if all or any</param>
-        public void SetAll(bool all)
+        public CompareListExpression SetAll(bool all)
         {
             IsAll = all;
+            return this;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,b".SplitCsv();
+                var fields = new [] { "a","b" };
                 var pattern =
                     "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
                 env.CompileDeploy(pattern).AddListener("s0");
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,b".SplitCsv();
+                var fields = new [] { "a","b" };
                 var pattern =
                     "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
                 env.CompileDeploy(pattern).AddListener("s0");
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,b".SplitCsv();
+                var fields = new [] { "a","b" };
                 TryAssertion(
                     env,
                     fields,
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
                     new object[] {"E1", null});
 
-                fields = "a,b,c".SplitCsv();
+                fields = new [] { "a","b","c" };
                 TryAssertion(
                     env,
                     fields,

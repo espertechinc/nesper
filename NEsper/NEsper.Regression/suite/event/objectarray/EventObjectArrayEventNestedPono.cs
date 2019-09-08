@@ -28,10 +28,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                                 "simple, object, nodefmap, map, " +
                                 "object.Id as a1, nodefmap.Key1? as a2, nodefmap.Key2? as a3, nodefmap.Key3?.Key4 as a4, " +
                                 "map.objectOne as b1, map.simpleOne as b2, map.nodefmapOne.Key2? as b3, map.mapOne.simpleTwo? as b4, " +
-                                "map.objectOne.indexed[1] as c1, map.objectOne.Nested.NestedValue as c2," +
+                                "map.objectOne.Indexed[1] as c1, map.objectOne.Nested.NestedValue as c2," +
                                 "map.mapOne.simpleTwo as d1, map.mapOne.objectTwo as d2, map.mapOne.nodefmapTwo as d3, " +
                                 "map.mapOne.mapTwo as e1, map.mapOne.mapTwo.simpleThree as e2, map.mapOne.mapTwo.objectThree as e3, " +
-                                "map.mapOne.objectTwo.array[1].mapped('1ma').Value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
+                                "map.mapOne.objectTwo.array[1].Mapped('1ma').Value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
                                 " from NestedObjectArr";
             env.CompileDeploy(statementText).AddListener("s0");
 
@@ -42,36 +42,36 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             var received = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 received,
-                "simple,object,nodefmap,map".SplitCsv(),
+                new [] { "simple","object","nodefmap","map" },
                 new[] {"abc", new SupportBean_A("A1"), testdata[2], testdata[3]});
             EPAssertionUtil.AssertProps(
                 received,
-                "a1,a2,a3,a4".SplitCsv(),
+                new [] { "a1","a2","a3","a4" },
                 new object[] {"A1", "val1", null, null});
             EPAssertionUtil.AssertProps(
                 received,
-                "b1,b2,b3,b4".SplitCsv(),
+                new [] { "b1","b2","b3","b4" },
                 new[] {EventObjectArrayCore.GetNestedKeyOA(testdata, 3, "objectOne"), 10, "val2", 300});
             EPAssertionUtil.AssertProps(
                 received,
-                "c1,c2".SplitCsv(),
+                new [] { "c1","c2" },
                 new object[] {2, "NestedValue"});
             EPAssertionUtil.AssertProps(
                 received,
-                "d1,d2,d3".SplitCsv(),
+                new [] { "d1","d2","d3" },
                 new[] {
                     300, EventObjectArrayCore.GetNestedKeyOA(testdata, 3, "mapOne", "objectTwo"),
                     EventObjectArrayCore.GetNestedKeyOA(testdata, 3, "mapOne", "nodefmapTwo")
                 });
             EPAssertionUtil.AssertProps(
                 received,
-                "e1,e2,e3".SplitCsv(),
+                new [] { "e1","e2","e3" },
                 new[] {
                     EventObjectArrayCore.GetNestedKeyOA(testdata, 3, "mapOne", "mapTwo"), 4000L, new SupportBean_B("B1")
                 });
             EPAssertionUtil.AssertProps(
                 received,
-                "f1,f2".SplitCsv(),
+                new [] { "f1","f2" },
                 new object[] {"1ma0", "B1"});
             env.UndeployModuleContaining("s0");
 

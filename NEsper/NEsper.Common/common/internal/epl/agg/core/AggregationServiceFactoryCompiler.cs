@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -26,6 +27,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
+using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
@@ -37,6 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceFactoryCompiler
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static readonly IList<CodegenNamedParam> UPDPARAMS = CodegenNamedParam.From(
             typeof(EventBean[]), NAME_EPS,
             typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
@@ -626,7 +630,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 var factory = methodFactories[i];
                 var evaluationTypes =
                     ExprNodeUtilityQuery.GetExprResultTypes(factory.AggregationExpression.PositionalParams);
-                var updateMethod = method.MakeChild(typeof(void), factory.Aggregator.GetType(), classScope)
+                var updateMethod = method
+                    .MakeChild(typeof(void), factory.Aggregator.GetType(), classScope)
                     .AddParam(typeof(object), "value");
                 if (type == AggregationCodegenTableUpdateType.ENTER) {
                     factory.Aggregator.ApplyTableEnterCodegen(value, evaluationTypes, updateMethod, classScope);
@@ -753,7 +758,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var numMethodStates = 0;
             if (methodFactories != null) {
                 foreach (var factory in methodFactories) {
-                    var method = parent.MakeChild(getType.ReturnType, factory.GetType(), classScope)
+                    var method = parent
+                        .MakeChild(getType.ReturnType, factory.GetType(), classScope)
                         .AddParam(
                             CodegenNamedParam.From(
                                 typeof(EventBean[]), NAME_EPS,
@@ -775,6 +781,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             if (accessAccessors != null) {
                 foreach (var accessorSlotPair in accessAccessors) {
+                    if (Log.IsDebugEnabled) {
+                        Log.Debug("getType: ReturnType => {0} => {1}", getType, getType.ReturnType);
+                    }
+
                     var method = parent
                         .MakeChild(getType.ReturnType, accessorSlotPair.AccessorForge.GetType(), classScope)
                         .AddParam(

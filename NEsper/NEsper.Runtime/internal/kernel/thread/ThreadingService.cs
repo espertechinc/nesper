@@ -94,6 +94,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         /// <value>thread pool</value>
         IExecutorService InboundThreadPool { get; }
 
-        Thread MakeEventSourceThread(String engineURI, String sourceName, Runnable runnable);
+        Thread MakeEventSourceThread(string engineURI, string sourceName, Runnable runnable);
     }
 }

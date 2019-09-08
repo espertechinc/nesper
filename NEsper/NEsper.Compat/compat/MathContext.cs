@@ -74,6 +74,26 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
+        /// Applies the math context.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public decimal Apply(decimal value)
+        {
+            return decimal.Round(value, Precision, RoundingMode);
+        }
+
+        /// <summary>
+        /// Applies the math context.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public double Apply(double value)
+        {
+            return Math.Round(value, RoundingMode);
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <returns>

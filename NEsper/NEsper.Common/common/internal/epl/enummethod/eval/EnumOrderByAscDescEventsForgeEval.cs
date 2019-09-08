@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var sort = new OrderedDictionary<IComparable, object>();
+            var sort = new OrderedDictionary<object, object>();
             var hasColl = false;
 
             var beans = (ICollection<EventBean>) enumcoll;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(EnumOrderByAscDescEventsForgeEval),
                     scope,
                     codegenClassScope)
@@ -113,11 +113,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockEnd();
             block.MethodReturn(
                 StaticMethod(
-                    typeof(EnumOrderByAscDescEventsForgeEval),
-                    "EnumOrderBySortEval",
-                    Ref("sort"),
-                    Ref("hasColl"),
-                    Constant(forge.descending)));
+                    typeof(CompatExtensions),
+                    "Unwrap",
+                    new[] {typeof(EventBean)},
+                    StaticMethod(
+                        typeof(EnumOrderByAscDescEventsForgeEval),
+                        "EnumOrderBySortEval",
+                        Ref("sort"),
+                        Ref("hasColl"),
+                        Constant(forge.descending))));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
@@ -129,11 +133,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <param name="descending">true for descending</param>
         /// <returns>collection</returns>
         public static ICollection<object> EnumOrderBySortEval(
-            OrderedDictionary<IComparable, object> sort,
+            OrderedDictionary<object, object> sort,
             bool hasColl,
             bool descending)
         {
-            IDictionary<IComparable, object> sorted;
+            IDictionary<object, object> sorted;
             if (descending) {
                 sorted = sort.Invert();
             }
@@ -147,8 +151,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             Deque<object> coll = new ArrayDeque<object>();
             foreach (var entry in sorted) {
-                if (entry.Value is ICollection<object>) {
-                    coll.AddAll((ICollection<object>) entry.Value);
+                if (entry.Value.GetType().IsGenericCollection()) {
+                    coll.AddAll(entry.Value.Unwrap<object>());
                 }
                 else {
                     coll.Add(entry.Value);

@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  myCount count(*), // column holds a number of values\n" +
                     "  myMax max(int), // column holds a highest int-typed value\n" +
                     "  myMedian median(float), // column holds the median of float-typed values\n" +
-                    "  myStddev stddev(java.math.BigDecimal), // column holds a standard deviation for BigDecimal values\n" +
+                    "  myStddev stddev(decimal), // column holds a standard deviation for BigDecimal values\n" +
                     "  mySum sum(long), // column holds a sum of long values\n" +
                     "  myFirstEver firstever(string), // column holds the first ever string value\n" +
                     "  myCountEver countever(*) // column holds the count-ever\n" +

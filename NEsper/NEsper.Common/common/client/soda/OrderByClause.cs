@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Create an order-by clause.</summary>
         /// <param name="properties">is the property names to order by</param>
         /// <returns>clause</returns>
-        public static OrderByClause Create(params String[] properties)
+        public static OrderByClause Create(params string[] properties)
         {
             return new OrderByClause(properties);
         }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isDescending">true for descending, false for ascending sort</param>
         /// <returns>clause</returns>
         public OrderByClause Add(
-            String property,
+            string property,
             bool isDescending)
         {
             orderByExpressions.Add(new OrderByElement(Expressions.GetPropExpr(property), isDescending));
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Ctor.</summary>
         /// <param name="properties">property names</param>
-        public OrderByClause(params String[] properties)
+        public OrderByClause(params string[] properties)
             : this()
         {
             for (int i = 0; i < properties.Length; i++)
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (OrderByElement element in orderByExpressions)
             {
                 writer.Write(delimiter);

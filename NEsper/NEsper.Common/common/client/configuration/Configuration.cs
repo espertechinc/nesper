@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.client.configuration
         /// </summary>
         /// <param name="resource">to get input stream for</param>
         /// <returns>input stream for resource</returns>
-        internal Stream GetResourceAsStream(String resource)
+        internal Stream GetResourceAsStream(string resource)
         {
             var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
                 ? resource.Substring(1)

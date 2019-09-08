@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('select') select a, b from MyInfra as s1";
+                var stmtTextSelect = "@Name('select') select a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // send 1 event
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('select') select a, b from MyInfra as s1";
+                var stmtTextSelect = "@Name('select') select a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // send 1 event

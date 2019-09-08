@@ -93,14 +93,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             Module module,
             string name,
             string usesCSV,
-            string importsCSV,
+            Import[] imports,
             string[] statements)
         {
             AssertModule(
                 module,
                 name,
                 usesCSV,
-                importsCSV,
+                imports,
                 statements,
                 new bool[statements.Length],
                 new int[statements.Length],
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             Module module,
             string name,
             string usesCSV,
-            string importsCSV,
+            Import[] expectedImports,
             string[] statementsExpected,
             bool[] commentsExpected,
             int[] lineNumsExpected,
@@ -121,10 +121,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             Assert.AreEqual(name, module.Name);
 
+            if (expectedImports == null) {
+                expectedImports = new Import[0];
+            }
+
             var expectedUses = usesCSV == null ? new string[0] : usesCSV.SplitCsv();
             EPAssertionUtil.AssertEqualsExactOrder(expectedUses, module.Uses.ToArray());
-
-            var expectedImports = importsCSV == null ? new string[0] : importsCSV.SplitCsv();
             EPAssertionUtil.AssertEqualsExactOrder(expectedImports, module.Imports.ToArray());
 
             var stmtsFound = new string[module.Items.Count];
@@ -265,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
                 Assert.IsNotNull(infoTwo.LastUpdateDate);
                 EPAssertionUtil.AssertEqualsExactOrder(
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     (string[]) infoTwo.ModuleProperties.Get(ModuleProperty.USES));
 
                 env.UndeployAll();
@@ -346,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     null,
                     new[] {
                         "select * from ABC",
-                        "/* Final Comment */"
+                        "/* Final comment */"
                     },
                     new[] {false, true},
                     new[] {3, 8},
@@ -410,20 +412,32 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module,
                     "mymodule",
                     "mymodule2",
-                    "abc",
+                    new Import[] {
+                        new ImportType("abc")
+                    },
                     new[] {
                         "select * from MyEvent"
                     });
 
                 module = env.ReadModule("regression/test_module_11.epl");
-                AssertModule(module, null, null, "com.mycompany.pck1", new string[0]);
+                AssertModule(
+                    module,
+                    null,
+                    null,
+                    new Import[] {
+                        new ImportType("com.mycompany.pck1")
+                    },
+                    new string[0]);
 
                 module = env.ReadModule("regression/test_module_10.epl");
                 AssertModule(
                     module,
                     "abd.def",
                     "one.use,two.use",
-                    "com.mycompany.pck1,com.mycompany.*",
+                    new Import[] {
+                        new ImportType("com.mycompany.pck1"),
+                        new ImportNamespace("com.mycompany"),
+                    },
                     new[] {
                         "select * from A"
                     }
@@ -439,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "seconds.until.every.where",
                     env.ParseModule("uses seconds.until.every.where; select * from System.Object;").Uses.ToArray()[0]);
                 Assert.AreEqual(
-                    "seconds.until.every.where",
+                    new ImportType("seconds.until.every.where"),
                     env.ParseModule("import seconds.until.every.where; select * from System.Object;")
                         .Imports.ToArray()[0]);
 

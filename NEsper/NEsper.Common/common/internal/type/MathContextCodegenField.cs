@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.type
             }
 
             return NewInstance<MathContext>(
-                Constant(mathContext.Precision),
-                EnumValue(mathContext.RoundingMode));
+                EnumValue(mathContext.RoundingMode),
+                Constant(mathContext.Precision));
         }
 
         public override bool Equals(object o)

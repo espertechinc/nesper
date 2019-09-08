@@ -21,6 +21,6 @@ namespace com.espertech.esper.regressionlib.support.bean
             Val = valOneA;
         }
 
-        public string Val { get; }
+        public override string Val { get; }
     }
 } // end of namespace

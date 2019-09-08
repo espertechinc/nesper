@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fields = "val0,val1,val2,val3,val6,val7,val8,val9".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val6","val7","val8","val9" };
                 var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.plus(1 hour 10 sec 20 msec) as val0," +
                                   "DtoDate.plus(1 hour 10 sec 20 msec) as val1," +

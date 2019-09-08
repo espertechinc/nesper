@@ -36,18 +36,18 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var appModuleTwo = "@Name('W') create window SupportBeanWindow#keepall as SupportBean;" +
                                "" +
                                "@Name('M') on SupportBean oe\n" +
-                               "  merge SupportBeanWindow pw\n" +
-                               "  where pw.TheString = oe.TheString\n" +
+                               "  merge SupportBeanWindow Pw\n" +
+                               "  where Pw.TheString = oe.TheString\n" +
                                "  when not matched \n" +
                                "    then insert select *\n" +
                                "  when matched and oe.IntPrimitive=1\n" +
                                "    then delete\n" +
                                "  when matched\n" +
-                               "    then update set pw.IntPrimitive = oe.IntPrimitive";
+                               "    then update set Pw.IntPrimitive = oe.IntPrimitive";
             env.CompileDeploy(appModuleTwo, path);
 
             env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
-            var fields = "statementName,numInput".SplitCsv();
+            var fields = new [] { "statementName","numInput" };
 
             env.SendEventBean(new SupportBean("E1", 1));
             env.AdvanceTime(1000);

@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
         {
             EPAssertionUtil.AssertPropsPerRow(
                 env.Runtime.DeploymentService.GetStatement(deploymentId, "create").GetEnumerator(),
-                "col1,myIdent".SplitCsv(),
+                new [] { "col1","myIdent" },
                 new[] {new object[] {"E1", ident}, new object[] {"E2", ident}});
         }
 

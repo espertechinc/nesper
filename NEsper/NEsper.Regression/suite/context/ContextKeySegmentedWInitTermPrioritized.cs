@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "TheString,cnt".SplitCsv(),
+                new [] { "TheString","cnt" },
                 new object[] {theString, expected});
         }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var s0 = new SupportBean_S0(id, p00, p01);
             env.SendEventBean(s0);
-            var fields = "P00,P01,s0,theSum".SplitCsv();
+            var fields = new [] { "P00","P01","s0","theSum" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
-                var fields = "TheString,theSum".SplitCsv();
+                var fields = new [] { "TheString","theSum" };
 
                 env.SendEventBean(new SupportBean("A", 10));
                 env.SendEventBean(new SupportBean("B", 99));
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('s0') context CtxPartitionInitWCorrTerm select TheString, sum(LongPrimitive) as theSum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "TheString,theSum".SplitCsv();
+                var fields = new [] { "TheString","theSum" };
 
                 var initA = SendBean(env, "A", 100, 1, true);
 
@@ -308,18 +308,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 var epl = "@Name('ctx') create context CtxPartitionInitWCorrTerm " +
                           "partition by P20 from SupportBean_S2, P10 from SupportBean_S1, P00 from SupportBean_S0 " +
-                          "initiated by SupportBean_S0 as s0, SupportBean_S1 as s1 " +
-                          "terminated by pattern[SupportBean_S0(Id=s0.Id) or SupportBean_S1(Id=s1.Id)]";
+                          "initiated by SupportBean_S0 as S0, SupportBean_S1 as S1 " +
+                          "terminated by pattern[SupportBean_S0(Id=S0.Id) or SupportBean_S1(Id=S1.Id)]";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionInitWCorrTerm " + 
-                    "select context.s0 as ctx0, context.s1 as ctx1, context.s0.Id as ctx0Id, context.s1.Id as ctx1Id, P20, sum(Id) as theSum " +
+                    "@Name('s0') context CtxPartitionInitWCorrTerm " +
+                    "select context.S0 as ctx0, context.S1 as ctx1, context.S0.Id as ctx0Id, context.S1.Id as ctx1Id, P20, sum(Id) as theSum " +
                     "from SupportBean_S2 output last when terminated",
                     path);
 
                 env.AddListener("s0");
-                var fields = "ctx0Id,ctx1Id,P20,theSum".SplitCsv();
+                var fields = new [] { "ctx0Id","ctx1Id","P20","theSum" };
 
                 Assert.AreEqual(typeof(SupportBean_S0), env.Statement("s0").EventType.GetPropertyType("ctx0"));
                 Assert.AreEqual(typeof(SupportBean_S1), env.Statement("s0").EventType.GetPropertyType("ctx1"));
@@ -364,10 +364,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 var epl = "create context CtxInitS0PositiveId as " +
                           "partition by P00 and P01 from SupportBean_S0 " +
-                          "initiated by SupportBean_S0(Id>0) as s0";
+                          "initiated by SupportBean_S0(Id>0) as S0";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxInitS0PositiveId select P00, P01, context.s0 as s0, sum(Id) as theSum from SupportBean_S0",
+                    "@Name('s0') context CtxInitS0PositiveId select P00, P01, context.S0 as S0, sum(Id) as theSum from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -420,7 +420,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "P21,cnt".SplitCsv();
+                var fields = new [] { "P21","cnt" };
 
                 SendS2(env, "b", "A");
                 SendS2(env, "a", "A");
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "terminated by SupportBean(IntPrimitive=1000);\n" +
                           "@Name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "TheString,theSum".SplitCsv();
+                var fields = new [] { "TheString","theSum" };
 
                 env.SendEventBean(new SupportBean("A", 20));
                 env.SendEventBean(new SupportBean("A", 1000));
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "TheString,theSum".SplitCsv();
+                var fields = new [] { "TheString","theSum" };
 
                 env.SendEventBean(new SupportBean("A", 20));
                 env.SendEventBean(new SupportBean("A", 1000));
@@ -638,7 +638,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "P00,cnt".SplitCsv();
+                var fields = new [] { "P00","cnt" };
 
                 env.SendEventBean(new SupportBean_S0(0, "A"));
                 env.SendEventBean(new SupportBean_S0(0, "B"));
@@ -693,7 +693,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "TheString,IntPrimitive,thesum".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","thesum" };
 
                 SendBean(env, "A", 1, 10, true);
                 SendBean(env, "B", 1, 11, true);
@@ -746,13 +746,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean",
+                    "@Audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "TheString,cnt".SplitCsv();
+                var fields = new [] { "TheString","cnt" };
 
                 env.SendEventBean(new SupportBean("A", 2));
 
@@ -796,13 +796,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
+                    "@Audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "TheString,cnt".SplitCsv();
+                var fields = new [] { "TheString","cnt" };
 
                 env.Milestone(0);
 
@@ -845,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "TheString,cnt".SplitCsv();
+                var fields = new [] { "TheString","cnt" };
 
                 env.SendEventBean(new SupportBean("A", 0));
                 env.SendEventBean(new SupportBean("B", 0));
@@ -888,11 +888,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context MyTermByTimeout partition by P00 from SupportBean_S0, P10 from SupportBean_S1 terminated by pattern [SupportBean_S0(Id<0) or SupportBean_S1(Id<0)]",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByTimeout select coalesce(s0.P00, s1.P10) as key, count(*) as cnt from pattern [every (s0=SupportBean_S0 or s1=SupportBean_S1)] output last when terminated",
+                    "@Name('s0') context MyTermByTimeout select coalesce(S0.P00, S1.P10) as key, count(*) as cnt from pattern [every (S0=SupportBean_S0 or S1=SupportBean_S1)] output last when terminated",
                     path);
 
                 env.AddListener("s0");
-                var fields = "key,cnt".SplitCsv();
+                var fields = new [] { "key","cnt" };
 
                 env.SendEventBean(new SupportBean_S0(0, "A"));
                 env.SendEventBean(new SupportBean_S1(0, "A"));
@@ -980,7 +980,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendCurrentTime(env, "2002-02-01T09:01:00.000");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,cnt".SplitCsv(),
+                    new [] { "TheString","cnt" },
                     new[] {new object[] {"A", 3L}, new object[] {"B", 2L}});
 
                 env.Milestone(3);
@@ -997,7 +997,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendCurrentTime(env, "2002-02-01T09:02:00.000");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,cnt".SplitCsv(),
+                    new [] { "TheString","cnt" },
                     new[] {new object[] {"A", 1L}, new object[] {"C", 2L}, new object[] {"D", 1L}});
 
                 SendCurrentTime(env, "2002-02-01T09:03:00.000");
@@ -1119,7 +1119,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventObjectArray(new object[] {poa}, "TypeOne");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "poa,cnt".SplitCsv(),
+                    new [] { "poa","cnt" },
                     new object[] {poa, count});
             }
         }
@@ -1143,7 +1143,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new ISupportABCImpl("a", "a", null, null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,cnt".SplitCsv(),
+                    new [] { "p0","cnt" },
                     new object[] {"a", 1L});
 
                 env.Milestone(1);
@@ -1151,7 +1151,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new ISupportAImpl("a", null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,cnt".SplitCsv(),
+                    new [] { "p0","cnt" },
                     new object[] {"a", 2L});
 
                 env.Milestone(2);
@@ -1159,7 +1159,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new ISupportBImpl("a", null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,cnt".SplitCsv(),
+                    new [] { "p0","cnt" },
                     new object[] {"a", 3L});
 
                 env.UndeployModuleContaining("s0");

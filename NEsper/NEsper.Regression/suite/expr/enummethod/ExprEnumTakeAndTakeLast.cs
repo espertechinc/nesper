@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
                 var epl = "@Name('s0') select " +
                           "Contained.take(2) as val0," +
                           "Contained.take(1) as val1," +
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3" };
                 var epl = "@Name('s0') select " +
                           "Strvals.take(2) as val0," +
                           "Strvals.take(1) as val1," +

@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree.AdvancedIndexQuadTreeConstants;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexEvaluationHelper;
@@ -27,12 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         private readonly EventTableOrganization organization;
         private readonly EventBean[] eventsPerStream = new EventBean[1];
         private readonly AdvancedIndexConfigStatementMXCIFQuadtree config;
-        private readonly MXCIFQuadTree<object> quadTree;
+        private readonly MXCIFQuadTree quadTree;
 
         public EventTableQuadTreeMXCIFImpl(
             EventTableOrganization organization,
             AdvancedIndexConfigStatementMXCIFQuadtree config,
-            MXCIFQuadTree<object> quadTree)
+            MXCIFQuadTree quadTree)
         {
             this.organization = organization;
             this.config = config;
@@ -45,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             double width,
             double height)
         {
-            return (ICollection<EventBean>) MXCIFQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
+            return MXCIFQuadTreeRowIndexQuery
+                .QueryRange(quadTree, x, y, width, height)
+                .Unwrap<EventBean>();
         }
 
         public void AddRemove(
@@ -124,8 +127,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             if (!added) {
                 throw InvalidColumnValue(
                     organization.IndexName,
-                    "(x,y,width,height)",
-                    "(" + x + "," + y + "," + width + "," + height + ")",
+                    "(X,Y,Width,Height)",
+                    "(" + x.RenderAny() + "," + y.RenderAny() + "," + width.RenderAny() + "," + height.RenderAny() + ")",
                     "a value intersecting index bounding box (range-end-inclusive) " + quadTree.Root.Bb);
             }
         }

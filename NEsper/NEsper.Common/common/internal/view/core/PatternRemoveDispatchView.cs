@@ -109,9 +109,10 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             var properties = match.EventType.PropertyDescriptors;
             var overlaps = false;
+            var propDictionary = match.Underlying.UnwrapStringDictionary();
 
             foreach (var desc in properties) {
-                var prop = ((IDictionary<object, object>) match.Underlying).Get(desc.PropertyName);
+                var prop = propDictionary.Get(desc.PropertyName);
                 if (prop == null) {
                 }
                 else if (prop is EventBean) {

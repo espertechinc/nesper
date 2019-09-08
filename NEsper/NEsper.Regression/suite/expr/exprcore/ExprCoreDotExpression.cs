@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "InnerTypesArray(Subkey).GetIds(Subkey) as c5,\n" +
                           "InnerTypesArray(Subkey).GetIds(s0, 'xyz') as c6,\n" +
                           "InnerTypesArray(Subkey).GetIds(*, 'xyz') as c7\n" +
-                          "from SupportEventTypeErasure as s0";
+                          "from SupportEventTypeErasure as S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(bean);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "nested.getNestedValue()".SplitCsv(),
+                    new [] { "nested.getNestedValue()" },
                     new object[] {bean.Nested.NestedValue});
 
                 env.UndeployAll();
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(bean);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "size,get0,get1,get2,get3".SplitCsv(),
+                    new [] { "size","get0","get1","get2","get3" },
                     new object[] {
                         bean.ArrayProperty.Length, bean.ArrayProperty[0], bean.ArrayProperty[1], bean.ArrayProperty[2],
                         null
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(bean);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "size,get0".SplitCsv(),
+                    new [] { "size","get0" },
                     new object[] {bean.Array.Length, bean.Array[0].NestLevOneVal});
 
                 env.UndeployAll();

@@ -26,24 +26,16 @@ namespace com.espertech.esper.common.@internal.collection
         {
             var e = new CombinationEnumeration(objects);
 
-            IList<object[]> results = new List<object[]>();
+            var results = new List<object[]>();
             while (e.MoveNext())
             {
                 var copy = new object[objects.Length];
-                object[] result = e.Current;
+                var result = e.Current;
                 Array.Copy(result, 0, copy, 0, result.Length);
                 results.Add(copy);
             }
 
-            try
-            {
-                Assert.IsFalse(e.MoveNext());
-                Assert.Fail();
-            }
-            catch (NoSuchElementException ex)
-            {
-                // expected
-            }
+            Assert.IsFalse(e.MoveNext());
 
             IList<string> items = new List<string>();
             foreach (var result in results)

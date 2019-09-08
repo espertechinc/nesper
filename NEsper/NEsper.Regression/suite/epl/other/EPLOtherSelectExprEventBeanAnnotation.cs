@@ -48,8 +48,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var eplInsert = "@Name('insert') insert into DStream select " +
                             "last(*) @eventbean as c0, " +
                             "window(*) @eventbean as c1, " +
-                            "prevwindow(s0) @eventbean as c2 " +
-                            "from MyEvent#length(2) as s0";
+                            "prevwindow(S0) @eventbean as c2 " +
+                            "from MyEvent#length(2) as S0";
             env.CompileDeploy(eplInsert, path).AddListener("insert");
 
             foreach (var prop in new [] { "c0", "c1", "c2" }) {
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
 
             // test consuming statement
-            var fields = "f0,f1,f2,f3,f4,f5".SplitCsv();
+            var fields = new [] { "f0","f1","f2","f3","f4","f5" };
             env.CompileDeploy(
                     "@Name('s0') select " +
                     "c0 as f0, " +
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 // test consuming statement
-                var fields = "f0,f1".SplitCsv();
+                var fields = new [] { "f0","f1" };
                 env.CompileDeploy(
                         "@Name('s0') select " +
                         "c0 as f0, " +

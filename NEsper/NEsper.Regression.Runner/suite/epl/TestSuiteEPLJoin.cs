@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
 
-            string[] names = "id,P00".SplitCsv();
+            string[] names = new [] { "id","P00" };
             object[] types = new object[] { typeof(string), typeof(int) };
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);

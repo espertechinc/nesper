@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryInvalidCompile(
                     env,
                     "select * from pattern[timer:interval((select waitTime from WaitWindow))]",
-                    "Subselects are not allowed within pattern observer parameters, please consIder using a variable instead");
+                    "Subselects are not allowed within pattern observer parameters, please consider using a variable instead");
 
                 env.UndeployAll();
             }

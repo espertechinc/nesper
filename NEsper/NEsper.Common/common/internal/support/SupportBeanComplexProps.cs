@@ -18,13 +18,21 @@ namespace com.espertech.esper.common.@internal.support
     public class SupportBeanComplexProps : SupportMarkerInterface
     {
         public static readonly string[] PROPERTIES = {
-            "SimpleProperty", "Mapped", "Indexed", "MapProperty", "ArrayProperty", "Nested", "ObjectArray"
+            "SimpleProperty",
+            "Mapped",
+            "Indexed",
+            "IndexedProps",
+            "MapProperty",
+            "MappedProps",
+            "ArrayProperty",
+            "Nested",
+            "ObjectArray"
         };
 
         private int[] arrayProperty;
         private int[] indexedProps;
         private Properties mappedProps;
-        private IDictionary<string, string> mapProperty;
+        private IDictionary<string, object> mapProperty;
         private SupportBeanSpecialGetterNested nested;
         private object[] objectArray;
         private string simpleProperty;
@@ -42,7 +50,7 @@ namespace com.espertech.esper.common.@internal.support
             string simpleProperty,
             Properties mappedProps,
             int[] indexedProps,
-            IDictionary<string, string> mapProperty,
+            IDictionary<string, object> mapProperty,
             int[] arrayProperty,
             string nestedValue,
             string nestedNestedValue)
@@ -80,7 +88,7 @@ namespace com.espertech.esper.common.@internal.support
             set => mappedProps = value;
         }
 
-        public IDictionary<string, string> MapProperty {
+        public IDictionary<string, object> MapProperty {
             get => mapProperty;
             set => mapProperty = value;
         }
@@ -96,7 +104,7 @@ namespace com.espertech.esper.common.@internal.support
             properties.Put("keyOne", "valueOne");
             properties.Put("keyTwo", "valueTwo");
 
-            IDictionary<string, string> mapProp = new Dictionary<string, string>();
+            IDictionary<string, object> mapProp = new Dictionary<string, object>();
             mapProp.Put("xOne", "yOne");
             mapProp.Put("xTwo", "yTwo");
 
@@ -120,6 +128,11 @@ namespace com.espertech.esper.common.@internal.support
         public int GetIndexed(int index)
         {
             return indexedProps[index];
+        }
+
+        public string GetSimpleProperty()
+        {
+            return SimpleProperty;
         }
 
         public void SetIndexed(

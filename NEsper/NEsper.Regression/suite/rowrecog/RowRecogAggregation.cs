@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 env.CompileDeploy(text).AddListener("s0");
 
-                var fields = "a_string,c_string,maxb,minb,minb2x,firstb,lastb,countb".SplitCsv();
+                var fields = new [] { "a_string","c_string","maxb","minb","minb2x","firstb","lastb","countb" };
                 env.SendEventBean(new SupportRecogBean("E1", 0));
                 env.SendEventBean(new SupportRecogBean("E2", 1));
                 EPAssertionUtil.AssertPropsPerRow(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 env.CompileDeploy(text).AddListener("s0");
 
-                var fields = "a_string,d_string,sumb,sumc,sumaplusb,sumaplusc".SplitCsv();
+                var fields = new [] { "a_string","d_string","sumb","sumc","sumaplusb","sumaplusc" };
                 env.SendEventBean(new SupportRecogBean("E1", "x", 10));
                 env.SendEventBean(new SupportRecogBean("E2", "y", 20));
 

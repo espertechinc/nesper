@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block
                 .DeclareVar<object>("min", _min.MakeCodegen(classScope, method))
                 .DeclareVar<object>("max", _max.MakeCodegen(classScope, method))
-                .MethodReturn(NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))));
+                .BlockReturn(NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))));
 
             method.Block.MethodReturn(param);
             return method;

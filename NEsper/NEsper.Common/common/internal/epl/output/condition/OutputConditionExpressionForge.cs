@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                         classScope))
                 .SetProperty(
                     Ref("factory"),
-                    "AndWhenTerminatedExpressionNodeEval",
+                    "WhenTerminatedExpressionNodeEval",
                     andWhenTerminatedExpressionNodeEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                             method,
                             GetType(),
                             classScope))
-                .SetProperty(Ref("factory"), "UsingBuiltinProperties", Constant(isUsingBuiltinProperties))
+                .SetProperty(Ref("factory"), "IsUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
                 .SetProperty(
                     Ref("factory"),
                     "VariableReadWritePackage",

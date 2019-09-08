@@ -186,9 +186,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select beanA.simpleProperty as simple," +
+                var statementText = "@Name('s0') select beanA.SimpleProperty as simple," +
                                     "beanA.Nested.NestedValue as nested," +
-                                    "beanA.indexed[1] as indexed," +
+                                    "beanA.Indexed[1] as indexed," +
                                     "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");

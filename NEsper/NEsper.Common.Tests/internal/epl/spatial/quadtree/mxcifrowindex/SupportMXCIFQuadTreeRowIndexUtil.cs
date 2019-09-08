@@ -21,22 +21,22 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 {
     public class SupportMXCIFQuadTreeRowIndexUtil
     {
-        public static readonly SupportQuadTreeUtil.AdderUnique<MXCIFQuadTree<object>> MXCIF_RI_ADDERUNIQUE = (
+        public static readonly SupportQuadTreeUtil.AdderUnique<MXCIFQuadTree> MXCIF_RI_ADDERUNIQUE = (
             tree,
             value) => AddUnique(tree, value.X, value.Y, value.W, value.H, value.Id);
 
-        public static readonly SupportQuadTreeUtil.Remover<MXCIFQuadTree<object>> MXCIF_RI_REMOVER = (
+        public static readonly SupportQuadTreeUtil.Remover<MXCIFQuadTree> MXCIF_RI_REMOVER = (
             tree,
             value) => Remove(tree, value.X, value.Y, value.W, value.H, value.Id);
 
-        public static readonly SupportQuadTreeUtil.Querier<MXCIFQuadTree<object>> MXCIF_RI_QUERIER = QueryWLog;
+        public static readonly SupportQuadTreeUtil.Querier<MXCIFQuadTree> MXCIF_RI_QUERIER = QueryWLog;
 
-        public static readonly SupportQuadTreeUtil.AdderNonUnique<MXCIFQuadTree<object>> MXCIF_RI_ADDERNONUNIQUE = (
+        public static readonly SupportQuadTreeUtil.AdderNonUnique<MXCIFQuadTree> MXCIF_RI_ADDERNONUNIQUE = (
             tree,
             value) => SupportMXCIFQuadTreeRowIndexUtil.AddNonUnique(tree, value.X, value.Y, value.W, value.H, value.Id);
 
         internal static ICollection<object> QueryWLog(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         internal static void Remove(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         internal static bool AddNonUnique(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         public static void AddUnique(
-            MXCIFQuadTree<object> tree,
+            MXCIFQuadTree tree,
             double x,
             double y,
             double width,
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         internal static void AssertFound(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         internal static void AssertFound(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Assert.AreEqual(y, rectangle.Y);
             Assert.AreEqual(width, rectangle.W);
             Assert.AreEqual(height, rectangle.H);
-            Assert.AreEqual(expected, rectangle.Multityped.ToString());
+            Assert.AreEqual(expected, rectangle.Multityped.RenderAny());
         }
     }
 } // end of namespace

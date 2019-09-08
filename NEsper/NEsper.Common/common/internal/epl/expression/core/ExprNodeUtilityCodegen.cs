@@ -269,15 +269,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var method = parent.MakeChildWithScope(
-                    typeof(IDictionary<object, object>),
+                    typeof(IDictionary<string, object>),
                     generator,
                     exprSymbol,
                     classScope)
                 .AddParam(PARAMS);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<string, object>>(
                 "map",
-                NewInstance(typeof(Dictionary<object, object>), Constant(selectAsNames.Length + 2)));
+                NewInstance(typeof(Dictionary<string, object>), Constant(selectAsNames.Length + 2)));
             var expressions = new CodegenExpression[selectAsNames.Length];
             for (var i = 0; i < selectClause.Count; i++) {
                 expressions[i] = selectClause[i].Forge.EvaluateCodegen(typeof(object), method, exprSymbol, classScope);

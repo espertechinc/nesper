@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             // test join
             env.CompileDeploy(
-                "@Name('s0') select * from SupportBean_S0 s0 unidirectional, MyWindow sb where TheString = MYCONST",
+                "@Name('s0') select * from SupportBean_S0 S0 unidirectional, MyWindow sb where TheString = MYCONST",
                 path);
             env.AddListener("s0");
 
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.SendEventBean(new SupportBean_S0(i, "E" + i));
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
-                    "sb.TheString,sb.IntPrimitive".SplitCsv(),
+                    new [] { "sb.TheString","sb.IntPrimitive" },
                     new object[] {"E331", -331});
             }
 

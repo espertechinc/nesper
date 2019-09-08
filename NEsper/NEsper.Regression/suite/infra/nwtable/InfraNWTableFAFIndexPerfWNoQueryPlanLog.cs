@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunFAFAssertion(env, path, eplIdx1Two, 9998 + 9999);
 
                 // drop index, create multikey btree
-                env.UndeployModuleContaining("idx");
+                env.UndeployModuleContaining("Idx");
 
                 env.CompileDeploy("create index Idx2 on MyInfraFAFKB(IntPrimitive btree, TheString btree)", path);
 

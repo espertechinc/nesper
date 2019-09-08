@@ -159,8 +159,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 .DeclareVar<InfraOnMergeActionIns>(
                     "insertUnmatched",
                     insertUnmatched == null ? ConstantNull() : insertUnmatched.Make(method, symbols, classScope))
-                .DeclareVar<IList<object>>("matched", MakeList(matched, method, symbols, classScope))
-                .DeclareVar<IList<object>>("unmatched", MakeList(unmatched, method, symbols, classScope))
+                .DeclareVar<IList<InfraOnMergeMatch>>("matched", MakeList(matched, method, symbols, classScope))
+                .DeclareVar<IList<InfraOnMergeMatch>>("unmatched", MakeList(unmatched, method, symbols, classScope))
                 .MethodReturn(
                     NewInstance<InfraOnMergeHelper>(
                         Ref("insertUnmatched"),

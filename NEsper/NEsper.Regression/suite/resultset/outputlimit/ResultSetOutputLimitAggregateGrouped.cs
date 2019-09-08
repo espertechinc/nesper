@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "IBM", 3, -3);
-            var fields = "symbol,Volume,sumPrice".SplitCsv();
+            var fields = new [] { "symbol","Volume","sumPrice" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 
             SendEvent(env, SYMBOL_DELL, 10000, 51);
-            var fields = "symbol,Volume,mySum".SplitCsv();
+            var fields = new [] { "symbol","Volume","mySum" };
             var events = env.Listener("s0").DataListsFlattened;
             if (events.First[0].Get("Symbol").Equals(SYMBOL_IBM)) {
                 EPAssertionUtil.AssertPropsPerRow(
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 
             SendEvent(env, SYMBOL_DELL, 10000, 51);
-            var fields = "symbol,Volume,mySum".SplitCsv();
+            var fields = new [] { "symbol","Volume","mySum" };
             var events = env.Listener("s0").DataListsFlattened;
             if (events.First[0].Get("Symbol").Equals(SYMBOL_IBM)) {
                 EPAssertionUtil.AssertPropsPerRow(
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertionLast(RegressionEnvironment env)
         {
-            var fields = "symbol,Volume,mySum".SplitCsv();
+            var fields = new [] { "symbol","Volume","mySum" };
             SendEvent(env, SYMBOL_DELL, 10000, 51);
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 
@@ -297,8 +297,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             string statementText,
             AtomicLong milestone)
         {
-            var fields = "TheString,LongPrimitive,value".SplitCsv();
-            var fieldsLimited = "TheString,value".SplitCsv();
+            var fields = new [] { "TheString","LongPrimitive","value" };
+            var fieldsLimited = new [] { "TheString","value" };
             var epl = "create window MyWindow#keepall as SupportBean;\n" +
                       "insert into MyWindow select * from SupportBean;\n" +
                       "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1378,9 +1378,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
 
                 var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as sumPrice" +
-                          " from SupportMarketDataBean#time(10 sec) as s0," +
-                          "SupportBean#keepall as s1 " +
-                          "where s0.Symbol = s1.TheString " +
+                          " from SupportMarketDataBean#time(10 sec) as S0," +
+                          "SupportBean#keepall as S1 " +
+                          "where S0.Symbol = S1.TheString " +
                           "group by Symbol " +
                           "having sum(Price) >= 10 " +
                           "output every 3 events";
@@ -1401,8 +1401,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
 
                 var epl = "@Name('s0') select irstream Symbol, Volume, max(Price) as maxVol" +
-                          " from SupportMarketDataBean#sort(1, Volume) as s0," +
-                          "SupportBean#keepall as s1 where s1.TheString = s0.Symbol " +
+                          " from SupportMarketDataBean#sort(1, Volume) as S0," +
+                          "SupportBean#keepall as S1 where S1.TheString = S0.Symbol " +
                           "group by Symbol output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 

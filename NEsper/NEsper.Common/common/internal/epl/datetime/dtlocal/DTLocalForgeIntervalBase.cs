@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         public abstract DTLocalEvaluatorIntervalComp MakeEvaluatorComp();
 
         public abstract CodegenExpression Codegen(
-            CodegenExpressionRef start,
-            CodegenExpressionRef end,
+            CodegenExpression start,
+            CodegenExpression end,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);

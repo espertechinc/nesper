@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiled = env.Compile(
                     soda,
-                    "@Name('s0') select * from SupportBean(TheString=(?::SupportBean.getTheString()))",
+                    "@Name('s0') select * from SupportBean(TheString=(?::SupportBean.GetTheString()))",
                     new CompilerArguments(new Configuration()));
                 DeployWithResolver(env, compiled, null, prepared => prepared.SetObject(1, new SupportBean("E1", 0)));
                 env.AddListener("s0");
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var compiled = env.Compile(
-                    "@Name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.getTheString())");
+                    "@Name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.GetTheString())");
                 DeployWithResolver(
                     env,
                     compiled,

@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Diagnostics;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
@@ -20,11 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public void Run(RegressionEnvironment env)
         {
             var epl = "@Name('s0') select " +
-                      "(dt).makeString() as strval, " +
-                      "(dt).makeInteger() as intval, " +
-                      "(dt).makeCommon().makeString() as commonstrval, " +
-                      "(dt).makeCommon().makeInteger() as commonintval, " +
-                      "(dt).returnDouble() as commondoubleval " +
+                      "(dt).MakeString() as strval, " +
+                      "(dt).MakeInteger() as intval, " +
+                      "(dt).MakeCommon().MakeString() as commonstrval, " +
+                      "(dt).MakeCommon().MakeInteger() as commonintval, " +
+                      "(dt).ReturnDouble() as commondoubleval " +
                       "from SupportBeanDuckType dt ";
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -41,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 Assert.AreEqual(rows[i][1], prop.PropertyType);
             }
 
-            var fields = "strval,intval,commonstrval,commonintval,commondoubleval".SplitCsv();
+            var fields = new [] { "strval","intval","commonstrval","commonintval","commondoubleval" };
 
             env.SendEventBean(new SupportBeanDuckTypeOne("x"));
             EPAssertionUtil.AssertProps(

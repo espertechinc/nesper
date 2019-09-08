@@ -24,9 +24,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                        "  measures A.TheString as a_string, C.TheString as c_string " +
                        "  all matches " +
                        "  pattern (A B*? C) " +
-                       "  define A as A.cat = '1'," +
-                       "         B as B.cat = '2'," +
-                       "         C as C.cat = '3'" +
+                       "  define A as A.Cat = '1'," +
+                       "         B as B.Cat = '2'," +
+                       "         C as C.Cat = '3'" +
                        ")";
             // When testing aggregation:
             //"  measures A.string as a_string, count(B.string) as cntb, C.string as c_string " +

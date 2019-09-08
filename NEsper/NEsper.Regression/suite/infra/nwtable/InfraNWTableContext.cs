@@ -106,27 +106,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s1").GetAndResetLastNewData(),
-                    "pKey0,pkey1,c0".SplitCsv(),
+                    new [] { "pKey0","pkey1","c0" },
                     new[] {new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
-                    "thecnt".SplitCsv(),
+                    new [] { "thecnt" },
                     new object[] {2L});
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s3").GetAndResetLastNewData(),
-                    "pKey0,thecnt".SplitCsv(),
+                    new [] { "pKey0","thecnt" },
                     new[] {new object[] {"E1", 2L}, new object[] {"E2", 2L}});
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s4").GetAndResetLastNewData(),
-                    "pKey0,thecnt".SplitCsv(),
+                    new [] { "pKey0","thecnt" },
                     new[] {new object[] {"E1", 1L}, new object[] {"E2", 1L}});
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s5").GetAndResetLastNewData(),
-                    "pKey0,pkey1,thecnt".SplitCsv(),
+                    new [] { "pKey0","pkey1","thecnt" },
                     new[] {new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s6").GetAndResetLastNewData(),
-                    "pKey0,pkey1,thecnt".SplitCsv(),
+                    new [] { "pKey0","pkey1","thecnt" },
                     new[] {
                         new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}, new object[] {"E1", null, 1L},
                         new object[] {"E2", null, 1L}, new object[] {null, null, 2L}

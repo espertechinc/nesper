@@ -41,12 +41,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             builder.Append("(");
             _first.Render(builder, isInnerClass, level, indent);
+            builder.Append(' ');
             builder.Append(_isAnd ? "&&" : "||");
+            builder.Append(' ');
             _second.Render(builder, isInnerClass, level, indent);
 
             if (_optionalMore != null) {
                 foreach (var expr in _optionalMore) {
+                    builder.Append(' ');
                     builder.Append(_isAnd ? "&&" : "||");
+                    builder.Append(' ');
                     expr.Render(builder, isInnerClass, level, indent);
                 }
             }

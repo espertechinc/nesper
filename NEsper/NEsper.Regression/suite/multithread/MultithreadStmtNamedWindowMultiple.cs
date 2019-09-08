@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     i +
                     "') on OrderEvent as s select sum(w.Price) from MyWindow_" +
                     i +
-                    " w where w.sIde = s.sIde group by w.sIde",
+                    " w where w.side = s.side group by w.side",
                     path);
             }
 

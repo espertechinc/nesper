@@ -54,11 +54,11 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestGet()
         {
-            int? val = refMap["b"];
-            Assert.IsNull(val);
+            Assert.That(refMap.Contains("b"), Is.False);
+            Assert.That(refMap.TryGetValue("b", out int val), Is.False);
 
-            val = refMap["a"];
-            Assert.AreEqual(100, (int) val);
+            Assert.That(refMap.TryGetValue("a", out val), Is.True);
+            Assert.AreEqual(100, val);
         }
 
         [Test]

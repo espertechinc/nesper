@@ -16,19 +16,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 {
     public class MXCIFQuadTreeFilterIndexCount
     {
-        public static int Count(MXCIFQuadTree<object> quadTree)
+        public static int Count(MXCIFQuadTree quadTree)
         {
             return Count(quadTree.Root);
         }
 
-        private static int Count(MXCIFQuadTreeNode<object> node)
+        private static int Count(MXCIFQuadTreeNode node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object>) {
-                var leaf = (MXCIFQuadTreeNodeLeaf<object>) node;
+            if (node is MXCIFQuadTreeNodeLeaf) {
+                var leaf = (MXCIFQuadTreeNodeLeaf) node;
                 return CountData(leaf.Data);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             return Count(branch.Nw) + Count(branch.Ne) + Count(branch.Sw) + Count(branch.Se) + CountData(branch.Data);
         }
 
@@ -38,19 +38,20 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return 0;
             }
 
-            if (data is XYWHRectangleWValue<object>) {
+            if (data is XYWHRectangleWValue) {
                 return CountCallbacks(data);
             }
-            else if (data is ICollection<XYWHRectangleWValue<object>> collection) {
+            else if (data is ICollection<XYWHRectangleWValue> collection) {
                 int count = 0;
-                foreach (XYWHRectangleWValue<object> p in collection) {
+                foreach (XYWHRectangleWValue p in collection) {
                     count += CountCallbacks(p.Value);
                 }
 
                 return count;
             }
             else {
-                throw new IllegalStateException("unknown type for data");
+                var actualType = data.GetType().FullName;
+                throw new IllegalStateException($"unknown type \"{actualType}\" for data");
             }
         }
 

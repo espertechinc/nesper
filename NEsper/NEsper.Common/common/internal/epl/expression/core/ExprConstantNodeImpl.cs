@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -199,11 +201,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (ConstantValue is string) {
                 writer.Write("\"" + ConstantValue + '\"');
             }
-            else if (ConstantValue == null) {
-                writer.Write("null");
-            }
             else {
-                writer.Write(ConstantValue.ToString());
+                writer.Write(CompatExtensions.RenderAny(ConstantValue));
             }
         }
     }

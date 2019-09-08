@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test map containing first-level property that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@Name('s0') select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
+                    "@Name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayOA");
                 env.AddListener("s0");
 
                 int[] p0 = {1, 2, 3};
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 5, beans[1], p0});
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -63,14 +63,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map at the second level of a nested map that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@Name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
+                    "@Name('s0') select " +
+                    "outer.P0[0] as a, " +
+                    "outer.P0[1] as b, " +
+                    "outer.P1[0].IntPrimitive as c, " +
+                    "outer.P1[1] as d, " +
+                    "outer.P0 as e " +
+                    "from MyArrayOAMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {eventData}, "MyArrayOAMapOuter");
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d".SplitCsv(),
+                    new [] { "a","b","c","d" },
                     new object[] {1, 2, 5, beans[1]});
                 eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -88,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 // test map containing first-level property that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select p0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@Name('s0') select P0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
@@ -101,13 +107,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"v1"});
                 Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
                 env.UndeployAll();
 
                 // test map at the second level of a nested map that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select outer.p0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@Name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = MakeMap(
@@ -118,14 +124,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"v1"});
                 Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
                 env.UndeployModuleContaining("s0");
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                        "@Name('s0') select outerTwo.mapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
+                        "@Name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
                     .AddListener("s0");
 
                 var eventOuterTwo = MakeMap(
@@ -136,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a".SplitCsv(),
+                    new [] { "a" },
                     new object[] {"yOne"});
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a"));
 
@@ -174,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 3, n0Bean1, n0Bean2});
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
@@ -192,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a,b,c,d,e".SplitCsv(),
+                    new [] { "a","b","c","d","e" },
                     new object[] {1, 2, 3, n0Bean1, n0Bean2});
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("a"));
 
@@ -226,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 var eventResult = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     eventResult,
-                    "a,b,c,d".SplitCsv(),
+                    new [] { "a","b","c","d" },
                     new object[] {1, 2, 3, n0Bean1});
                 var valueE = (IDictionary<string, object>[]) eventResult.Get("e");
                 Assert.AreEqual(valueE[0], n0Bean2[0]);
@@ -255,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 var theEvent = env.GetEnumerator("s0").Advance();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "rootId,p0.p0Id,p0.p1.p1Id".SplitCsv(),
+                    new [] { "rootId","p0.p0id","p0.p1.p1id" },
                     new object[] {10, 100, 1000});
 
                 env.UndeployAll();

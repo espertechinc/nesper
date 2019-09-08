@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestRandomIntPoints()
         {
-            SupportQuadTreeToolUnique<MXCIFQuadTree<object>> tools = new SupportQuadTreeToolUnique<MXCIFQuadTree<object>>(
+            SupportQuadTreeToolUnique<MXCIFQuadTree> tools = new SupportQuadTreeToolUnique<MXCIFQuadTree>(
                 MXCIF_FACTORY,
                 SupportGeneratorPointUniqueByXYInteger.INSTANCE,
                 MXCIF_RI_ADDERUNIQUE,

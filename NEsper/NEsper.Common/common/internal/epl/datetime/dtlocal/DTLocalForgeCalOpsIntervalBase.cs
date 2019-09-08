@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope);
 
         public abstract CodegenExpression Codegen(
-            CodegenExpressionRef start,
-            CodegenExpressionRef end,
+            CodegenExpression start,
+            CodegenExpression end,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.compat.concurrency
@@ -30,7 +31,7 @@ namespace com.espertech.esper.compat.concurrency
         private long _numSubmitted;
         private long _numRecycled;
 
-        private readonly TaskFactory _taskFactory;
+        private TaskFactory _taskFactory;
 
         /// <summary>
         /// Gets the number of items executed.
@@ -47,6 +48,7 @@ namespace com.espertech.esper.compat.concurrency
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultExecutorService"/> class.
         /// </summary>
+        /// <param name="taskFactory">The task factory.</param>
         public DefaultExecutorService(TaskFactory taskFactory)
         {
             _id = Guid.NewGuid();
@@ -59,11 +61,28 @@ namespace com.espertech.esper.compat.concurrency
             _taskFactory = taskFactory;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultExecutorService"/> class.
+        /// </summary>
+        public DefaultExecutorService(TaskScheduler taskScheduler)
+        {
+            _id = Guid.NewGuid();
+            _futuresPending = new List<FutureBase>();
+            _isActive = true;
+            _isShutdown = false;
+            _numExecuted = 0;
+            _numSubmitted = 0;
+            _numRecycled = 0;
+            _taskFactory = new DisposableTaskFactory(taskScheduler);
+        }
+
         public void Dispose()
         {
-            if (_taskFactory.Scheduler is IDisposable disposableScheduler) {
-                disposableScheduler.Dispose();
+            if (_taskFactory is IDisposable disposableFactory) {
+                disposableFactory.Dispose();
             }
+
+            _taskFactory = null;
         }
 
         /// <summary>
@@ -172,7 +191,8 @@ namespace com.espertech.esper.compat.concurrency
                 }
             }
 
-            _taskFactory.StartNew(() => DispatchFuture(future), TaskCreationOptions.None);
+            Task task = _taskFactory.StartNew(() => DispatchFuture(future), TaskCreationOptions.None);
+            Log.Info(".Submit - Queued task {0}", task);
 
             return future;
         }
@@ -187,9 +207,16 @@ namespace com.espertech.esper.compat.concurrency
                 Log.Info(".Shutdown - Marking instance {0} to avoid further queuing", _id);
             }
 
-            // Mark the executor as inactive so that we
-            // don't take any new callables.
+            // Mark the executor as inactive so that we don't take any new callables.
             _isShutdown = true;
+
+            // Dispose the taskFactory
+            if (_taskFactory.Scheduler is IDisposable disposableScheduler)
+            {
+                disposableScheduler.Dispose();
+            }
+
+            _taskFactory = null;
         }
 
         /// <summary>
@@ -242,7 +269,7 @@ namespace com.espertech.esper.compat.concurrency
 
                     if (_futuresPending.Count != 0) {
                         _futuresPending.ForEach(
-                            delegate(FutureBase futureBase) {
+                            futureBase => {
                                 Log.Warn(".AwaitTermination - Forceably terminating future");
                                 futureBase.Kill();
                             });

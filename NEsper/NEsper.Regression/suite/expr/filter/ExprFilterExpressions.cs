@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s3') select * from SupportBean where TheString = 'A' or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = "s0,s1,s2,s3".SplitCsv();
+                stmts = new [] { "s0","s1","s2","s3" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {false, false, false, false});
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test equals&selection
-                var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
                 epl = "@Name('s0') select " +
                       "TheString != 'A' as val0, " +
                       "TheString != 'A' or IntPrimitive != 0 as val1, " +
@@ -657,7 +657,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "@Name('s3') select * from SupportBean where TheString is not null or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = "s0,s1,s2,s3".SplitCsv();
+                stmts = new [] { "s0","s1","s2","s3" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {true, true, false, false});
@@ -718,7 +718,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s4') select * from SupportBean where TheString != null").AddListener("s4");
                 env.CompileDeploy("@Name('s5') select * from SupportBean(TheString != null)").AddListener("s5");
                 env.MilestoneInc(milestone);
-                stmts = "s0,s1,s2,s3,s4,s5".SplitCsv();
+                stmts = new [] { "s0","s1","s2","s3","s4","s5" };
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {true, false, false, false, false, false});
@@ -729,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // select constants
-                fields = "val0,val1,val2,val3".SplitCsv();
+                fields = new [] { "val0","val1","val2","val3" };
                 env.CompileDeploy(
                         "@Name('s0') select " +
                         "2 != null as val0," +
@@ -1771,15 +1771,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(s0.myInstanceMethodAlwaysTrue()) as s0",
+                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodAlwaysTrue()) as S0",
                     new[] {true, true, true});
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(s0.myInstanceMethodEventBean(s0, 'x', 1)) as s0",
+                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodEventBean(s0, 'x', 1)) as S0",
                     new[] {false, true, false});
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(s0.myInstanceMethodEventBean(*, 'x', 1)) as s0",
+                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodEventBean(*, 'x', 1)) as S0",
                     new[] {false, true, false});
             }
 
@@ -1802,9 +1802,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportBeanComplexProps(simpleProperty='1')#keepall as s0" +
-                           ", SupportBeanComplexProps(simpleProperty='2')#keepall as s1" +
-                           " where s0.Nested = s1.Nested";
+                var text = "@Name('s0') select * from SupportBeanComplexProps(simpleProperty='1')#keepall as S0" +
+                           ", SupportBeanComplexProps(simpleProperty='2')#keepall as S1" +
+                           " where S0.Nested = S1.Nested";
                 env.CompileDeploy(text).AddListener("s0");
 
                 var eventOne = SupportBeanComplexProps.MakeDefaultBean();

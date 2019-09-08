@@ -16,12 +16,12 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    public partial class MinMaxTypeEnum
+    public partial class MinMaxType
     {
         /// <summary>
-        ///     Determines maximum using AsDecimal.
+        ///     Determines maximum using AsDouble.
         /// </summary>
-        public class MaxComputerDecimalCoerce : Computer
+        public class MaxComputerDoubleCoerce : Computer
         {
             private readonly ExprEvaluator[] childNodes;
 
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ///     Ctor.
             /// </summary>
             /// <param name="childNodes">array of expression nodes</param>
-            public MaxComputerDecimalCoerce(ExprEvaluator[] childNodes)
+            public MaxComputerDoubleCoerce(ExprEvaluator[] childNodes)
             {
                 this.childNodes = childNodes;
             }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 object result;
-                if (valueChildOne.AsDecimal() > valueChildTwo.AsDecimal()) {
+                if (valueChildOne.AsDouble() > valueChildTwo.AsDouble()) {
                     result = valueChildOne;
                 }
                 else {
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         return null;
                     }
 
-                    if (valueChild.AsDecimal() > result.AsDecimal()) {
+                    if (valueChild.AsDouble() > result.AsDouble()) {
                         result = valueChild;
                     }
                 }
@@ -75,7 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 ExprNode[] nodes,
                 Type returnType)
             {
-                return CodegenMinMax(false, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
+                return MinMaxTypeCodegen
+                    .CodegenMinMax(false, codegenMethodScope, exprSymbol, codegenClassScope, nodes, returnType);
             }
         }
     }

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">output stream name</param>
         /// <param name="typeInfo">type information</param>
         public DataFlowOperatorOutput(
-            String streamName,
+            string streamName,
             IList<DataFlowOperatorOutputType> typeInfo)
         {
             StreamName = streamName;

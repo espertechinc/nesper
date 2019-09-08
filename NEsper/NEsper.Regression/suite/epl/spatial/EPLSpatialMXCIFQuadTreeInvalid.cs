@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 // invalid index for filter
                 var epl = "expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
-                          "select * from SupportSpatialEventRectangle(rectangle(10, 20, 5, 6, filterindex:myindex).intersects(rectangle(x, y, width, height)))";
+                          "select * from SupportSpatialEventRectangle(rectangle(10, 20, 5, 6, filterindex:myindex).intersects(rectangle(X, Y, Width, Height)))";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportSpatialEventRectangle(rectangle(0).intersects(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error valIdating left-hand-sIde method 'rectangle', expected 4 parameters but received 1 parameters");
+                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error validating left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
             }
         }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var epl = "@Name('mywindow') create window RectangleWindow#keepall as SupportSpatialEventRectangle;\n" +
                           "insert into RectangleWindow select * from SupportSpatialEventRectangle;\n" +
-                          "create index MyIndex on RectangleWindow((x, y, width, height) mxcifquadtree(0, 0, 100, 100));\n";
+                          "create index MyIndex on RectangleWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl);
 
                 try {
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column 'x' received null and expected non-null");
+                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column 'X' received null and expected non-null");
                 }
 
                 try {
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column '(x,y,width,height)' received (200.0,200.0,1.0,1.0) and expected a value intersecting index bounding box (range-end-inclusive) {minX=0.0, minY=0.0, maxX=100.0, maxY=100.0}");
+                        "Unexpected exception in statement 'mywindow': Invalid value for index 'MyIndex' column '(X,Y,Width,Height)' received (200.0d,200.0d,1.0d,1.0d) and expected a value intersecting index bounding box (range-end-inclusive) {MinX=0.0d, MinY=0.0d, MaxX=100.0d, MaxY=100.0d}");
                 }
 
                 env.UndeployAll();
@@ -100,18 +100,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index MyIndex on MyWindow(x mxcifquadtree(0, 0, 100, 100))",
+                    "create index MyIndex on MyWindow(X mxcifquadtree(0, 0, 100, 100))",
                     "Index of type 'mxcifquadtree' requires 4 expressions as index columns but received 1");
 
                 // same index twice, by-columns
                 env.CompileDeploy("create window SomeWindow#keepall as SupportSpatialEventRectangle", path);
                 env.CompileDeploy(
-                    "create index SomeWindowIdx1 on SomeWindow((x, y, width, height) mxcifquadtree(0, 0, 1, 1))",
+                    "create index SomeWindowIdx1 on SomeWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 1, 1))",
                     path);
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "create index SomeWindowIdx2 on SomeWindow((x, y, width, height) mxcifquadtree(0, 0, 1, 1))",
+                    "create index SomeWindowIdx2 on SomeWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 1, 1))",
                     "An index for the same columns already exists");
 
                 env.UndeployAll();
@@ -125,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl =
                     "create table RectangleTable(rectangleId string primary key, rx double, ry double, rwidth double, rheight double);\n" +
                     "create index RectangleIndex on RectangleTable((rx, ry, rwidth, rheight) mxcifquadtree(0, 0, 100, 100));\n" +
-                    "create schema OtherRectangleEvent(otherX double, otherY double, otherWIdth double, otherHeight double);\n" +
+                    "create schema OtherRectangleEvent(otherX double, otherY double, otherWidth double, otherHeight double);\n" +
                     "on OtherRectangleEvent\n" +
                     "select rectangleId from RectangleTable\n" +
-                    "where rectangle(rx, ry, rwidth, rheight).intersects(rectangle(otherX, otherY, otherWIdth, otherHeight));" +
+                    "where rectangle(rx, ry, rwidth, rheight).intersects(rectangle(otherX, otherY, otherWidth, otherHeight));" +
                     "expression myMXCIFQuadtreeSettings { mxcifquadtree(0, 0, 100, 100) } \n" +
-                    "select * from SupportSpatialAABB(rectangle(10, 20, 5, 5, filterindex:myMXCIFQuadtreeSettings).intersects(rectangle(x, y, width, height)));\n";
+                    "select * from SupportSpatialAABB(rectangle(10, 20, 5, 5, filterindex:myMXCIFQuadtreeSettings).intersects(rectangle(X, Y, Width, Height)));\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }

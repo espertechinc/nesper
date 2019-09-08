@@ -146,13 +146,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 "('E1', 10); ]";
                 env.CompileDeploy(eplScript, path);
                 env.CompileDeploy(
-                        "@Name('s0') select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb",
+                        "@Name('s0') select callIt() as val0, callIt().GetTheString() as val1 from SupportBean as sb",
                         path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0.TheString,val0.IntPrimitive,val1".SplitCsv(),
+                    new [] { "val0.TheString","val0.IntPrimitive","val1" },
                     new object[] {"E1", 10, "E1"});
 
                 env.UndeployAll();
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {Math.PI * 10});
 
                 // test SODA
-                var eplExpr = "@Name('expr') create expression JoinMultiplication {(s1,s2) -> s1.IntPrimitive*s2.Id}";
+                var eplExpr = "@Name('expr') create expression JoinMultiplication {(s1,s2) -> S1.IntPrimitive*S2.Id}";
                 var modelExpr = env.EplToModel(eplExpr);
                 Assert.AreEqual(eplExpr, modelExpr.ToEPL());
                 env.CompileDeploy(modelExpr, path);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test SODA and join and 2-stream parameter
                 var eplJoin =
-                    "@Name('join') select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
+                    "@Name('join') select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as S0";
                 var modelJoin = env.EplToModel(eplJoin);
                 Assert.AreEqual(eplJoin, modelJoin.ToEPL());
                 env.CompileDeploy(modelJoin, path);

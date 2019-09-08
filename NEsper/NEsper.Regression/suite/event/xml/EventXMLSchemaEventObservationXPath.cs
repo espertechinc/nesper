@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 new[] {"urn:epc:1:2.24.400", "urn:epc:1:2.24.401"});
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("s0").Advance(),
-                "countTags,countTagsInt".SplitCsv(),
+                new [] { "countTags","countTagsInt" },
                 new object[] {2d, 2});
             Assert.AreEqual("urn:epc:1:2.24.400", env.GetEnumerator("e1").Advance().Get("ID"));
             Assert.AreEqual("urn:epc:1:2.24.401", env.GetEnumerator("e3").Advance().Get("mytags[1].ID"));

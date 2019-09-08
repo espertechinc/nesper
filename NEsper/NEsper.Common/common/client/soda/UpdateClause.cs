@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">expression returning a value to write</param>
         /// <returns>Update clause</returns>
         public static UpdateClause Create(
-            String eventType,
+            string eventType,
             Expression expression)
         {
             var clause = new UpdateClause(eventType, null);
@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="eventType">the name of the type to Update</param>
         /// <param name="optionalAsClauseStreamName">as-clause for Update, if any</param>
         public UpdateClause(
-            String eventType,
-            String optionalAsClauseStreamName)
+            string eventType,
+            string optionalAsClauseStreamName)
         {
             EventType = eventType;
             OptionalAsClauseStreamName = optionalAsClauseStreamName;
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.client.soda
             IList<Assignment> assignments)
         {
             writer.Write("set ");
-            String delimiter = "";
+            string delimiter = "";
             foreach (Assignment pair in assignments)
             {
                 writer.Write(delimiter);

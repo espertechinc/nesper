@@ -153,14 +153,14 @@ namespace com.espertech.esper.common.client.configuration.common
                 switch (subElement.Name) {
                     case "query-plan": {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
-                        var value = Boolean.Parse(valueText);
+                        var value = bool.Parse(valueText);
                         common.Logging.IsEnableQueryPlan = value;
                         break;
                     }
 
                     case "jdbc": {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
-                        var value = Boolean.Parse(valueText);
+                        var value = bool.Parse(valueText);
                         common.Logging.IsEnableADO = value;
                         break;
                     }
@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "connection-settings":
                         if (subElement.Attributes.GetNamedItem("auto-commit") != null) {
                             var autoCommit = subElement.Attributes.GetNamedItem("auto-commit").InnerText;
-                            configDBRef.ConnectionAutoCommit = Boolean.Parse(autoCommit);
+                            configDBRef.ConnectionAutoCommit = bool.Parse(autoCommit);
                         }
 
                         if (subElement.Attributes.GetNamedItem("transaction-isolation") != null) {
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
                         if (subElement.Attributes.GetNamedItem("read-only") != null) {
                             var readOnly = subElement.Attributes.GetNamedItem("read-only").InnerText;
-                            configDBRef.ConnectionReadOnly = Boolean.Parse(readOnly);
+                            configDBRef.ConnectionReadOnly = bool.Parse(readOnly);
                         }
 
                         break;
@@ -309,12 +309,12 @@ namespace com.espertech.esper.common.client.configuration.common
                             refTypeEnum = EnumHelper.Parse<CacheReferenceType>(refType);
                         }
 
-                        configDBRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval), refTypeEnum);
+                        configDBRef.SetExpiryTimeCache(double.Parse(maxAge), double.Parse(purgeInterval), refTypeEnum);
                         break;
 
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
-                        configDBRef.SetLRUCache(Int32.Parse(size));
+                        configDBRef.SetLRUCache(int.Parse(size));
                         break;
                 }
             }
@@ -341,7 +341,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
             var isConstant = false;
             if (GetOptionalAttribute(element, "constant") != null) {
-                isConstant = Boolean.Parse(GetOptionalAttribute(element, "constant"));
+                isConstant = bool.Parse(GetOptionalAttribute(element, "constant"));
             }
 
             configuration.AddVariable(variableName, variableType, initValue, isConstant);
@@ -425,19 +425,19 @@ namespace com.espertech.esper.common.client.configuration.common
             xmlDOMEventTypeDesc.StartTimestampPropertyName = startTimestampProperty;
             xmlDOMEventTypeDesc.EndTimestampPropertyName = endTimestampProperty;
             if (resolvePropertiesAbsoluteStr != null) {
-                xmlDOMEventTypeDesc.IsXPathResolvePropertiesAbsolute = Boolean.Parse(resolvePropertiesAbsoluteStr);
+                xmlDOMEventTypeDesc.IsXPathResolvePropertiesAbsolute = bool.Parse(resolvePropertiesAbsoluteStr);
             }
 
             if (propertyExprXPathStr != null) {
-                xmlDOMEventTypeDesc.IsXPathPropertyExpr = Boolean.Parse(propertyExprXPathStr);
+                xmlDOMEventTypeDesc.IsXPathPropertyExpr = bool.Parse(propertyExprXPathStr);
             }
 
             if (eventSenderChecksRootStr != null) {
-                xmlDOMEventTypeDesc.IsEventSenderValidatesRoot = Boolean.Parse(eventSenderChecksRootStr);
+                xmlDOMEventTypeDesc.IsEventSenderValidatesRoot = bool.Parse(eventSenderChecksRootStr);
             }
 
             if (autoFragmentStr != null) {
-                xmlDOMEventTypeDesc.IsAutoFragment = Boolean.Parse(autoFragmentStr);
+                xmlDOMEventTypeDesc.IsAutoFragment = bool.Parse(autoFragmentStr);
             }
 
             configuration.AddEventType(name, xmlDOMEventTypeDesc);
@@ -735,14 +735,14 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         configMethodRef.SetExpiryTimeCache(
-                            Double.Parse(maxAge),
-                            Double.Parse(purgeInterval),
+                            double.Parse(maxAge),
+                            double.Parse(purgeInterval),
                             refTypeEnum);
                         break;
 
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
-                        configMethodRef.SetLRUCache(Int32.Parse(size));
+                        configMethodRef.SetLRUCache(int.Parse(size));
                         break;
                 }
             }
@@ -786,12 +786,12 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "avro-settings":
                         var enableAvroStr = GetOptionalAttribute(subElement, "enable-avro");
                         if (enableAvroStr != null) {
-                            common.EventMeta.AvroSettings.IsEnableAvro = Boolean.Parse(enableAvroStr);
+                            common.EventMeta.AvroSettings.IsEnableAvro = bool.Parse(enableAvroStr);
                         }
 
                         var enableNativeStringStr = GetOptionalAttribute(subElement, "enable-native-string");
                         if (enableNativeStringStr != null) {
-                            common.EventMeta.AvroSettings.IsEnableNativeString = Boolean.Parse(enableNativeStringStr);
+                            common.EventMeta.AvroSettings.IsEnableNativeString = bool.Parse(enableNativeStringStr);
                         }
 
                         var enableSchemaDefaultNonNullStr = GetOptionalAttribute(
@@ -799,7 +799,7 @@ namespace com.espertech.esper.common.client.configuration.common
                             "enable-schema-default-nonnull");
                         if (enableSchemaDefaultNonNullStr != null) {
                             common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull =
-                                Boolean.Parse(enableSchemaDefaultNonNullStr);
+                                bool.Parse(enableSchemaDefaultNonNullStr);
                         }
 
                         var objectvalueTypewidenerFactoryClass = GetOptionalAttribute(

@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     listener => {
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             env.Listener("s0").GetAndResetLastNewData(),
-                            "TheString,c0,c1".SplitCsv(),
+                            new [] { "TheString","c0","c1" },
                             new[] {new object[] {"E1", 60, 10}, new object[] {"E2", 60, 50}});
                     });
 
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     listener => {
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             env.Listener("s0").GetAndResetLastNewData(),
-                            "TheString,c0,c1,c2".SplitCsv(),
+                            new [] { "TheString","c0","c1","c2" },
                             new[] {
                                 new object[] {"E1", 600L, 100L, 100L}, new object[] {"E2", 600L, 500L, 200L},
                                 new object[] {"E2", 600L, 500L, 300L}
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var cols = "TheString,IntPrimitive,c0,c1".SplitCsv();
+                var cols = new [] { "TheString","IntPrimitive","c0","c1" };
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var cols = "TheString,IntPrimitive,c0,c1".SplitCsv();
+                var cols = new [] { "TheString","IntPrimitive","c0","c1" };
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "TheString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","c0","c1","c2","c3","c4" };
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(IntPrimitive, TheString)) as c0," +
@@ -598,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "TheString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","c0","c1","c2","c3","c4" };
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   window(*, group_by:(IntPrimitive, TheString)) as c0," +
@@ -660,7 +660,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "TheString,IntPrimitive,c0,c1,c2".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","c0","c1","c2" };
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(TheString)) as c0," +
@@ -707,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "TheString,pct".SplitCsv();
+                var fields = new [] { "TheString","pct" };
                 var epl = "@Name('s0') select TheString, count(*) / count(*, group_by:()) as pct" +
                           " from SupportBean#time(30 sec)" +
                           " group by TheString" +
@@ -801,7 +801,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var cols = "c0,c1,c2,c3,c4,c5,c8,c9,c10,c11,c12,c13".SplitCsv();
+                var cols = new [] { "c0","c1","c2","c3","c4","c5","c8","c9","c10","c11","c12","c13" };
                 var epl = "@Name('s0') select IntPrimitive, " +
                           " countever(*, IntPrimitive>0, group_by:(TheString)) as c0," +
                           " countever(*, IntPrimitive>0, group_by:()) as c1," +
@@ -1110,7 +1110,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,sum0,sum1".SplitCsv();
+                var fields = new [] { "c0","sum0","sum1" };
                 var epl = "@Name('s0') select IntPrimitive as c0, " +
                           "sum(IntPrimitive, group_by:()) as sum0, " +
                           "sum(IntPrimitive, group_by:(TheString)) as sum1 " +
@@ -1180,7 +1180,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,c0".SplitCsv(),
+                    new [] { "TheString","c0" },
                     new[] {
                         new object[] {"E1", 40}, new object[] {"E1", 40}, new object[] {"E3", 40},
                         new object[] {"E2", 70}, new object[] {"E2", 70}
@@ -1213,7 +1213,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,c0,c1".SplitCsv(),
+                    new [] { "TheString","c0","c1" },
                     new[] {
                         new object[] {"E1", 40, 150}, new object[] {"E2", 70, 150}, new object[] {"E3", 40, 150}
                     });
@@ -1223,7 +1223,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,c0,c1".SplitCsv(),
+                    new [] { "TheString","c0","c1" },
                     new[] {
                         new object[] {"E1", 100, 210}, new object[] {"E2", 70, 210}, new object[] {"E3", 40, 210}
                     });
@@ -1247,7 +1247,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,c0".SplitCsv(),
+                    new [] { "TheString","c0" },
                     new[] {new object[] {"E1", 40}, new object[] {"E1", 40}, new object[] {"E2", 20}});
 
                 MakeSendEvent(env, "E1", 40);
@@ -1255,7 +1255,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString,c0".SplitCsv(),
+                    new [] { "TheString","c0" },
                     new[] {
                         new object[] {"E1", 80}, new object[] {"E1", 80}, new object[] {"E1", 80},
                         new object[] {"E2", 20}

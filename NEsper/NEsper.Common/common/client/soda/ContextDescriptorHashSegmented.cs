@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("coalesce ");
-            String delimiter = "";
+            string delimiter = "";
             foreach (ContextDescriptorHashSegmentedItem item in Items)
             {
                 writer.Write(delimiter);

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             if (lhsType.IsPrimitive && rhsType.IsPrimitive) {
-                return StaticMethod(Boxing.GetBoxedType(lhsType), "Compare", lhs, rhs);
+                return Op(rhs, "==", lhs);
             }
 
             if (lhsType.IsPrimitive) {

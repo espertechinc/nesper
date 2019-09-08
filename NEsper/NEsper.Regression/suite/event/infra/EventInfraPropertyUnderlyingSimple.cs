@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var epl = "@Name('s0') select * from " + typename;
             env.CompileDeploy(epl).AddListener("s0");
 
-            var fields = "MyInt,MyString".SplitCsv();
+            var fields = new [] { "MyInt","MyString" };
 
             Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("MyInt").GetBoxedType());
             Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("MyString"));
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 typename;
             env.CompileDeploy(epl).AddListener("s0");
 
-            var fields = "MyInt,exists_MyInt,MyString,exists_MyString".SplitCsv();
+            var fields = new [] { "MyInt","exists_MyInt","MyString","exists_MyString" };
 
             var eventType = env.Statement("s0").EventType;
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt").GetBoxedType());

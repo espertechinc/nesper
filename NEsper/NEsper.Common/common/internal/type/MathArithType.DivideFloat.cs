@@ -25,6 +25,10 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
+                if (d1 == null || d2 == null) {
+                    return null;
+                }
+
                 var d2Float = d2.AsFloat();
                 if (d2Float == 0) {
                     return null;

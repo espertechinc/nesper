@@ -507,39 +507,39 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream avg(Price) as avgp, sym " +
-                          "from SupportPriceEvent#groupwin(sym)#length(2)";
+                var epl = "@Name('s0') select irstream avg(Price) as Avgp, Sym " +
+                          "from SupportPriceEvent#groupwin(Sym)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportPriceEvent(1, "A"));
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("A", theEvent.Get("sym"));
-                Assert.AreEqual(1.0, theEvent.Get("avgp"));
+                Assert.AreEqual("A", theEvent.Get("Sym"));
+                Assert.AreEqual(1.0, theEvent.Get("Avgp"));
 
                 env.SendEventBean(new SupportPriceEvent(2, "B"));
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("B", theEvent.Get("sym"));
-                Assert.AreEqual(1.5, theEvent.Get("avgp"));
+                Assert.AreEqual("B", theEvent.Get("Sym"));
+                Assert.AreEqual(1.5, theEvent.Get("Avgp"));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportPriceEvent(9, "A"));
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("A", theEvent.Get("sym"));
-                Assert.AreEqual((1 + 2 + 9) / 3.0, theEvent.Get("avgp"));
+                Assert.AreEqual("A", theEvent.Get("Sym"));
+                Assert.AreEqual((1 + 2 + 9) / 3.0, theEvent.Get("Avgp"));
 
                 env.SendEventBean(new SupportPriceEvent(18, "B"));
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("B", theEvent.Get("sym"));
-                Assert.AreEqual((1 + 2 + 9 + 18) / 4.0, theEvent.Get("avgp"));
+                Assert.AreEqual("B", theEvent.Get("Sym"));
+                Assert.AreEqual((1 + 2 + 9 + 18) / 4.0, theEvent.Get("Avgp"));
 
                 env.SendEventBean(new SupportPriceEvent(5, "A"));
                 theEvent = env.Listener("s0").LastNewData[0];
-                Assert.AreEqual("A", theEvent.Get("sym"));
-                Assert.AreEqual((2 + 9 + 18 + 5) / 4.0, theEvent.Get("avgp"));
+                Assert.AreEqual("A", theEvent.Get("Sym"));
+                Assert.AreEqual((2 + 9 + 18 + 5) / 4.0, theEvent.Get("Avgp"));
                 theEvent = env.Listener("s0").LastOldData[0];
-                Assert.AreEqual("A", theEvent.Get("sym"));
-                Assert.AreEqual((5 + 2 + 9 + 18) / 4.0, theEvent.Get("avgp"));
+                Assert.AreEqual("A", theEvent.Get("Sym"));
+                Assert.AreEqual((5 + 2 + 9 + 18) / 4.0, theEvent.Get("Avgp"));
 
                 env.UndeployAll();
             }

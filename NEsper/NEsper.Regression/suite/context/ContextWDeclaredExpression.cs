@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("y", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "e1.IntPrimitive,e2.IntPrimitive".SplitCsv(),
+                    new [] { "e1.IntPrimitive","e2.IntPrimitive" },
                     new object[] {1, 2});
 
                 env.UndeployAll();

@@ -33,10 +33,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var epl = "select * from SupportTradeEventTwo#lastevent;\n" +
                           "@Name('s0') select window(tl.*) as longItems, " +
-                          "       (SELECT window(ts.*) AS shortItems FROM SupportTradeEventTwo#time(20 minutes) as ts WHERE ts.securityID=tl.securityID) " +
+                          "       (SELECT window(ts.*) AS shortItems FROM SupportTradeEventTwo#time(20 minutes) as ts WHERE ts.SecurityID=tl.SecurityID) " +
                           "from SupportTradeEventTwo#time(20 minutes) as tl " +
-                          "where tl.securityID = 1000" +
-                          "group by tl.securityID";
+                          "where tl.SecurityID = 1000" +
+                          "group by tl.SecurityID";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportTradeEventTwo(PerformanceObserver.MilliTime, 1000, 50, 1));

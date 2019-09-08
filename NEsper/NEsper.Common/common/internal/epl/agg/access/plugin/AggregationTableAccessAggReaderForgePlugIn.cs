@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                 true,
                 typeof(AggregationMultiFunctionTableReaderFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
-            return ExprDotMethod(factoryField, "newReader", ConstantNull());
+            return ExprDotMethod(factoryField, "NewReader", ConstantNull());
         }
     }
 } // end of namespace

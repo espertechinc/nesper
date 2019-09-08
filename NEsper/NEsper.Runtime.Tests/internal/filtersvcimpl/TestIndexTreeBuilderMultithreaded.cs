@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numberOfRunnables,
             int numberOfSecondsSleep)
         {
-            log.Info(".performMultithreadedTest Loading thread pool work queue,numberOfRunnables=" + numberOfRunnables);
+            log.Info(".PerformMultithreadedTest Loading thread pool work queue,numberOfRunnables={0}", numberOfRunnables);
 
             var pool = Executors.NewMultiThreadedExecutor(numberOfThreads);
             //var pool = new ThreadPoolExecutor(0, numberOfThreads, 99999,
@@ -149,19 +149,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 pool.Submit(() => runnable.Run());
             }
 
-            log.Info(".performMultithreadedTest Starting thread pool, threads=" + numberOfThreads);
+            log.Info(".PerformMultithreadedTest Starting thread pool, threads={0}", numberOfThreads);
             //pool.CorePoolSize = numberOfThreads;
 
             // Sleep X seconds
             Sleep(numberOfSecondsSleep);
 
-            log.Info(
-                ".performMultithreadedTest Completed, numberOfRunnables=" +
-                numberOfRunnables +
-                "  numberOfThreads=" +
-                numberOfThreads +
-                "  completed=" +
-                pool.NumExecuted);
+            log.Info(".PerformMultithreadedTest Completed, numberOfRunnables={0}  numberOfThreads={1}  completed={2}",
+                    numberOfRunnables,
+                    numberOfThreads,
+                    pool.NumExecuted);
 
             pool.Shutdown();
             pool.AwaitTermination(1, TimeUnit.SECONDS);

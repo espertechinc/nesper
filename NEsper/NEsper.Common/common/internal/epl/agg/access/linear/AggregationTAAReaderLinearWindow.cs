@@ -22,14 +22,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private Type componentType;
         private ExprEvaluator optionalEvaluator;
 
-        public void SetComponentType(Type componentType)
-        {
-            this.componentType = componentType;
+        public Type ComponentType {
+            get => componentType;
+            set => componentType = value;
         }
 
-        public void SetOptionalEvaluator(ExprEvaluator optionalEvaluator)
+        public ExprEvaluator OptionalEvaluator {
+            get => optionalEvaluator;
+            set => optionalEvaluator = value;
+        }
+
+        public AggregationTAAReaderLinearWindow SetComponentType(Type componentType)
+        {
+            this.componentType = componentType;
+            return this;
+        }
+
+        public AggregationTAAReaderLinearWindow SetOptionalEvaluator(ExprEvaluator optionalEvaluator)
         {
             this.optionalEvaluator = optionalEvaluator;
+            return this;
         }
 
         public object GetValue(

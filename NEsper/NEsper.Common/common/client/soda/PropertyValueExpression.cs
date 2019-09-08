@@ -39,18 +39,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the property name.
         /// </summary>
         /// <returns>name of the property</returns>
-        public string PropertyName
-        {
+        public string PropertyName {
             get => propertyName;
+            set => propertyName = value;
         }
 
         /// <summary>
         /// Sets the property name.
         /// </summary>
         /// <param name="propertyName">name of the property</param>
-        public void SetPropertyName(string propertyName)
+        public PropertyValueExpression SetPropertyName(string propertyName)
         {
             this.propertyName = propertyName;
+            return this;
         }
 
         public override ExpressionPrecedenceEnum Precedence

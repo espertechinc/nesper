@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
 
             var start = PerformanceObserver.MilliTime;
-            var compiled = env.CompileFAF("select * from W1 as w1, W2 as w2 where w1.s1 = w2.s2", path);
+            var compiled = env.CompileFAF("select * from W1 as w1, W2 as w2 where w1.S1 = w2.s2", path);
             var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
             for (var i = 0; i < 100; i++) {
                 var result = prepared.Execute();

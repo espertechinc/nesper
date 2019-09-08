@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory)
             : base(factory)
         {
-            propertyIndex = new Dictionary<object, ISet<EventBean>>();
+            propertyIndex = new Dictionary<object, ISet<EventBean>>()
+                .WithNullKeySupport();
         }
 
         public override bool IsEmpty => propertyIndex.IsEmpty();

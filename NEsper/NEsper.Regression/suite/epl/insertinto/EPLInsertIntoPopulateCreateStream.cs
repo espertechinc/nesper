@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "MyOASource");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "p0,p1".SplitCsv(),
+                new [] { "p0","p1" },
                 new object[] {"p0value", "p1value"});
 
             env.UndeployAll();

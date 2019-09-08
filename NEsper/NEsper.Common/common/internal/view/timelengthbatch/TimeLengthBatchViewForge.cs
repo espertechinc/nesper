@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.timelengthbatch
 {
@@ -108,11 +109,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .SetProperty(
-                    factory,
-                    "Size",
-                    ExprNodeUtilityCodegen
-                        .CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .SetProperty(factory, "SizeEvaluator", CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(factory, "ForceUpdate", Constant(isForceUpdate))

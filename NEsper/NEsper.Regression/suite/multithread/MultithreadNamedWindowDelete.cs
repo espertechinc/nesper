@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 "insert into MyWindow(TheString, LongPrimitive) select Symbol, Volume  from SupportMarketDataBean",
                 path);
 
-            var stmtTextDelete = "on SupportBean_A as s0 delete from MyWindow as win where win.TheString = s0.Id";
+            var stmtTextDelete = "on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id";
             env.CompileDeploy(stmtTextDelete, path);
 
             env.CompileDeploy("@Name('s0') select irstream TheString, LongPrimitive from MyWindow", path);

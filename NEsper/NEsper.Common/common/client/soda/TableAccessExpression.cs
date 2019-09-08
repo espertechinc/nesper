@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class TableAccessExpression : ExpressionBase
     {
-        private string tableName;
-        private IList<Expression> keyExpressions;
-        private string optionalColumn;
-        private Expression optionalAggregate;
+        private string _tableName;
+        private IList<Expression> _keyExpressions;
+        private string _optionalColumn;
+        private Expression _optionalAggregate;
 
         /// <summary>
         /// Ctor.
@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.client.soda
             string optionalColumn,
             Expression optionalAggregate)
         {
-            this.tableName = tableName;
-            this.keyExpressions = keyExpressions;
-            this.optionalColumn = optionalColumn;
-            this.optionalAggregate = optionalAggregate;
+            this._tableName = tableName;
+            this._keyExpressions = keyExpressions;
+            this._optionalColumn = optionalColumn;
+            this._optionalAggregate = optionalAggregate;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -58,24 +58,24 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write(tableName);
-            if (keyExpressions != null && !keyExpressions.IsEmpty())
+            writer.Write(_tableName);
+            if (_keyExpressions != null && !_keyExpressions.IsEmpty())
             {
                 writer.Write("[");
-                ExpressionBase.ToPrecedenceFreeEPL(keyExpressions, writer);
+                ExpressionBase.ToPrecedenceFreeEPL(_keyExpressions, writer);
                 writer.Write("]");
             }
 
-            if (optionalColumn != null)
+            if (_optionalColumn != null)
             {
                 writer.Write(".");
-                writer.Write(optionalColumn);
+                writer.Write(_optionalColumn);
             }
 
-            if (optionalAggregate != null)
+            if (_optionalAggregate != null)
             {
                 writer.Write(".");
-                optionalAggregate.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                _optionalAggregate.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 
@@ -83,72 +83,76 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table name.
         /// </summary>
         /// <returns>table name</returns>
-        public string TableName
-        {
-            get => tableName;
+        public string TableName {
+            get => _tableName;
+            set => _tableName = value;
         }
 
         /// <summary>
         /// Sets the table name.
         /// </summary>
         /// <param name="tableName">table name</param>
-        public void SetTableName(string tableName)
+        public TableAccessExpression SetTableName(string tableName)
         {
-            this.tableName = tableName;
+            this._tableName = tableName;
+            return this;
         }
 
         /// <summary>
         /// Returns the primary key expressions.
         /// </summary>
         /// <returns>primary key expressions</returns>
-        public IList<Expression> KeyExpressions
-        {
-            get => keyExpressions;
+        public IList<Expression> KeyExpressions {
+            get => _keyExpressions;
+            set => _keyExpressions = value;
         }
 
         /// <summary>
         /// Sets the primary key expressions.
         /// </summary>
         /// <param name="keyExpressions">primary key expressions</param>
-        public void SetKeyExpressions(IList<Expression> keyExpressions)
+        public TableAccessExpression SetKeyExpressions(IList<Expression> keyExpressions)
         {
-            this.keyExpressions = keyExpressions;
+            this._keyExpressions = keyExpressions;
+            return this;
         }
 
         /// <summary>
         /// Returns the optional table column name to access.
         /// </summary>
         /// <returns>table column name or null if accessing row</returns>
-        public string OptionalColumn
-        {
-            get => optionalColumn;
+        public string OptionalColumn {
+            get => _optionalColumn;
+            set => _optionalColumn = value;
         }
 
         /// <summary>
         /// Sets the optional table column name to access.
         /// </summary>
         /// <param name="optionalColumn">table column name or null if accessing row</param>
-        public void SetOptionalColumn(string optionalColumn)
+        public TableAccessExpression SetOptionalColumn(string optionalColumn)
         {
-            this.optionalColumn = optionalColumn;
+            this._optionalColumn = optionalColumn;
+            return this;
         }
 
         /// <summary>
         /// Returns the optional table column aggregation accessor to use.
         /// </summary>
         /// <returns>table column aggregation accessor</returns>
-        public Expression OptionalAggregate
-        {
-            get => optionalAggregate;
+        public Expression OptionalAggregate {
+            get => _optionalAggregate;
+            set => _optionalAggregate = value;
         }
 
         /// <summary>
         /// Sets the optional table column aggregation accessor to use.
         /// </summary>
         /// <param name="optionalAggregate">table column aggregation accessor</param>
-        public void SetOptionalAggregate(Expression optionalAggregate)
+        public TableAccessExpression SetOptionalAggregate(Expression optionalAggregate)
         {
-            this.optionalAggregate = optionalAggregate;
+            this._optionalAggregate = optionalAggregate;
+            return this;
         }
     }
 } // end of namespace

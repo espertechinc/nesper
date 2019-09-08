@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean(1=2=3)",
-                    "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand sIde and right-hand sIde but received 3 expressions");
+                    "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand side and right-hand side but received 3 expressions");
             }
         }
 

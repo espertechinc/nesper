@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
                 EPAssertionUtil.AssertMapOfCollection(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                    "E1,E2".SplitCsv(),
+                    new [] { "E1","E2" },
                     new[] {"1,2", "5"},
                     extractorEvents);
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
                 EPAssertionUtil.AssertMapOfCollection(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                    "2,1".SplitCsv(),
+                    new [] { "2","1" },
                     new[] {"E1_2,E3_2", "E2_1"},
                     GetExtractorScalar());
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
                 EPAssertionUtil.AssertMapOfCollection(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                    "E1,E2".SplitCsv(),
+                    new [] { "E1","E2" },
                     new[] {"1,2", "5"},
                     extractor);
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
                 EPAssertionUtil.AssertMapOfCollection(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
-                    "2,1".SplitCsv(),
+                    new [] { "2","1" },
                     new[] {"E1_2,E3_2", "E2_1"},
                     GetExtractorScalar());
 

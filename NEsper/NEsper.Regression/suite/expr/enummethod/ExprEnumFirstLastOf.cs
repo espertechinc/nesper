@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3".SplitCsv();
+                var fields = new [] { "val0","val1","val2","val3" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.firstOf() as val0, " +
                                   "Strvals.lastOf() as val1, " +

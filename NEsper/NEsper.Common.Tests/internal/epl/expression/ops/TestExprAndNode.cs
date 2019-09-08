@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             andNode.AddChildNode(new SupportExprNode(true));
             andNode.AddChildNode(new SupportExprNode(false));
 
-            Assert.AreEqual("True and False", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode));
+            Assert.AreEqual("true and false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode));
         }
 
         [Test]

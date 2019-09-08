@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string method,
             object constant)
         {
-            this._clazz = clazz;
-            this._expression = expression;
-            this._method = method;
-            this._constant = constant;
+            _clazz = clazz;
+            _expression = expression;
+            _method = method;
+            _constant = constant;
         }
 
         public void Render(

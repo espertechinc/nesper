@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var propertyNames = "indexed1,indexed2,mapped1,mapped2".SplitCsv();
+            var propertyNames = new [] { "indexed1","indexed2","mapped1","mapped2" };
             var eventType = env.Statement("s0").EventType;
             foreach (var propertyName in propertyNames) {
                 Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));

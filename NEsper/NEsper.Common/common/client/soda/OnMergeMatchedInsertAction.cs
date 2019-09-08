@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
             IList<string> columnNames,
             IList<SelectClauseElement> selectList,
             Expression whereClause,
-            String optionalStreamName)
+            string optionalStreamName)
         {
             ColumnNames = columnNames;
             SelectList = selectList;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.client.soda
             {
                 writer.Write("(");
                 delimiter = "";
-                foreach (String name in ColumnNames)
+                foreach (string name in ColumnNames)
                 {
                     writer.Write(delimiter);
                     writer.Write(name);

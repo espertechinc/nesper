@@ -22,8 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
 {
     public class AggregationPortableValidationNth : AggregationPortableValidationWFilterWInputType
     {
-        private int size;
-
         public AggregationPortableValidationNth(
             bool distinct,
             bool hasFilter,
@@ -32,12 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.size = size;
+            this.Size = size;
         }
 
         public AggregationPortableValidationNth()
         {
         }
+
+        public int Size { get; set; }
 
         protected override Type TypeOf()
         {
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(@ref, "Size", Constant(size));
+            method.Block.SetProperty(@ref, "Size", Constant(Size));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
@@ -60,18 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             AggregationForgeFactory factory)
         {
             AggregationPortableValidationNth that = (AggregationPortableValidationNth) intoTableAgg;
-            if (size != that.size) {
+            if (Size != that.Size) {
                 throw new ExprValidationException(
                     "The size is " +
-                    size +
+                    Size +
                     " and provided is " +
-                    that.size);
+                    that.Size);
             }
-        }
-
-        public void SetSize(int size)
-        {
-            this.size = size;
         }
     }
 } // end of namespace

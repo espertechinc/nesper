@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenClassScope classScope)
         {
             Type distinctValueType = !parent.IsDistinct ? null : inputValueType;
-            if (resultType == typeof(BigInteger) || resultType == typeof(decimal)) {
+            if (resultType.IsBigInteger()) {
                 aggregator = new AggregatorSumBig(
                     this,
                     col,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 
         private Type GetSumAggregatorType(Type type)
         {
-            if (type == typeof(BigInteger)) {
+            if (type.IsBigInteger()) {
                 return typeof(BigInteger);
             }
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             else if (inputValueType == typeof(int?) || inputValueType == typeof(int)) {
                 coercer = SimpleNumberCoercerFactory.CoercerInt.INSTANCE;
             }
-            else if (inputValueType == typeof(decimal?) || inputValueType == typeof(decimal)) {
+            else if (inputValueType.IsDecimal()) {
                 coercer = SimpleNumberCoercerFactory.CoercerDecimal.INSTANCE;
             }
             else if (inputValueType == typeof(double?) || inputValueType == typeof(double)) {
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             else if (inputValueType == typeof(int?) || inputValueType == typeof(int)) {
                 return typeof(int);
             }
-            else if (inputValueType == typeof(decimal?) || inputValueType == typeof(decimal)) {
+            else if (inputValueType.IsDecimal()) {
                 return typeof(decimal);
             }
             else if (inputValueType == typeof(double?) || inputValueType == typeof(double)) {

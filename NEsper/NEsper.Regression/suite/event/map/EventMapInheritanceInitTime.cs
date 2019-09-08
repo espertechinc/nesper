@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.Statement("s" + i).AddListener(listeners[i]);
             }
 
-            var fields = "vbase,v1,v2,va,vb".SplitCsv();
+            var fields = new [] { "vbase","v1","v2","va","vb" };
 
             env.SendEventMap(EventMapCore.MakeMap("base=a,sub1=b,sub2=x,suba=c,subb=y"), "SubAEvent");
             EPAssertionUtil.AssertProps(

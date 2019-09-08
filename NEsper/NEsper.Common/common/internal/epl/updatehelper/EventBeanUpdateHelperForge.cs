@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         REF_EPS,
                         Constant(UpdateItems.Length),
                         ConstantTrue()))
-                .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "copy", Ref("matchingEvent")))
+                .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "Copy", Ref("matchingEvent")))
                 .AssignArrayElement(REF_EPS, Constant(0), Ref("copy"))
                 .AssignArrayElement(REF_EPS, Constant(2), Ref("matchingEvent"))
                 .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
@@ -111,34 +111,51 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             var method = scope.MakeChild(typeof(EventBeanUpdateHelperNoCopy), GetType(), classScope);
             var updateInternal = MakeUpdateInternal(method, classScope);
 
-            var clazz = NewAnonymousClass(method.Block, typeof(EventBeanUpdateHelperNoCopy));
+            var eventBeanUpdateHelper = Ref("eventBeanUpdateHelper");
+            method.Block.DeclareVar(
+                typeof(ProxyEventBeanUpdateHelperNoCopy),
+                eventBeanUpdateHelper.Ref,
+                NewInstance<ProxyEventBeanUpdateHelperNoCopy>());
 
-            var updateNoCopy = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "matchingEvent")
-                .AddParam(typeof(EventBean[]), NAME_EPS)
-                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-            clazz.AddMethod("updateNoCopy", updateNoCopy);
-            updateNoCopy.Block
-                .Apply(
-                    Instblock(
-                        classScope,
-                        "qInfraUpdate",
-                        Ref("matchingEvent"),
-                        REF_EPS,
-                        Constant(UpdateItems.Length),
-                        ConstantFalse()))
-                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
-                .Apply(Instblock(classScope, "aInfraUpdate", Ref("matchingEvent")));
+            //var clazz = NewAnonymousClass(method.Block, typeof(EventBeanUpdateHelperNoCopy));
+            //var updateNoCopy = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
+            //    .AddParam(typeof(EventBean), "matchingEvent")
+            //    .AddParam(typeof(EventBean[]), NAME_EPS)
+            //    .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            //clazz.AddMethod("updateNoCopy", updateNoCopy);
 
-            var getUpdatedProperties = CodegenMethod.MakeMethod(typeof(string[]), GetType(), classScope);
-            clazz.AddMethod("GetUpdatedProperties", getUpdatedProperties);
-            getUpdatedProperties.Block.MethodReturn(Constant(UpdateItemsPropertyNames));
+            method.Block
+                .SetProperty(
+                    eventBeanUpdateHelper,
+                    "ProcIsRequiresStream2InitialValueEvent",
+                    new CodegenExpressionLambda(method.Block)
+                        .WithBody(block => block.BlockReturn(Constant(IsRequiresStream2InitialValueEvent))))
+                .SetProperty(
+                    eventBeanUpdateHelper,
+                    "ProcUpdatedProperties",
+                    new CodegenExpressionLambda(method.Block)
+                        .WithBody(block => block.BlockReturn(Constant(UpdateItemsPropertyNames))))
+                .SetProperty(
+                    eventBeanUpdateHelper,
+                    "ProcUpdateNoCopy",
+                    new CodegenExpressionLambda(method.Block)
+                        .WithParam(typeof(EventBean), "matchingEvent")
+                        .WithParam(typeof(EventBean[]), NAME_EPS)
+                        .WithParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT)
+                        .WithBody(
+                            block => block
+                                .Apply(
+                                    Instblock(
+                                        classScope,
+                                        "qInfraUpdate",
+                                        Ref("matchingEvent"),
+                                        REF_EPS,
+                                        Constant(UpdateItems.Length),
+                                        ConstantFalse()))
+                                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
+                                .Apply(Instblock(classScope, "aInfraUpdate", Ref("matchingEvent")))));
 
-            var isRequiresStream2InitialValueEvent = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
-            clazz.AddMethod("isRequiresStream2InitialValueEvent", isRequiresStream2InitialValueEvent);
-            isRequiresStream2InitialValueEvent.Block.MethodReturn(Constant(IsRequiresStream2InitialValueEvent));
-
-            method.Block.MethodReturn(clazz);
+            method.Block.MethodReturn(eventBeanUpdateHelper);
 
             return LocalMethod(method);
         }

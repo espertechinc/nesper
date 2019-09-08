@@ -261,8 +261,8 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 // handle primitive value
                 if (!annotationAttribute.AnnotationType.IsAttribute()) {
                     // if expecting an enumeration type, allow string value
-                    if (annotationAttribute.AnnotationType.IsEnum && value.GetType() == typeof(string)) {
-                        var valueString = value.ToString().Trim();
+                    if (annotationAttribute.AnnotationType.IsEnum && (value is string valueString)) {
+                        valueString = valueString.Trim();
 
                         // find case-sensitive exact match first
                         foreach (Enum e in Enum.GetValues(annotationAttribute.AnnotationType)) {
@@ -359,8 +359,8 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 }
 
                 object finalValue;
-                if (arrayValue is AnnotationDesc) {
-                    var inner = CreateAttributeInstance((AnnotationDesc) arrayValue, importService);
+                if (arrayValue is AnnotationDesc annotationDesc) {
+                    var inner = CreateAttributeInstance(annotationDesc, importService);
                     if (inner.GetType() != componentType) {
                         throw MakeArrayMismatchException(
                             annotationClass,

@@ -76,8 +76,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             var random = new Random();
             var stmtText = "@Name('s0') select myint from " +
-                           "SupportBean_S0 as s0," +
-                           " sql:MyDB ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
+                           "SupportBean_S0 as S0," +
+                           " sql:MyDB ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             log.Debug(".trySendEvents Sending " + numEvents + " events");

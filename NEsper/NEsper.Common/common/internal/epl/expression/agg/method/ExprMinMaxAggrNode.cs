@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public bool HasFilter { get; private set; }
 
-        public override string AggregationFunctionName => MinMaxTypeEnum.ExpressionText;
+        public override string AggregationFunctionName => MinMaxTypeEnum.GetExpressionText();
 
         public bool IsEver { get; }
 

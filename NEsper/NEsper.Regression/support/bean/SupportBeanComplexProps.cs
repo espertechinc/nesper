@@ -18,7 +18,13 @@ namespace com.espertech.esper.regressionlib.support.bean
     public class SupportBeanComplexProps : SupportMarkerInterface
     {
         public static readonly string[] PROPERTIES = {
-            "simpleProperty", "Mapped", "Indexed", "MapProperty", "ArrayProperty", "nested", "ObjectArray"
+            "SimpleProperty",
+            "Mapped",
+            "Indexed",
+            "MapProperty",
+            "ArrayProperty",
+            "Nested",
+            "ObjectArray"
         };
 
         private int[] _arrayProperty;
@@ -101,13 +107,13 @@ namespace com.espertech.esper.regressionlib.support.bean
             int[] arrayProp = {10, 20, 30};
 
             return new SupportBeanComplexProps(
-                "simple",
+                "Simple",
                 properties,
                 new[] {1, 2},
                 mapProp,
                 arrayProp,
                 "NestedValue",
-                "nestedNestedValue");
+                "NestedNestedValue");
         }
 
         public string GetMapped(string key)

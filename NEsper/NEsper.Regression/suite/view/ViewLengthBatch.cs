@@ -535,7 +535,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {
                     EPAssertionUtil.AssertPropsPerRow(
                         env.Listener("s0").LastNewData,
-                        "prevString".SplitCsv(),
+                        new [] { "prevString" },
                         new[] {
                             new object[] {null},
                             new object[] {"E1"},

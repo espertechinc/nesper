@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 path.Clear();
 
                 // int-expression with endpoint-included
-                env.CompileDeploy("@audit select * from SupportBean#keepall where IntPrimitive in (1:3)");
+                env.CompileDeploy("@Audit select * from SupportBean#keepall where IntPrimitive in (1:3)");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
             }

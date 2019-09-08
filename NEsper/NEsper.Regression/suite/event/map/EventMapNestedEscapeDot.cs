@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 });
             env.SendEventMap(data, "DotMap");
 
-            var fields = "a.b,a.b.c,nes.,nes.nes2.x.y".SplitCsv();
+            var fields = new [] { "a.b","a.b.c","nes.","nes.nes2.x.y" };
             var received = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 received,

@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Listener("s0").GetAndResetDataListsFlattened(),
-                "mySum,myAvg".SplitCsv(),
+                new [] { "mySum","myAvg" },
                 new[] {new object[] {newSumOne, newAvgOne}, new object[] {newSumTwo, newAvgTwo}},
                 new[] {new object[] {oldSumOne, oldAvgOne}, new object[] {oldSumTwo, oldAvgTwo}});
         }
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "#length(2) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                var fields = "aPrice,Symbol".SplitCsv();
+                var fields = new [] { "aPrice","Symbol" };
 
                 SendEvent(env, "A", 1);
                 EPAssertionUtil.AssertProps(
@@ -497,8 +497,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 var fieldsOne = new [] { "val" };
                 var fieldsTwo = new [] { "val" };
-                var fieldsThree = "val1,val2".SplitCsv();
-                var fieldsFour = "val1,val2".SplitCsv();
+                var fieldsThree = new [] { "val1","val2" };
+                var fieldsFour = new [] { "val1","val2" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
@@ -602,8 +602,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select sb.getTheString() as c0, sum(IntPrimitive) as c1 " +
-                          "from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                var epl = "@Name('s0') select sb.GetTheString() as c0, sum(IntPrimitive) as c1 " +
+                          "from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -794,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 epl =
                     "@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
 
                 TryAssertionNamedWindowDelete(env, fields, milestone);
 
@@ -946,7 +946,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "mycount".SplitCsv();
+                var fields = new [] { "mycount" };
                 var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Price";
@@ -1008,7 +1008,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "mycount".SplitCsv();
+                var fields = new [] { "mycount" };
                 var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price";
@@ -1085,7 +1085,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "symbol,Price,mycount".SplitCsv();
+                var fields = new [] { "symbol","Price","mycount" };
                 var epl = "@Name('s0') select irstream Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price order by Symbol asc";

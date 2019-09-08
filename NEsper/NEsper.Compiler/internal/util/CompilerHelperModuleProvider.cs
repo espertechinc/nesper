@@ -346,10 +346,10 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private static void MakeModuleProperties(
             IDictionary<ModuleProperty, object> props,
-            CodegenProperty method)
+            CodegenProperty property)
         {
             if (props.IsEmpty()) {
-                method.GetterBlock.BlockReturn(StaticMethod(
+                property.GetterBlock.BlockReturn(StaticMethod(
                     typeof(Collections),
                     "GetEmptyMap",
                     new Type[] {
@@ -362,7 +362,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             if (props.Count == 1) {
                 var entry = props.First();
-                method.GetterBlock.BlockReturn(
+                property.GetterBlock.BlockReturn(
                     StaticMethod(
                         typeof(Collections),
                         "SingletonMap",
@@ -375,18 +375,18 @@ namespace com.espertech.esper.compiler.@internal.util
                 return;
             }
 
-            method.Block.DeclareVar<IDictionary<string, string>>(
+            property.GetterBlock.DeclareVar<IDictionary<ModuleProperty, object>>(
                 "props",
-                NewInstance(typeof(Dictionary<string, string>)));
+                NewInstance(typeof(Dictionary<ModuleProperty, object>)));
             foreach (var entry in props) {
-                method.Block.ExprDotMethod(
+                property.GetterBlock.ExprDotMethod(
                     @Ref("props"),
                     "Put",
                     MakeModulePropKey(entry.Key),
                     MakeModulePropValue(entry.Value));
             }
 
-            method.Block.BlockReturn(@Ref("props"));
+            property.GetterBlock.BlockReturn(@Ref("props"));
         }
 
         private static CodegenExpression MakeModulePropKey(ModuleProperty key)

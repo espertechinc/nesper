@@ -114,14 +114,14 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(long?) &&
                 coercedType != typeof(int?) &&
                 coercedType != typeof(decimal?) &&
-                coercedType != typeof(BigInteger) &&
+                coercedType != typeof(BigInteger?) &&
                 coercedType != typeof(short?) &&
                 coercedType != typeof(byte)) {
                 throw new ArgumentException(
                     "Expected base numeric type for computation result but got type " + coercedType);
             }
 
-            if (coercedType == typeof(decimal?)) {
+            if (coercedType.IsDecimal()) {
                 return MakeDecimalComputer(
                     operation,
                     typeOne,
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.type
                     optionalMathContext);
             }
 
-            if (coercedType == typeof(BigInteger)) {
+            if (coercedType.IsBigInteger()) {
                 return MakeBigIntegerComputer(
                     operation,
                     typeOne,
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.type
             bool divisionByZeroReturnsNull,
             MathContext optionalMathContext)
         {
-            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?)) {
+            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
                 if (operation == MathArithTypeEnum.DIVIDE) {
                     if (optionalMathContext != null) {
                         return new DivideDecimalWMathContext(divisionByZeroReturnsNull, optionalMathContext);
@@ -195,8 +195,8 @@ namespace com.espertech.esper.common.@internal.type
                 return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), operation}));
             }
 
-            var convertorOne = SimpleNumberCoercerFactory.GetCoercer(typeOne, typeof(decimal));
-            var convertorTwo = SimpleNumberCoercerFactory.GetCoercer(typeTwo, typeof(decimal));
+            var convertorOne = SimpleNumberCoercerFactory.GetCoercer(typeOne, typeof(decimal?));
+            var convertorTwo = SimpleNumberCoercerFactory.GetCoercer(typeTwo, typeof(decimal?));
             if (operation == MathArithTypeEnum.ADD) {
                 return new AddDecimalConvComputer(convertorOne, convertorTwo);
             }
@@ -232,11 +232,11 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?)) {
+            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
                 return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), operation}));
             }
 
-            if (typeOne == typeof(BigInteger) && typeTwo == typeof(BigInteger)) {
+            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
                 var computer = computers.Get(new HashableMultiKey(new object[] {typeof(BigInteger), operation}));
                 if (computer != null) {
                     return computer;

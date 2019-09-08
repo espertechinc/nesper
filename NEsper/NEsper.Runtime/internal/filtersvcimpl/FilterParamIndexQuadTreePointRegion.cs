@@ -27,10 +27,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private readonly PointRegionQuadTree<object> _quadTree;
         private readonly FilterSpecLookupableAdvancedIndex _advancedIndex;
 
-        private static readonly QuadTreeCollector<EventEvaluator, ICollection<FilterHandle>> _collector =
-            new ProxyQuadTreeCollector<EventEvaluator, ICollection<FilterHandle>>()
+        private static readonly QuadTreeCollector<ICollection<FilterHandle>> _collector =
+            new ProxyQuadTreeCollector<ICollection<FilterHandle>>()
             {
-                ProcCollectInto = (@event, eventEvaluator, c) => eventEvaluator.MatchEvent(@event, c)
+                ProcCollectInto = (@event, eventEvaluator, c) => ((EventEvaluator) eventEvaluator).MatchEvent(@event, c)
             };
 
         public FilterParamIndexQuadTreePointRegion(IReaderWriterLock readWriteLock, ExprFilterSpecLookupable lookupable)

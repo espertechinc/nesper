@@ -67,11 +67,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("e2_0").Advance(),
-                "Observation.Command,Observation.Tag[0].ID".SplitCsv(),
+                new [] { "Observation.Command","Observation.Tag[0].ID" },
                 new object[] {"READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("e3_0").Advance(),
-                "sensorId,Command,Tag[0].ID".SplitCsv(),
+                new [] { "sensorId","Command","Tag[0].ID" },
                 new object[] {"urn:epc:1:4.16.36", "READ_PALLET_TAGS_ONLY", "urn:epc:1:2.24.400"});
 
             TryInvalidCompile(

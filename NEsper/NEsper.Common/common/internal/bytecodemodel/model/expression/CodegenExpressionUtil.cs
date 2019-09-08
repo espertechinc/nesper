@@ -9,7 +9,10 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text;
+
+using com.espertech.esper.compat.logging;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,10 +26,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionUtil
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static void RenderConstant(
             StringBuilder builder,
             object constant)
         {
+            if (Log.IsDebugEnabled) {
+                Log.Debug("RenderConstant: {0} => {1}", constant?.GetType(), constant);
+            }
+
             if (constant is string stringConstant) {
                 // StringEscapeUtils.EscapeJava((string) constant));
                 builder.Append(Literal(stringConstant).ToFullString());
@@ -52,7 +61,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
             else if (constant is decimal) {
                 var literal = Literal((decimal) constant).ToFullString();
-                if (!literal.EndsWith("m")) {
+                if (!literal.EndsWith("m") && !literal.EndsWith("M")) {
                     literal += "m";
                 }
 
@@ -158,7 +167,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                     IdentifierName("Numeric")),
                 IdentifierName("BigInteger"));
 
-            var newValueExpression = SyntaxFactory.ObjectCreationExpression(
+            var newValueExpression = ObjectCreationExpression(
                     IdentifierName(typeof(BigInteger).FullName))
                 .WithArgumentList(argumentList);
 

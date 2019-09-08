@@ -28,14 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             this.sortKeyPerLevel = sortKeyPerLevel;
         }
 
-        public IList<EventBean>[] GetEventsPerLevel()
-        {
-            return eventsPerLevel;
+        public IList<EventBean>[] EventsPerLevel {
+            get { return eventsPerLevel; }
         }
 
-        public IList<object>[] GetSortKeyPerLevel()
-        {
-            return sortKeyPerLevel;
+        public IList<object>[] SortKeyPerLevel {
+            get { return sortKeyPerLevel; }
         }
 
         public void Reset()

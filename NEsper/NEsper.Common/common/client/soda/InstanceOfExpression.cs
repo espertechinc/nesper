@@ -85,18 +85,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the types to compare to.
         /// </summary>
         /// <returns>list of types to compare to</returns>
-        public string[] TypeNames
-        {
+        public string[] TypeNames {
             get => typeNames;
+            set => typeNames = value;
         }
 
         /// <summary>
         /// Sets the types to compare to.
         /// </summary>
         /// <param name="typeNames">list of types to compare to</param>
-        public void SetTypeNames(string[] typeNames)
+        public InstanceOfExpression SetTypeNames(string[] typeNames)
         {
             this.typeNames = typeNames;
+            return this;
         }
     }
 } // end of namespace

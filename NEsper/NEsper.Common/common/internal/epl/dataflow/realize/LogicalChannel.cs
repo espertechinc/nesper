@@ -74,14 +74,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(typeof(LogicalChannel), GetType(), "lc", parent, symbols, classScope)
-                .Constant("channelId", ChannelId)
-                .Constant("consumingOpName", ConsumingOpName)
-                .Constant("consumingOpNum", ConsumingOpNum)
-                .Constant("consumingOpStreamNum", ConsumingOpStreamNum)
-                .Constant("consumingOpStreamName", ConsumingOpStreamName)
-                .Constant("consumingOptStreamAliasName", ConsumingOptStreamAliasName)
-                .Constant("consumingOpPrettyPrint", ConsumingOpPrettyPrint)
-                .Method("outputPort", method => OutputPort.Make(method, symbols, classScope))
+                .Constant("ChannelId", ChannelId)
+                .Constant("ConsumingOpName", ConsumingOpName)
+                .Constant("ConsumingOpNum", ConsumingOpNum)
+                .Constant("ConsumingOpStreamNum", ConsumingOpStreamNum)
+                .Constant("ConsumingOpStreamName", ConsumingOpStreamName)
+                .Constant("ConsumingOptStreamAliasName", ConsumingOptStreamAliasName)
+                .Constant("ConsumingOpPrettyPrint", ConsumingOpPrettyPrint)
+                .Method("OutputPort", method => OutputPort.Make(method, symbols, classScope))
                 .Build();
         }
     }

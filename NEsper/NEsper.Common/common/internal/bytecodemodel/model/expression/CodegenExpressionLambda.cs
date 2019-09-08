@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionLambda WithBody(Action<CodegenBlock> blockHandler)
         {
-            blockHandler.Invoke(this.Block);
+            blockHandler.Invoke(Block);
             return this;
         }
 

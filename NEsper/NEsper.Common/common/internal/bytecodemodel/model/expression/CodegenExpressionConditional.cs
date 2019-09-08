@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expressionTrue,
             CodegenExpression expressionFalse)
         {
-            this._condition = condition;
-            this._expressionTrue = expressionTrue;
-            this._expressionFalse = expressionFalse;
+            _condition = condition;
+            _expressionTrue = expressionTrue;
+            _expressionFalse = expressionFalse;
         }
 
         public void Render(

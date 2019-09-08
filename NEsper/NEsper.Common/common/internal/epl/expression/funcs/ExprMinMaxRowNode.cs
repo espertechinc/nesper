@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write(minMaxTypeEnum.ExpressionText);
+            writer.Write(minMaxTypeEnum.GetExpressionText());
             writer.Write('(');
 
             this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);

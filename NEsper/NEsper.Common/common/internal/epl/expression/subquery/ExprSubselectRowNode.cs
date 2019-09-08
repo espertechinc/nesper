@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     return selectClause[0].Forge.EvaluationType.GetBoxedType();
                 }
 
-                return typeof(IDictionary<object, object>);
+                return typeof(IDictionary<string, object>);
             }
         }
 
@@ -261,13 +261,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(ICollection<object>), GetType(), classScope);
+            var method = parent
+                .MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
+
             method.Block
                 .ApplyTri(
-                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), CollectionUtil.EMPTY_LIST_EXPRESSION),
+                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(
+                        ConstantNull(),
+                        StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(EventBean) })),
                     method,
                     symbols)
                 .MethodReturn(evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));
+
             return LocalMethod(method);
         }
 
@@ -307,7 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             var symbols = new ExprForgeCodegenSymbol(true, true);
             var method = parent.MakeChildWithScope(
-                    typeof(IDictionary<object, object>),
+                    typeof(IDictionary<string, object>),
                     typeof(CodegenLegoMethodExpression),
                     symbols,
                     classScope)
@@ -323,9 +328,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             symbols.DerivedSymbolsCodegen(method, method.Block, classScope);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<string, object>>(
                 "map",
-                NewInstance(typeof(Dictionary<object, object>)));
+                NewInstance(typeof(Dictionary<string, object>)));
             for (var i = 0; i < selectClause.Length; i++) {
                 method.Block.ExprDotMethod(Ref("map"), "Put", Constant(selectAsNames[i]), expressions[i]);
             }

@@ -24,12 +24,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "create window A#unique(key) as MyEventA;\n" +
-                      "create window B#unique(key) as MyEventB;\n" +
+            var epl = "create window A#unique(Key) as MyEventA;\n" +
+                      "create window B#unique(Key) as MyEventB;\n" +
                       "insert into A select * from MyEventA;\n" +
                       "insert into B select * from MyEventB;\n" +
                       "\n" +
-                      "@Name('stmt') select sum(A.data) as aTotal,sum(B.data) as bTotal " +
+                      "@Name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
                       "from A unidirectional, B where A.Key = B.Key;\n";
             env.CompileDeploy(epl);
 

@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E" + i, i));
             }
 
-            var fields = "col0".SplitCsv();
+            var fields = new [] { "col0" };
 
             // test FAF filter
             var events = env.CompileExecuteFAF("select col0 from MyTable(pkey='E1')", path).Array;

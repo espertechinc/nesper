@@ -25,6 +25,10 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
+                if (d1 == null || d2 == null) {
+                    return null;
+                }
+
                 var d2Long = d2.AsLong();
                 if (d2Long == 0) {
                     return null;

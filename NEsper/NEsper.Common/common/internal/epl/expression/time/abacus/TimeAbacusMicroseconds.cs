@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", sec));
+            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", sec)));
         }
 
         public CodegenExpression DateTimeSetCodegen(

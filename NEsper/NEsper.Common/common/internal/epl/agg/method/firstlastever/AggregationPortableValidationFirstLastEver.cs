@@ -20,8 +20,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
     public class AggregationPortableValidationFirstLastEver : AggregationPortableValidationWFilterWInputType
     {
-        private bool isFirst;
-
         public AggregationPortableValidationFirstLastEver()
         {
         }
@@ -34,8 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.isFirst = isFirst;
+            this.IsFirst = isFirst;
         }
+
+        public bool IsFirst { get; set; }
 
         protected override Type TypeOf()
         {
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(@ref, "First", Constant(isFirst));
+            method.Block.SetProperty(@ref, "IsFirst", Constant(IsFirst));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
@@ -58,18 +58,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationFirstLastEver) intoTableAgg;
-            if (isFirst != that.isFirst) {
+            if (IsFirst != that.IsFirst) {
                 throw new ExprValidationException(
                     "The aggregation declares " +
-                    (isFirst ? "firstever" : "lastever") +
+                    (IsFirst ? "firstever" : "lastever") +
                     " and provided is " +
-                    (that.isFirst ? "firstever" : "lastever"));
+                    (that.IsFirst ? "firstever" : "lastever"));
             }
-        }
-
-        public void SetFirst(bool first)
-        {
-            isFirst = first;
         }
     }
 } // end of namespace

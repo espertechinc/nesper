@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.SendEventBean(new MyMapPropEvent());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertPairGetIRAndReset(),
-                "props('abc'),array[2]".SplitCsv(),
+                new [] { "props('abc')","array[2]" },
                 new object[] {1, 10},
                 new object[] {null, null});
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             EPAssertionUtil.AssertProps(
                 env.Listener("update").AssertPairGetIRAndReset(),
-                "simple,mymap('abc'),myarray[2]".SplitCsv(),
+                new [] { "simple","mymap('abc')","myarray[2]" },
                 new object[] {"A", 1, 10},
                 new object[] {null, null, 0});
 
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertPropsPerRow(
                 env.GetEnumerator("window"),
-                "simple,mymap('abc'),myarray[2]".SplitCsv(),
+                new [] { "simple","mymap('abc')","myarray[2]" },
                 new[] {new object[] {"A", 10, 10}});
 
             // test null and array too small
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.SendEventBean(new SupportBean("E2", 20));
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("window"),
-                "simple,mymap('abc'),myarray[2]".SplitCsv(),
+                new [] { "simple","mymap('abc')","myarray[2]" },
                 new[] {new object[] {"A", 20, 20}, new object[] {"A", null, null}});
 
             env.UndeployAll();
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env.Statement("update").GetProperty(StatementProperty.STATEMENTTYPE));
 
                 env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
-                var fields = "IntPrimitive,IntBoxed".SplitCsv();
+                var fields = new [] { "IntPrimitive","IntBoxed" };
 
                 env.SendEventBean(MakeSupportBean("E1", 1, 2));
                 EPAssertionUtil.AssertProps(
@@ -512,8 +512,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     path,
-                    "update istream SupportBeanStreamRO set sIde='a'",
-                    "Property 'sIde' is not available for write access [update istream SupportBeanStreamRO set sIde='a']");
+                    "update istream SupportBeanStreamRO set side='a'",
+                    "Property 'side' is not available for write access [update istream SupportBeanStreamRO set side='a']");
                 TryInvalidCompile(
                     env,
                     path,
@@ -761,7 +761,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.CompileDeploy("@Name('s0') select * from MyStreamII", path).AddListener("s0");
 
-                var fields = "p0,p1,p2".SplitCsv();
+                var fields = new [] { "p0","p1","p2" };
                 env.SendEventMap(MakeMap("P0", 10L, "P1", 1L, "P2", 100L), "MyMapTypeII");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -841,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('a') update istream BaseInterface set i='XYZ' where i like 'E%'", path);
                 env.CompileDeploy("@Name('s0') select * from BaseOne", path).AddListener("s0");
 
-                var fields = "i,p".SplitCsv();
+                var fields = new [] { "i","p" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 var path = new RegressionPath();
 
                 env.CompileDeploy("@Name('window') create window AWindow#keepall select * from MyMapTypeNW", path)
@@ -985,7 +985,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "TheString,LongBoxed,IntBoxed".SplitCsv();
+                var fields = new [] { "TheString","LongBoxed","IntBoxed" };
 
                 env.CompileDeploy("insert into AStream select * from SupportBean", path);
                 env.CompileDeploy("update istream AStream set LongBoxed=IntBoxed, IntBoxed=null", path);
@@ -1012,7 +1012,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from MyMapTypeSR").AddListener("s0");
                 env.CompileDeploy("update istream MyMapTypeSR set p0='a'");
 
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSR");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1103,7 +1103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from MyMapTypeSODA").AddListener("s0");
                 env.CompileDeploy(model);
 
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSODA");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1135,7 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventXMLDOM(simpleDoc, "MyXMLEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "valOne,valTwo,prop1".SplitCsv(),
+                    new [] { "valOne","valTwo","prop1" },
                     new object[] {987, 123, "SAMPLE_V1"});
 
                 env.UndeployAll();
@@ -1154,7 +1154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "valOne,valTwo,TheString".SplitCsv(),
+                    new [] { "valOne","valTwo","TheString" },
                     new object[] {987, 123, "E1"});
 
                 env.UndeployModuleContaining("update");
@@ -1163,7 +1163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "valOne,valTwo,TheString".SplitCsv(),
+                    new [] { "valOne","valTwo","TheString" },
                     new object[] {1, 2, "A"});
 
                 env.UndeployModuleContaining("update");
@@ -1172,7 +1172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E3", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "valOne,valTwo,TheString".SplitCsv(),
+                    new [] { "valOne","valTwo","TheString" },
                     new object[] {555, 2, "B"});
 
                 env.UndeployAll();
@@ -1191,7 +1191,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBeanCopyMethod("1", "2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "valOne,valTwo".SplitCsv(),
+                    new [] { "valOne","valTwo" },
                     new object[] {"x", "y"});
 
                 env.UndeployAll();
@@ -1291,7 +1291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "s0,s1".SplitCsv();
+                var fields = new [] { "s0","s1" };
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into ABCStreamUO select * from MyMapTypeUO", path);
                 env.CompileDeploy("@Name('A') update istream ABCStreamUO set s0='A'", path);
@@ -1321,7 +1321,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "TheString,IntPrimitive,value1".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","value1" };
                 env.CompileDeploy(
                         "@Name('insert') insert into ABCStreamLD select *, 'orig' as value1 from SupportBean",
                         path)
@@ -1443,7 +1443,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "TheString,IntPrimitive,value1".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","value1" };
                 env.CompileDeploy(
                         "@Name('insert') insert into ABCStreamLDM select *, 'orig' as value1 from SupportBean",
                         path)

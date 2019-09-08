@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("every-distinct(");
-            String delimiter = "";
+            string delimiter = "";
             foreach (Expression expr in Expressions)
             {
                 writer.Write(delimiter);

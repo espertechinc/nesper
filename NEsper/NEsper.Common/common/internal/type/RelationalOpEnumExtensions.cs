@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.type
                 throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
             }
 
-            if (coercedType == typeof(BigInteger)) {
+            if (coercedType.IsBigInteger()) {
                 return MakeBigIntegerComputer(value, typeOne, typeTwo);
             }
 
@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne == typeof(BigInteger) && typeTwo == typeof(BigInteger)) {
+            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
                 return computers.Get(new HashableMultiKey(new object[] {typeof(BigInteger), value}));
             }
 

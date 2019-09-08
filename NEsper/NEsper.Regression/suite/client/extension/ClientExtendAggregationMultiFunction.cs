@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private void RunAssertionManagedScalarColl(RegressionEnvironment env)
         {
             // test scalar-collection only
-            var fieldsScalarColl = "c2,c3".SplitCsv();
+            var fieldsScalarColl = new [] { "c2","c3" };
             var eplScalarColl = "@Name('s0') select " +
                                 "sc(TheString) as c0, " +
                                 "sc(IntPrimitive) as c1, " +

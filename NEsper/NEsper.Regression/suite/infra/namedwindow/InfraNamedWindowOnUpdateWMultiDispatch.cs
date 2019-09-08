@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "company,value,total".SplitCsv();
+            var fields = new [] { "company","value","total" };
 
             var eplSchema = "create schema S2 ( company string, value double, total double)";
             var path = new RegressionPath();
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             // ESPER-568
             env.CompileDeploy("@Name('create') create window S2Win#time(25 hour)#firstunique(company) as S2", path);
             env.CompileDeploy("insert into S2Win select * from S2#firstunique(company)", path);
-            env.CompileDeploy("on S2 as a update S2Win as b set total = b.Value + a.Value", path);
+            env.CompileDeploy("on S2 as a update S2Win as b set total = b.value + a.value", path);
             env.CompileDeploy("@Name('s0') select count(*) as cnt from S2Win", path).AddListener("s0");
 
             CreateSendEvent(env, "S2", "AComp", 3.0, 0.0);

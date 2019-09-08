@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "MapTwo",
                 mapEventOne,
                 FMAPWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"1", "|2|"});
 
             IDictionary<string, object> mapEventTwo = new Dictionary<string, object>();
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 typeof(IDictionary<string, object>),
                 mapEventTwo,
                 FMAPWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"3", "|4|"});
 
             // Object-Array
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "OATwo",
                 new object[] {"1", "2"},
                 FOAWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"1", "|2|"});
             RunAssertionConversionConfiguredType(
                 env,
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 typeof(object[]),
                 new object[] {"3", "4"},
                 FOAWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"3", "|4|"});
 
             // Avro
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "AvroTwo",
                 rowOne,
                 FAVROWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"1", "|2|"});
 
             var rowTwo = new GenericRecord(
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 typeof(GenericRecord),
                 rowTwo,
                 FAVROWTYPE,
-                "one,two".SplitCsv(),
+                new [] { "one","two" },
                 new object[] {"3", "|4|"});
         }
 
@@ -161,12 +161,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var textTwo = "@Name('s2') insert into " +
                           streamName +
                           " select " +
-                          typeof(SupportStaticMethodLib).FullName +
+                          typeof(SupportStaticMethodLib).MaskTypeName() +
                           "." +
                           functionName +
-                          "(s0) from " +
+                          "(S0) from " +
                           typeNameEvent +
-                          " as s0";
+                          " as S0";
 
             var path = new RegressionPath();
             env.CompileDeploy(textOne, path).AddListener("s1");
@@ -200,9 +200,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             object[] propertyValues)
         {
             // test native
-            var typeName = typeof(SupportStaticMethodLib).FullName;
+            var typeName = typeof(SupportStaticMethodLib).MaskTypeName();
             env.CompileDeploy(
-                $"insert into {typeNameTarget} select {typeName}.{functionName}(s0) from {typeNameOrigin} as s0");
+                $"insert into {typeNameTarget} select {typeName}.{functionName}(S0) from {typeNameOrigin} as S0");
             env.CompileDeploy($"@Name('s0') select * from {typeNameTarget}").AddListener("s0");
 
             sendEvent.Invoke(env, @event, typeNameOrigin);

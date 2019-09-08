@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.myBigint between ${?} and ${queryvar_int+?}'] order by myint",
-                    "EPL substitution parameters are not allowed in SQL ${...} expressions, consIder using a variable instead");
+                    "EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
             }
         }
 

@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
             var fields = new [] { "val0", "val1" };
             env.CompileDeploy(
-                    "@Name('s0') select (myagg(Id)).getTheString() as val0, (myagg(Id)).getIntPrimitive() as val1 from SupportBean_A")
+                    "@Name('s0') select (myagg(Id)).GetTheString() as val0, (myagg(Id)).GetIntPrimitive() as val1 from SupportBean_A")
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean_A("A1"));

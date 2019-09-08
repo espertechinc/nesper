@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
-    public class EventBeanJavaBeanAccessor : RegressionExecution
+    public class EventBeanNativeAccessor : RegressionExecution
     {
         public void Run(RegressionEnvironment env)
         {

@@ -126,9 +126,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         ///     Sets the convertor for matching events to events-per-stream.
         /// </summary>
         /// <param name="convertor">convertor</param>
-        public void SetConvertor(MatchedEventConvertorForge convertor)
+        public EvalEveryDistinctForgeNode SetConvertor(MatchedEventConvertorForge convertor)
         {
             this.convertor = convertor;
+            return this;
         }
 
         public void SetDistinctExpressions(

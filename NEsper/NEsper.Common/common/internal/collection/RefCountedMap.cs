@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             value = refValue.First;
-            return false;
+            return true;
         }
 
         public bool Contains(K key)

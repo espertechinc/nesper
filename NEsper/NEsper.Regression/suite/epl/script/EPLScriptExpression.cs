@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 .Get("c0");
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
-                "Id".SplitCsv(),
+                new [] { "Id" },
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployModuleContaining("s0");
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             string expression;
             var path = new RegressionPath();
 
-            expression = "expression int " + dialect + ":callIt(bean) [ bean.getIntPrimitive() + 1; ]";
+            expression = "expression int " + dialect + ":callIt(bean) [ bean.GetIntPrimitive() + 1; ]";
             testData = new[] {
                 new object[] {new SupportBean("E1", 20), 21},
                 new object[] {new SupportBean("E1", 10), 11}
@@ -188,14 +188,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                              typeof(SupportBean).Name +
                              "('E1', 10); ]";
             env.CompileDeploy(
-                    expression + " select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb")
+                    expression + " select callIt() as val0, callIt().GetTheString() as val1 from SupportBean as sb")
                 .AddListener("s0");
             Assert.AreEqual(typeof(SupportBean), env.Statement("s0").EventType.GetPropertyType("val0"));
 
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0.TheString,val0.IntPrimitive,val1".SplitCsv(),
+                new [] { "val0.TheString","val0.IntPrimitive","val1" },
                 new object[] {"E1", 10, "E1"});
 
             env.UndeployAll();
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0.P00".SplitCsv(),
+                new [] { "val0.P00" },
                 new object[] {MyImportedClass.VALUE_P00});
 
             env.UndeployAll();
@@ -426,13 +426,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "ch".SplitCsv(),
+                new [] { "ch" },
                 new object[] {0d});
 
             env.SendEventBean(new SupportBean("E2", 10));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "ch".SplitCsv(),
+                new [] { "ch" },
                 new object[] {-0.9d});
 
             env.UndeployAll();
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "getResultOne()".SplitCsv(),
+                new [] { "getResultOne()" },
                 new[] {value});
             env.UndeployAll();
 

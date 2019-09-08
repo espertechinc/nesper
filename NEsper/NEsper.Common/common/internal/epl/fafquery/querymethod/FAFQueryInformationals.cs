@@ -64,11 +64,24 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return new FAFQueryInformationals(types, names);
         }
 
-        public CodegenExpression Make(
-            CodegenPropertyScope parent,
+        public void Make(
+            CodegenBlock block,
             CodegenClassScope classScope)
         {
-            throw new NotImplementedException();
+            if (SubstitutionParamsNames == null) {
+                block.DeclareVar<IDictionary<string, int>>("names", ConstantNull());
+            }
+            else {
+                block.DeclareVar<IDictionary<string, int>>("names", NewInstance<Dictionary<string, int>>());
+                foreach (var entry in SubstitutionParamsNames) {
+                    block.AssignArrayElement("names", Constant(entry.Key), Constant(entry.Value));
+                }
+            }
+
+            block.BlockReturn(
+                NewInstance<FAFQueryInformationals>(
+                    Constant(SubstitutionParamsTypes),
+                    Ref("names")));
         }
 
         public CodegenExpression Make(
@@ -88,11 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 return ConstantNull();
             }
 
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), GetType(), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            var method = parent.MakeChild(typeof(IDictionary<string, int>), GetType(), classScope);
+            method.Block.DeclareVar<IDictionary<string, int>>(
                 "names",
                 NewInstance(
-                    typeof(Dictionary<object, object>)));
+                    typeof(Dictionary<string, int>)));
             foreach (var entry in SubstitutionParamsNames) {
                 method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(entry.Value));
             }

@@ -238,7 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
             string channelSpecificMethodName = null;
             if (channelDesc.ConsumingOptStreamAliasName != null) {
-                channelSpecificMethodName = "on" + channelDesc.ConsumingOptStreamAliasName;
+                channelSpecificMethodName = "On" + channelDesc.ConsumingOptStreamAliasName;
             }
 
             foreach (var method in target.GetMethods()) {
@@ -302,11 +302,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             throw new ExprValidationException(
-                "Failed to find onInput method on for operator '" +
+                "Failed to find OnInput method on for operator '" +
                 operatorName +
                 "' class " +
                 target.Name +
-                ", expected an onInput method that takes any of {" +
+                ", expected an OnInput method that takes any of {" +
                 CollectionUtil.ToString(choices) +
                 "}");
         }

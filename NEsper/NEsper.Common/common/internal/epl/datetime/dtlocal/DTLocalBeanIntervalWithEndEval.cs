@@ -84,7 +84,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             }
 
             block.MethodReturn(
-                forge.inner.Codegen(Ref("start"), Ref("end"), methodNode, exprSymbol, codegenClassScope));
+                forge.inner.Codegen(
+                    Ref("start"), 
+                    Ref("end"), 
+                    methodNode, 
+                    exprSymbol, 
+                    codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

@@ -358,7 +358,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         true);
 
                     try {
-                        descriptor.WriteMethod.Invoke(top, new[] {coerceProperty});
+                        var writeMember = descriptor.WriteMember;
+                        if (writeMember is MethodInfo writeMethod) {
+                            writeMethod.Invoke(top, new[] {coerceProperty});
+                        }
+                        else if (writeMember is PropertyInfo writeProperty) {
+                            writeProperty.SetValue(top, coerceProperty);
+                        }
+                        else {
+                            throw new IllegalStateException("writeMember of invalid type");
+                        }
                     }
                     catch (ArgumentException e) {
                         throw new ExprValidationException(
@@ -367,7 +376,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name +
+                            descriptor.WriteMember.Name +
                             " provided value " +
                             coerceProperty,
                             e);
@@ -379,7 +388,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name,
+                            descriptor.WriteMember.Name,
                             e);
                     }
                     catch (TargetException e) {
@@ -389,7 +398,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name +
+                            descriptor.WriteMember.Name +
                             ": " +
                             e.InnerException.Message,
                             e);
@@ -605,7 +614,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         true);
 
                     try {
-                        descriptor.WriteMethod.Invoke(top, new[] {coerceProperty});
+                        var writeMember = descriptor.WriteMember;
+                        if (writeMember is MethodInfo writeMethod) {
+                            writeMethod.Invoke(top, new[] {coerceProperty});
+                        }
+                        else if (writeMember is PropertyInfo writeProperty) {
+                            writeProperty.SetValue(top, coerceProperty);
+                        }
+                        else {
+                            throw new IllegalStateException("writeMember of invalid type");
+                        }
                     }
                     catch (ArgumentException e) {
                         throw new ExprValidationException(
@@ -614,7 +632,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name +
+                            descriptor.WriteMember.Name +
                             " provided value " +
                             coerceProperty,
                             e);
@@ -626,7 +644,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name,
+                            descriptor.WriteMember.Name,
                             e);
                     }
                     catch (TargetException e) {
@@ -636,7 +654,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             "' for class " +
                             applicableClass.Name +
                             " method " +
-                            descriptor.WriteMethod.Name +
+                            descriptor.WriteMember.Name +
                             ": " +
                             e.InnerException.Message,
                             e);

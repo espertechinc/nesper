@@ -151,13 +151,13 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                         NewInstance(typeof(VirtualDataWindowFactoryFactoryContext))))
                 .Constant("parameters", _parameterValues)
                 .Expression(
-                    "parameterExpressions",
+                    "ParameterExpressions",
                     ExprNodeUtilityCodegen.CodegenEvaluators(
                         _validatedParameterExpressions,
                         builder.Method(),
                         GetType(),
                         classScope))
-                .Constant("namedWindowName", _namedWindowName)
+                .Constant("NamedWindowName", _namedWindowName)
                 .Expression(
                     "compileTimeConfiguration",
                     SerializerUtil.ExpressionForUserObject(_customConfigs));

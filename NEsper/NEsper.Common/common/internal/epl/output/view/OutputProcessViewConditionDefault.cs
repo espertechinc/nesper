@@ -76,12 +76,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newData,
             EventBean[] oldData)
         {
-            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = _agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QOutputProcessWCondition(newData, oldData);
 
             // add the incoming events to the event batches
             if (_parent.IsAfter) {
-                var afterSatisfied = CheckAfterCondition(newData, agentInstanceContext.StatementContext);
+                var afterSatisfied = CheckAfterCondition(newData, _agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
                     if (!_parent.IsUnaggregatedUngrouped) {
                         OptionalDeltaSet.AddView(new UniformPair<EventBean[]>(newData, oldData));
@@ -124,12 +124,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = _agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QOutputProcessWConditionJoin(newEvents, oldEvents);
 
             // add the incoming events to the event batches
             if (_parent.IsAfter) {
-                var afterSatisfied = CheckAfterCondition(newEvents, agentInstanceContext.StatementContext);
+                var afterSatisfied = CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
                     if (!_parent.IsUnaggregatedUngrouped) {
                         AddToChangeset(newEvents, oldEvents, OptionalDeltaSet);
@@ -176,14 +176,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool doOutput,
             bool forceUpdate)
         {
-            agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
+            _agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
 
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
             // Process the events and get the result
-            var newOldEvents = resultSetProcessor.ProcessOutputLimitedView(
+            var newOldEvents = _resultSetProcessor.ProcessOutputLimitedView(
                 OptionalDeltaSet.ViewEventsSet,
                 isGenerateSynthetic);
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 ResetEventBatches();
-                agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(false);
+                _agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(false);
                 return;
             }
 
@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             ResetEventBatches();
 
-            agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(true);
+            _agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(true);
         }
 
         protected virtual void Output(
@@ -243,14 +243,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool doOutput,
             bool forceUpdate)
         {
-            agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
+            _agentInstanceContext.InstrumentationProvider.QOutputRateConditionOutputNow();
 
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
             // Process the events and get the result
-            var newOldEvents = resultSetProcessor.ProcessOutputLimitedJoin(
+            var newOldEvents = _resultSetProcessor.ProcessOutputLimitedJoin(
                 OptionalDeltaSet.JoinEventsSet,
                 isGenerateSynthetic);
 
@@ -261,11 +261,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 if (AuditPath.isAuditEnabled) {
-                    OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                    OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                 }
 
                 ResetEventBatches();
-                agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(false);
+                _agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(false);
                 return;
             }
 
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             ResetEventBatches();
 
-            agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(true);
+            _agentInstanceContext.InstrumentationProvider.AOutputRateConditionOutputNow(true);
         }
 
         private OutputCallback GetCallbackToLocal(int streamCount)
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
-                resultSetProcessor,
+                _resultSetProcessor,
                 parentView,
                 _parent.IsDistinct);
         }

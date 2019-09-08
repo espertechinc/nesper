@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                 "dynamicTwo? as t4, " +
                                 "Indexed[1]? as t5, " +
                                 "Mapped('keyOne')? as t6, " +
-                                "innermap.indexedTwo[0]? as t7, " +
+                                "innermap.IndexedTwo[0]? as t7, " +
                                 "innermap.mappedTwo('keyTwo')? as t8 " +
                                 "from MyLevel2#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                 "exists(dynamicTwo?) as t4, " +
                                 "exists(indexed[1]?) as t5, " +
                                 "exists(mapped('keyOne')?) as t6, " +
-                                "exists(innermap.indexedTwo[0]?) as t7, " +
+                                "exists(innermap.IndexedTwo[0]?) as t7, " +
                                 "exists(innermap.mappedTwo('keyTwo')?) as t8 " +
                                 "from MyLevel2#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             IList<ExprNode> parameters)
         {
             _defaultDialect = defaultDialect;
-            Script = script;
+            Script = script ?? throw new ArgumentException("script cannot be null", nameof(script));
             Parameters = parameters;
         }
 

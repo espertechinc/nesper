@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "keyOne,keyTwo,p0".SplitCsv();
+            var fields = new [] { "keyOne","keyTwo","p0" };
             var path = new RegressionPath();
 
             env.CompileDeploy(

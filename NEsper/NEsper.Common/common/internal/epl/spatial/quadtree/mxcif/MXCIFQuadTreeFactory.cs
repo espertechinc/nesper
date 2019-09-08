@@ -10,12 +10,12 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
-    public class MXCIFQuadTreeFactory<TL>
+    public class MXCIFQuadTreeFactory
     {
         public const int DEFAULT_LEAF_CAPACITY = 4;
         public const int DEFAULT_MAX_TREE_HEIGHT = 20;
 
-        public static MXCIFQuadTree<TL> Make(
+        public static MXCIFQuadTree Make(
             double x,
             double y,
             double width,
@@ -24,11 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
             int maxTreeHeight)
         {
             var bb = new BoundingBox(x, y, x + width, y + height);
-            var leaf = new MXCIFQuadTreeNodeLeaf<TL>(bb, 1, default(TL), 0);
-            return new MXCIFQuadTree<TL>(leafCapacity, maxTreeHeight, leaf);
+            var leaf = new MXCIFQuadTreeNodeLeaf(bb, 1, null, 0);
+            return new MXCIFQuadTree(leafCapacity, maxTreeHeight, leaf);
         }
 
-        public static MXCIFQuadTree<TL> Make(
+        public static MXCIFQuadTree Make(
             double x,
             double y,
             double width,

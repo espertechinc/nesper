@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
             CodegenClassScope classScope)
         {
             var sizeEval = CodegenEvaluator(sizeForge, method, GetType(), classScope);
-            method.Block.SetProperty(factory, "Size", sizeEval);
+            method.Block.SetProperty(factory, "SizeEvaluator", sizeEval);
         }
     }
 } // end of namespace

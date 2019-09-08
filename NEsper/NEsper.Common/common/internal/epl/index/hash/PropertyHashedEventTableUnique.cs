@@ -22,17 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
     public class PropertyHashedEventTableUnique : PropertyHashedEventTable,
         EventTableAsSet
     {
-        private readonly IDictionary<object, EventBean> propertyIndex;
+        private readonly IDictionary<object, EventBean> _propertyIndex;
 
         public PropertyHashedEventTableUnique(PropertyHashedEventTableFactory factory)
             : base(factory)
         {
-            propertyIndex = new Dictionary<object, EventBean>();
+            _propertyIndex = new Dictionary<object, EventBean>()
+                .WithNullKeySupport();
         }
 
         public override ISet<EventBean> Lookup(object key)
         {
-            EventBean @event = propertyIndex.Get(key);
+            var @event = _propertyIndex.Get(key);
             if (@event != null) {
                 return Collections.SingletonSet(@event);
             }
@@ -40,13 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return null;
         }
 
-        public override int NumKeys {
-            get => propertyIndex.Count;
-        }
+        public override int NumKeys => _propertyIndex.Count;
 
-        public override object Index {
-            get => propertyIndex;
-        }
+        public override object Index => _propertyIndex;
 
         /// <summary>
         /// Remove then add events.
@@ -82,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             object key = GetKey(theEvent);
 
-            var existing = propertyIndex.Push(key, theEvent);
+            var existing = _propertyIndex.Push(key, theEvent);
             if (existing != null && !existing.Equals(theEvent)) {
                 throw HandleUniqueIndexViolation(base.Factory.Organization.IndexName, key);
             }
@@ -93,21 +90,19 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             ExprEvaluatorContext exprEvaluatorContext)
         {
             object key = GetKey(theEvent);
-            propertyIndex.Remove(key);
+            _propertyIndex.Remove(key);
         }
 
-        public override bool IsEmpty {
-            get => propertyIndex.IsEmpty();
-        }
+        public override bool IsEmpty => _propertyIndex.IsEmpty();
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return propertyIndex.Values.GetEnumerator();
+            return _propertyIndex.Values.GetEnumerator();
         }
 
         public override void Clear()
         {
-            propertyIndex.Clear();
+            _propertyIndex.Clear();
         }
 
         public override void Destroy()
@@ -120,26 +115,20 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return ToQueryPlan();
         }
 
-        public override int? NumberOfEvents {
-            get => propertyIndex.Count;
-        }
+        public override int? NumberOfEvents => _propertyIndex.Count;
 
         public ISet<EventBean> AllValues()
         {
-            if (propertyIndex.IsEmpty()) {
+            if (_propertyIndex.IsEmpty()) {
                 return Collections.GetEmptySet<EventBean>();
             }
 
-            return new HashSet<EventBean>(propertyIndex.Values);
+            return new HashSet<EventBean>(_propertyIndex.Values);
         }
 
-        public override Type ProviderClass {
-            get => typeof(PropertyHashedEventTableUnique);
-        }
+        public override Type ProviderClass => typeof(PropertyHashedEventTableUnique);
 
-        public IDictionary<object, EventBean> PropertyIndex {
-            get { return propertyIndex; }
-        }
+        public IDictionary<object, EventBean> PropertyIndex => _propertyIndex;
 
         public static EPException HandleUniqueIndexViolation(
             string indexName,

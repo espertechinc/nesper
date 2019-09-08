@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     public class MXCIFQuadTreeRowIndexQuery
     {
         public static ICollection<object> QueryRange(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
@@ -27,18 +27,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         private static ICollection<object> QueryNode(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
             ICollection<object> result)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 return Visit(leaf, x, y, width, height, result);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             result = Visit(branch, x, y, width, height, result);
             result = QueryNode(branch.Nw, x, y, width, height, result);
             result = QueryNode(branch.Ne, x, y, width, height, result);
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         }
 
         private static ICollection<object> Visit(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,

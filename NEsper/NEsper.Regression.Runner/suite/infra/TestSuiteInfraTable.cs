@@ -80,11 +80,11 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Compiler.AddPlugInAggregationFunctionForge("csvWords", typeof(SupportSimpleWordCSVForge));
 
             var config = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "referenceCountedMap,referenceCountLookup".SplitCsv(),
+                new [] { "referenceCountedMap","referenceCountLookup" },
                 typeof(SupportReferenceCountedMapForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(config);
             var configMultiFuncAgg = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "se1".SplitCsv(),
+                new [] { "se1" },
                 typeof(SupportAggMFMultiRTForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(configMultiFuncAgg);
 

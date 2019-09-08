@@ -140,15 +140,21 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                 }
                 catch (Exception ex) {
                     var text = epl;
-                    if (model != null) {
+                    if (model != null)
+                    {
                         text = "Model: " + model.ToEPL();
                     }
 
                     log.Error(
                         ".RunTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
                         ex);
+
+#if DO_NOT_CATCH_EXCEPTIONS
                     Assert.Fail(text + ": " + ex.Message);
                     compiled = null;
+#else
+                    throw;
+#endif
                 }
 
                 // We stop the statement again and start after the first listener was added.

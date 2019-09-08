@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // test passing null
-                env.CompileDeploy("@Name('s0') select NullPrimitive.getValue(IntBoxed) from SupportBean")
+                env.CompileDeploy("@Name('s0') select NullPrimitive.GetValue(IntBoxed) from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.CompileDeploy(
                         "@Name('s0') select " +
-                        "LevelZero.getLevelOne().getLevelTwoValue() as val0 " +
+                        "LevelZero.GetLevelOne().GetLevelTwoValue() as val0 " +
                         "from SupportBean")
                     .AddListener("s0");
 
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").getText()";
+                var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").GetText()";
                 var statementText = "@Name('s0') select " + subexp + " from SupportBean";
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNew(),
-                    "v0,v1".SplitCsv(),
+                    new [] { "v0","v1" },
                     new object[] {"A1", 200});
 
                 env.UndeployAll();
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "v1,v2,v3,v4".SplitCsv(),
+                    new [] { "v1","v2","v3","v4" },
                     new object[] {10, 10d, 10d, 10d});
 
                 env.UndeployAll();

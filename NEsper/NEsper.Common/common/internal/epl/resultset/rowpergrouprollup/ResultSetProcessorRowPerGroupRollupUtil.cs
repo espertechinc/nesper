@@ -41,13 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var countEvents = 0;
             var countSortKeys = 0;
             foreach (var level in rollupDesc.Levels) {
-                var events = rstreamEventSortArrayBuf.GetEventsPerLevel()[level.LevelNumber];
+                var events = rstreamEventSortArrayBuf.EventsPerLevel[level.LevelNumber];
                 foreach (var @event in events) {
                     oldEventsArr[countEvents++] = @event;
                 }
 
                 if (orderByProcessor != null) {
-                    var sortKeys = rstreamEventSortArrayBuf.GetSortKeyPerLevel()[level.LevelNumber];
+                    var sortKeys = rstreamEventSortArrayBuf.SortKeyPerLevel[level.LevelNumber];
                     foreach (var sortKey in sortKeys) {
                         oldEventsSortKeys[countSortKeys++] = sortKey;
                     }

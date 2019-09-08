@@ -77,11 +77,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             env.SendEventBean(new SupportBean_S2(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            foreach (var col in "c1,c2,c6".SplitCsv()) {
+            foreach (var col in new [] { "c1","c2","c6" }) {
                 AssertEventUnd(@event.Get(col), rowValues);
             }
 
-            foreach (var col in "c0,c5".SplitCsv()) {
+            foreach (var col in new [] { "c0","c5" }) {
                 AssertEventUnd(((object[][]) @event.Get(col))[0], rowValues);
             }
 
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S1 " +
                     "merge MyTable where P10 = key when matched then " +
-                    "update set p0 = P11, p1 = p12",
+                    "update set P0 = P11, P1 = P12",
                     path);
 
                 var e1Sb = MakeSupportBean("G1", 10, 100);

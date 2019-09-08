@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var stmtInsertWildcardBean = env.GetEnumerator("iw").Advance();
             EPAssertionUtil.AssertProps(
                 stmtInsertWildcardBean,
-                "prop1,prop2,attr1".SplitCsv(),
+                new [] { "prop1","prop2","attr1" },
                 new object[] {"SAMPLE_V1", true, "SAMPLE_ATTR1"});
 
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("s0").Advance());

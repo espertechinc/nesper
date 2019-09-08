@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression lhs,
             bool not)
         {
-            this._lhs = lhs;
-            this._not = not;
+            _lhs = lhs;
+            _not = not;
         }
 
         public void Render(

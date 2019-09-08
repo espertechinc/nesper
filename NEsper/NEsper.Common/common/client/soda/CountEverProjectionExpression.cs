@@ -71,18 +71,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for distinct.
         /// </summary>
         /// <returns>boolean indicating distinct or not</returns>
-        public bool Distinct
-        {
+        public bool Distinct {
             get => distinct;
+            set => distinct = value;
         }
 
         /// <summary>
         /// Set to true for distinct.
         /// </summary>
         /// <param name="distinct">indicating distinct or not</param>
-        public void SetDistinct(bool distinct)
+        public CountEverProjectionExpression SetDistinct(bool distinct)
         {
             this.distinct = distinct;
+            return this;
         }
     }
 } // end of namespace

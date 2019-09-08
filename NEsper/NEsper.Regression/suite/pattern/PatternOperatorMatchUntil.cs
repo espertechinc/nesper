@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("C1", "b[0]", events.GetEvent("B1"), "b[1]", null);
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("c=SupportBean_C => [2] b=SupportBean_B -> d=SupportBean_D");
+                testCase = new EventExpressionCase("c=SupportBean_C -> [2] b=SupportBean_B -> d=SupportBean_D");
                 testCase.Add(
                     "D3",
                     "c",
@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtThree, 5, true, 2);
 
                 // test followed-by - bounded
-                env.CompileDeploy("@Name('s0') select * from pattern [s0=SupportBean_S0 -> [s0.Id] b=SupportBean]")
+                env.CompileDeploy("@Name('s0') select * from pattern [S0=SupportBean_S0 -> [S0.Id] b=SupportBean]")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(2));
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -834,7 +834,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("E2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "b[0].TheString,b[1].TheString".SplitCsv(),
+                    new [] { "b[0].TheString","b[1].TheString" },
                     new object[] {"E1", "E2"});
 
                 env.UndeployAll();
@@ -865,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(16000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id".SplitCsv(),
+                    new [] { "a.Id" },
                     new object[] {"A1"});
 
                 env.AdvanceTime(999999);
@@ -894,7 +894,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(1024999);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.Id,b[0].Id,b[1].Id".SplitCsv(),
+                    new [] { "a.Id","b[0].Id","b[1].Id" },
                     new object[] {"A1", "B1", "B2"});
 
                 env.AdvanceTime(1999999);
@@ -908,7 +908,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "e[0].IntPrimitive,e[1].IntPrimitive".SplitCsv();
+                var fields = new [] { "e[0].IntPrimitive","e[1].IntPrimitive" };
                 var epl =
                     "@Name('s0') select * from pattern [every [2] (e = SupportBean(TheString='A') and not SupportBean(TheString='B'))]";
                 env.CompileDeploy(epl).AddListener("s0");

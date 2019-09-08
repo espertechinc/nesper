@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 env.SendEventBean(new SupportBean(theString, intPrimitive));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "a,b".SplitCsv(),
+                    new [] { "a","b" },
                     new object[] {theString, intPrimitive});
             }
         }

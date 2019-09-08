@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expression,
             CodegenExpression index)
         {
-            this._expression = expression;
-            this._index = index;
+            _expression = expression;
+            _index = index;
         }
 
         public void Render(

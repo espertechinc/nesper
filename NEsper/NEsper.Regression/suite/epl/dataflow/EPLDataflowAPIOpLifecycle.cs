@@ -371,7 +371,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 SAIFFInitializeSymbol symbols,
                 CodegenClassScope classScope)
             {
+#if TYPE_ERASURE_BUG
                 return NewInstance("System.Object");
+#else
+                return NewInstance<VoidDataFlowOperatorFactory>();
+#endif
             }
 
             public static DataFlowOpOutputPort GetPort()

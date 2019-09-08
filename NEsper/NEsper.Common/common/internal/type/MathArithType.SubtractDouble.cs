@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                return CodegenExpressionBuilder.Op(CodegenAsDouble(left, ltype), "-", CodegenAsDouble(right, rtype));
+                return CodegenExpressionBuilder.Op(
+                    CodegenAsDouble(left, ltype), "-", 
+                    CodegenAsDouble(right, rtype));
             }
         }
     }

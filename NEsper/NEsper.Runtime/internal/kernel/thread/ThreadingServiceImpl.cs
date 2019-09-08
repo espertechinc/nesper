@@ -189,7 +189,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             }
         }
 
-        private static IExecutorService GetThreadPool(String engineURI, String name, IBlockingQueue<Runnable> queue, int numThreads)
+        private static IExecutorService GetThreadPool(string engineURI, string name, IBlockingQueue<Runnable> queue, int numThreads)
         {
             if (Log.IsInfoEnabled)
             {
@@ -204,7 +204,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             return new DedicatedExecutorService(name, numThreads, queue);
         }
 
-        public Thread MakeEventSourceThread(String engineURI, String sourceName, Runnable runnable)
+        public Thread MakeEventSourceThread(string engineURI, string sourceName, Runnable runnable)
         {
             if (engineURI == null)
             {
@@ -223,7 +223,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             SubmitInbound(new InboundUnitSendWrapped(@event, _servicesContext, runtimeEventSender));
         }
 
-        private static void StopPool(IExecutorService executorService, IBlockingQueue<Runnable> queue, String name)
+        private static void StopPool(IExecutorService executorService, IBlockingQueue<Runnable> queue, string name)
         {
             if (Log.IsInfoEnabled)
             {

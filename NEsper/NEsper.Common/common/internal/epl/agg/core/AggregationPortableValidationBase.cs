@@ -18,16 +18,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationBase : AggregationPortableValidation
     {
-        protected bool distinct;
-
-        public AggregationPortableValidationBase()
+        protected AggregationPortableValidationBase()
         {
         }
 
-        public AggregationPortableValidationBase(bool distinct)
+        protected AggregationPortableValidationBase(bool distinct)
         {
-            this.distinct = distinct;
+            this.IsDistinct = distinct;
         }
+
+        public bool IsDistinct { get; set; }
 
         protected abstract Type TypeOf();
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
             var that = (AggregationPortableValidationBase) intoTableAgg;
-            AggregationValidationUtil.ValidateDistinct(distinct, that.distinct);
+            AggregationValidationUtil.ValidateDistinct(IsDistinct, that.IsDistinct);
             ValidateIntoTable(tableExpression, intoTableAgg, intoExpression, factory);
         }
 
@@ -63,15 +63,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var method = parent.MakeChild(TypeOf(), GetType(), classScope);
             method.Block
                 .DeclareVar(TypeOf(), "v", NewInstance(TypeOf()))
-                .SetProperty(Ref("v"), "IsDistinct", Constant(distinct));
+                .SetProperty(Ref("v"), "IsDistinct", Constant(IsDistinct));
             CodegenInlineSet(Ref("v"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("v"));
             return LocalMethod(method);
         }
 
-        public void SetDistinct(bool distinct)
+        public AggregationPortableValidationBase SetDistinct(bool distinct)
         {
-            this.distinct = distinct;
+            this.IsDistinct = distinct;
+            return this;
         }
     }
 } // end of namespace

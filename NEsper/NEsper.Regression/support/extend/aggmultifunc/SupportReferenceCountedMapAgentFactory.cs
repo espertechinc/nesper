@@ -13,16 +13,11 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
     public class SupportReferenceCountedMapAgentFactory : AggregationMultiFunctionAgentFactory
     {
-        public ExprEvaluator Eval { get; private set; }
+        public ExprEvaluator Eval { get; set; }
 
         public AggregationMultiFunctionAgent NewAgent(AggregationMultiFunctionAgentFactoryContext ctx)
         {
             return new SupportReferenceCountedMapAgent(Eval);
-        }
-
-        public void SetEval(ExprEvaluator eval)
-        {
-            Eval = eval;
         }
     }
 } // end of namespace

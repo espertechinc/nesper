@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
+                var text = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,LongPrimitive".SplitCsv();
+                var fields = new [] { "TheString","LongPrimitive" };
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
@@ -426,8 +426,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var fields = "Id".SplitCsv();
-                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
+                var fields = new [] { "Id" };
+                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#timetolive(Timestamp)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 SendEvent(env, "E1", 1000);
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 env.CompileDeploy(
-                        "@Name('s0') select rstream * from SupportBeanTimestamp#time_order(timestamp, 1 month)")
+                        "@Name('s0') select rstream * from SupportBeanTimestamp#time_order(Timestamp, 1 month)")
                     .AddListener("s0");
 
                 SendEvent(env, "E1", DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"));
@@ -562,7 +562,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new[] {new object[] {"E1"}});
 
                 env.UndeployAll();
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "insert rstream into OrderedStream select rstream Id from SupportBeanTimestamp#time_order(timestamp, 10 sec);\n" +
+                    "insert rstream into OrderedStream select rstream Id from SupportBeanTimestamp#time_order(Timestamp, 10 sec);\n" +
                     "@Name('s0') select * from OrderedStream";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -678,7 +678,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
+                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 20000);
                 var epl =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(timestamp, 10 sec)";
+                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // 1st event is old
@@ -974,7 +974,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(2, env.Listener("s0").LastOldData.Length);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").LastOldData,
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
@@ -1002,7 +1002,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportBeanTimestamp#time_order(timestamp, abc)",
+                    "select * from SupportBeanTimestamp#time_order(Timestamp, abc)",
                     "Failed to validate data window declaration: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [");
             }
         }
@@ -1021,7 +1021,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                           " prevtail(1, Id) as prevTailIdOne, " +
                           " prevcount(Id) as prevCountId, " +
                           " prevwindow(Id) as prevWindowId " +
-                          " from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
+                          " from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields =
                     {"Id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
@@ -1115,7 +1115,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                            "prevtail(0, Id) as prevtail, " +
                            "prevcount(Id) as prevCountId, " +
                            "prevwindow(Id) as prevWindowId " +
-                           "from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
+                           "from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // event

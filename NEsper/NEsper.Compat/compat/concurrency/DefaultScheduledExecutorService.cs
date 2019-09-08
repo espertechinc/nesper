@@ -20,6 +20,11 @@ namespace com.espertech.esper.compat.concurrency
             _dispatchExecutorService = Executors.DefaultExecutor();
         }
 
+        public DefaultScheduledExecutorService(IExecutorService dispatchExecutorService)
+        {
+            _dispatchExecutorService = dispatchExecutorService;
+        }
+
         public IFuture<object> Submit(Action runnable)
         {
             return _dispatchExecutorService.Submit(runnable);

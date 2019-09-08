@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <param name="eventsPerStream">input events for the lookup</param>
         /// <returns>set of events</returns>
         ISet<EventBean> Lookup(
-            Object[] keys,
+            object[] keys,
             EventBean[] eventsPerStream);
     }
 }

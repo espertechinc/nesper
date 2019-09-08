@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>
         /// clause
         /// </returns>
-        public static RowLimitClause Create(String numRowsVariable)
+        public static RowLimitClause Create(string numRowsVariable)
         {
             return new RowLimitClause(null, null, numRowsVariable, null);
         }
@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.client.soda
         /// clause
         /// </returns>
         public static RowLimitClause Create(
-            String numRowsVariable,
-            String offsetVariable)
+            string numRowsVariable,
+            string offsetVariable)
         {
             return new RowLimitClause(null, null, numRowsVariable, offsetVariable);
         }
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.client.soda
                 }
                 else
                 {
-                    writer.Write(Int32.MaxValue);
+                    writer.Write(int.MaxValue);
                 }
             }
 

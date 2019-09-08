@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "firsteverstring,lasteverstring,counteverall".SplitCsv();
+                var fields = new [] { "firsteverstring","lasteverstring","counteverall" };
                 var epl = "create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A delete from MyWindow where TheString = Id;\n" +

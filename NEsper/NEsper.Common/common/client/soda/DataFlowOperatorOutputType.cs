@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="typeParameters">optional additional type parameters</param>
         public DataFlowOperatorOutputType(
             bool wildcard,
-            String typeOrClassname,
+            string typeOrClassname,
             IList<DataFlowOperatorOutputType> typeParameters)
         {
             IsWildcard = wildcard;

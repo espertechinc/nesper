@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
@@ -41,6 +42,22 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
+        private void CheckWriteLockNotAcquired()
+        {
+            if (_writeLock != null)
+            {
+                throw new EPLockException("lock already acquired");
+            }
+        }
+
+        private void CheckReadLockNotAcquired()
+        {
+            if (_readLock != null)
+            {
+                throw new EPLockException("lock already acquired");
+            }
+        }
+
         /// <summary>
         ///     Lock write @lock.
         /// </summary>
@@ -50,7 +67,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
+            CheckWriteLockNotAcquired();
             _writeLock = _lock.WriteLock.Acquire();
+
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
             }
@@ -62,7 +81,8 @@ namespace com.espertech.esper.common.@internal.context.util
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
-            _lock.WriteLock.Acquire(msecTimeout);
+            CheckWriteLockNotAcquired();
+            _writeLock = _lock.WriteLock.Acquire(msecTimeout);
 
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
@@ -80,7 +100,13 @@ namespace com.espertech.esper.common.@internal.context.util
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " write ", _lock);
             }
 
+            if (_writeLock == null) {
+                throw new EPLockException("writeLock was not acquired");
+            }
+
             _writeLock.Dispose();
+            _writeLock = null;
+
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " write ", _lock);
             }
@@ -95,7 +121,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read ", _lock);
             }
 
+            CheckReadLockNotAcquired();
             _readLock = _lock.ReadLock.Acquire();
+
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read ", _lock);
             }
@@ -110,7 +138,14 @@ namespace com.espertech.esper.common.@internal.context.util
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " read ", _lock);
             }
 
+            if (_readLock == null)
+            {
+                throw new EPLockException("readLock was not acquired");
+            }
+
             _readLock.Dispose();
+            _readLock = null;
+
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " read ", _lock);
             }

@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 .SetProperty(Ref("sts"), "Y", toExpr.Invoke(y))
                 .SetProperty(Ref("sts"), "Width", toExpr.Invoke(width))
                 .SetProperty(Ref("sts"), "Height", toExpr.Invoke(height))
-                .SetProperty(Ref("sts"), "NWOnTrigger", Constant(isNWOnTrigger))
+                .SetProperty(Ref("sts"), "IsNwOnTrigger", Constant(isNWOnTrigger))
                 .SetProperty(Ref("sts"), "StreamCountOuter", Constant(streamCountOuter))
                 .SetProperty(Ref("sts"), "LookupExpressions", Constant(LookupStrategyDesc.ExpressionsTexts))
                 .MethodReturn(Ref("sts"));

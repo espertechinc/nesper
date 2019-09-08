@@ -29,24 +29,19 @@ namespace com.espertech.esper.compiler.@internal.parse
             CommonTokenStream tokenStream,
             EsperEPL2GrammarParser.JsonvalueContext node)
         {
-            if (node.constant() != null)
-            {
+            if (node.constant() != null) {
                 EsperEPL2GrammarParser.ConstantContext constCtx = node.constant();
-                if (constCtx.stringconstant() != null)
-                {
+                if (constCtx.stringconstant() != null) {
                     return ExtractString(constCtx.stringconstant().GetText());
                 }
-                else
-                {
+                else {
                     return ASTConstantHelper.Parse(constCtx.GetChild(0));
                 }
             }
-            else if (node.jsonobject() != null)
-            {
+            else if (node.jsonobject() != null) {
                 return WalkObject(tokenStream, node.jsonobject());
             }
-            else if (node.jsonarray() != null)
-            {
+            else if (node.jsonarray() != null) {
                 return WalkArray(tokenStream, node.jsonarray());
             }
 
@@ -78,11 +73,9 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return list;
             }
 
-            IList<EsperEPL2GrammarParser.JsonvalueContext> values = ctx.jsonelements().jsonvalue();
-            foreach (EsperEPL2GrammarParser.JsonvalueContext value in values)
+            foreach (EsperEPL2GrammarParser.JsonvalueContext value in ctx.jsonelements().jsonvalue())
             {
-                object val = Walk(tokenStream, value);
-                list.Add(val);
+                list.Add(Walk(tokenStream, value));
             }
 
             return list;
@@ -123,7 +116,8 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var builder = new StringBuilder();
             var index = 1;
-            while (index < text.Length)
+            var lastIndex = text.Length - 1;
+            while (index < lastIndex)
             {
                 var nextCharacter = text[index++];
                 if (nextCharacter != '\\')

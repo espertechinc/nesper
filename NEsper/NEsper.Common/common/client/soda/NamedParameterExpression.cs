@@ -41,18 +41,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the parameter name.
         /// </summary>
         /// <returns>name</returns>
-        public string Name
-        {
+        public string Name {
             get => name;
+            set => name = value;
         }
 
         /// <summary>
         /// Sets the parameter name.
         /// </summary>
         /// <param name="name">name to set</param>
-        public void SetName(string name)
+        public NamedParameterExpression SetName(string name)
         {
             this.name = name;
+            return this;
         }
 
         public override ExpressionPrecedenceEnum Precedence

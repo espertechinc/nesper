@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-            var fields = "e0,val".SplitCsv();
+            var fields = new [] { "e0","val" };
 
             // test once
             env.SendEventBean(new SupportBean("WX", 10));
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean(theString, i));
                 }
 
-                var fields = "cols.mini,cols.maxi".SplitCsv();
+                var fields = new [] { "cols.mini","cols.maxi" };
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean("E1", i));
                 }
 
-                var fields = "cols.mini,cols.maxi".SplitCsv();
+                var fields = new [] { "cols.mini","cols.maxi" };
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env.SendEventBean(new SupportBean(key, i));
                 }
 
-                var fields = "cols.mini,cols.maxi".SplitCsv();
+                var fields = new [] { "cols.mini","cols.maxi" };
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow " +
                     "where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";

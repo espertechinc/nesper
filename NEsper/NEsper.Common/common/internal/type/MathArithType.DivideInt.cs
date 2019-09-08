@@ -25,6 +25,10 @@ namespace com.espertech.esper.common.@internal.type
                 object i1,
                 object i2)
             {
+                if (i1 == null || i2 == null) {
+                    return null;
+                }
+
                 var i2int = i2.AsInt();
                 if (i2int == 0) {
                     return null;
@@ -45,16 +49,19 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(typeof(int), "i1")
                     .AddParam(typeof(int), "i2")
                     .Block
+                    
                     .IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
                             CodegenExpressionBuilder.Ref("i2"),
                             CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
+
                     .MethodReturn(
                         CodegenExpressionBuilder.Op(
                             CodegenExpressionBuilder.Ref("i1"),
                             "/",
                             CodegenExpressionBuilder.Ref("i2")));
+
                 return CodegenExpressionBuilder.LocalMethod(
                     method,
                     CodegenAsInt(left, ltype),

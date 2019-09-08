@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     "on SupportBean as d delete from MyNamedWindow w where d.IntPrimitive = w.Value",
                     path);
 
-                var fields = "a_string,b_string".SplitCsv();
+                var fields = new [] { "a_string","b_string" };
                 var text = "@Name('s0') select * from MyNamedWindow " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string" +
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     "on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString",
                     path);
 
-                var fields = "a0,a1,b0,b1,c".SplitCsv();
+                var fields = new [] { "a0","a1","b0","b1","c" };
                 var text = "@Name('s0') select * from MyWindow " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     "on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString",
                     path);
 
-                var fields = "a0,a1,b".SplitCsv();
+                var fields = new [] { "a0","a1","b" };
                 var text = "@Name('s0') select * from MyWindow " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B.TheString as b" +

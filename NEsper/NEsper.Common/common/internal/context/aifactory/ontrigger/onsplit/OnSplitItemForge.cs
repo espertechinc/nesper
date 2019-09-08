@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                     WhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(WhereClause.Forge, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "NamedWindowInsert", Constant(IsNamedWindowInsert))
+                .SetProperty(Ref("eval"), "IsNamedWindowInsert", Constant(IsNamedWindowInsert))
                 .SetProperty(
                     Ref("eval"),
                     "InsertIntoTable",

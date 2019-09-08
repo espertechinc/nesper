@@ -23,16 +23,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             tree = null;
         }
 
-        private MXCIFQuadTree<object> tree;
+        private MXCIFQuadTree tree;
 
         private static void Delete(
             double x,
             double y,
             double width,
             double height,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
-            MXCIFQuadTreeFilterIndexDelete<object>.Delete(x, y, width, height, tree);
+            MXCIFQuadTreeFilterIndexDelete.Delete(x, y, width, height, tree);
         }
 
         private static object Get(
@@ -40,15 +40,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double y,
             double width,
             double height,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
-            return MXCIFQuadTreeFilterIndexGet<object>.Get(x, y, width, height, tree);
+            return MXCIFQuadTreeFilterIndexGet.Get(x, y, width, height, tree);
         }
 
         [Test]
         public void TestFewValues()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
 
             Set(73.32704983331149, 23.46990952575032, 1, 1, "R0", tree);
             Set(53.09747562396894, 17.100976152185034, 1, 1, "R1", tree);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestGetSetRemove()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
             Assert.IsNull(Get(10, 20, 30, 40, tree));
             AssertCollectAll(tree, "");
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestPoints()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 10, 10);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 10, 10);
 
             Set(8.0, 4.0, 1, 1, "R0", tree);
             AssertCollectAll(tree, "R0");
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         [Test]
         public void TestSetRemoveTwiceSamePoint()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
 
             Set(5, 8, 1, 2, "R1", tree);
             Set(5, 8, 1, 2, "R2", tree);

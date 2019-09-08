@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     [TestFixture]
     public class TestMxcifQuadTreeRowIndexSimple : AbstractCommonTest
     {
-        private MXCIFQuadTree<object> tree;
+        private MXCIFQuadTree tree;
 
         [TearDown]
         public void TearDown()
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestAddRemoveSimple()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 50, 60);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 50, 60);
             AssertFound(tree, 0, 0, 10, 10, "");
 
             AddNonUnique(tree, 5, 8, 1, 1, "R1");
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestPoints()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 10, 10);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 10, 10);
 
             AddNonUnique(tree, 8.0, 4.0, 1, 1, "R0");
             AssertFound(tree, 0, 0, 10, 10, "R0");
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestAddRemoveSamePoint()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
 
             AddNonUnique(tree, 5, 8, 1, 1, "R1");
             AddNonUnique(tree, 5, 8, 1, 1, "R2");
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestFewValues()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
 
             AddNonUnique(tree, 73.32704983331149, 23.46990952575032, 1, 1, "R0");
             AddNonUnique(tree, 53.09747562396894, 17.100976152185034, 1, 1, "R1");
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         [Test]
         public void TestAddRemoveScenario()
         {
-            tree = MXCIFQuadTreeFactory<object>.Make(0, 0, 100, 100);
+            tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
 
             AddUnique(tree, 85.0, 65.0, 0.999, 0.999, "P3");
             AddUnique(tree, 86.0, 50.0, 0.999, 0.999, "P6");

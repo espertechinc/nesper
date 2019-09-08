@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.AreSame(theEvent, eventBean.Get("a"));
                 Assert.AreSame(theEvent, eventBean.Get("myEvent"));
-                Assert.AreEqual(1, eventBean.Get("MyInt"));
+                Assert.AreEqual(1, eventBean.Get("myInt"));
                 Assert.AreEqual("test", eventBean.Get("a.TheString"));
 
                 env.UndeployAll();

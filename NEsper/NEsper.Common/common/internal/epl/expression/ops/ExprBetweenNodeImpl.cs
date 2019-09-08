@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (compareType == typeof(string)) {
                 computer = new ExprBetweenCompString(IsLowEndpointIncluded, IsHighEndpointIncluded);
             }
-            else if (compareType == typeof(decimal?)) {
+            else if (compareType.IsDecimal()) {
                 computer = new ExprBetweenCompDecimal(
                     IsLowEndpointIncluded,
                     IsHighEndpointIncluded,
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     lowType,
                     highType);
             }
-            else if (compareType == typeof(BigInteger)) {
+            else if (compareType.IsBigInteger()) {
                 computer = new ExprBetweenCompBigInteger(
                     IsLowEndpointIncluded,
                     IsHighEndpointIncluded,

@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.UndeployAll();
                 eplFragment =
-                    "@Name('s0') select Items.where(i => i.Location.X = 0).where(i -> i.Location.Y = 0) as zeroloc from LocationReport";
+                    "@Name('s0') select Items.where(i -> i.Location.X = 0).where(i -> i.Location.Y = 0) as zeroloc from LocationReport";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') select window(*).where(p -> distance(0, 0, p.Location.X, p.Location.Y) < 20) as centeritems " +
-                    "from Item(type='P')#time(10) group by assetId";
+                    "from Item(type='P')#time(10) group by AssetId";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new Item("P0001", new Location(10, 10), "P", null));
@@ -270,10 +270,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') expression passengers {\n" +
-                          "  lr => lr.Items.where(l -> l.type='P')\n" +
+                          "  lr -> lr.Items.where(l -> l.Type='P')\n" +
                           "}\n" +
                           "select passengers(lr) as p," +
-                          "passengers(lr).where(x -> assetId = 'P01') as p2 from LocationReport lr";
+                          "passengers(lr).where(x -> AssetId = 'P01') as p2 from LocationReport lr";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
@@ -291,13 +291,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                AssertStmt(env, path, "select Items.firstof().assetId as firstcenter from LocationReport");
-                AssertStmt(env, path, "select Items.where(p -> p.type=\"P\") from LocationReport");
-                AssertStmt(env, path, "select Items.where((p,ind) -> p.type=\"P\" and ind>2) from LocationReport");
+                AssertStmt(env, path, "select Items.firstof().AssetId as firstcenter from LocationReport");
+                AssertStmt(env, path, "select Items.where(p -> p.Type=\"P\") from LocationReport");
+                AssertStmt(env, path, "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
                 AssertStmt(
                     env,
                     path,
-                    "select Items.aggregate(\"\",(result,item) -> result||(case when result=\"\" then \"\" else \",\" end)||item.assetId) as assets from LocationReport");
+                    "select Items.aggregate(\"\",(result,item) -> result||(case when result=\"\" then \"\" else \",\" end)||item.AssetId) as assets from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.firstof(i -> distance(i.Location.X,i.Location.Y,0,0)<20) as firstcenter from LocationReport");
-                AssertStmt(env, path, "select Items.lastof().assetId as firstcenter from LocationReport");
+                AssertStmt(env, path, "select Items.lastof().AssetId as firstcenter from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -322,12 +322,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select Items.where(i => i.type=\"L\").groupby(i -> assetIdPassenger) as luggagePerPerson from LocationReport");
-                AssertStmt(env, path, "select Items.where((p,ind) -> p.type=\"P\" and ind>2) from LocationReport");
+                    "select Items.where(i -> i.Type=\"L\").groupby(i -> AssetIdPassenger) as luggagePerPerson from LocationReport");
+                AssertStmt(env, path, "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
                 AssertStmt(
                     env,
                     path,
-                    "select Items.groupby(k => assetId,v -> distance(v.Location.X,v.Location.Y,0,0)) as distancePerItem from LocationReport");
+                    "select Items.groupby(k -> AssetId,v -> distance(v.Location.X,v.Location.Y,0,0)) as distancePerItem from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -343,12 +343,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select Items.minBy(i -> distance(i.Location.X,i.Location.Y,0,0)).assetId as minItemCenter from LocationReport");
+                    "select Items.minBy(i -> distance(i.Location.X,i.Location.Y,0,0)).AssetId as minItemCenter from LocationReport");
                 AssertStmt(
                     env,
                     path,
                     "select Items.orderBy(i -> distance(i.Location.X,i.Location.Y,0,0)) as itemsOrderedByDist from LocationReport");
-                AssertStmt(env, path, "select Items.selectFrom(i -> assetId) as itemAssetIds from LocationReport");
+                AssertStmt(env, path, "select Items.selectFrom(i -> AssetId) as itemAssetIds from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -356,11 +356,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select Items.toMap(k => k.assetId,v -> distance(v.Location.X,v.Location.Y,0,0)) as assetDistance from LocationReport");
+                    "select Items.toMap(k -> k.AssetId,v -> distance(v.Location.X,v.Location.Y,0,0)) as assetDistance from LocationReport");
                 AssertStmt(
                     env,
                     path,
-                    "select Items.where(i => i.assetId=\"L001\").union(Items.where(i -> i.type=\"P\")) as itemsUnion from LocationReport");
+                    "select Items.where(i -> i.AssetId=\"L001\").union(Items.where(i -> i.Type=\"P\")) as itemsUnion from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -372,11 +372,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select window(assetId).orderBy() as orderedAssetIds from Item#time(10) group by assetId");
+                    "select window(AssetId).orderBy() as orderedAssetIds from Item#time(10) group by AssetId");
                 AssertStmt(
                     env,
                     path,
-                    "select prevwindow(assetId).orderBy() as orderedAssetIds from Item#time(10) as items");
+                    "select prevwindow(AssetId).orderBy() as orderedAssetIds from Item#time(10) as items");
                 AssertStmt(
                     env,
                     path,
@@ -384,13 +384,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select Items.selectFrom(i -> new{assetId,distanceCenter=distance(i.Location.X,i.Location.Y,0,0)}) as itemInfo from LocationReport");
+                    "select Items.selectFrom(i -> new{AssetId,distanceCenter=distance(i.Location.X,i.Location.Y,0,0)}) as itemInfo from LocationReport");
                 AssertStmt(env, path, "select Items.leastFrequent(i -> type) as leastFreqType from LocationReport");
 
                 var epl = "expression myquery {itm -> " +
                           "(select * from Zone#keepall).where(z -> inrect(z.rectangle,itm.Location))" +
                           "} " +
-                          "select assetId, myquery(item) as subq, myquery(item).where(z -> z.name=\"Z01\") as assetItem " +
+                          "select AssetId, myquery(item) as subq, myquery(item).where(z -> z.name=\"Z01\") as assetItem " +
                           "from Item as item";
                 AssertStmt(env, path, epl);
 

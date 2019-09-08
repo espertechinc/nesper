@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {"updated", 50});
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) received.Get("c2"),
-                "p0,sumint".SplitCsv(),
+                new [] { "p0","sumint" },
                 "updated",
                 50);
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionEnvironment env,
             bool soda)
         {
-            var fieldsTable = "key,p0,p1,p2,sumint".SplitCsv();
+            var fieldsTable = new [] { "key","p0","p1","p2","sumint" };
             var path = new RegressionPath();
             var eplDeclare =
                 "create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S1(2));
             EPAssertionUtil.AssertProps(
                 env.Listener("convert").AssertOneGetNewAndReset(),
-                "val0.KeyOne".SplitCsv(),
+                new [] { "val0.KeyOne" },
                 new object[] {10});
 
             // delete for varagg[10, "A"]
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] objects,
             int total)
         {
-            var fields = "eventset,total".SplitCsv();
+            var fields = new [] { "eventset","total" };
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "k1,v1".SplitCsv();
+                var fields = new [] { "k1","v1" };
 
                 env.CompileDeploy("@Name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(

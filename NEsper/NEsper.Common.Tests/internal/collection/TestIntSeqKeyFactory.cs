@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.collection
         private void AssertKey(IntSeqKey key, Type clazz, params int[] expected)
         {
             Assert.AreEqual(key.GetType(), clazz);
-            Assert.IsTrue(Arrays.Equals(expected, key.AsIntArray()));
+            Assert.IsTrue(Arrays.AreEqual(expected, key.AsIntArray()));
         }
     }
 } // end of namespace

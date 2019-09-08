@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             var text = "create constant variable int NUM_PRIOR = 1;\n @Name('s0') select prior(" +
                        priorIndex +
-                       ", s0) as result from SupportBean_S0#length(2) as s0";
+                       ", S0) as result from SupportBean_S0#length(2) as S0";
             env.CompileDeploy(text, path).AddListener("s0");
 
             var e1 = new SupportBean_S0(3);
@@ -525,8 +525,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 TryInvalidCompile(
                     env,
                     path,
-                    "@Name('s0') select prior(NUM_PRIOR_NONCONST, s0) as result from SupportBean_S0#length(2) as s0",
-                    "Failed to validate select-clause expression 'prior(NUM_PRIOR_NONCONST,s0)': Prior function requires a constant-value integer-typed index expression as the first parameter");
+                    "@Name('s0') select prior(NUM_PRIOR_NONCONST, S0) as result from SupportBean_S0#length(2) as S0",
+                    "Failed to validate select-clause expression 'prior(NUM_PRIOR_NONCONST,S0)': Prior function requires a constant-value integer-typed index expression as the first parameter");
 
                 env.UndeployAll();
             }

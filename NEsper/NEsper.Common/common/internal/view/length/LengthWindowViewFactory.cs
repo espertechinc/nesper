@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.view.length
 
         protected internal ExprEvaluator size;
 
-        public ExprEvaluator Size {
+        public ExprEvaluator SizeEvaluator {
             set => size = value;
         }
 

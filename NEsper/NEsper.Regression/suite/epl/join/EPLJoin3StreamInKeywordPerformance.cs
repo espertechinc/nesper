@@ -24,10 +24,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select s0.Id as val from " +
-                      "SupportBean_S0#keepall s0, " +
-                      "SupportBean_S1#keepall s1, " +
-                      "SupportBean_S2#keepall s2 " +
+            var epl = "@Name('s0') select S0.Id as val from " +
+                      "SupportBean_S0#keepall S0, " +
+                      "SupportBean_S1#keepall S1, " +
+                      "SupportBean_S2#keepall S2 " +
                       "where P00 in (P10, P20)";
             var fields = new [] { "val" };
             env.CompileDeployAddListenerMileZero(epl, "s0");

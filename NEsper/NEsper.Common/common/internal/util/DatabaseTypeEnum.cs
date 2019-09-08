@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
@@ -26,55 +25,58 @@ namespace com.espertech.esper.common.@internal.util
     ///     </para>
     /// </summary>
     [Serializable]
-    public class DatabaseTypeEnum
+    public enum DatabaseTypeEnum
+    {
+        /// <summary>Boolean type.</summary>
+        BOOLEAN,
+
+        /// <summary>Byte type.</summary>
+        BYTE,
+
+        /// <summary>Byte array type.</summary>
+        BYTE_ARRAY,
+
+        /// <summary>Big decimal.</summary>
+        DECIMAL,
+
+        /// <summary>Double type.</summary>
+        DOUBLE,
+
+        /// <summary>Float type.</summary>
+        FLOAT,
+
+        /// <summary>Integer type.</summary>
+        INT32,
+
+        /// <summary>Long type.</summary>
+        INT64,
+
+        /// <summary>Short type.</summary>
+        INT16,
+
+        /// <summary>String type.</summary>
+        STRING,
+
+        /// <summary>timestamp type.</summary>
+        TIMESTAMP
+    }
+
+    public static class DatabaseTypeEnumExtensions
     {
         public static readonly IDictionary<DatabaseTypeEnum, DatabaseTypeBinding> BINDINGS;
 
-        /// <summary>Boolean type.</summary>
-        public static readonly DatabaseTypeEnum BOOLEAN = new DatabaseTypeEnum(typeof(bool));
-
-        /// <summary>Byte type.</summary>
-        public static readonly DatabaseTypeEnum BYTE = new DatabaseTypeEnum(typeof(byte));
-
-        /// <summary>Byte array type.</summary>
-        public static readonly DatabaseTypeEnum BYTE_ARRAY = new DatabaseTypeEnum(typeof(byte[]));
-
-        /// <summary>Big decimal.</summary>
-        public static readonly DatabaseTypeEnum DECIMAL = new DatabaseTypeEnum(typeof(decimal));
-
-        /// <summary>Double type.</summary>
-        public static readonly DatabaseTypeEnum DOUBLE = new DatabaseTypeEnum(typeof(double));
-
-        /// <summary>Float type.</summary>
-        public static readonly DatabaseTypeEnum FLOAT = new DatabaseTypeEnum(typeof(float));
-
-        /// <summary>Integer type.</summary>
-        public static readonly DatabaseTypeEnum INT32 = new DatabaseTypeEnum(typeof(int));
-
-        /// <summary>Long type.</summary>
-        public static readonly DatabaseTypeEnum INT64 = new DatabaseTypeEnum(typeof(long));
-
-        /// <summary>Short type.</summary>
-        public static readonly DatabaseTypeEnum INT16 = new DatabaseTypeEnum(typeof(short));
-
-        /// <summary>String type.</summary>
-        public static readonly DatabaseTypeEnum STRING = new DatabaseTypeEnum(typeof(string));
-
-        /// <summary>timestamp type.</summary>
-        public static readonly DatabaseTypeEnum TIMESTAMP = new DatabaseTypeEnum(typeof(DateTime));
-
         public static readonly DatabaseTypeEnum[] VALUES = {
-            STRING,
-            DECIMAL,
-            DOUBLE,
-            FLOAT,
-            INT64,
-            INT32,
-            INT16,
-            BOOLEAN,
-            BYTE,
-            BYTE_ARRAY,
-            TIMESTAMP
+            DatabaseTypeEnum.STRING,
+            DatabaseTypeEnum.DECIMAL,
+            DatabaseTypeEnum.DOUBLE,
+            DatabaseTypeEnum.FLOAT,
+            DatabaseTypeEnum.INT64,
+            DatabaseTypeEnum.INT32,
+            DatabaseTypeEnum.INT16,
+            DatabaseTypeEnum.BOOLEAN,
+            DatabaseTypeEnum.BYTE,
+            DatabaseTypeEnum.BYTE_ARRAY,
+            DatabaseTypeEnum.TIMESTAMP
         };
 
         public static ProxyDatabaseTypeBinding<string> InstanceBindingString;
@@ -89,7 +91,7 @@ namespace com.espertech.esper.common.@internal.util
         public static ProxyDatabaseTypeBinding<byte[]> InstanceBindingByteArray;
         public static ProxyDatabaseTypeBinding<byte[]> InstanceBindingTimestamp;
 
-        static DatabaseTypeEnum()
+        static DatabaseTypeEnumExtensions()
         {
             InstanceBindingString = new ProxyDatabaseTypeBinding<string>(
                 (
@@ -148,16 +150,16 @@ namespace com.espertech.esper.common.@internal.util
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingBoolean"));
 
             BINDINGS = new Dictionary<DatabaseTypeEnum, DatabaseTypeBinding>();
-            BINDINGS.Put(STRING, InstanceBindingString);
-            BINDINGS.Put(DECIMAL, InstanceBindingDecimal);
-            BINDINGS.Put(DOUBLE, InstanceBindingDouble);
-            BINDINGS.Put(FLOAT, InstanceBindingFloat);
-            BINDINGS.Put(INT64, InstanceBindingInt64);
-            BINDINGS.Put(INT32, InstanceBindingInt32);
-            BINDINGS.Put(INT16, InstanceBindingInt16);
-            BINDINGS.Put(BYTE, InstanceBindingByte);
-            BINDINGS.Put(BYTE_ARRAY, InstanceBindingByteArray);
-            BINDINGS.Put(BOOLEAN, InstanceBindingBoolean);
+            BINDINGS.Put(DatabaseTypeEnum.STRING, InstanceBindingString);
+            BINDINGS.Put(DatabaseTypeEnum.DECIMAL, InstanceBindingDecimal);
+            BINDINGS.Put(DatabaseTypeEnum.DOUBLE, InstanceBindingDouble);
+            BINDINGS.Put(DatabaseTypeEnum.FLOAT, InstanceBindingFloat);
+            BINDINGS.Put(DatabaseTypeEnum.INT64, InstanceBindingInt64);
+            BINDINGS.Put(DatabaseTypeEnum.INT32, InstanceBindingInt32);
+            BINDINGS.Put(DatabaseTypeEnum.INT16, InstanceBindingInt16);
+            BINDINGS.Put(DatabaseTypeEnum.BYTE, InstanceBindingByte);
+            BINDINGS.Put(DatabaseTypeEnum.BYTE_ARRAY, InstanceBindingByteArray);
+            BINDINGS.Put(DatabaseTypeEnum.BOOLEAN, InstanceBindingBoolean);
 
             //bindings.Put(
             //    SqlDate,
@@ -184,29 +186,6 @@ namespace com.espertech.esper.common.@internal.util
             //            }));
         }
 
-        private DatabaseTypeEnum(Type type)
-        {
-            DataType = type;
-            BoxedType = type.GetBoxedType();
-        }
-
-        /// <summary>Returns the type for the name.</summary>
-        public Type DataType { get; }
-
-        /// <summary>
-        ///     Gets the boxed data type.
-        /// </summary>
-        /// <value>The type of the boxed.</value>
-        public Type BoxedType { get; }
-
-        /// <summary>
-        ///     Returns the binding for this enumeration value for
-        ///     reading the database result set and returning the right type.
-        /// </summary>
-        /// <value>The binding.</value>
-        /// <returns>mapping of output column type to built-in</returns>
-        public DatabaseTypeBinding Binding => BINDINGS.Get(this);
-
         /// <summary>
         ///     Given a type name, matches for simple and fully-qualified type name (case-insensitive)
         ///     as well as case-insensitive type name.
@@ -218,28 +197,106 @@ namespace com.espertech.esper.common.@internal.util
             var boxedType = TypeHelper.GetBoxedTypeName(type).ToLower();
             var sourceName1 = boxedType.ToLower();
 
-            foreach (var val in VALUES) {
-                var targetName1 = val.BoxedType.FullName.ToLower();
-                if (targetName1 == sourceName1) {
+            foreach (var val in VALUES)
+            {
+                var targetName1 = val.GetBoxedType().FullName.ToLower();
+                if (targetName1 == sourceName1)
+                {
                     return val;
                 }
 
-                var targetName2 = val.DataType.FullName.ToLower();
-                if (targetName2 == sourceName1) {
+                var targetName2 = val.GetDataType().FullName.ToLower();
+                if (targetName2 == sourceName1)
+                {
                     return val;
                 }
 
-                if (targetName2 == boxedType) {
+                if (targetName2 == boxedType)
+                {
                     return val;
                 }
 
-                var targetName3 = val.DataType.Name;
-                if (targetName3 == boxedType) {
+                var targetName3 = val.GetDataType().Name;
+                if (targetName3 == boxedType)
+                {
                     return val;
                 }
             }
 
-            return null;
+            throw new ArgumentException("unable to find a value for type", nameof(type));
+        }
+
+        public static Type GetDataType(this DatabaseTypeEnum value)
+        {
+            switch (value)
+            {
+                case DatabaseTypeEnum.BOOLEAN:
+                    return typeof(bool);
+                case DatabaseTypeEnum.BYTE:
+                    return typeof(byte);
+                case DatabaseTypeEnum.BYTE_ARRAY:
+                    return typeof(byte[]);
+                case DatabaseTypeEnum.DECIMAL:
+                    return typeof(decimal);
+                case DatabaseTypeEnum.DOUBLE:
+                    return typeof(double);
+                case DatabaseTypeEnum.FLOAT:
+                    return typeof(float);
+                case DatabaseTypeEnum.INT32:
+                    return typeof(int);
+                case DatabaseTypeEnum.INT64:
+                    return typeof(long);
+                case DatabaseTypeEnum.INT16:
+                    return typeof(short);
+                case DatabaseTypeEnum.STRING:
+                    return typeof(string);
+                case DatabaseTypeEnum.TIMESTAMP:
+                    return typeof(DateTime);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        public static Type GetBoxedType(this DatabaseTypeEnum value)
+        {
+            switch (value)
+            {
+                case DatabaseTypeEnum.BOOLEAN:
+                    return typeof(bool?);
+                case DatabaseTypeEnum.BYTE:
+                    return typeof(byte?);
+                case DatabaseTypeEnum.BYTE_ARRAY:
+                    return typeof(byte[]);
+                case DatabaseTypeEnum.DECIMAL:
+                    return typeof(decimal?);
+                case DatabaseTypeEnum.DOUBLE:
+                    return typeof(double?);
+                case DatabaseTypeEnum.FLOAT:
+                    return typeof(float?);
+                case DatabaseTypeEnum.INT32:
+                    return typeof(int?);
+                case DatabaseTypeEnum.INT64:
+                    return typeof(long?);
+                case DatabaseTypeEnum.INT16:
+                    return typeof(short?);
+                case DatabaseTypeEnum.STRING:
+                    return typeof(string);
+                case DatabaseTypeEnum.TIMESTAMP:
+                    return typeof(DateTime?);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        /// <summary>
+        ///     Returns the binding for this enumeration value for
+        ///     reading the database result set and returning the right type.
+        /// </summary>
+        /// <returns>The binding.</returns>
+        /// <returns>mapping of output column type to built-in</returns>
+        public static DatabaseTypeBinding GetBinding(this DatabaseTypeEnum value)
+        {
+            return BINDINGS.Get(value);
         }
     }
 } // End of namespace

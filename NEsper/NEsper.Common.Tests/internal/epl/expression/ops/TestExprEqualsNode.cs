@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             equalsNodes[0].AddChildNode(new SupportExprNode(true));
             equalsNodes[0].AddChildNode(new SupportExprNode(false));
-            Assert.AreEqual("True=False", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(equalsNodes[0]));
+            Assert.AreEqual("true=false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(equalsNodes[0]));
         }
 
         [Test]

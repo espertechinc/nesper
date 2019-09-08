@@ -120,9 +120,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             minMaxNode.AddChildNode(new SupportExprNode(9d));
             minMaxNode.AddChildNode(new SupportExprNode(6));
-            Assert.AreEqual("max(9.0,6)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
+            Assert.AreEqual("max(9.0d,6)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
             minMaxNode.AddChildNode(new SupportExprNode(0.5d));
-            Assert.AreEqual("max(9.0,6,0.5)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
+            Assert.AreEqual("max(9.0d,6,0.5d)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
         }
 
         [Test]

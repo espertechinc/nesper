@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 method.Block.InstanceMethod(dereferenceRemove, Ref("theEvent"), eps, ctx);
             }
             else {
-                method.Block.IfCondition(ExprDotMethod(joinRefs, "remove", Ref("theEvent")))
+                method.Block.IfCondition(ExprDotMethod(joinRefs, "Remove", Ref("theEvent")))
                     .InstanceMethod(dereferenceRemove, Ref("theEvent"), eps, ctx);
             }
         }

@@ -30,23 +30,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double width,
             double height,
             object value,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
             var root = tree.Root;
             var replacement = RemoveFromNode(x, y, width, height, value, root, tree);
             tree.Root = replacement;
         }
 
-        private static MXCIFQuadTreeNode<object> RemoveFromNode(
+        private static MXCIFQuadTreeNode RemoveFromNode(
             double x,
             double y,
             double width,
             double height,
             object value,
-            MXCIFQuadTreeNode<object> node,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTreeNode node,
+            MXCIFQuadTree tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 var removed = RemoveFromPoints(x, y, width, height, value, leaf.Data);
                 if (removed) {
                     leaf.DecCount();
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return leaf;
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             var quadrant = node.Bb.GetQuadrantApplies(x, y, width, height);
             switch (quadrant) {
                 case QuadrantAppliesEnum.NW:
@@ -89,17 +89,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                     break;
             }
 
-            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf<object>) ||
-                !(branch.Ne is MXCIFQuadTreeNodeLeaf<object>) ||
-                !(branch.Sw is MXCIFQuadTreeNodeLeaf<object>) ||
-                !(branch.Se is MXCIFQuadTreeNodeLeaf<object>)) {
+            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf) ||
+                !(branch.Ne is MXCIFQuadTreeNodeLeaf) ||
+                !(branch.Sw is MXCIFQuadTreeNodeLeaf) ||
+                !(branch.Se is MXCIFQuadTreeNodeLeaf)) {
                 return branch;
             }
 
-            var nwLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Nw;
-            var neLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Ne;
-            var swLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Sw;
-            var seLeaf = (MXCIFQuadTreeNodeLeaf<object>) branch.Se;
+            var nwLeaf = (MXCIFQuadTreeNodeLeaf) branch.Nw;
+            var neLeaf = (MXCIFQuadTreeNodeLeaf) branch.Ne;
+            var swLeaf = (MXCIFQuadTreeNodeLeaf) branch.Sw;
+            var seLeaf = (MXCIFQuadTreeNodeLeaf) branch.Se;
             var total = branch.Count + nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
             if (total >= tree.LeafCapacity) {
                 return branch;
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             count += MergeChildNodes(collection, neLeaf.Data);
             count += MergeChildNodes(collection, swLeaf.Data);
             count += MergeChildNodes(collection, seLeaf.Data);
-            return new MXCIFQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
+            return new MXCIFQuadTreeNodeLeaf(branch.Bb, branch.Level, collection, count);
         }
 
         private static bool RemoveFromPoints(

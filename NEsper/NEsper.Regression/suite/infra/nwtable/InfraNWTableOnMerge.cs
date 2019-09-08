@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 path);
             EPAssertionUtil.AssertProps(
                 result.Array[0],
-                "cf0,ca0,ca1".SplitCsv(),
+                new [] { "cf0","ca0","ca1" },
                 new object[] {1, 1, 2});
 
             env.UndeployAll();
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 var path = new RegressionPath();
 
                 var stmtTextCreateOne = namedWindow
@@ -757,7 +757,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p0,p1,".SplitCsv();
+                var fields = new [] { "p0","p1","" };
                 var path = new RegressionPath();
                 var createEPL = namedWindow
                     ? "@Name('Window') create window InsertOnlyInfra#unique(p0) as (p0 string, p1 int)"
@@ -817,7 +817,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString,IntPrimitive,IntBoxed".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive","IntBoxed" };
                 var path = new RegressionPath();
                 var createEPL = namedWindow
                     ? "@Name('Window') create window MyMergeInfra#unique(TheString) as SupportBean"
@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var rep = EventRepresentationChoiceExtensions
                     .GetEngineDefault(env.Configuration);
-                var fields = "col1,col2".SplitCsv();
+                var fields = new [] { "col1","col2" };
 
                 var epl = "create schema MyEvent as (in1 string, in2 int);\n" +
                           "create schema MySchema as (col1 string, col2 int);\n";
@@ -968,7 +968,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "col1,col2".SplitCsv();
+                var fields = new [] { "col1","col2" };
                 var rep = EventRepresentationChoiceExtensions
                     .GetEngineDefault(env.Configuration);
 
@@ -1215,7 +1215,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           " when matched then " +
                           "  delete";
                 env.CompileDeploy(epl, path).AddListener("Merge");
-                var fields = "c1,c2.in1,c2.in2".SplitCsv();
+                var fields = new [] { "c1","c2.in1","c2.in2" };
 
                 SendMyInnerSchemaEvent(env, eventRepresentationEnum, "X1", "Y1", 10);
                 EPAssertionUtil.AssertProps(
@@ -1290,7 +1290,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c1,c2".SplitCsv();
+                var fields = new [] { "c1","c2" };
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow
@@ -1366,15 +1366,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "id,Key0".SplitCsv(),
+                    new [] { "id","Key0" },
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
-                    "id,Key0".SplitCsv(),
+                    new [] { "id","Key0" },
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s3").AssertOneGetNewAndReset(),
-                    "id,Key0".SplitCsv(),
+                    new [] { "id","Key0" },
                     new object[] {"ID1", "K1"});
                 Assert.IsFalse(env.Listener("s4").IsInvoked);
 
@@ -1383,11 +1383,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s4").AssertOneGetNewAndReset(),
-                    "id,Key0".SplitCsv(),
+                    new [] { "id","Key0" },
                     new object[] {"ID1", "K2"});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("Create"),
-                    "v1,v2".SplitCsv(),
+                    new [] { "v1","v2" },
                     new[] {new object[] {"K1", 1}, new object[] {"K2", 2}});
 
                 env.UndeployAll();
@@ -1517,7 +1517,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("W2", 1));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("Create"),
-                    "string,IntPrimitive".SplitCsv(),
+                    new [] { "string","IntPrimitive" },
                     new[] {new object[] {"Y", 50}});
 
                 if (namedWindow) {
@@ -1525,7 +1525,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.SendEventBean(new SupportBean("W2", 2));
                     EPAssertionUtil.AssertPropsPerRow(
                         env.GetEnumerator("Create"),
-                        "string,IntPrimitive".SplitCsv(),
+                        new [] { "string","IntPrimitive" },
                         new[] {new object[] {"Y", 51}});
                 }
 
@@ -1554,7 +1554,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                        "update set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive;\n";
 
                 env.CompileDeploy(epl).AddListener("Merge");
-                var fields = "IntPrimitive,IntBoxed,DoublePrimitive".SplitCsv();
+                var fields = new [] { "IntPrimitive","IntBoxed","DoublePrimitive" };
 
                 env.SendEventBean(MakeSupportBean("E1", 1, 2));
                 env.SendEventBean(new SupportBean_S0(5, "E1"));
@@ -1620,7 +1620,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 MakeSendNameValueEvent(env, eventRepresentationEnum, "MyEvent", "name1", 10d);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "event_name,status".SplitCsv(),
+                    new [] { "event_name","status" },
                     new object[] {"name1", namedWindow ? 0d : 10d});
 
                 // for named windows we can send same-value keys now
@@ -1628,13 +1628,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     MakeSendNameValueEvent(env, eventRepresentationEnum, "MyEvent", "name1", 11d);
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
-                        "event_name,status".SplitCsv(),
+                        new [] { "event_name","status" },
                         new object[] {"name1", 10d});
 
                     MakeSendNameValueEvent(env, eventRepresentationEnum, "MyEvent", "name1", 12d);
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
-                        "event_name,status".SplitCsv(),
+                        new [] { "event_name","status" },
                         new object[] {"name1", 11d});
                 }
 

@@ -94,10 +94,10 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestAddArray()
         {
-            TryAddStringArr("b,a".SplitCsv(), CollectionUtil.AddArrays(new[] { "b" }, new[] { "a" }));
-            TryAddStringArr("a".SplitCsv(), CollectionUtil.AddArrays(null, new[] { "a" }));
-            TryAddStringArr("b".SplitCsv(), CollectionUtil.AddArrays(new[] { "b" }, null));
-            TryAddStringArr("a,b,c,d".SplitCsv(), CollectionUtil.AddArrays(new[] { "a", "b" }, new[] { "c", "d" }));
+            TryAddStringArr(new [] { "b","a" }, CollectionUtil.AddArrays(new[] { "b" }, new[] { "a" }));
+            TryAddStringArr(new [] { "a" }, CollectionUtil.AddArrays(null, new[] { "a" }));
+            TryAddStringArr(new [] { "b" }, CollectionUtil.AddArrays(new[] { "b" }, null));
+            TryAddStringArr(new [] { "a","b","c","d" }, CollectionUtil.AddArrays(new[] { "a", "b" }, new[] { "c", "d" }));
             Assert.AreEqual(null, CollectionUtil.AddArrays(null, null));
 
             var result = CollectionUtil.AddArrays(new[] { 1, 2 }, new[] { 3, 4 });

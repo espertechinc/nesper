@@ -121,13 +121,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
-                               "SupportBean as s0 left outer join " +
+                               "SupportBean as S0 left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -136,13 +136,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 right outer join " +
-                               "SupportBean as s0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 right outer join " +
+                               "SupportBean as S0 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -151,13 +151,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 full outer join " +
-                               "SupportBean as s0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 full outer join " +
+                               "SupportBean as S0 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -166,13 +166,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
-                               "SupportBean as s0 full outer join " +
+                               "SupportBean as S0 full outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -181,13 +181,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
-                               "SupportBean as s0 right outer join " +
+                               "SupportBean as S0 right outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 on IntPrimitive = myBigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -196,13 +196,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, " +
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 left outer join " +
-                               "SupportBean as s0 on IntPrimitive = myBigint";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 left outer join " +
+                               "SupportBean as S0 on IntPrimitive = myBigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -211,15 +211,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "MyInt,myint".SplitCsv();
-                var stmtText = "@Name('s0') @IterableUnbound select s0.IntPrimitive as MyInt, " +
+                var fields = new [] { "MyInt","myint" };
+                var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
-                               "SupportBean as s0 " +
+                               "SupportBean as S0 " +
                                " left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 " +
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 " +
                                "on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -262,14 +262,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "MyInt,myint".SplitCsv();
-                var stmtText = "@Name('s0') @IterableUnbound select s0.IntPrimitive as MyInt, " +
+                var fields = new [] { "MyInt","myint" };
+                var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 right outer join " +
-                               "SupportBean as s0 on TheString = myvarchar";
+                               " from mytesttable where ${S0.IntPrimitive} = mytesttable.myBigint'] as S1 right outer join " +
+                               "SupportBean as S0 on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
@@ -311,11 +311,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "MyInt,MyVarChar".SplitCsv();
-                var stmtText = "@Name('s0') select s0.IntPrimitive as MyInt, MyVarChar from " +
-                               "SupportBean#keepall as s0 " +
+                var fields = new [] { "MyInt","MyVarChar" };
+                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, MyVarChar from " +
+                               "SupportBean#keepall as S0 " +
                                " right outer join " +
-                               " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as s1 " +
+                               " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as S1 " +
                                "on TheString = MyVarChar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

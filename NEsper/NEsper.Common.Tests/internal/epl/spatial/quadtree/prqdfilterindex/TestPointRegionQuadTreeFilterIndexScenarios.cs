@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             Assert.That(
                 () => Set(tree, 10, 90, "P1"),
                 Throws.Exception.With.Message.EqualTo(
-                    "Point (10.0,90.0) not in {minX=1000.0, minY=100000.0, maxX=10000.0, maxY=1000000.0}"));
+                    "Point (10.0d,90.0d) not in {MinX=1000.0d, MinY=100000.0d, MaxX=10000.0d, MaxY=1000000.0d}"));
 
             Assert.That(
                 () => Set(tree, 10999999, 90, "P2"),

@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportConcatWManagedAggregationFunctionForge));
 
             var eventsAsList = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                "eventsAsList".SplitCsv(),
+                new [] { "eventsAsList" },
                 typeof(SupportAggMFEventsAsListForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(eventsAsList);
         }

@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             }
 
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, "remove", Ref("value")))).BlockReturnNoValue();
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, "Remove", Ref("value")))).BlockReturnNoValue();
             }
 
             method.Block.Apply(decrement);
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             CodegenClassScope classScope)
         {
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, "remove", Ref("value")))).BlockReturnNoValue();
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, "Remove", Ref("value")))).BlockReturnNoValue();
             }
 
             method.Block.Decrement(cnt);

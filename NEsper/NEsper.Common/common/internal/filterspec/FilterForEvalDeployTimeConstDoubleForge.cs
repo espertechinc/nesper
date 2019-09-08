@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .MethodReturn(
                     ExprDotMethod(
                         Cast(typeof(object), _deployTimeConst.CodegenGetDeployTimeConstValue(classScope)),
-                        "DoubleValue"));
+                        "AsDouble"));
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
 

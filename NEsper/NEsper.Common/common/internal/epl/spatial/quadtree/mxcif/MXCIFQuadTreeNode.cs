@@ -10,12 +10,12 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 {
-    public abstract class MXCIFQuadTreeNode<TL>
+    public abstract class MXCIFQuadTreeNode
     {
         protected MXCIFQuadTreeNode(
             BoundingBox bb,
             int level,
-            TL data,
+            object data,
             int count)
         {
             Bb = bb;
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif
 
         public BoundingBox Bb { get; }
         public int Level { get; }
-        public TL Data;
+        public object Data;
         public int Count;
 
         public void IncCount(int numAdded)

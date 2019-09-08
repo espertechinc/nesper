@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             EPAssertionUtil.AssertProps(
                 env.Listener("select").AssertOneGetNewAndReset(),
-                "col5,col6".SplitCsv(),
+                new [] { "col5","col6" },
                 new object[] {"abc", 1});
 
             // assert type information
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("s0").EventType.UnderlyingType));
 
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                object[] innerData = {"abc,def".SplitCsv(), new[] {1, 2}};
+                object[] innerData = {new [] { "abc","def" }, new[] {1, 2}};
                 object[] outerData = {
                     innerData,
                     new object[] {innerData, innerData}
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> innerData = new Dictionary<string, object>();
-                innerData.Put("inn1", "abc,def".SplitCsv());
+                innerData.Put("inn1", new [] { "abc","def" });
                 innerData.Put("inn2", new[] {1, 2});
                 IDictionary<string, object> outerData = new Dictionary<string, object>();
                 outerData.Put("col1", innerData);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "col1.inn1[1],col2[1].inn2[1]".SplitCsv(),
+                new [] { "col1.inn1[1]","col2[1].inn2[1]" },
                 new object[] {"def", 2});
 
             env.UndeployAll();
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 catch (Exception t) {
                     Assert.AreEqual(
-                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consIder renaming either of these types",
+                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         t.Message);
                 }
             }
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("a", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new object[] {"a", 20});
 
                 env.UndeployAll();
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(CollectionUtil.BuildMap("P0", "a", "P1", 20), "MySchema");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,p1".SplitCsv(),
+                    new [] { "p0","p1" },
                     new object[] {"a", 20});
 
                 env.UndeployAll();
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeployWBusPublicType(epl, path);
 
                 var type = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s1"), "MyEventTwo");
-                EPAssertionUtil.AssertEqualsExactOrder("p0,p1,p2".SplitCsv(), type.PropertyNames);
+                EPAssertionUtil.AssertEqualsExactOrder(new [] { "p0","p1","p2" }, type.PropertyNames);
 
                 epl = "insert into MyEventTwo select 'abc' as p2, s.* from MyEventOne as s;\n" +
                       "@Name('s0') select p0, p1, p2 from MyEventTwo;\n";
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventObjectArray(new object[] {"E1", 10d}, "MyEventOne");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p0,p1,p2".SplitCsv(),
+                    new [] { "p0","p1","p2" },
                     new object[] {"E1", 10d, "abc"});
 
                 env.UndeployAll();
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id".SplitCsv(),
+                    new [] { "bean.TheString","beanarray[0].Id" },
                     new object[] {"E1", 2});
                 env.UndeployModuleContaining("s0");
 
@@ -456,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id".SplitCsv(),
+                    new [] { "bean.TheString","beanarray[0].Id" },
                     new object[] {"E1", 2});
                 env.UndeployModuleContaining("windowInsertOne");
 
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(0, "S0_3"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id,beanarray[1].Id".SplitCsv(),
+                    new [] { "bean.TheString","beanarray[0].Id","beanarray[1].Id" },
                     new object[] {"E2", 10, 20});
                 env.UndeployModuleContaining("windowInsertOne");
 
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id".SplitCsv(),
+                    new [] { "bean.TheString","beanarray[0].Id" },
                     new object[] {"E1", 2});
 
                 env.UndeployAll();
@@ -541,7 +541,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "prop1,prop2".SplitCsv(),
+                    new [] { "prop1","prop2" },
                     new object[] {"v1", 2});
                 env.UndeployModuleContaining("s0");
 
@@ -705,7 +705,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     eventRepresentationEnum.GetAnnotationText() + " create schema MyEventTypeT3 as () inherits",
-                    "Incorrect syntax near end-of-input expecting an Identifier but found end-of-input at line 1 column ");
+                    "Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
 
                 env.UndeployAll();
             }
@@ -773,14 +773,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "id,P00".SplitCsv(),
+                    new [] { "id","P00" },
                     new object[] {"E1", 2});
                 Assert.IsFalse(env.Listener("s1").IsInvoked);
 
                 env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "id,P00".SplitCsv(),
+                    new [] { "id","P00" },
                     new object[] {"E2", 3});
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 

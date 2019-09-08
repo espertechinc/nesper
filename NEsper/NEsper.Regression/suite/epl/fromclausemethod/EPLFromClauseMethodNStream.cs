@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy(expression).AddListener("s0");
 
-            var fields = "valh0,valh1,valh2".SplitCsv();
+            var fields = new [] { "valh0","valh1","valh2" };
 
             SendBeanInt(env, "S00", 1, 1, 1);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                           "method:" +
                           typeof(EPLFromClauseMethodNStream).Name +
                           ".computeCorrelation(us, them) as corr\n" +
-                          "where us.sIde != them.sIde and corr.correlation > 0";
+                          "where us.side != them.side and corr.correlation > 0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 var one = new SupportTradeEventWithSide("T1", "B");
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "us,them,crl".SplitCsv(),
+                    new [] { "us","them","crl" },
                     new[] {new object[] {one, two, 1}, new object[] {two, one, 1}});
                 env.UndeployAll();
             }
@@ -158,14 +158,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
-                                 "from SupportBeanInt#lastevent as s0, " +
+                var expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
+                                 "from SupportBeanInt#lastevent as S0, " +
                                  "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                                  "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                                  "order by h0.val, h1.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = new [] { "id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -213,17 +213,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
-                             "from SupportBeanInt#keepall as s0, " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
+                             "from SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              "where h0.index = h1.index and h0.index = P02";
                 TryAssertionOne(env, expression);
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1   from " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1   from " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
-                             "SupportBeanInt#keepall as s0 " +
+                             "SupportBeanInt#keepall as S0 " +
                              "where h0.index = h1.index and h0.index = P02";
                 TryAssertionOne(env, expression);
             }
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = new [] { "id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 20, 20, 3);
@@ -275,16 +275,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string expression;
                 var milestone = new AtomicLong();
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
-                             "from SupportBeanInt#keepall as s0, " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
+                             "from SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1 " +
                              "order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
                              "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1, " +
-                             "SupportBeanInt#keepall as s0, " +
+                             "SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0 " +
                              "order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = new [] { "id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -349,19 +349,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
-                             "from SupportBeanInt#lastevent as s0, " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                             "from SupportBeanInt#lastevent as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
                              "order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
                              "method:SupportJoinMethods.FetchVal('H2', P02) as h2, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
-                             "SupportBeanInt#lastevent as s0 " +
+                             "SupportBeanInt#lastevent as S0 " +
                              "order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
             }
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = new [] { "id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1, 1);
@@ -401,18 +401,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
-                             "from SupportBeanInt#keepall as s0, " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                             "from SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal(h0.val||'H2', P02) as h2 " +
                              " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 TryAssertionFour(env, expression);
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
                              "method:SupportJoinMethods.FetchVal(h0.val||'H2', P02) as h2, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
-                             "SupportBeanInt#keepall as s0, " +
+                             "SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 TryAssertionFour(env, expression);
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = new [] { "id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 2, 2, 2, 1);
@@ -457,15 +457,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@Name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
-                             "from SupportBeanInt#keepall as s0, " +
+                expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                             "from SupportBeanInt#keepall as S0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal(h0.val||'H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal(h1.val||'H2', P02) as h2 " +
                              " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = new [] { "id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E2", 4, 4, 4, 3);
@@ -494,15 +494,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select s0.Id as Ids0, s1.Id as Ids1, h0.val as valh0, h1.val as valh1 " +
-                                 "from SupportBeanInt(Id like 'S0%')#keepall as s0, " +
-                                 "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
-                                 "method:SupportJoinMethods.FetchVal(s0.Id||'H1', s0.P00) as h0, " +
-                                 "method:SupportJoinMethods.FetchVal(s1.Id||'H2', s1.P00) as h1 " +
-                                 "order by s0.Id asc";
+                var expression = "@Name('s0') select S0.Id as ids0, S1.Id as ids1, h0.val as valh0, h1.val as valh1 " +
+                                 "from SupportBeanInt(Id like 'S0%')#keepall as S0, " +
+                                 "SupportBeanInt(Id like 'S1%')#lastevent as S1, " +
+                                 "method:SupportJoinMethods.FetchVal(S0.Id||'H1', S0.P00) as h0, " +
+                                 "method:SupportJoinMethods.FetchVal(S1.Id||'H2', S1.P00) as h1 " +
+                                 "order by S0.Id asc";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "ids0,Ids1,valh0,valh1".SplitCsv();
+                var fields = new [] { "ids0","ids1","valh0","valh1" };
                 SendBeanInt(env, "S00", 1);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -539,15 +539,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select s0.Id as Ids0, s1.Id as Ids1, s2.Id as Ids2, h0.val as valh0 " +
-                                 "from SupportBeanInt(Id like 'S0%')#keepall as s0, " +
-                                 "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
-                                 "SupportBeanInt(Id like 'S2%')#lastevent as s2, " +
-                                 "method:SupportJoinMethods.FetchVal(s1.Id||s2.Id||'H1', s0.P00) as h0 " +
-                                 "order by s0.Id, s1.Id, s2.Id, h0.val";
+                var expression = "@Name('s0') select S0.Id as ids0, S1.Id as ids1, S2.Id as ids2, h0.val as valh0 " +
+                                 "from SupportBeanInt(Id like 'S0%')#keepall as S0, " +
+                                 "SupportBeanInt(Id like 'S1%')#lastevent as S1, " +
+                                 "SupportBeanInt(Id like 'S2%')#lastevent as S2, " +
+                                 "method:SupportJoinMethods.FetchVal(S1.Id||S2.Id||'H1', S0.P00) as h0 " +
+                                 "order by S0.Id, S1.Id, S2.Id, h0.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "ids0,Ids1,Ids2,valh0".SplitCsv();
+                var fields = new [] { "ids0","ids1","ids2","valh0" };
                 SendBeanInt(env, "S00", 2);
                 SendBeanInt(env, "S10", 1);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
@@ -614,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "valh0,valh1,valh2".SplitCsv();
+                var fields = new [] { "valh0","valh1","valh2" };
 
                 SendBeanInt(env, "S00", 1, 1, 1);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -675,7 +675,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "valh0,valh1,valh2".SplitCsv();
+                var fields = new [] { "valh0","valh1","valh2" };
 
                 SendBeanInt(env, "S00", 1, 1, 1);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(

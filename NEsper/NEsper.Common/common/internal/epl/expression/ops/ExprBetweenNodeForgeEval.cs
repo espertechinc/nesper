@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 codegenClassScope);
             var block = methodNode.Block;
 
-            var valueType = value.EvaluationType;
+            var valueType = value.EvaluationType.GetBoxedType();
             block.DeclareVar(
                 valueType,
                 "value",
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNullReturnFalse("value");
             }
 
-            var lowerType = lower.EvaluationType;
+            var lowerType = lower.EvaluationType.GetBoxedType();
             block.DeclareVar(
                 lowerType,
                 "lower",
@@ -91,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNull("lower").BlockReturn(Constant(isNot));
             }
 
-            var higherType = higher.EvaluationType;
+            var higherType = higher.EvaluationType.GetBoxedType();
             block.DeclareVar(
                 higherType,
                 "higher",
@@ -103,11 +104,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<bool>(
                 "result",
                 forge.Computer.CodegenNoNullCheck(
-                    ExprDotName(Ref("value"), "Value"),
+                    ExprDotMethod(Ref("value"), "GetValueOrDefault"),
                     value.EvaluationType,
-                    ExprDotName(Ref("lower"), "Value"),
+                    ExprDotMethod(Ref("lower"), "GetValueOrDefault"),
                     lower.EvaluationType,
-                    ExprDotName(Ref("higher"), "Value"),
+                    ExprDotMethod(Ref("higher"), "GetValueOrDefault"),
                     higher.EvaluationType,
                     methodNode,
                     codegenClassScope));

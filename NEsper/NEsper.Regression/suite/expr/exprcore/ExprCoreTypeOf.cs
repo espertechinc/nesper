@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                       eventRepresentationEnum.GetAnnotationText() +
                       " create schema MySchema as (inside InnerSchema, insidearr InnerSchema[]);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
-                      " @Name('s0') select typeof(s0.inside) as t0, typeof(s0.insidearr) as t1 from MySchema as s0;\n";
+                      " @Name('s0') select typeof(S0.inside) as t0, typeof(S0.insidearr) as t1 from MySchema as S0;\n";
             string[] fields = {"t0", "t1"};
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
             var deploymentId = env.DeploymentId("s0");
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                              " create schema MyDynoPropSchema as (key string);\n";
                 env.CompileDeployWBusPublicType(schema, path);
 
-                var epl = "@Name('s0') select typeof(prop?), typeof(key) from MyDynoPropSchema as s0";
+                var epl = "@Name('s0') select typeof(prop?), typeof(key) from MyDynoPropSchema as S0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 TryAssertionDynamicProps(env);

@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Context condition that starts/initiates immediately.</summary>
+    [Serializable]
     public class ContextDescriptorConditionNever : ContextDescriptorCondition
     {
         /// <summary>Ctor.</summary>

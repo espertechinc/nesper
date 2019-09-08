@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
-            var fields = "a0_Id,a1_Id,b_Id".SplitCsv();
+            var fields = new [] { "a0_Id","a1_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RegressionEnvironment env,
             string pattern)
         {
-            var fields = "a0_Id,a1_Id,a2_Id,b_Id".SplitCsv();
+            var fields = new [] { "a0_Id","a1_Id","a2_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunDocSampleExactlyN(RegressionEnvironment env)
         {
-            var fields = "a0_Id,a1_Id".SplitCsv();
+            var fields = new [] { "a0_Id","a1_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var b8 = SendEvent("A9", 8, env);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "a".SplitCsv(),
+                new [] { "a" },
                 new object[] {new object[] {b6, b7, b8}});
 
             env.UndeployAll();

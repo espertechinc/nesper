@@ -741,13 +741,19 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .AddParam(typeof(object), "value")
                 .Block
                 .IfRefNullReturnNull("value")
-                .IfConditionReturnConst(Not(ExprDotMethodChain(Ref("value")).Add("GetType").Get("IsArray")), null)
+
+                .IfNotInstanceOf("value", typeof(Array))
+                .BlockReturn(ConstantNull())
+
+                .DeclareVar<Array>("array", Cast<Array>(Ref("value")))
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "GetLength", Ref("value")), LE, Constant(index)),
+                    Relational(ExprDotName(Ref("array"), "Length"), LE, Constant(index)),
                     null)
+
                 .DeclareVar<object>(
                     "arrayItem",
-                    StaticMethod(typeof(Array), "Get", Ref("value"), Constant(index)))
+                    ExprDotMethod(Ref("array"), "GetValue", Constant(index)))
+
                 .IfRefNullReturnNull("arrayItem")
                 .MethodReturn(
                     nestedGetter.UnderlyingGetCodegen(

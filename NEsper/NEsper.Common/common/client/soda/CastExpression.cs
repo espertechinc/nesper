@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the name of the type to cast to.
         /// </summary>
         /// <returns>type name</returns>
-        public string TypeName { get; private set; }
+        public string TypeName { get; set; }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -73,9 +73,10 @@ namespace com.espertech.esper.common.client.soda
         ///     Sets the name of the type to cast to.
         /// </summary>
         /// <param name="typeName">is the name of type to cast to</param>
-        public void SetTypeName(string typeName)
+        public CastExpression SetTypeName(string typeName)
         {
             TypeName = typeName;
+            return this;
         }
     }
 } // end of namespace

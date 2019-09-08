@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a.TheString,b.TheString".SplitCsv();
+                var fields = new [] { "a.TheString","b.TheString" };
                 var epl =
                     "@Name('s0') select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
                     "where a.IntPrimitive = b.IntPrimitive";

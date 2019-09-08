@@ -349,8 +349,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     METHOD_APPLYAGGJOINRESULT,
                     REF_AGGREGATIONSVC,
                     REF_AGENTINSTANCECONTEXT,
-                    Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "First")),
-                    Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "Second")));
+                    ExprDotName(Ref("pair"), "First"),
+                    ExprDotName(Ref("pair"), "Second"));
                 forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
                     forEach.ExprDotMethod(
@@ -423,8 +423,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     METHOD_APPLYAGGJOINRESULT,
                     REF_AGGREGATIONSVC,
                     REF_AGENTINSTANCECONTEXT,
-                    Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "First")),
-                    Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "Second")));
+                    ExprDotName(Ref("pair"), "First"),
+                    ExprDotName(Ref("pair"), "Second"));
                 forEach.AssignRef(
                     "lastNewEvent",
                     LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
@@ -497,8 +497,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     METHOD_APPLYAGGVIEWRESULT,
                     REF_AGGREGATIONSVC,
                     REF_AGENTINSTANCECONTEXT,
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")),
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")),
+                    ExprDotName(Ref("pair"), "First"),
+                    ExprDotName(Ref("pair"), "Second"),
                     Ref("eventsPerStream"));
                 forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
@@ -555,7 +555,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
+                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 if (forge.IsSelectRStream) {
                     forEach.IfCondition(EqualsNull(Ref("lastOldEvent")))
                         .AssignRef(
@@ -569,8 +569,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     METHOD_APPLYAGGVIEWRESULT,
                     REF_AGGREGATIONSVC,
                     REF_AGENTINSTANCECONTEXT,
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")),
-                    Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")),
+                    ExprDotName(Ref("pair"), "First"),
+                    ExprDotName(Ref("pair"), "Second"),
                     Ref("eventsPerStream"));
                 forEach.AssignRef(
                     "lastNewEvent",

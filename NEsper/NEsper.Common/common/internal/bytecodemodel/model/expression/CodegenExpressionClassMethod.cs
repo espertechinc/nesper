@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string methodName,
             CodegenExpression[] @params)
         {
-            this._methodName = methodName;
-            this._params = @params;
+            _methodName = methodName;
+            _params = @params;
         }
 
         public void Render(

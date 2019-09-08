@@ -85,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select total from varagg where key = s0.P00) as value " +
-                        "from SupportBean_S0 as s0",
+                        "@Name('s0') select (select total from varagg where key = S0.P00) as value " +
+                        "from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
 
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create table InfraOne (string string, IntPrimitive int)", path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select IntPrimitive from InfraOne where string = s0.P00) as c0 from SupportBean_S0 as s0",
+                        "@Name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(

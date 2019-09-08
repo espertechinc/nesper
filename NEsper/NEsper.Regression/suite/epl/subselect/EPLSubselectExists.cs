@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 as s0 where exists (select * from SupportBean_S1#length(1000) as s1 where s1.Id=s0.Id)";
+                    "@Name('s0') select Id from SupportBean_S0 as S0 where exists (select * from SupportBean_S1#length(1000) as S1 where S1.Id=S0.Id)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
@@ -156,10 +156,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Id from SupportBean_S0 as s0 where " +
-                               "exists (select * from SupportBean_S1#length(1000) as s1 where s1.Id=s0.Id) " +
+                var stmtText = "@Name('s0') select Id from SupportBean_S0 as S0 where " +
+                               "exists (select * from SupportBean_S1#length(1000) as S1 where S1.Id=S0.Id) " +
                                "and " +
-                               "exists (select * from SupportBean_S2#length(1000) as s2 where s2.Id=s0.Id) ";
+                               "exists (select * from SupportBean_S2#length(1000) as S2 where S2.Id=S0.Id) ";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(2));

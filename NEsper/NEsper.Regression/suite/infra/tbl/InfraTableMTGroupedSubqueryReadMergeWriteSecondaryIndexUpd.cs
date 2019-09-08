@@ -60,9 +60,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // insert and delete merge
             var eplMergeInsDel = "on SupportTopGroupSubGroupEvent as lge merge vartotal as vt " +
-                                 "where vt.topgroup = lge.topgroup and vt.subgroup = lge.subgroup " +
-                                 "when not matched and lge.op = 'insert' then insert select lge.topgroup as topgroup, lge.subgroup as subgroup " +
-                                 "when matched and lge.op = 'delete' then delete";
+                                 "where vt.topgroup = lge.Topgroup and vt.subgroup = lge.Subgroup " +
+                                 "when not matched and lge.Op = 'insert' then insert select lge.Topgroup as topgroup, lge.Subgroup as subgroup " +
+                                 "when matched and lge.Op = 'delete' then delete";
             env.CompileDeploy(eplMergeInsDel, path);
 
             // seed with {0, 0} group

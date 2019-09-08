@@ -13,6 +13,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -60,14 +62,14 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
+                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(Ref("d1"), ltype))
+                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(Ref("d2"), rtype))
                     .MethodReturn(
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("s1"),
-                            "subtract",
-                            CodegenExpressionBuilder.Ref("s2")));
-                return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
+                        Op(
+                            ExprDotName(Ref("s1"), "Value"),
+                            "-",
+                            ExprDotName(Ref("s2"), "Value")));
+                return LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }
     }

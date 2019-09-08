@@ -17,23 +17,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
     public class MXCIFQuadTreeFilterIndexTraverse
     {
         public static void Traverse(
-            MXCIFQuadTree<object> quadtree,
+            MXCIFQuadTree quadtree,
             Consumer<object> consumer)
         {
             Traverse(quadtree.Root, consumer);
         }
 
         public static void Traverse(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             Consumer<object> consumer)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object>) {
-                MXCIFQuadTreeNodeLeaf<object> leaf = (MXCIFQuadTreeNodeLeaf<object>) node;
+            if (node is MXCIFQuadTreeNodeLeaf) {
+                MXCIFQuadTreeNodeLeaf leaf = (MXCIFQuadTreeNodeLeaf) node;
                 TraverseData(leaf.Data, consumer);
                 return;
             }
 
-            MXCIFQuadTreeNodeBranch<object> branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            MXCIFQuadTreeNodeBranch branch = (MXCIFQuadTreeNodeBranch) node;
             TraverseData(branch.Data, consumer);
             Traverse(branch.Nw, consumer);
             Traverse(branch.Ne, consumer);
@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             object data,
             Consumer<object> consumer)
         {
-            if (data is XYWHRectangleWValue<object>) {
-                consumer.Invoke(((XYWHRectangleWValue<object>) data).Value);
+            if (data is XYWHRectangleWValue) {
+                consumer.Invoke(((XYWHRectangleWValue) data).Value);
             }
             else if (data is XYWHRectangleMultiType) {
                 XYWHRectangleMultiType multiType = (XYWHRectangleMultiType) data;

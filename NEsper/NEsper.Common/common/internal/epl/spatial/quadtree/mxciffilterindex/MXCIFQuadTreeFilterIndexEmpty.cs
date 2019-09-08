@@ -12,14 +12,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 {
     public class MXCIFQuadTreeFilterIndexEmpty
     {
-        public static bool IsEmpty(MXCIFQuadTree<object> quadTree)
+        public static bool IsEmpty(MXCIFQuadTree quadTree)
         {
             return IsEmpty(quadTree.Root);
         }
 
-        public static bool IsEmpty(MXCIFQuadTreeNode<object> node)
+        public static bool IsEmpty(MXCIFQuadTreeNode node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 return leaf.Data == null;
             }
 

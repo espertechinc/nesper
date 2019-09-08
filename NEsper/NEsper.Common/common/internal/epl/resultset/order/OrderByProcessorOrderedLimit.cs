@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         REF_AGGREGATIONSVC))
-                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "applyLimit", Ref("sorted")));
+                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "ApplyLimit", Ref("sorted")));
         }
 
         public static void SortRollupCodegen(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_AGENTINSTANCECONTEXT,
                         REF_AGGREGATIONSVC))
-                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
+                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
 
         protected internal static void SortWGroupKeysCodegen(
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         REF_AGGREGATIONSVC))
-                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
+                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
 
         protected internal static void SortTwoKeysCodegen(
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_ORDERFIRSTSORTKEY,
                         REF_ORDERSECONDEVENT,
                         REF_ORDERSECONDSORTKEY))
-                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
+                .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
 
         protected internal static void SortWOrderKeysCodegen(

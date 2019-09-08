@@ -18,9 +18,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationWFilterWInputType : AggregationPortableValidationBase
     {
-        protected bool hasFilter;
-        protected Type inputValueType;
-
         protected AggregationPortableValidationWFilterWInputType()
         {
         }
@@ -31,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type inputValueType)
             : base(distinct)
         {
-            this.hasFilter = hasFilter;
-            this.inputValueType = inputValueType;
+            this.HasFilter = hasFilter;
+            this.InputValueType = inputValueType;
         }
 
         protected abstract void CodegenInlineSetWFilterWInputType(
@@ -54,8 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(Ref("v"), "InputValueType", Constant(inputValueType))
-                .SetProperty(Ref("v"), "HasFilter", Constant(hasFilter));
+                .SetProperty(Ref("v"), "InputValueType", Constant(InputValueType))
+                .SetProperty(Ref("v"), "HasFilter", Constant(HasFilter));
             CodegenInlineSetWFilterWInputType(@ref, method, symbols, classScope);
         }
 
@@ -66,19 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationWFilterWInputType) intoTableAgg;
-            AggregationValidationUtil.ValidateAggregationInputType(inputValueType, that.inputValueType);
-            AggregationValidationUtil.ValidateAggregationFilter(hasFilter, that.hasFilter);
+            AggregationValidationUtil.ValidateAggregationInputType(InputValueType, that.InputValueType);
+            AggregationValidationUtil.ValidateAggregationFilter(HasFilter, that.HasFilter);
             ValidateIntoTableWFilterWInputType(tableExpression, intoTableAgg, intoExpression, factory);
         }
 
-        public void SetHasFilter(bool hasFilter)
-        {
-            this.hasFilter = hasFilter;
-        }
+        public bool HasFilter { get; set; }
 
-        public void SetInputValueType(Type inputValueType)
-        {
-            this.inputValueType = inputValueType;
-        }
+        public Type InputValueType { get; set; }
     }
 } // end of namespace

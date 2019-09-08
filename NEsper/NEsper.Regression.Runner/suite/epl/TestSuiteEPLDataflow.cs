@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             configuration.Common.AddEventType(
                 "MyOAEventType",
-                "p0,p1".SplitCsv(),
+                new [] { "p0","p1" },
                 new object[] {typeof(string), typeof(int)});
 
             var legacy = new ConfigurationCommonEventTypeBean();

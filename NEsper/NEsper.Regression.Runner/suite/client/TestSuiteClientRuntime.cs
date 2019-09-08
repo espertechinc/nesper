@@ -55,20 +55,26 @@ namespace com.espertech.esper.regressionrun.suite.client
         private void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
-                typeof(SupportBean), typeof(SupportBeanComplexProps), typeof(SupportBeanWithEnum),
+                typeof(SupportBean),
+                typeof(SupportBeanComplexProps),
+                typeof(SupportBeanWithEnum),
                 typeof(SupportMarketDataBean),
-                typeof(SupportMarkerInterface), typeof(SupportBean_A), typeof(SupportBean_B), typeof(SupportBean_C),
-                typeof(SupportBean_D), typeof(SupportBean_S0)
+                typeof(SupportMarkerInterface),
+                typeof(SupportBean_A),
+                typeof(SupportBean_B),
+                typeof(SupportBean_C),
+                typeof(SupportBean_D),
+                typeof(SupportBean_S0)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
 
             configuration.Common.AddEventType(
                 ClientRuntimeListener.MAP_TYPENAME,
-                Collections.SingletonDataMap("ident", "string"));
+                Collections.SingletonDataMap("Ident", "string"));
             configuration.Common.AddEventType(
                 ClientRuntimeListener.OA_TYPENAME,
-                new[] {"ident"},
+                new[] { "Ident" },
                 new[] {typeof(string)});
             configuration.Common.AddEventType(
                 ClientRuntimeListener.BEAN_TYPENAME,
@@ -80,7 +86,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
                          "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"ident\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"Ident\" type=\"xs:string\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -90,7 +96,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             Schema avroSchema = SchemaBuilder.Record(
                 EventInfraPropertyUnderlyingSimple.AVRO_TYPENAME,
                 TypeBuilder.Field(
-                    "ident",
+                    "Ident",
                     TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             configuration.Common.AddEventTypeAvro(

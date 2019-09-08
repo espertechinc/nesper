@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 }
             }
 
-            this._expression = expression;
-            this._method = method;
-            this._params = @params;
+            _expression = expression;
+            _method = method;
+            _params = @params;
         }
 
         public void Render(

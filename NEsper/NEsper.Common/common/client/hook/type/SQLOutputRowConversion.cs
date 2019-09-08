@@ -30,6 +30,6 @@ namespace com.espertech.esper.common.client.hook.type
         /// <summary>Returns the PONO object that represents a row of the SQL query result, or null to indicate to skip this row. </summary>
         /// <param name="context">receives row result information</param>
         /// <returns>PONO or null value to skip the row</returns>
-        Object GetOutputRow(SQLOutputRowValueContext context);
+        object GetOutputRow(SQLOutputRowValueContext context);
     }
 }

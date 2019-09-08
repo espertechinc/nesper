@@ -39,7 +39,15 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
         public Variable[] Variables { get; set; }
 
-        public int ScheduleCallbackId => scheduleCallbackId;
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+            set => scheduleCallbackId = value;
+        }
+
+        public bool IsUsingBuiltinProperties {
+            get => isUsingBuiltinProperties;
+            set => isUsingBuiltinProperties = value;
+        }
 
         public OutputCondition InstantiateOutputCondition(
             AgentInstanceContext agentInstanceContext,

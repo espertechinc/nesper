@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10".SplitCsv(),
+                new [] { "c0","c1","c2","c3","c4","c5","c6","c7","c8","c9","c10" },
                 new object[] {
                     1, 4, 30, 5, 150, 1, 9, 3, 2, 22, 2002
                 });
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "utildate,longdate,caldate,zoneddate,localdate".SplitCsv();
+                var fields = new [] { "utildate","longdate","caldate","zoneddate","localdate" };
                 var milestone = new AtomicLong();
 
                 foreach (var field in fields) {

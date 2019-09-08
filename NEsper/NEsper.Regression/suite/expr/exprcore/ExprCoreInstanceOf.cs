@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " instanceof(TheString, System.Single, char, byte) as t3, " +
                           " instanceof(IntPrimitive, System.Int32) as t4, " +
                           " instanceof(IntPrimitive, long) as t5, " +
-                          " instanceof(IntPrimitive, long, long, System.Number) as t6, " +
+                          " instanceof(IntPrimitive, long, long, System.Object) as t6, " +
                           " instanceof(FloatBoxed, long, float) as t7 " +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " instanceof(item?, System.Single, char, byte) as t3, " +
                           " instanceof(item?, System.Int32) as t4, " +
                           " instanceof(item?, long) as t5, " +
-                          " instanceof(item?, long, long, System.Number) as t6, " +
+                          " instanceof(item?, long, long, System.Object) as t6, " +
                           " instanceof(item?, long, float) as t7 " +
                           " from SupportBeanDynRoot";
 

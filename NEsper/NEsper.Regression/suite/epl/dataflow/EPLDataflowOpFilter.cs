@@ -88,13 +88,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid: no filter
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 BeaconSource => instream<SupportBean> {} Filter(instream) -> abc {}",
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc {}",
                     "Failed to obtain operator 'Filter': Required parameter 'filter' providing the filter expression is not provided");
 
                 // invalid: too many output streams
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 BeaconSource => instream<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
                     "Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 3 streams");
 
                 // invalid: too few output streams

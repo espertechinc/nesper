@@ -28,16 +28,16 @@ namespace com.espertech.esper.common.@internal.collection
                 Assert.IsTrue(e.MoveNext());
                 int[] next = e.Current;
                 var expectedArr = expected[count];
-                if (!Equals(expectedArr, next))
-                {
-                    Assert.Fail("Expected " + expectedArr.RenderAny() + " Received " + next.RenderAny() + " at index " + count);
-                }
+
+                Assert.That(
+                    expectedArr, Is.EqualTo(next),
+                    () => "Expected " + expectedArr.RenderAny() + " Received " + next.RenderAny() + " at index " + count);
 
                 count++;
             }
 
             Assert.IsFalse(e.MoveNext());
-            Assert.That(() => e.Current, Throws.InstanceOf<NoSuchElementException>());
+            Assert.That(() => e.Current, Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]

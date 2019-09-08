@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                           "select total, total+1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "total,total+1".SplitCsv();
+                var fields = new [] { "total","total+1" };
                 foreach (var field in fields) {
                     Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(field));
                 }
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     "expression total alias for {sum(xxx)} select total+1 from SupportBean",
-                    "Failed to validate select-clause expression 'total+1': Error valIdating expression alias 'total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression total alias for {sum(xxx)} select total+1 from SupportBean]");
+                    "Failed to validate select-clause expression 'total+1': Error validating expression alias 'total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression total alias for {sum(xxx)} select total+1 from SupportBean]");
                 TryInvalidCompile(
                     env,
                     "expression total xxx for {1} select total+1 from SupportBean",

@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "Id".SplitCsv(),
+                new [] { "Id" },
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployModuleContaining("s0");
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             bool soda)
         {
             var epl = "@Name('s0') select p0 from SupportBean, method:" +
-                      typeof(SupportStaticMethodLib).Name +
+                      typeof(SupportStaticMethodLib).FullName +
                       "." +
                       methodName +
                       "(TheString) @type(MyItemEvent)";
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.SendEventBean(new SupportBean("a,b", 0));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "P0".SplitCsv(),
+                new [] { "P0" },
                 new[] {new object[] {"a"}, new object[] {"b"}});
 
             env.UndeployModuleContaining("s0");
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             var events = new EventBean[2];
             var count = 0;
-            foreach (var id in "id1,Id3".SplitCsv()) {
+            foreach (var id in new [] { "id1","Id3" }) {
                 events[count++] = context.EventBeanService.AdapterForMap(
                     Collections.SingletonDataMap("Id", id),
                     "ItemEvent");
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             RegressionEnvironment env,
             string expression)
         {
-            var fields = "valueOne,valueTwo".SplitCsv();
+            var fields = new [] { "valueOne","valueTwo" };
             env.CompileDeploy("@Name('s0') " + expression).AddListener("s0");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("s0"),
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy("@Name('s0') " + expression, path).AddListener("s0");
 
-            var fields = "value,result".SplitCsv();
+            var fields = new [] { "value","result" };
             EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
             SendSupportBeanEvent(env, 5, 5);
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy("@Name('s0') " + expression, path).AddListener("s0");
 
-            var fields = "valueOne,valueTwo".SplitCsv();
+            var fields = new [] { "valueOne","valueTwo" };
             EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
             SendSupportBeanEvent(env, 5, 5);
@@ -222,9 +222,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             string method)
         {
             var epl = "@Name('s0') select TheString, IntPrimitive, mapstring, mapint from " +
-                      "SupportBean as s1, " +
+                      "SupportBean as S1, " +
                       "method:" +
-                      typeof(SupportStaticMethodLib).Name +
+                      typeof(SupportStaticMethodLib).FullName +
                       "." +
                       method;
             env.CompileDeploy(epl).AddListener("s0");
@@ -260,12 +260,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             string method)
         {
             var epl = "@Name('s0') select TheString, IntPrimitive, mapstring, mapint from " +
-                      "SupportBean#keepall as s1, " +
+                      "SupportBean#keepall as S1, " +
                       "method:" +
-                      typeof(SupportStaticMethodLib).Name +
+                      typeof(SupportStaticMethodLib).FullName +
                       "." +
                       method;
-            var fields = "TheString,IntPrimitive,mapstring,mapint".SplitCsv();
+            var fields = new [] { "TheString","IntPrimitive","mapstring","mapint" };
             env.CompileDeploy(epl).AddListener("s0");
 
             EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -352,17 +352,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 var epl = "@Name('s0') select * from SupportBean as e,\n" +
                           "method:" +
-                          typeof(EPLFromClauseMethod).Name +
-                          ".getWithMethodResultParam('somevalue', e, " +
-                          typeof(EPLFromClauseMethod).Name +
-                          ".getWithMethodResultParamCompute(true)) as s";
+                          typeof(EPLFromClauseMethod).FullName +
+                          ".GetWithMethodResultParam('somevalue', e, " +
+                          typeof(EPLFromClauseMethod).FullName +
+                          ".GetWithMethodResultParamCompute(true)) as s";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "s.P00,s.P01,s.P02".SplitCsv(),
+                    new [] { "s.P00","s.P01","s.P02" },
                     new object[] {"somevalue", "E1", "s0"});
 
                 env.UndeployAll();
@@ -375,14 +375,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 var epl = "@Name('s0') select * from SupportBean as e,\n" +
                           "method:" +
-                          typeof(EPLFromClauseMethod).Name +
-                          ".getStreamNameWContext('somevalue', e) as s";
+                          typeof(EPLFromClauseMethod).FullName +
+                          ".GetStreamNameWContext('somevalue', e) as s";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "s.P00,s.P01,s.P02".SplitCsv(),
+                    new [] { "s.P00","s.P01","s.P02" },
                     new object[] {"somevalue", "E1", "s0"});
 
                 env.UndeployAll();
@@ -431,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     env,
                     path,
                     "select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".FetchResult12(0) @type(ItemEvent)",
                     "The @type annotation is only allowed when the invocation target returns EventBean instances");
 
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string expectedSecond)
             {
                 var epl = "@Name('s0') select col1, col2 from SupportBean, method:" +
-                          typeof(SupportStaticMethodLib).Name +
+                          typeof(SupportStaticMethodLib).FullName +
                           ".overloadedMethodForJoin(" +
                           @params +
                           ")";
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "col1,col2".SplitCsv(),
+                    new [] { "col1","col2" },
                     new object[] {expectedFirst, expectedSecond});
 
                 env.UndeployAll();
@@ -477,9 +477,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
-                var fields = "maxcol1".SplitCsv();
+                var fields = new [] { "maxcol1" };
 
                 // ESPER 556
                 stmtText = "@Name('s0') select max(col1) as maxcol1 from SupportBean#unique(TheString), method:" +
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
@@ -519,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                            ".FetchResult100() " +
                            "on IntPrimitive = col1 and IntBoxed = col2";
 
-                var fields = "IntPrimitive,IntBoxed,col1,col2".SplitCsv();
+                var fields = new [] { "IntPrimitive","IntBoxed","col1","col2" };
                 env.CompileDeploy(stmtText).AddListener("s0");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
@@ -541,47 +541,47 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from method:" +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from method:" +
                            className +
-                           ".FetchResult12(0) as s0 " +
+                           ".FetchResult12(0) as S0 " +
                            "left outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.Value) as s1 on s0.Value = s1.Value";
+                           ".FetchResult23(S0.Value) as S1 on S0.Value = S1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.Value) as s1 " +
+                           ".FetchResult23(S0.Value) as S1 " +
                            "right outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
+                           ".FetchResult12(0) as S0 on S0.Value = S1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.Value) as s1 " +
+                           ".FetchResult23(S0.Value) as S1 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
+                           ".FetchResult12(0) as S0 on S0.Value = S1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 " +
+                           ".FetchResult12(0) as S0 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.Value) as s1 on s0.Value = s1.Value";
+                           ".FetchResult23(S0.Value) as S1 on S0.Value = S1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
             }
         }
@@ -590,17 +590,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "valueOne,valueTwo".SplitCsv();
-                var className = typeof(SupportStaticMethodLib).Name;
+                var fields = new [] { "valueOne","valueTwo" };
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
-                stmtText = "@Name('s0') select s0.Value as valueOne, s1.Value as valueTwo from method:" +
+                stmtText = "@Name('s0') select S0.Value as valueOne, S1.Value as valueTwo from method:" +
                            className +
-                           ".FetchResult12(0) as s0 " +
+                           ".FetchResult12(0) as S0 " +
                            "left outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 on s0.Value = s1.Value";
+                           ".FetchResult23(0) as S1 on S0.Value = S1.Value";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
@@ -608,14 +608,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new[] {new object[] {1, null}, new object[] {2, 2}});
                 env.UndeployAll();
 
-                stmtText = "@Name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "@Name('s0') select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 " +
+                           ".FetchResult23(0) as S1 " +
                            "right outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
+                           ".FetchResult12(0) as S0 on S0.Value = S1.Value";
                 env.CompileDeploy(stmtText);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
@@ -623,14 +623,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new[] {new object[] {1, null}, new object[] {2, 2}});
                 env.UndeployAll();
 
-                stmtText = "@Name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "@Name('s0') select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 " +
+                           ".FetchResult23(0) as S1 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
+                           ".FetchResult12(0) as S0 on S0.Value = S1.Value";
                 env.CompileDeploy(stmtText);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
@@ -638,14 +638,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new[] {new object[] {1, null}, new object[] {2, 2}, new object[] {null, 3}});
                 env.UndeployAll();
 
-                stmtText = "@Name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "@Name('s0') select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 " +
+                           ".FetchResult12(0) as S0 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 on s0.Value = s1.Value";
+                           ".FetchResult23(0) as S1 on S0.Value = S1.Value";
                 env.CompileDeploy(stmtText);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
@@ -665,7 +665,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy("create variable int upper", path);
                 env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
@@ -699,25 +699,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy("create variable int upper", path);
                 env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from method:" +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from method:" +
                            className +
-                           ".FetchBetween(lower, upper) as s0, " +
+                           ".FetchBetween(lower, upper) as S0, " +
                            "method:" +
                            className +
-                           ".FetchBetweenString(lower, upper) as s1";
+                           ".FetchBetweenString(lower, upper) as S1";
                 AssertJoinHistoricalOnlyIndependent(env, path, stmtText);
 
-                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
+                stmtText = "select S0.Value as valueOne, S1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchBetweenString(lower, upper) as s1, " +
+                           ".FetchBetweenString(lower, upper) as S1, " +
                            "method:" +
                            className +
-                           ".FetchBetween(lower, upper) as s0 ";
+                           ".FetchBetween(lower, upper) as S0 ";
                 AssertJoinHistoricalOnlyIndependent(env, path, stmtText);
 
                 env.UndeployAll();
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy("on SupportBean set lower=IntPrimitive,upper=IntBoxed", path);
 
                 // Test int and singlerow
-                var className = typeof(SupportStaticMethodLib).Name;
+                var className = typeof(SupportStaticMethodLib).FullName;
                 var stmtText = "@Name('s0') select value from method:" + className + ".FetchBetween(lower, upper)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
@@ -793,17 +793,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select Id, TheString from " +
-                                    "SupportBean#length(3) as s1, " +
+                                    "SupportBean#length(3) as S1, " +
                                     "method:" +
-                                    typeof(SupportStaticMethodLib).Name +
+                                    typeof(SupportStaticMethodLib).FullName +
                                     ".FetchArrayNoArg";
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayNoArg(env);
 
                 joinStatement = "@Name('s0') select Id, TheString from " +
-                                "SupportBean#length(3) as s1, " +
+                                "SupportBean#length(3) as S1, " +
                                 "method:" +
-                                typeof(SupportStaticMethodLib).Name +
+                                typeof(SupportStaticMethodLib).FullName +
                                 ".FetchArrayNoArg()";
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayNoArg(env);
@@ -848,17 +848,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select irstream Id, TheString from " +
-                                    "SupportBean()#length(3) as s1, " +
+                                    "SupportBean()#length(3) as S1, " +
                                     " method:" +
-                                    typeof(SupportStaticMethodLib).Name +
+                                    typeof(SupportStaticMethodLib).FullName +
                                     ".FetchArrayGen(IntPrimitive)";
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayWithArg(env);
 
                 joinStatement = "@Name('s0') select irstream Id, TheString from " +
                                 "method:" +
-                                typeof(SupportStaticMethodLib).Name +
-                                ".FetchArrayGen(IntPrimitive) as s0, " +
+                                typeof(SupportStaticMethodLib).FullName +
+                                ".FetchArrayGen(IntPrimitive) as S0, " +
                                 "SupportBean#length(3)";
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 TryArrayWithArg(env);
@@ -949,9 +949,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select Id, TheString from " +
-                                    "SupportBean()#length(3) as s1, " +
+                                    "SupportBean()#length(3) as S1, " +
                                     " method:" +
-                                    typeof(SupportStaticMethodLib).Name +
+                                    typeof(SupportStaticMethodLib).FullName +
                                     ".FetchObjectNoArg()";
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 string[] fields = {"Id", "TheString"};
@@ -979,9 +979,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@Name('s0') select Id, TheString from " +
-                                    "SupportBean()#length(3) as s1, " +
+                                    "SupportBean()#length(3) as S1, " +
                                     " method:" +
-                                    typeof(SupportStaticMethodLib).Name +
+                                    typeof(SupportStaticMethodLib).FullName +
                                     ".FetchObject(TheString)";
                 env.CompileDeploy(joinStatement).AddListener("s0");
 
@@ -1010,11 +1010,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "select s1.TheString from " +
-                                    "SupportBean()#length(3) as s1, " +
+                var joinStatement = "select S1.TheString from " +
+                                    "SupportBean()#length(3) as S1, " +
                                     " method:" +
-                                    typeof(SupportStaticMethodLib).Name +
-                                    ".throwExceptionBeanReturn()";
+                                    typeof(SupportStaticMethodLib).FullName +
+                                    ".ThrowExceptionBeanReturn()";
 
                 env.CompileDeploy(joinStatement);
 
@@ -1036,9 +1036,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 TryInvalidCompile(
                     env,
-                    "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).Name + ".FetchArrayGen()",
+                    "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".FetchArrayGen()",
                     "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find static method named 'fetchArrayGen' in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     "' taking no parameters (nearest match found was 'fetchArrayGen' taking type(s) 'int') [");
 
                 TryInvalidCompile(
@@ -1049,27 +1049,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".FetchObjectAndSleep(1)",
                     "Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed 'int': Could not find static method named 'fetchObjectAndSleep' in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     "' with matching parameter number and expected parameter type(s) 'int' (nearest match found was 'fetchObjectAndSleep' taking type(s) 'String, int, long') [");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".Sleep(100) where 1=2",
                     "Invalid return type for static method 'sleep' of class '" +
-                    typeof(SupportStaticMethodLib).Name +
-                    "', expecting a Java class [select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
+                    "', expecting a class [select * from SupportBean, method:" +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".Sleep(100) where 1=2]");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:AClass. where 1=2",
-                    "Incorrect syntax near 'where' (a reserved keyword) expecting an Identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
+                    "Incorrect syntax near 'where' (a reserved keyword) expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
 
                 TryInvalidCompile(
                     env,
@@ -1088,71 +1088,71 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 TryInvalidCompile(
                     env,
-                    "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).Name + ".dummy where 1=2",
+                    "select * from SupportBean, method:" + typeof(SupportStaticMethodLib).FullName + ".dummy where 1=2",
                     "Could not find public static method named 'dummy' in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     "' [");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".minusOne(10) where 1=2",
-                    "Invalid return type for static method 'minusOne' of class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".MinusOne(10) where 1=2",
+                    "Invalid return type for static method 'MinusOne' of class '" +
+                    typeof(SupportStaticMethodLib).FullName +
                     "', expecting a Java class [");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, xyz:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".FetchArrayNoArg() where 1=2",
                     "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
                     ".FetchArrayNoArg() where 1=2]");
 
                 TryInvalidCompile(
                     env,
                     "select * from method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".FetchBetween(s1.Value, s1.Value) as s0, method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".FetchBetween(s0.Value, s0.Value) as s1",
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".FetchBetween(S1.Value, S1.Value) as S0, method:" +
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".FetchBetween(S0.Value, S0.Value) as S1",
                     "Circular dependency detected between historical streams [");
 
                 TryInvalidCompile(
                     env,
                     "select * from method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".FetchBetween(s0.Value, s0.Value) as s0, method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".FetchBetween(s0.Value, s0.Value) as s1",
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".FetchBetween(S0.Value, S0.Value) as S0, method:" +
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".FetchBetween(S0.Value, S0.Value) as S1",
                     "Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
 
                 TryInvalidCompile(
                     env,
                     "select * from method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".FetchBetween(s0.Value, s0.Value) as s0",
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".FetchBetween(S0.Value, S0.Value) as S0",
                     "Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
 
                 TryInvalidCompile(
                     env,
-                    "select * from method:SupportMethodInvocationJoinInvalid.readRowNoMetadata()",
-                    "Could not find getter method for method invocation, expected a method by name 'readRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.readRowNoMetadata()]");
+                    "select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()",
+                    "Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
 
                 TryInvalidCompile(
                     env,
-                    "select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()",
-                    "Getter method 'readRowWrongMetadataMetadata' does not return IDictionary [select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()]");
+                    "select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
+                    "Getter method 'ReadRowWrongMetadataMetadata' does not return IDictionary [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean, method:" +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".invalidOverloadForJoin(null)",
-                    "Method by name 'invalidOverloadForJoin' is overloaded in class '" +
-                    typeof(SupportStaticMethodLib).Name +
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".InvalidOverloadForJoin(null)",
+                    "Method by name 'InvalidOverloadForJoin' is overloaded in class '" +
+                    typeof(SupportStaticMethodLib).FullName +
                     "' and overloaded methods do not return the same type");
             }
         }

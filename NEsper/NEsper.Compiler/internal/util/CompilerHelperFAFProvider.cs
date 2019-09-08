@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
@@ -44,6 +45,13 @@ namespace com.espertech.esper.compiler.@internal.util
     public class CompilerHelperFAFProvider
     {
         private const string MEMBERNAME_QUERY_METHOD_PROVIDER = "provider";
+
+        private static int defaultStatementNameIndex = 0;
+
+        public static string GetDefaultStatementName()
+        {
+            return "q" + Interlocked.Increment(ref defaultStatementNameIndex);
+        }
 
         public static EPCompiled Compile(
             Compilable compilable,
@@ -89,7 +97,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             var statementNameFromAnnotation = GetNameFromAnnotation(annotations);
-            var statementName = statementNameFromAnnotation == null ? "q0" : statementNameFromAnnotation.Trim();
+            var statementName = statementNameFromAnnotation == null ? GetDefaultStatementName() : statementNameFromAnnotation.Trim();
             var statementRawInfo = new StatementRawInfo(
                 0,
                 statementName,
@@ -248,17 +256,17 @@ namespace com.espertech.esper.compiler.@internal.util
                 NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF));
 
             // get-execute
-            var getQueryMethodProviderMethod = CodegenMethod.MakeMethod(
+            var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
                 typeof(FAFQueryMethodProvider),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            getQueryMethodProviderMethod.Block.MethodReturn(Ref(MEMBERNAME_QUERY_METHOD_PROVIDER));
+            queryMethodProviderProperty.GetterBlock.BlockReturn(Ref(MEMBERNAME_QUERY_METHOD_PROVIDER));
 
             // build stack
             CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeQueryMethod, "InitializeQuery", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(getQueryMethodProviderMethod, "GetQueryMethodProvider", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(queryMethodProviderProperty, "QueryMethodProvider", methods, properties);
 
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
             var typedParam = new CodegenTypedParam(typeof(FAFQueryMethodProvider), MEMBERNAME_QUERY_METHOD_PROVIDER);

@@ -28,31 +28,31 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public class FAFQueryMethodSelect : FAFQueryMethod
     {
-        private bool isDistinct;
+        private bool _isDistinct;
 
-        public Attribute[] Annotations { get; private set; }
+        public Attribute[] Annotations { get; set; }
 
-        public string ContextName { get; private set; }
+        public string ContextName { get; set; }
 
-        public ExprEvaluator WhereClause { get; private set; }
+        public ExprEvaluator WhereClause { get; set; }
 
-        public ExprEvaluator[] ConsumerFilters { get; private set; }
+        public ExprEvaluator[] ConsumerFilters { get; set; }
 
-        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider { get; private set; }
+        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider { get; set; }
 
-        public FireAndForgetProcessor[] Processors { get; private set; }
+        public FireAndForgetProcessor[] Processors { get; set; }
 
         public EventBeanReader EventBeanReaderDistinct { get; private set; }
 
-        public JoinSetComposerPrototype JoinSetComposerPrototype { get; private set; }
+        public JoinSetComposerPrototype JoinSetComposerPrototype { get; set; }
 
-        public QueryGraph QueryGraph { get; private set; }
+        public QueryGraph QueryGraph { get; set; }
 
-        public bool IsTableAccess { get; private set; }
+        public bool HasTableAccess { get; set; }
 
         public FAFQueryMethodSelectExec SelectExec { get; private set; }
 
-        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses { get; private set; }
+        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses { get; set; }
 
         /// <summary>
         ///     Returns the event type of the prepared statement.
@@ -117,74 +117,25 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 return SelectExec.Execute(this, contextPartitionSelectors, assignerSetter, contextManagementService);
             }
             finally {
-                if (IsTableAccess) {
+                if (HasTableAccess) {
                     Processors[0].StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }
             }
         }
 
-        public void SetAnnotations(Attribute[] annotations)
-        {
-            Annotations = annotations;
-        }
+        public bool IsDistinct {
+            get => _isDistinct;
+            set {
+                _isDistinct = value;
+                if (_isDistinct) {
+                    var resultEventType = ResultSetProcessorFactoryProvider.ResultEventType;
+                    if (resultEventType is EventTypeSPI) {
+                        EventBeanReaderDistinct = ((EventTypeSPI) resultEventType).Reader;
+                    }
 
-        public void SetProcessors(FireAndForgetProcessor[] processors)
-        {
-            Processors = processors;
-        }
-
-        public void SetResultSetProcessorFactoryProvider(
-            ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider)
-        {
-            ResultSetProcessorFactoryProvider = resultSetProcessorFactoryProvider;
-        }
-
-        public void SetWhereClause(ExprEvaluator whereClause)
-        {
-            WhereClause = whereClause;
-        }
-
-        public void SetJoinSetComposerPrototype(JoinSetComposerPrototype joinSetComposerPrototype)
-        {
-            JoinSetComposerPrototype = joinSetComposerPrototype;
-        }
-
-        public void SetConsumerFilters(ExprEvaluator[] consumerFilters)
-        {
-            ConsumerFilters = consumerFilters;
-        }
-
-        public void SetQueryGraph(QueryGraph queryGraph)
-        {
-            QueryGraph = queryGraph;
-        }
-
-        public void SetContextName(string contextName)
-        {
-            ContextName = contextName;
-        }
-
-        public void SetTableAccesses(IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses)
-        {
-            TableAccesses = tableAccesses;
-        }
-
-        public void SetHasTableAccess(bool hasTableAccess)
-        {
-            IsTableAccess = hasTableAccess;
-        }
-
-        public void SetDistinct(bool distinct)
-        {
-            isDistinct = distinct;
-            if (isDistinct) {
-                var resultEventType = ResultSetProcessorFactoryProvider.ResultEventType;
-                if (resultEventType is EventTypeSPI) {
-                    EventBeanReaderDistinct = ((EventTypeSPI) resultEventType).Reader;
-                }
-
-                if (EventBeanReaderDistinct == null) {
-                    EventBeanReaderDistinct = new EventBeanReaderDefaultImpl(resultEventType);
+                    if (EventBeanReaderDistinct == null) {
+                        EventBeanReaderDistinct = new EventBeanReaderDefaultImpl(resultEventType);
+                    }
                 }
             }
         }

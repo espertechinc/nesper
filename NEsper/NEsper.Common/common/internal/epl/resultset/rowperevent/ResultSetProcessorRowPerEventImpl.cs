@@ -430,13 +430,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<EventBean>>(
-                        "newData",
-                        Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<EventBean>>(
-                        "oldData",
-                        Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "Second")));
+                var forEach = method.Block.ForEach(
+                    typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach
+                    .DeclareVar<ISet<MultiKey<EventBean>>>("newData", ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>("oldData", ExprDotName(Ref("pair"), "Second"));
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
@@ -577,17 +575,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+            method.Block
+                .DeclareVar<EventBean>("lastOldEvent", ConstantNull())
                 .DeclareVar<EventBean>("lastNewEvent", ConstantNull());
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<EventBean>>(
-                        "newData",
-                        Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<EventBean>>(
-                        "oldData",
-                        Cast(typeof(ISet<EventBean>), ExprDotName(Ref("pair"), "Second")));
+                forEach
+                    .DeclareVar<ISet<EventBean>>("newData",ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<EventBean>>("oldData",ExprDotName(Ref("pair"), "Second"));
 
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");
@@ -705,10 +701,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<EventBean[]>(
                         "eventsPerStream",
                         NewArrayByLength(typeof(EventBean), Constant(1)))
@@ -849,7 +845,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+            method.Block
+                .DeclareVar<EventBean>("lastOldEvent", ConstantNull())
                 .DeclareVar<EventBean>("lastNewEvent", ConstantNull())
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
@@ -857,10 +854,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .StaticMethod(
                         typeof(ResultSetProcessorUtil),
                         METHOD_APPLYAGGVIEWRESULT,

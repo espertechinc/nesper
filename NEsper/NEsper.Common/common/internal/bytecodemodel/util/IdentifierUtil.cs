@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Security.Cryptography;
 using System.Text;
+
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
@@ -14,6 +17,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
     {
         public static string GetIdentifierMayStartNumeric(string str)
         {
+#if false
             var sb = new StringBuilder();
             for (int i = 0; i < str.Length; i++) {
                 var charAt = str[i];
@@ -26,6 +30,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             }
 
             return sb.ToString();
+#else
+            using (var hash = SHA1.Create()) {
+                return hash
+                    .ComputeHash(str.GetUTF8Bytes())
+                    .ToHexString();
+            }
+#endif
         }
 
         private static bool IsIdentifierPart(char cc)

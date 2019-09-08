@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var myLegacyTwo = new ConfigurationCommonEventTypeBean();
             myLegacyTwo.AccessorStyle = AccessorStyle.NATIVE;
             myLegacyTwo.AddFieldProperty("explicitFInt", "fieldIntPrimitive");
-            myLegacyTwo.AddMethodProperty("explicitMGetInt", "get_IntPrimitive");
+            myLegacyTwo.AddMethodProperty("explicitMGetInt", "GetIntPrimitive");
             myLegacyTwo.AddMethodProperty("explicitMReadInt", "ReadIntPrimitive");
             configuration.Common.AddEventType("MyLegacyTwo", typeof(SupportLegacyBeanInt), myLegacyTwo);
 
@@ -292,9 +292,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test]
-        public void TestEventBeanJavaBeanAccessor()
+        public void TestEventBeanNativeAccessor()
         {
-            RegressionRunner.Run(session, new EventBeanJavaBeanAccessor());
+            RegressionRunner.Run(session, new EventBeanNativeAccessor());
         }
 
         [Test]

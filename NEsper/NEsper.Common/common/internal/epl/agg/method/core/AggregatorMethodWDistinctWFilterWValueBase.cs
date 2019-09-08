@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             ApplyEvalValuePrefix(true, method, symbols, forges, classScope);
-            ApplyEvalEnterNonNull(Ref("val"), forges[0].EvaluationType, method, symbols, forges, classScope);
+            ApplyEvalEnterNonNull(Ref("val"), forges[0].EvaluationType.GetBoxedType(), method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableEnterFiltered(
@@ -97,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             ApplyEvalValuePrefix(false, method, symbols, forges, classScope);
-            ApplyEvalLeaveNonNull(Ref("val"), forges[0].EvaluationType, method, symbols, forges, classScope);
+            ApplyEvalLeaveNonNull(Ref("val"), forges[0].EvaluationType.GetBoxedType(), method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableLeaveFiltered(
@@ -117,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var type = forges[0].EvaluationType;
+            var type = forges[0].EvaluationType.GetBoxedType();
             var expr = forges[0].EvaluateCodegen(type, method, symbols, classScope);
             method.Block.DeclareVar(type, "val", expr);
             if (!type.IsPrimitive) {
@@ -125,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             }
 
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "remove", Ref("val"))))
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", Ref("val"))))
                     .BlockReturnNoValue();
             }
         }
@@ -138,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             method.Block.IfCondition(EqualsNull(value)).BlockReturnNoValue();
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "remove", value)))
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", value)))
                     .BlockReturnNoValue();
             }
         }

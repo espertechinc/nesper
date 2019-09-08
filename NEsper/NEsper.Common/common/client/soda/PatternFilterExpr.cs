@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tagName">specifies the name of the tag to assigned to matching events</param>
         public PatternFilterExpr(
             Filter filter,
-            String tagName)
+            string tagName)
         {
             TagName = tagName;
             Filter = filter;

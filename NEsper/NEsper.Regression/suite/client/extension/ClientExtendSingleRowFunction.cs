@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -97,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.SendEventBean(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "a.IntPrimitive,b.IntPrimitive".SplitCsv(),
+                    new [] { "a.IntPrimitive","b.IntPrimitive" },
                     new object[] {1, 2});
                 env.UndeployAll();
 
@@ -151,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select chainTop().chainValue(12,IntPrimitive) as val from SupportBean";
+                var text = "@Name('s0') select chainTop().ChainValue(12,IntPrimitive) as val from SupportBean";
 
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionChainMethod(env);
@@ -209,9 +210,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 }
                 catch (EPException ex) {
                     Assert.AreEqual(
-                        "System.Exception: Unexpected exception in statement 's0': Invocation exception when invoking method 'throwexception' of class '" +
-                        typeof(SupportSingleRowFunction).FullName +
-                        "' passing parameters [] for statement 's0': Exception : This is a 'throwexception' generated exception",
+                        "Unexpected exception in statement 's0': Invocation exception when invoking method 'Throwexception' of class '" +
+                        typeof(SupportSingleRowFunction).Name +
+                        "' passing parameters [] for statement 's0': com.espertech.esper.common.client.EPException : This is a 'throwexception' generated exception",
                         ex.Message);
                     env.UndeployAll();
                 }
@@ -224,9 +225,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 }
                 catch (EPException ex) {
                     Assert.AreEqual(
-                        "System.Exception: Unexpected exception in statement 's0': NullPointerException invoking method 'computePower3' of class '" +
-                        typeof(SupportSingleRowFunction).FullName +
-                        "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive int value but received a null value",
+                        "Unexpected exception in statement 's0': NullPointerException invoking method 'ComputePower3' of class '" +
+                        typeof(SupportSingleRowFunction).Name +
+                        "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive Int32 value but received a null value",
                         ex.Message);
                 }
 
@@ -241,9 +242,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 TryInvalidCompile(
                     env,
                     "select singlerow('a', 'b') from SupportBean",
-                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
+                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'TestSingleRow' in class '" +
                     typeof(SupportSingleRowFunctionTwo).FullName +
-                    "' with matching parameter number and expected parameter type(s) 'String, String' (nearest match found was 'testSingleRow' taking type(s) 'String, int')");
+                    "' with matching parameter number and expected parameter type(s) 'System.String, System.String' (nearest match found was 'TestSingleRow' taking type(s) 'System.String, System.Int32')");
             }
         }
     }

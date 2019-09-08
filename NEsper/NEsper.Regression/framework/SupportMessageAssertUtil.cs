@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                AssertMessage(ex, message);
+                 AssertMessage(ex, message);
             }
         }
 
@@ -66,6 +66,14 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
+#if false
+                for (Exception eq = ex; eq != null ; eq = eq.InnerException)
+                {
+                    Console.WriteLine("{0}[>>]: {1}", eq.GetType().Name, eq.Message);
+                    Console.WriteLine(eq.StackTrace);
+                }
+#endif
+
                 AssertMessage(ex, message);
             }
         }

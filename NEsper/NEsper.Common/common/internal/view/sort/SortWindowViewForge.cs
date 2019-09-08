@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(factory, "Size", CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .SetProperty(factory, "SizeEvaluator", CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "SortCriteriaEvaluators",
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                     "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
                 .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
-                .SetProperty(factory, "UseCollatorSort", Constant(useCollatorSort));
+                .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort));
         }
     }
 } // end of namespace

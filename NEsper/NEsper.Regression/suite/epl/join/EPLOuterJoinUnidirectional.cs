@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string a,
             string b)
         {
-            var fields = "aId,bId".SplitCsv();
+            var fields = new [] { "aId","bId" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string b,
             string c)
         {
-            var fields = "a.Id,b.Id,c.Id".SplitCsv();
+            var fields = new [] { "a.Id","b.Id","c.Id" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string c,
             string d)
         {
-            var fields = "aId,bId,cId,dId".SplitCsv();
+            var fields = new [] { "aId","bId","cId","dId" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,

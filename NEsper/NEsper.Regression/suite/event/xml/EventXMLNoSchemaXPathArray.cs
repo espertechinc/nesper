@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 theEvent,
-                "A".SplitCsv(),
+                new [] { "A" },
                 new object[] {new object[] {"987654321", "9876543210"}});
 
             env.UndeployAll();

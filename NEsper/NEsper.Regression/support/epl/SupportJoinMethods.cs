@@ -61,14 +61,14 @@ namespace com.espertech.esper.regressionlib.support.epl
             return result;
         }
 
-        public static IDictionary<string, Type> FetchValMultiRowMetadata()
+        public static IDictionary<string, object> FetchValMultiRowMetadata()
         {
             return FetchValMetadata();
         }
 
-        public static IDictionary<string, Type> FetchValMetadata()
+        public static IDictionary<string, object> FetchValMetadata()
         {
-            IDictionary<string, Type> values = new Dictionary<string, Type>();
+            IDictionary<string, object> values = new Dictionary<string, object>();
             values.Put("val", typeof(string));
             values.Put("index", typeof(int?));
             return values;

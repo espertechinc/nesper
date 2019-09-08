@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select s0.AnyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
+                    "@Name('s0') select S0.AnyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 var s1 = new SupportBean_S1(100);
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 as s0 where P00 in (select P10 from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 as S0 where P00 in (select P10 from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select LongBoxed from SupportBean(TheString='A') as s0 " +
+                var stmtText = "@Name('s0') select LongBoxed from SupportBean(TheString='A') as S0 " +
                                "where LongBoxed in " +
                                "(select IntBoxed from SupportBean(TheString='B')#length(1000))";
 
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select IntBoxed from SupportBean(TheString='A') as s0 " +
+                var stmtText = "@Name('s0') select IntBoxed from SupportBean(TheString='A') as S0 " +
                                "where IntBoxed in " +
                                "(select LongBoxed from SupportBean(TheString='B')#length(1000))";
 
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s0.P01 in (s1.P10, s1.P11)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as S0 where S0.P01 in (S1.P10, S1.P11)) as c0 from SupportBean_S1 as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -410,7 +410,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s1.P11 in (s0.P00, s0.P01)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as S0 where S1.P11 in (S0.P00, S0.P01)) as c0 from SupportBean_S1 as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select IntBoxed from SupportBean(TheString='A') as s0 " +
+                var stmtText = "@Name('s0') select IntBoxed from SupportBean(TheString='A') as S0 " +
                                "where IntBoxed not in " +
                                "(select LongBoxed from SupportBean(TheString='B')#length(1000))";
 
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select LongBoxed from SupportBean(TheString='A') as s0 " +
+                var stmtText = "@Name('s0') select LongBoxed from SupportBean(TheString='A') as S0 " +
                                "where LongBoxed not in " +
                                "(select IntBoxed from SupportBean(TheString='B')#length(1000))";
 

@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOut = "TheString,total".SplitCsv();
+                var fieldsOut = new [] { "TheString","total" };
                 var path = new RegressionPath();
 
                 env.CompileDeploy("create table MyTableR1D(pk string primary key, total sum(int))", path);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "k0,k1,total".SplitCsv();
+                var fields = new [] { "k0","k1","total" };
 
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType("create objectarray schema MyEventTwo(k0 int, k1 int, col int)", path);
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "into table MyTableGS3D insert into MyStreamThree select sum(col) as total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
                     path);
 
-                var fields = "k0,k1,k2,total".SplitCsv();
+                var fields = new [] { "k0","k1","k2","total" };
                 env.SendEventObjectArray(new object[] {1, 10, 100, 1000}, "MyEventThree");
                 env.SendEventObjectArray(new object[] {2, 10, 200, 2000}, "MyEventThree");
 

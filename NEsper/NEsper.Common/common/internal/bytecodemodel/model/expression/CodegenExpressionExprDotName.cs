@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression lhs,
             string name)
         {
-            this._lhs = lhs;
-            this._name = name;
+            _lhs = lhs;
+            _name = name;
         }
 
         public void Render(

@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    public partial class MinMaxTypeEnum
+    public partial class MinMaxType
     {
         /// <summary>
         ///     Determines minimum/maximum using BigInteger.compareTo.
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 block.DeclareVarNoInit(typeof(BigInteger), "result");
                 block.IfCondition(
-                        CodegenCompareCompareTo(
+                        MinMaxTypeCodegen.CodegenCompareCompareTo(
                             CodegenExpressionBuilder.Ref("bi0"),
                             CodegenExpressionBuilder.Ref("bi1"),
                             max))
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         convertors[i].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref(refnameNumber), nodeType));
                     block.IfCondition(
                             CodegenExpressionBuilder.Not(
-                                CodegenCompareCompareTo(
+                                MinMaxTypeCodegen.CodegenCompareCompareTo(
                                     CodegenExpressionBuilder.Ref("result"),
                                     CodegenExpressionBuilder.Ref(refnameBigint),
                                     max)))

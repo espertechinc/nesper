@@ -15,38 +15,38 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
-    public class MXCIFQuadTreeFilterIndexCollect<TL, TT>
+    public class MXCIFQuadTreeFilterIndexCollect<TT>
     {
         public static void CollectRange(
-            MXCIFQuadTree<object> quadTree,
+            MXCIFQuadTree quadTree,
             double x,
             double y,
             double width,
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
         }
 
         private static void CollectRange(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
+            if (node is MXCIFQuadTreeNodeLeaf leaf)
             {
                 CollectNode(leaf, x, y, width, height, eventBean, target, collector);
                 return;
             }
 
-            MXCIFQuadTreeNodeBranch<object> branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            MXCIFQuadTreeNodeBranch branch = (MXCIFQuadTreeNodeBranch) node;
             CollectNode(branch, x, y, width, height, eventBean, target, collector);
             CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector);
             CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector);
@@ -55,21 +55,21 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         private static void CollectNode(
-            MXCIFQuadTreeNode<object> node,
+            MXCIFQuadTreeNode node,
             double x,
             double y,
             double width,
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TL, TT> collector)
+            QuadTreeCollector<TT> collector)
         {
             object rectangles = node.Data;
             if (rectangles == null) {
                 return;
             }
 
-            if (rectangles is XYWHRectangleWValue<TL> rectangleWValue) {
+            if (rectangles is XYWHRectangleWValue rectangleWValue) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
                     x,
                     y,
@@ -82,20 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                     collector.CollectInto(eventBean, rectangleWValue.Value, target);
                 }
             }
-            else if (rectangles is XYWHRectangleWValue<object> rectangleWValueGeneric) {
-                if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x,
-                    y,
-                    x + width,
-                    y + height,
-                    rectangleWValueGeneric.X,
-                    rectangleWValueGeneric.Y,
-                    rectangleWValueGeneric.W,
-                    rectangleWValueGeneric.H)) {
-                    collector.CollectInto(eventBean, (TL) rectangleWValueGeneric.Value, target);
-                }
-            }
-            else if (rectangles is IEnumerable<XYWHRectangleWValue<TL>> enumerableWithType) {
+            else if (rectangles is IEnumerable<XYWHRectangleWValue> enumerableWithType) {
                 foreach (var rectangle in enumerableWithType) {
                     if (BoundingBox.IntersectsBoxIncludingEnd(
                         x,
@@ -107,21 +94,6 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                         rectangle.W,
                         rectangle.H)) {
                         collector.CollectInto(eventBean, rectangle.Value, target);
-                    }
-                }
-            }
-            else if (rectangles is IEnumerable<XYWHRectangleWValue<object>> enumerableWithoutType) {
-                foreach (var rectangle in enumerableWithoutType) {
-                    if (BoundingBox.IntersectsBoxIncludingEnd(
-                        x,
-                        y,
-                        x + width,
-                        y + height,
-                        rectangle.X,
-                        rectangle.Y,
-                        rectangle.W,
-                        rectangle.H)) {
-                        collector.CollectInto(eventBean, (TL) rectangle.Value, target);
                     }
                 }
             }

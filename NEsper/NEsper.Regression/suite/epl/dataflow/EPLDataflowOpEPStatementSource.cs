@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
@@ -124,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"E2"});
 
                 env.UndeployModuleContaining("MyStatement");
@@ -143,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"E4"});
 
                 env.UndeployModuleContaining("MyStatement");
@@ -163,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"XE6X"});
 
                 df.Cancel();
@@ -197,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  EPStatementSource -> stream.two<eventbean<?>> {\n" +
                           "    statementFilter : {\n" +
                           "      class : '" +
-                          typeof(MyFilter).Name +
+                          typeof(MyFilter).MaskTypeName() +
                           "'\n" +
                           "    }\n" +
                           "  }\n" +
@@ -207,12 +208,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  EPStatementSource -> stream.two<SampleSchema> {\n" +
                           "    collector : {\n" +
                           "      class : '" +
-                          typeof(MyCollector).Name +
+                          typeof(MyCollector).MaskTypeName() +
                           "'\n" +
                           "    },\n" +
                           "    statementFilter : {\n" +
                           "      class : '" +
-                          typeof(MyFilter).Name +
+                          typeof(MyFilter).MaskTypeName() +
                           "'\n" +
                           "    }\n" +
                           "  }";
@@ -279,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"B1"});
 
                 env.CompileDeploy("select TheString, IntPrimitive from SupportBean");
@@ -295,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"A1"});
 
                 env.UndeployModuleContaining("s2");
@@ -310,14 +311,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"A3"});
 
                 env.SendEventBean(new SupportBean_B("B2"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "Id".SplitCsv(),
+                    new [] { "Id" },
                     new object[] {"B2"});
 
                 df.Cancel();

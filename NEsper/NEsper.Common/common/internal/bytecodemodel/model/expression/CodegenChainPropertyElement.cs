@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public CodegenChainPropertyElement(
             string propertyName)
         {
-            this._propertyName = propertyName;
+            _propertyName = propertyName;
         }
 
         public override void Render(

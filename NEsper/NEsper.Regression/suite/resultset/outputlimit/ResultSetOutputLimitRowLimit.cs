@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString,mysum".SplitCsv();
+                var fields = new [] { "TheString","mysum" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 

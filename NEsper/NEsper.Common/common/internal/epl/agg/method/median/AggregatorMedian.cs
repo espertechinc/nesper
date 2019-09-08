@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
         {
             method.Block.ExprDotMethod(
                 vector,
-                "remove",
+                "Remove",
                 SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(vector, "Add", ExprDotMethod(Cast(typeof(object), value), "DoubleValue"));
+            method.Block.ExprDotMethod(vector, "Add", ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(vector, "Remove", ExprDotMethod(Cast(typeof(object), value), "DoubleValue"));
+            method.Block.ExprDotMethod(vector, "Remove", ExprDotMethod(Cast(typeof(object), value), "AsDouble"));
         }
 
         protected override void ClearWODistinct(

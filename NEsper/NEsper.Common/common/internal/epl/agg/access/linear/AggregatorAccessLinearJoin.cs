@@ -6,8 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,6 +22,8 @@ using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
+using Microsoft.CodeAnalysis;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -52,9 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         {
             this.forge = forge;
-            refSet = membersColumnized.AddMember(col, typeof(LinkedHashMap<string, object>), "refSet");
+            refSet = membersColumnized.AddMember(col, typeof(LinkedHashMap<EventBean, object>), "refSet");
             array = membersColumnized.AddMember(col, typeof(EventBean[]), "array");
-            rowCtor.Block.AssignRef(refSet, NewInstance(typeof(LinkedHashMap<string, object>)));
+            rowCtor.Block.AssignRef(refSet, NewInstance(typeof(LinkedHashMap<EventBean, object>)));
         }
 
         public override void ClearCodegen(
@@ -88,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.AssignRef(
                 RowDotRef(row, refSet),
                 Cast(
-                    typeof(LinkedHashMap<string, object>),
+                    typeof(LinkedHashMap<EventBean, object>),
                     ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
         }
 
@@ -191,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var initArray = InitArrayCodegen(namedMethods, classScope);
             var method = parentMethod.MakeChildWithScope(
-                typeof(IEnumerator),
+                typeof(IEnumerator<EventBean>),
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
@@ -210,9 +214,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
+            Trace.Assert(
+                parentMethod.ReturnType == typeof(ICollection<EventBean>),
+                "parentMethod.ReturnType != typeof(ICollection<EventBean>)");
+
             var initArray = InitArrayCodegen(namedMethods, classScope);
             var method = parentMethod.MakeChildWithScope(
-                typeof(ICollection<object>),
+                typeof(ICollection<EventBean>),
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
@@ -304,12 +312,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             Consumer<CodegenMethod> code = method => {
                 method.Block
-                    .DeclareVar<ISet<EventBean>>("events", ExprDotName(refSet, "Keys"))
+                    .DeclareVar<ICollection<EventBean>>("events", ExprDotName(refSet, "Keys"))
                     .AssignRef(array, StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYEVENTS, Ref("events")));
             };
             return namedMethods.AddMethod(
                 typeof(void),
-                "initArray_" + array.Ref,
+                "InitArray_" + array.Ref,
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 typeof(AggregatorAccessLinearJoin),
                 classScope,

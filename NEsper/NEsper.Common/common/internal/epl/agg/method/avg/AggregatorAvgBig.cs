@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            if (valueType == typeof(BigInteger)) {
+            if (valueType.IsBigInteger()) {
                 method.Block.AssignRef(
                     sum,
                     ExprDotMethod(
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     ExprDotMethod(
                         sum,
                         "Add",
-                        valueType == typeof(decimal) ? value : Cast(typeof(decimal), value)));
+                        valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
             }
 
             method.Block.Increment(cnt);
@@ -121,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                                 ExprDotMethod(
                                     sum,
                                     "subtract",
-                                    valueType == typeof(decimal) ? value : Cast(typeof(decimal), value)));
+                                    valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
                         }
                     });
         }
@@ -252,10 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     return sum / cnt;
                 }
 
-                return decimal.Round(
-                    decimal.Divide(sum, cnt),
-                    optionalMathContext.Precision,
-                    optionalMathContext.RoundingMode);
+                return optionalMathContext.Apply(decimal.Divide(sum, cnt));
             }
             catch (ArithmeticException ex) {
                 Log.Error("Error computing avg aggregation result: " + ex.Message, ex);

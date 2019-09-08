@@ -53,6 +53,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> keys,
             CompositeIndexQueryResultPostProcessor postProcessor);
 
-        void SetNext(CompositeIndexQuery next);
+        CompositeIndexQuery SetNext(CompositeIndexQuery next);
     }
 } // end of namespace

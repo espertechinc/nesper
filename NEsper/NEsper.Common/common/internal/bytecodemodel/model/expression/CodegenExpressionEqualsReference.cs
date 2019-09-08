@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression rhs,
             bool isNot)
         {
-            this._lhs = lhs;
-            this._rhs = rhs;
-            this._isNot = isNot;
+            _lhs = lhs;
+            _rhs = rhs;
+            _isNot = isNot;
         }
 
         public void Render(

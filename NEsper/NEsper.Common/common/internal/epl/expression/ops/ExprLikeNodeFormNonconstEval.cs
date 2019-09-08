@@ -96,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     "escapeString",
                     optionalEscape.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope));
                 blockMethod.IfCondition(
-                        And(NotEqualsNull(Ref("escapeString")), Not(ExprDotMethod(Ref("escapeString"), "IsEmpty"))))
+                        And(NotEqualsNull(Ref("escapeString")), Not(
+                            StaticMethod<string>("IsNullOrEmpty", Ref("escapeString")))))
                     .AssignRef("es", ArrayAtIndex(Ref("escapeString"), Constant(0)));
             }
 

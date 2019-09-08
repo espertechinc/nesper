@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.util
                 return PrimitiveCastDecimal;
             }
 
-            if (t == typeof(BigInteger)) {
+            if (t.IsBigInteger()) {
                 return PrimitiveCastBigInteger;
             }
 

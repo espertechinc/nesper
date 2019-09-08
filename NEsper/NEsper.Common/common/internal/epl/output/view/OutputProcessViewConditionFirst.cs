@@ -97,18 +97,18 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     (oldData == null ? 0 : oldData.Length));
             }
 
-            if (!CheckAfterCondition(newData, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newData, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
             if (!_witnessedFirstHelper.WitnessedFirst) {
-                var statementResultService = agentInstanceContext.StatementResultService;
+                var statementResultService = _agentInstanceContext.StatementResultService;
                 var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
 
                 // Process the events and get the result
                 _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
                 var newOldEvents =
-                    resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, isGenerateSynthetic);
+                    _resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, isGenerateSynthetic);
                 _viewEventsList.Clear();
 
                 if (!HasRelevantResults(newOldEvents)) {
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 var isGenerateNatural = statementResultService.IsMakeNatural;
                 if (!isGenerateSynthetic && !isGenerateNatural) {
                     if (AuditPath.isAuditEnabled) {
-                        OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                        OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                     }
 
                     return;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
             else {
                 _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
-                resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, false);
+                _resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, false);
                 _viewEventsList.Clear();
             }
 
@@ -175,17 +175,17 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     (oldEvents == null ? 0 : oldEvents.Count));
             }
 
-            if (!CheckAfterCondition(newEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newEvents, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
             // add the incoming events to the event batches
             if (!_witnessedFirstHelper.WitnessedFirst) {
-                var statementResultService = agentInstanceContext.StatementResultService;
+                var statementResultService = _agentInstanceContext.StatementResultService;
 
                 AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
                 var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
-                var newOldEvents = resultSetProcessor
+                var newOldEvents = _resultSetProcessor
                     .ProcessOutputLimitedJoin(_joinEventsSet, isGenerateSynthetic);
                 _joinEventsSet.Clear();
 
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 var isGenerateNatural = statementResultService.IsMakeNatural;
                 if (!isGenerateSynthetic && !isGenerateNatural) {
                     if (AuditPath.isAuditEnabled) {
-                        OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                        OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                     }
 
                     return;
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
 
                 // Process the events and get the result
-                resultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, false);
+                _resultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, false);
                 _joinEventsSet.Clear();
             }
 
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
-                resultSetProcessor,
+                _resultSetProcessor,
                 parentView,
                 _parent.IsDistinct);
         }

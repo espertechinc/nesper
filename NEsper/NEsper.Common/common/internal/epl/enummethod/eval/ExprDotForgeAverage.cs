@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -54,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             if (bodiesAndParameters.IsEmpty()) {
-                if (collectionComponentType == typeof(decimal) || collectionComponentType == typeof(BigInteger)) {
+                if (collectionComponentType.IsDecimal() || collectionComponentType.IsBigInteger()) {
                     TypeInfo = EPTypeHelper.SingleValue(typeof(decimal));
                     return new EnumAverageDecimalScalarForge(
                         numStreamsIncoming,
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             var returnType = first.BodyForge.EvaluationType;
 
-            if (returnType == typeof(decimal) || returnType == typeof(BigInteger)) {
+            if (returnType == typeof(decimal) || returnType.IsBigInteger()) {
                 TypeInfo = EPTypeHelper.SingleValue(typeof(decimal));
                 if (inputEventType == null) {
                     return new EnumAverageDecimalScalarLambdaForge(

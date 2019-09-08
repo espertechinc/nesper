@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             Type methodProviderClass,
             bool isStaticMethod,
             IDictionary<string, object> optionalMapType,
-            LinkedHashMap<string, object> optionalOaType,
+            IDictionary<string, object> optionalOaType,
             MethodPollingExecStrategyEnum strategy,
             bool isCollection,
             bool isIterator,
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         public IDictionary<string, object> OptionalMapType { get; }
 
-        public LinkedHashMap<string, object> OptionalOaType { get; }
+        public IDictionary<string, object> OptionalOaType { get; }
 
         public MethodPollingExecStrategyEnum Strategy { get; }
 

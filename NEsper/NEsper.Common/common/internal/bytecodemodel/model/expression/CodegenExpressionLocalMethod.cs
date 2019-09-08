@@ -25,12 +25,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenMethod methodNode,
             IList<CodegenExpression> parameters)
         {
-            this._methodNode = methodNode;
+            _methodNode = methodNode;
             if (methodNode == null) {
                 throw new ArgumentException("Null method node");
             }
 
-            this._parameters = parameters;
+            _parameters = parameters;
         }
 
         public void Render(

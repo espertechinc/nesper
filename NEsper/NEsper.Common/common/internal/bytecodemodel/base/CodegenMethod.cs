@@ -293,7 +293,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private string GetGeneratorDetail(Type generator)
         {
-            var stack = new StackTrace();
+            var stack = new StackTrace(true);
             string stackString = null;
             for (var i = 1; i < 10; i++) {
                 var frame = stack.GetFrame(i);

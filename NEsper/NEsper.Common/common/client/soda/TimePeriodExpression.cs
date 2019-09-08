@@ -266,162 +266,171 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a day-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsDays
-        {
+        public bool IsDays {
             get => hasDays;
+            set => hasDays = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a day-part.
         /// </summary>
         /// <param name="hasDays">for presence of part</param>
-        public void SetHasDays(bool hasDays)
+        public TimePeriodExpression SetHasDays(bool hasDays)
         {
             this.hasDays = hasDays;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a hour-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsHours
-        {
+        public bool IsHours {
             get => hasHours;
+            set => hasHours = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a hour-part.
         /// </summary>
         /// <param name="hasHours">for presence of part</param>
-        public void SetHasHours(bool hasHours)
+        public TimePeriodExpression SetHasHours(bool hasHours)
         {
             this.hasHours = hasHours;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a minutes-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMinutes
-        {
+        public bool IsMinutes {
             get => hasMinutes;
+            set => hasMinutes = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a minutes-part.
         /// </summary>
         /// <param name="hasMinutes">for presence of part</param>
-        public void SetHasMinutes(bool hasMinutes)
+        public TimePeriodExpression SetHasMinutes(bool hasMinutes)
         {
             this.hasMinutes = hasMinutes;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a seconds-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsSeconds
-        {
+        public bool IsSeconds {
             get => hasSeconds;
+            set => hasSeconds = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a seconds-part.
         /// </summary>
         /// <param name="hasSeconds">for presence of part</param>
-        public void SetHasSeconds(bool hasSeconds)
+        public TimePeriodExpression SetHasSeconds(bool hasSeconds)
         {
             this.hasSeconds = hasSeconds;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a milliseconds-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMilliseconds
-        {
+        public bool IsMilliseconds {
             get => hasMilliseconds;
+            set => hasMilliseconds = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a msec-part.
         /// </summary>
         /// <param name="hasMilliseconds">for presence of part</param>
-        public void SetHasMilliseconds(bool hasMilliseconds)
+        public TimePeriodExpression SetHasMilliseconds(bool hasMilliseconds)
         {
             this.hasMilliseconds = hasMilliseconds;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a year-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsYears
-        {
+        public bool IsYears {
             get => hasYears;
+            set => hasYears = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a year-part.
         /// </summary>
         /// <param name="hasYears">for presence of part</param>
-        public void SetHasYears(bool hasYears)
+        public TimePeriodExpression SetHasYears(bool hasYears)
         {
             this.hasYears = hasYears;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a month-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMonths
-        {
+        public bool IsMonths {
             get => hasMonths;
+            set => hasMonths = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a month-part.
         /// </summary>
         /// <param name="hasMonths">for presence of part</param>
-        public void SetHasMonths(bool hasMonths)
+        public TimePeriodExpression SetHasMonths(bool hasMonths)
         {
             this.hasMonths = hasMonths;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a weeks-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsWeeks
-        {
+        public bool IsWeeks {
             get => hasWeeks;
+            set => hasWeeks = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a weeks-part.
         /// </summary>
         /// <param name="hasWeeks">for presence of part</param>
-        public void SetHasWeeks(bool hasWeeks)
+        public TimePeriodExpression SetHasWeeks(bool hasWeeks)
         {
             this.hasWeeks = hasWeeks;
+            return this;
         }
 
         /// <summary>
         /// Returns true if a subexpression exists that is a microsecond-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMicroseconds
-        {
+        public bool IsMicroseconds {
             get => hasMicroseconds;
+            set => hasMicroseconds = value;
         }
 
         /// <summary>
         /// Set to true if a subexpression exists that is a microsecond-part.
         /// </summary>
         /// <param name="hasMicroseconds">indicator for presence of part</param>
-        public void SetHasMicroseconds(bool hasMicroseconds)
+        public TimePeriodExpression SetHasMicroseconds(bool hasMicroseconds)
         {
             this.hasMicroseconds = hasMicroseconds;
+            return this;
         }
 
         public override ExpressionPrecedenceEnum Precedence

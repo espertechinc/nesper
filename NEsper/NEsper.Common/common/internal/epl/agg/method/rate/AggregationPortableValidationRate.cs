@@ -20,8 +20,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
 {
     public class AggregationPortableValidationRate : AggregationPortableValidationWFilterWInputType
     {
-        private long intervalTime;
-
         public AggregationPortableValidationRate(
             bool distinct,
             bool hasFilter,
@@ -29,12 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             long intervalTime)
             : base(distinct, hasFilter, inputValueType)
         {
-            this.intervalTime = intervalTime;
+            this.IntervalTime = intervalTime;
         }
 
         public AggregationPortableValidationRate()
         {
         }
+
+        public long IntervalTime { get; set; }
 
         protected override Type TypeOf()
         {
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(@ref, "IntervalTime", Constant(intervalTime));
+            method.Block.SetProperty(@ref, "IntervalTime", Constant(IntervalTime));
         }
 
         protected override void ValidateIntoTableWFilterWInputType(
@@ -57,18 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             AggregationForgeFactory factory)
         {
             var that = (AggregationPortableValidationRate) intoTableAgg;
-            if (intervalTime != that.intervalTime) {
+            if (IntervalTime != that.IntervalTime) {
                 throw new ExprValidationException(
                     "The interval-time is " +
-                    intervalTime +
+                    IntervalTime +
                     " and provided is " +
-                    that.intervalTime);
+                    that.IntervalTime);
             }
-        }
-
-        public void SetIntervalTime(long intervalTime)
-        {
-            this.intervalTime = intervalTime;
         }
     }
 } // end of namespace

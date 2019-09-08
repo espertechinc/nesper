@@ -65,13 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newData,
             EventBean[] oldData)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
-            var newOldEvents = resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            var newOldEvents = _resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
 
-            if (!CheckAfterCondition(newOldEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newOldEvents, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 if (AuditPath.isAuditEnabled) {
-                    OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                    OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                 }
 
                 return;
@@ -120,13 +120,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     (oldEvents == null ? 0 : oldEvents.Count));
             }
 
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
-            var newOldEvents = resultSetProcessor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+            var newOldEvents = _resultSetProcessor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
-            if (!CheckAfterCondition(newOldEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newOldEvents, _agentInstanceContext.StatementContext)) {
                 return;
             }
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 if (AuditPath.isAuditEnabled) {
-                    OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                    OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                 }
 
                 return;
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
-                resultSetProcessor,
+                _resultSetProcessor,
                 parentView,
                 _parent.IsDistinct);
         }

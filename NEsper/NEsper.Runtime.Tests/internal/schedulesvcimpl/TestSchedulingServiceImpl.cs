@@ -212,7 +212,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         {
             var dateTimeEx = DateTimeEx.GetInstance(
                 TimeZoneInfo.Local,
-                new DateTime(2004, 11, 9, 15, 27, 10));
+                new DateTime(2004, 12, 9, 15, 27, 10));
             dateTimeEx.SetMillis(500);
             var startTime = dateTimeEx.TimeInMillis;
 

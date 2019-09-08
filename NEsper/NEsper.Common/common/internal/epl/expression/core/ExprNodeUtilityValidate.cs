@@ -147,14 +147,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         text = "'" + text + "'";
                     }
 
-                    throw new ExprValidationException(
-                        "Failed to validate " +
-                        origin.GetClauseName() +
-                        " expression " +
-                        text +
-                        ": " +
-                        ex.Message,
-                        ex);
+                    var errorText = string.Format(
+                        "Failed to validate {0} expression {1}: {2}",
+                        origin.GetClauseName(),
+                        text,
+                        ex.Message);
+
+                    throw new ExprValidationException(errorText, ex);
+                }
+                catch (ExprValidationException) {
+                    throw;
                 }
                 catch (EPException) {
                     throw;
@@ -311,7 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     try {
                         result = ResolveStaticMethodOrField(identNode, e, validationContext);
                     }
-                    catch (ExprValidationException ex) {
+                    catch (ExprValidationException) {
                         var resolutionStream = ResolveAsStreamName(identNode, validationContext);
                         if (resolutionStream.First == false) {
                             throw;

@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             object type2,
             object type21)
         {
-            var typeNames = "Type_Root,Type_1,Type_2,Type_2_1".SplitCsv();
+            var typeNames = new [] { "Type_Root","Type_1","Type_2","Type_2_1" };
             var statements = new EPStatement[4];
             var listeners = new SupportUpdateListener[4];
             for (var i = 0; i < typeNames.Length; i++) {

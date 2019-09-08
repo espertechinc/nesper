@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree.AdvancedIndexPointRegionQuadTree;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexEvaluationHelper;
@@ -108,8 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             if (!added) {
                 throw InvalidColumnValue(
                     organization.IndexName,
-                    "(x,y)",
-                    "(" + x + "," + y + ")",
+                    "(X,Y)",
+                    "(" + x.RenderAny() + "," + y.RenderAny() + ")",
                     "a value within index bounding box (range-end-non-inclusive) " + quadTree.Root.Bb);
             }
         }

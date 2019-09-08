@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             Assert.AreEqual("{}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[0]));
             Assert.AreEqual("{2,3}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[1]));
-            Assert.AreEqual("{1.5,1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[2]));
+            Assert.AreEqual("{1.5d,1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[2]));
             Assert.AreEqual("{\"a\",1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[3]));
         }
     }

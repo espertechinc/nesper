@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             scope.AddSymbol(assigned);
             return assigned;
         }
-
+        
         public void DerivedSymbolsCodegen(
             CodegenMethod parent,
             CodegenBlock processBlock,
@@ -136,7 +136,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                         Cast(underlyingType, ExprDotUnderlying(arrayAtIndex)));
                 }
                 else {
-                    var methodNode = parent.MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
+                    var methodNode = parent
+                        .MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
                         .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);
                     methodNode.Block
                         .DeclareVar<EventBean>("@event", arrayAtIndex)

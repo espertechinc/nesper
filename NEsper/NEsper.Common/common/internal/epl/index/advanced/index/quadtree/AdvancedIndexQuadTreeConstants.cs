@@ -10,18 +10,18 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class AdvancedIndexQuadTreeConstants
     {
-        internal const string COL_X = "x";
-        internal const string COL_Y = "y";
-        internal const string COL_WIDTH = "width";
-        internal const string COL_HEIGHT = "height";
+        internal const string COL_X = "X";
+        internal const string COL_Y = "Y";
+        internal const string COL_WIDTH = "Width";
+        internal const string COL_HEIGHT = "Height";
 
-        internal const string PARAM_XMIN = "xMin";
-        internal const string PARAM_YMIN = "yMin";
-        internal const string PARAM_WIDTH = "width";
-        internal const string PARAM_HEIGHT = "height";
-        internal const string PARAM_LEAFCAPACITY = "leafCapacity";
-        internal const string PARAM_MAXTREEHEIGHT = "maxTreeHeight";
-        internal const string PARAM_MINWIDTH = "minWidth";
-        internal const string PARAM_MINHEIGHT = "minHeight";
+        internal const string PARAM_XMIN = "XMin";
+        internal const string PARAM_YMIN = "YMin";
+        internal const string PARAM_WIDTH = "Width";
+        internal const string PARAM_HEIGHT = "Height";
+        internal const string PARAM_LEAFCAPACITY = "LeafCapacity";
+        internal const string PARAM_MAXTREEHEIGHT = "MaxTreeHeight";
+        internal const string PARAM_MINWIDTH = "MinWidth";
+        internal const string PARAM_MINHEIGHT = "MinHeight";
     }
 } // end of namespace

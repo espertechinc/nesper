@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var eplUnique = "@Name('s0')" +
                             INDEX_CALLBACK_HOOK +
                             "select s1 as c0, " +
-                            "(select s2 from SupportSimpleBeanTwo#unique(" +
+                            "(select S2 from SupportSimpleBeanTwo#unique(" +
                             uniqueFields +
                             ") as ssb2 " +
                             whereClause +
@@ -386,8 +386,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportQueryPlanIndexHook.Reset();
                 var eplUnique = INDEX_CALLBACK_HOOK +
                                 "@Name('s0') select Id as c0, " +
-                                "(select IntPrimitive from SupportBean#unique(TheString) where TheString = s0.P00) as c1 " +
-                                "from SupportBean_S0 as s0";
+                                "(select IntPrimitive from SupportBean#unique(TheString) where TheString = S0.P00) as c1 " +
+                                "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMile(eplUnique, "s0", milestone.GetAndIncrement());
 
                 SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(
@@ -418,8 +418,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportQueryPlanIndexHook.Reset();
                 var eplFirstUnique = INDEX_CALLBACK_HOOK +
                                      "@Name('s0') select Id as c0, " +
-                                     "(select IntPrimitive from SupportBean#firstunique(TheString) where TheString = s0.P00) as c1 " +
-                                     "from SupportBean_S0 as s0";
+                                     "(select IntPrimitive from SupportBean#firstunique(TheString) where TheString = S0.P00) as c1 " +
+                                     "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMile(eplFirstUnique, "s0", milestone.GetAndIncrement());
 
                 SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(
@@ -450,8 +450,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportQueryPlanIndexHook.Reset();
                 var eplIntersection = INDEX_CALLBACK_HOOK +
                                       "@Name('s0') select Id as c0, " +
-                                      "(select IntPrimitive from SupportBean#time(1)#unique(TheString) where TheString = s0.P00) as c1 " +
-                                      "from SupportBean_S0 as s0";
+                                      "(select IntPrimitive from SupportBean#time(1)#unique(TheString) where TheString = S0.P00) as c1 " +
+                                      "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMile(eplIntersection, "s0", milestone.GetAndIncrement());
 
                 SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(
@@ -482,8 +482,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportQueryPlanIndexHook.Reset();
                 var eplGrouped = INDEX_CALLBACK_HOOK +
                                  "@Name('s0') select Id as c0, " +
-                                 "(select LongPrimitive from SupportBean#groupwin(TheString)#unique(IntPrimitive) where TheString = s0.P00 and IntPrimitive = s0.Id) as c1 " +
-                                 "from SupportBean_S0 as s0";
+                                 "(select LongPrimitive from SupportBean#groupwin(TheString)#unique(IntPrimitive) where TheString = S0.P00 and IntPrimitive = S0.Id) as c1 " +
+                                 "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMile(eplGrouped, "s0", milestone.GetAndIncrement());
 
                 SupportQueryPlanIndexHook.AssertSubqueryBackingAndReset(SUBQUERY_NUM_FIRST, null, BACKING_MULTI_UNIQUE);

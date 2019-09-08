@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             private void RunNestedArray(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@MyAnnotationWArrayAndClass(priorities = {@Priority(1), @Priority(3)}, classOne = System.String.class, classTwo = Integer.class) @Name('s0') select * from SupportBean";
+                    "@MyAnnotationWArrayAndClass(priorities = {@Priority(1), @Priority(3)}, ClassOne = System.String.class, ClassTwo = Integer.class) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 var annotations = env.Statement("s0").Annotations;
@@ -383,8 +383,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 string epl;
 
-                epl =
-                    "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 var name = (NameAttribute) AnnotationUtil.FindAnnotation(
@@ -394,16 +394,15 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // try lowercase
-                epl =
-                    "@Name('MyTestStmt') @description('MyTestStmt description') @tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      " select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 env.UndeployAll();
 
                 // try fully-qualified
-                epl = "@" +
-                      typeof(NameAttribute).Name +
-                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
+                epl = "@"  + typeof(NameAttribute).Name + "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 env.UndeployAll();
@@ -416,33 +415,36 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.CompileDeploy("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') select * from SupportBean");
                 env.CompileDeploy("@Hint('  iterate_only ') select * from SupportBean");
 
-                var annos = env.CompileDeploy("@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select * from SupportBean")
+                var annos = env
+                    .CompileDeploy("@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select * from SupportBean")
                     .Statement("s0")
                     .Annotations;
                 Assert.AreEqual("DISABLE_RECLAIM_GROUP", HintEnum.DISABLE_RECLAIM_GROUP.GetHint(annos).Value);
 
-                annos = env.CompileDeploy(
-                        "@Hint('ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') @Name('s1') select * from SupportBean")
+                annos = env
+                    .CompileDeploy("@Hint('ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') @Name('s1') select * from SupportBean")
                     .Statement("s1")
                     .Annotations;
                 Assert.AreEqual(
                     "ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY",
                     HintEnum.DISABLE_RECLAIM_GROUP.GetHint(annos).Value);
 
-                annos = env.CompileDeploy(
-                        "@Hint('ITERATE_ONLY,reclaim_group_aged=10') @Name('s2') select * from SupportBean")
+                annos = env
+                    .CompileDeploy("@Hint('ITERATE_ONLY,reclaim_group_aged=10') @Name('s2') select * from SupportBean")
                     .Statement("s2")
                     .Annotations;
                 var hint = HintEnum.RECLAIM_GROUP_AGED.GetHint(annos);
                 Assert.AreEqual("10", HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(hint));
 
-                annos = env.CompileDeploy("@Hint('reclaim_group_aged=11') @Name('s3') select * from SupportBean")
+                annos = env
+                    .CompileDeploy("@Hint('reclaim_group_aged=11') @Name('s3') select * from SupportBean")
                     .Statement("s3")
                     .Annotations;
                 hint = HintEnum.RECLAIM_GROUP_AGED.GetHint(annos);
                 Assert.AreEqual("11", HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(hint));
 
-                annos = env.CompileDeploy("@Hint('index(one, two)') @Name('s4') select * from SupportBean")
+                annos = env
+                    .CompileDeploy("@Hint('index(one, two)') @Name('s4') select * from SupportBean")
                     .Statement("s4")
                     .Annotations;
                 Assert.AreEqual("one, two", HintEnum.INDEX.GetHintAssignedValues(annos)[0]);

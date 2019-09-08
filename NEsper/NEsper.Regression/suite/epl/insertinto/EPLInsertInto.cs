@@ -222,8 +222,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             Assert.AreEqual(2, listener.LastNewData[0].EventType.PropertyNames.Length);
             Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("s0"));
             Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("s1"));
-            Assert.AreSame(eventS0, listener.LastNewData[0].Get("s0"));
-            Assert.AreSame(eventS1, listener.LastNewData[0].Get("s1"));
+            Assert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
+            Assert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
             Assert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
         }
 
@@ -266,8 +266,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var textOne = "@Name('s1') " +
                           (bean ? "" : rep.GetAnnotationText()) +
                           "insert into event2 select * " +
-                          "from S0#length(100) as s0, S1#length(5) as s1 " +
-                          "where s0.TheString = s1.Id";
+                          "from S0#length(100) as S0, S1#length(5) as S1 " +
+                          "where S0.TheString = S1.Id";
             env.CompileDeploy(textOne, path).AddListener("s1");
 
             var textTwo = "@Name('s2') " + (bean ? "" : rep.GetAnnotationText()) + "select * from event2#length(10)";
@@ -362,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // declare source type
             string schemaEPL;
             if (sourceBean) {
-                schemaEPL = "create schema SourceSchema as " + typeof(MyP0P1EventSource).FullName;
+                schemaEPL = "create schema SourceSchema as " + TypeHelper.MaskTypeName<MyP0P1EventSource>();
             }
             else {
                 schemaEPL = "create " +
@@ -375,18 +375,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             // declare target type
             if (targetBean) {
-                env.CompileDeploy("create schema TargetSchema as " + typeof(MyP0P1EventTarget).FullName, path);
+                var eventTargetType = TypeHelper.MaskTypeName<MyP0P1EventTarget>();
+                env.CompileDeploy(
+                    $"create schema TargetSchema as {eventTargetType}", path);
             }
             else {
+                var outputTypeCreateSchemaName = targetType.Value.GetOutputTypeCreateSchemaName();
                 env.CompileDeploy(
-                    "create " +
-                    targetType.Value.GetOutputTypeCreateSchemaName() +
-                    " schema TargetContainedSchema as (c0 int)",
+                    $"create {outputTypeCreateSchemaName} schema TargetContainedSchema as (c0 int)",
                     path);
                 env.CompileDeploy(
-                    "create " +
-                    targetType.Value.GetOutputTypeCreateSchemaName() +
-                    " schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)",
+                    $"create {outputTypeCreateSchemaName} schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)",
                     path);
             }
 
@@ -425,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // assert
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "p0,p1,c0".SplitCsv(),
+                new [] { "p0","p1","c0" },
                 new object[] {"a", 10, null});
 
             env.UndeployAll();
@@ -553,9 +552,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var stmtText = "insert into Event_1J (delta, product) " +
                                "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
-                               "from SupportBean#length(100) as s0," +
-                               "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.Id";
+                               "from SupportBean#length(100) as S0," +
+                               "SupportBean_A#length(100) as S1 " +
+                               " where S0.TheString = S1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1J");
                 env.UndeployAll();
@@ -568,9 +567,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var stmtText = "insert into Event_1JW (delta, product) " +
                                "select * " +
-                               "from SupportBean#length(100) as s0," +
-                               "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.Id";
+                               "from SupportBean#length(100) as S0," +
+                               "SupportBean_A#length(100) as S1 " +
+                               " where S0.TheString = S1.Id";
 
                 try {
                     env.CompileWCheckedEx(stmtText);
@@ -632,9 +631,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var stmtText = "insert into Event_1_2J " +
                                "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
-                               "from SupportBean#length(100) as s0," +
-                               "SupportBean_A#length(100) as s1 " +
-                               " where s0.TheString = s1.Id";
+                               "from SupportBean#length(100) as S0," +
+                               "SupportBean_A#length(100) as S1 " +
+                               " where S0.TheString = S1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1_2J");
 
@@ -816,7 +815,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
 
-                var fields = "p0,p1".SplitCsv();
+                var fields = new [] { "p0","p1" };
                 var epl =
                     "insert into AStream (p0, p1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
                     "insert into AStream (p0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +

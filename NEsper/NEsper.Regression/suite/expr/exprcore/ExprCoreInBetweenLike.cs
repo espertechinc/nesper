@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Numerics;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -282,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('stmt1') select s0.AnyObject in (ObjectArr) as value from SupportBeanArrayCollMap s0";
+                var epl = "@Name('stmt1') select S0.AnyObject in (ObjectArr) as value from SupportBeanArrayCollMap S0";
 
                 env.CompileDeploy(epl).AddListener("stmt1");
 
@@ -354,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "@Name('s0') select 1 in (IntArr, LongArr) as resOne, 1 not in (IntArr, LongArr) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new[] {10, 20, 30}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -394,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
                 var epl =
                     "@Name('s0') select 1 in (intCol, LongCol) as resOne, 1 not in (LongCol, intCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -437,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "@Name('s0') select 1 in (LongMap, IntMap) as resOne, 1 not in (LongMap, IntMap) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new[] {10, 20, 30}, null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -476,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "@Name('s0') select 1 in (LongBoxed, IntArr, LongMap, intCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, intCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(1L, new int[0], new long?[0], new int[0]));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -520,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl =
                     "@Name('s0') select 1 in (ObjectArr) as resOne, 2 in (ObjectArr) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new object[] { }));
                 EPAssertionUtil.AssertProps(
@@ -554,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl =
                     "@Name('s0') select 1 in ({1,2,3}) as resOne, 2 in ({0, 1}) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "resOne, resTwo".SplitCsv();
+                var fields = new [] { "resOne"," resTwo" };
 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new object[] { }));
                 EPAssertionUtil.AssertProps(
@@ -652,9 +653,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl = "@Name('s0') select " +
-                          "IntPrimitive between BigInteger.ValueOf(1) and BigInteger.ValueOf(3) as c0," +
+                          "IntPrimitive between BigIntegerHelper.ValueOf(1) and BigIntegerHelper.ValueOf(3) as c0," +
                           "IntPrimitive between 1.0m and 3.0m as c1," +
-                          "IntPrimitive in (BigInteger.ValueOf(1):BigInteger.ValueOf(3)) as c2," +
+                          "IntPrimitive in (BigIntegerHelper.ValueOf(1):BigIntegerHelper.ValueOf(3)) as c2," +
                           "IntPrimitive in (1.0m:3.0m) as c3" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -865,7 +866,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".SplitCsv();
+                var fields = new [] { "ro","rc","rho","rhc","nro","nrc","nrho","nrhc" };
                 var eplOne =
                     "@Name('s0') select IntPrimitive in (2:4) as ro, IntPrimitive in [2:4] as rc, IntPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
                     "IntPrimitive not in (2:4) as nro, IntPrimitive not in [2:4] as nrc, IntPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
@@ -909,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "@Name('s1') select IntPrimitive between 4 and 2 as r1, IntPrimitive in [4:2] as r2 from SupportBean";
                 env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
 
-                fields = "r1,r2".SplitCsv();
+                fields = new [] { "r1","r2" };
                 env.SendEventBean(new SupportBean("E1", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
@@ -919,7 +920,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.UndeployAll();
 
                 // test string type;
-                fields = "ro".SplitCsv();
+                fields = new [] { "ro" };
                 var eplThree = "@Name('s2') select TheString in ('a':'d') as ro from SupportBean";
                 env.CompileDeployAddListenerMile(eplThree, "s2", 2);
 

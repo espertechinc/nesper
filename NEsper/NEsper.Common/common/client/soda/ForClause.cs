@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            String delimiter = "";
+            string delimiter = "";
             foreach (ForClauseItem child in Items)
             {
                 writer.Write(delimiter);

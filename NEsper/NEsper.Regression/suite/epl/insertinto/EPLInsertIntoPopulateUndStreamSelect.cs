@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "myint,mystr,addprop".SplitCsv(),
+                new [] { "myint","mystr","addprop" },
                 new object[] {123, "abc", null});
             env.UndeployModuleContaining("insert");
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "myint,mystr,addprop".SplitCsv(),
+                new [] { "myint","mystr","addprop" },
                 new object[] {456, "def", 1});
 
             env.UndeployAll();
@@ -263,14 +263,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var epl = "create objectarray schema Event();\n" +
                           "create objectarray schema ChildEvent(Id string, action string) inherits Event;\n" +
-                          "create objectarray schema IncIdent(name string, event Event);\n" +
-                          "@Name('window') create window IncIdentWindow#keepall as IncIdent;\n" +
+                          "create objectarray schema Incident(name string, event Event);\n" +
+                          "@Name('window') create window IncidentWindow#keepall as Incident;\n" +
                           "\n" +
                           "on ChildEvent e\n" +
-                          "    merge IncIdentWindow w\n" +
+                          "    merge IncidentWindow w\n" +
                           "    where e.Id = cast(w.event.Id? as string)\n" +
                           "    when not matched\n" +
-                          "        then insert (name, event) select 'ChildIncIdent', e \n" +
+                          "        then insert (name, event) select 'ChildIncident', e \n" +
                           "            where e.action = 'INSERT'\n" +
                           "    when matched\n" +
                           "        then update set w.event = e \n" +
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventObjectArray(new object[] {"ID1", "INSERT"}, "ChildEvent");
                 var @event = env.Statement("window").First();
                 var underlying = (object[]) @event.Underlying;
-                Assert.AreEqual("ChildIncIdent", underlying[0]);
+                Assert.AreEqual("ChildIncident", underlying[0]);
                 var underlyingInner = (object[]) ((EventBean) underlying[1]).Underlying;
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] {"ID1", "INSERT"}, underlyingInner);
 

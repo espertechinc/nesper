@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="streamName">is the name assigned to a stream</param>
         /// <param name="optionalColumnName">is the name to assign to the column carrying the streams generated events, ornull if the event should not appear in a column </param>
         public SelectClauseStreamWildcard(
-            String streamName,
-            String optionalColumnName)
+            string streamName,
+            string optionalColumnName)
         {
             this.StreamName = streamName;
             this.OptionalColumnName = optionalColumnName;

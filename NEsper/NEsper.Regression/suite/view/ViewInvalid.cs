@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetSyntaxExceptionView(env, "select * from com.true.mycompany.MyEvent");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Incorrect syntax near 'true' (a reserved keyword) expecting an Identifier but found 'true' at line 1 column 18, please check the view specifications within the from clause [");
+                "Incorrect syntax near 'true' (a reserved keyword) expecting an identifier but found 'true' at line 1 column 18, please check the view specifications within the from clause [");
 
             // keyword as part of identifier
             exception = GetSyntaxExceptionView(env, "select * from MyEvent, MyEvent2 where a.day=b.day");
@@ -99,10 +99,10 @@ namespace com.espertech.esper.regressionlib.suite.view
             EPCompileExceptionItem exception;
 
             // property near to spelling
-            exception = GetStatementExceptionView(env, "select s0.intPrimitv from SupportBean as s0");
+            exception = GetStatementExceptionView(env, "select S0.intPrimitv from SupportBean as S0");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression 's0.intPrimitv': Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'IntPrimitive'?) [");
+                "Failed to validate select-clause expression 'S0.intPrimitv': Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'IntPrimitive'?) [");
 
             exception = GetStatementExceptionView(env, "select INTPRIMITIVE from SupportBean");
             SupportMessageAssertUtil.AssertMessage(
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select * from " + EVENT_ALLTYPES + "#length(1) where TheString > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed [");
 
             // where-clause has aggregation function
             exception = GetStatementExceptionView(
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select * from " + EVENT_ALLTYPES + "#length(1) where sum(IntPrimitive) > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
+                "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
             // invalid numerical expression
             exception = GetStatementExceptionView(env, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1)");
@@ -241,55 +241,55 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "#length(1) on xxxx=yyyy");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Failed to validate on-clause join expression 'xxxx=yyyy': Property named 'xxxx' is not valid in any stream [");
+                "Error validating outer-join expression: Failed to validate on-clause join expression 'xxxx=yyyy': Property named 'xxxx' is not valid in any stream [");
 
             // invalid outer join for 3 streams - not a symbol
             exception = GetStatementExceptionView(
                 env,
                 "select * from " +
                 EVENT_ALLTYPES +
-                "#length(1) as s0 " +
+                "#length(1) as S0 " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " +
+                "#length(1) as S1 on S0.IntPrimitive = S1.IntPrimitive " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s2 on s0.IntPrimitive = s2.yyyy");
+                "#length(1) as S2 on S0.IntPrimitive = S2.yyyy");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Failed to validate on-clause join expression 's0.IntPrimitive=s2.yyyy': Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [");
+                "Error validating outer-join expression: Failed to validate on-clause join expression 'S0.IntPrimitive=S2.yyyy': Failed to resolve property 'S2.yyyy' to a stream or nested property in a stream [");
 
             // invalid outer join for 3 streams - wrong stream, the properties in on-clause don't refer to streams
             exception = GetStatementExceptionView(
                 env,
                 "select * from " +
                 EVENT_ALLTYPES +
-                "#length(1) as s0 " +
+                "#length(1) as S0 " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s1 on s0.IntPrimitive = s1.IntPrimitive " +
+                "#length(1) as S1 on S0.IntPrimitive = S1.IntPrimitive " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s2 on s0.IntPrimitive = s1.IntPrimitive");
+                "#length(1) as S2 on S0.IntPrimitive = S1.IntPrimitive");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Outer join ON-clause must refer to at least one property of the joined stream for stream 2 [");
+                "Error validating outer-join expression: Outer join ON-clause must refer to at least one property of the joined stream for stream 2 [");
 
             // invalid outer join - referencing next stream
             exception = GetStatementExceptionView(
                 env,
                 "select * from " +
                 EVENT_ALLTYPES +
-                "#length(1) as s0 " +
+                "#length(1) as S0 " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s1 on s2.IntPrimitive = s1.IntPrimitive " +
+                "#length(1) as S1 on S2.IntPrimitive = S1.IntPrimitive " +
                 "left outer join " +
                 EVENT_ALLTYPES +
-                "#length(1) as s2 on s1.IntPrimitive = s2.IntPrimitive");
+                "#length(1) as S2 on S1.IntPrimitive = S2.IntPrimitive");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Outer join ON-clause invalid scope for property 'IntPrimitive', expecting the current or a prior stream scope [");
+                "Error validating outer-join expression: Outer join ON-clause invalid scope for property 'IntPrimitive', expecting the current or a prior stream scope [");
 
             // invalid outer join - same properties
             exception = GetStatementExceptionView(
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "#length(1) on TheString=TheString");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Outer join ON-clause cannot refer to properties of the same stream [");
+                "Error validating outer-join expression: Outer join ON-clause cannot refer to properties of the same stream [");
 
             // invalid order by
             exception = GetStatementExceptionView(env, "select * from " + EVENT_NUM + "#length(1) as aStr order by X");

@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "index",
-                    "@Name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.IntPrimitive = s0.Id",
+                    "@Name('A') on SupportBean_S0 as S0 delete from MyWindow as mw where mw.IntPrimitive = S0.Id",
                     "A",
                     text);
 

@@ -20,48 +20,49 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 {
     public class SupportMXCIFQuadTreeFilterIndexUtil
     {
-        private static readonly QuadTreeCollector<string, ICollection<object>> COLLECTION_COLLECTOR =
-            new ProxyQuadTreeCollector<string, ICollection<object>>(
+        private static readonly QuadTreeCollector<ICollection<object>> COLLECTION_COLLECTOR =
+            new ProxyQuadTreeCollector<ICollection<object>>(
                 (
                     @event,
                     s,
                     target) => target.Add(s));
 
-        private static readonly QuadTreeCollector<string, IDictionary<int, string>> MAP_COLLECTOR =
-            new ProxyQuadTreeCollector<string, IDictionary<int, string>>(
+        private static readonly QuadTreeCollector<IDictionary<int, string>> MAP_COLLECTOR =
+            new ProxyQuadTreeCollector<IDictionary<int, string>>(
                 (
                     @event,
                     s,
                     target) => {
-                        int num = int.Parse(s.Substring(1));
+                        var asString = (string) s;
+                        var num = int.Parse(asString.Substring(1));
                         if (target.ContainsKey(num))
                         {
                             throw new IllegalStateException();
                         }
 
-                        target.Put(num, s);
+                        target.Put(num, asString);
                     });
 
-        public static readonly SupportQuadTreeUtil.Querier<MXCIFQuadTree<object>> MXCIF_FI_QUERIER = (
+        public static readonly SupportQuadTreeUtil.Querier<MXCIFQuadTree> MXCIF_FI_QUERIER = (
             tree,
             x,
             y,
             width,
             height) => {
                 IList<object> received = new List<object>();
-                MXCIFQuadTreeFilterIndexCollect<string, ICollection<object>>
+                MXCIFQuadTreeFilterIndexCollect<ICollection<object>>
                     .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR);
                 // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
                 return received.IsEmpty() ? null : received;
             };
 
-        public static readonly SupportQuadTreeUtil.AdderUnique<MXCIFQuadTree<object>> MXCIF_FI_ADDER = (
+        public static readonly SupportQuadTreeUtil.AdderUnique<MXCIFQuadTree> MXCIF_FI_ADDER = (
             tree,
             value) => Set(value.X, value.Y, value.W, value.H, value.Id, tree);
 
-        public static readonly SupportQuadTreeUtil.Remover<MXCIFQuadTree<object>> MXCIF_FI_REMOVER = (
+        public static readonly SupportQuadTreeUtil.Remover<MXCIFQuadTree> MXCIF_FI_REMOVER = (
             tree,
-            value) => MXCIFQuadTreeFilterIndexDelete<object>.Delete(value.X, value.Y, value.W, value.H, tree);
+            value) => MXCIFQuadTreeFilterIndexDelete.Delete(value.X, value.Y, value.W, value.H, tree);
 
         public static void Set(
             double x,
@@ -69,14 +70,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double width,
             double height,
             String value,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
             // Comment-me-in: System.out.println("set(" + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\", tree);");
-            MXCIFQuadTreeFilterIndexSet<object>.Set(x, y, width, height, value, tree);
+            MXCIFQuadTreeFilterIndexSet.Set(x, y, width, height, value, tree);
         }
 
         internal static void AssertCollectAll(
-            MXCIFQuadTree<Object> tree,
+            MXCIFQuadTree tree,
             String expected)
         {
             BoundingBox bb = tree.Root.Bb;
@@ -86,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         internal static void AssertCollect(
-            MXCIFQuadTree<Object> tree,
+            MXCIFQuadTree tree,
             double x,
             double y,
             double width,
@@ -94,13 +95,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             String expected)
         {
             IDictionary<int, string> received = new SortedDictionary<int, string>();
-            MXCIFQuadTreeFilterIndexCollect<string, IDictionary<int, string>>
+            MXCIFQuadTreeFilterIndexCollect<IDictionary<int, string>>
                 .CollectRange(tree, x, y, width, height, null, received, MAP_COLLECTOR);
             AssertCompare(tree, expected, received);
         }
 
         private static void AssertCompare(
-            MXCIFQuadTree<Object> tree,
+            MXCIFQuadTree tree,
             String expected,
             IDictionary<int, String> received)
         {
@@ -114,13 +115,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             Assert.IsTrue((expected.Length == 0 ? 0 : expected.SplitCsv().Length) <= MXCIFQuadTreeFilterIndexCount.Count(tree));
         }
 
-        internal static void Compare<T>(
+        internal static void Compare(
             double x,
             double y,
             double width,
             double height,
-            T expected,
-            XYWHRectangleWValue<T> rectangle)
+            object expected,
+            XYWHRectangleWValue rectangle)
         {
             Assert.AreEqual(x, rectangle.X);
             Assert.AreEqual(y, rectangle.Y);

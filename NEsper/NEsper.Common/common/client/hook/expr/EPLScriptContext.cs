@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="value">value to set</param>
         void SetScriptAttribute(
             string attribute,
-            Object value);
+            object value);
 
         /// <summary>
         ///     Return a script attribute value.
         /// </summary>
         /// <param name="attribute">name to retrieve value for</param>
         /// <returns>attribute value or null if undefined</returns>
-        Object GetScriptAttribute(string attribute);
+        object GetScriptAttribute(string attribute);
     }
 } // end of namespace

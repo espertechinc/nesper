@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write("(");
-            String delimiter = "";
+            string delimiter = "";
             foreach (Expression child in Expressions)
             {
                 writer.Write(delimiter);

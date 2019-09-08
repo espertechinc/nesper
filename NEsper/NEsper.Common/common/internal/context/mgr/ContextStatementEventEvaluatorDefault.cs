@@ -88,19 +88,19 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 // Self-joins require that the internal dispatch happens after all streams are evaluated.
                 // Priority or preemptive settings also require special ordering.
                 if (handle.IsCanSelfJoin || isPrioritized) {
-                    object stmtCallback = stmtCallbacks.Get(agentInstanceFound);
+                    var stmtCallback = stmtCallbacks.Get(agentInstanceFound);
                     if (stmtCallback == null) {
                         stmtCallbacks.Put(agentInstanceFound, handleCallback);
                     }
-                    else if (stmtCallback is ArrayDeque<EPStatementHandleCallbackFilter> callbackFilterDeque) {
+                    else if (stmtCallback is ArrayDeque<FilterHandle> callbackFilterDeque) {
                         if (!callbackFilterDeque.Contains(handleCallback)) {
                             // De-duplicate for Filter OR expression paths
                             callbackFilterDeque.Add(handleCallback);
                         }
                     }
                     else {
-                        var filterDeque = new ArrayDeque<EPStatementHandleCallbackFilter>(4);
-                        filterDeque.Add((EPStatementHandleCallbackFilter) stmtCallback);
+                        var filterDeque = new ArrayDeque<FilterHandle>(4);
+                        filterDeque.Add((FilterHandle) stmtCallback);
                         if (stmtCallback != handleCallback) { // De-duplicate for Filter OR expression paths
                             filterDeque.Add(handleCallback);
                         }

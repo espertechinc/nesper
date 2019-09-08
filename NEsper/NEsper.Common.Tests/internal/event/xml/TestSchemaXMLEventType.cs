@@ -88,8 +88,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
             Assert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 
-            Assert.AreEqual("c", eventSchemaOne.Get("Nested3.Nested4[2].Id"));
-            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("Nested3.Nested4[1].Id"));
+            Assert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].Id"));
+            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].Id"));
         }
 
         [Test]

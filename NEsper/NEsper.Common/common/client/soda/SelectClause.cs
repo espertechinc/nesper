@@ -59,10 +59,10 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Creates a select-clause consisting of a list of property names. </summary>
         /// <param name="propertyNames">is the names of properties to select</param>
         /// <returns>select-clause</returns>
-        public static SelectClause Create(params String[] propertyNames)
+        public static SelectClause Create(params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames)
+            foreach (string name in propertyNames)
             {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Creates a select-clause with a single stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
         /// <param name="streamName">is the name given to a stream</param>
         /// <returns>select-clause</returns>
-        public static SelectClause CreateStreamWildcard(String streamName)
+        public static SelectClause CreateStreamWildcard(string streamName)
         {
             var selectList = new List<SelectClauseElement>();
             selectList.Add(new SelectClauseStreamWildcard(streamName, null));
@@ -104,10 +104,10 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>select-clause</returns>
         public static SelectClause Create(
             StreamSelector streamSelector,
-            params String[] propertyNames)
+            params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames)
+            foreach (string name in propertyNames)
             {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
@@ -118,9 +118,9 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Adds property names to be selected. </summary>
         /// <param name="propertyNames">is a list of property names to add</param>
         /// <returns>clause</returns>
-        public SelectClause Add(params String[] propertyNames)
+        public SelectClause Add(params string[] propertyNames)
         {
-            foreach (String name in propertyNames)
+            foreach (string name in propertyNames)
             {
                 _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
@@ -133,8 +133,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="asName">is the "as"-asName for the column</param>
         /// <returns>clause</returns>
         public SelectClause AddWithAsProvidedName(
-            String propertyName,
-            String asName)
+            string propertyName,
+            string asName)
         {
             _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(propertyName), asName));
             return this;
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>clause</returns>
         public SelectClause Add(
             Expression expression,
-            String asName)
+            string asName)
         {
             _selectList.Add(new SelectClauseExpression(expression, asName));
             return this;
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Adds to the select-clause a stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
         /// <param name="streamName">is the name given to a stream</param>
         /// <returns>select-clause</returns>
-        public SelectClause AddStreamWildcard(String streamName)
+        public SelectClause AddStreamWildcard(string streamName)
         {
             _selectList.Add(new SelectClauseStreamWildcard(streamName, null));
             return this;
@@ -191,8 +191,8 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="columnName">the name given to the column</param>
         /// <returns>select-clause</returns>
         public SelectClause AddStreamWildcard(
-            String streamName,
-            String columnName)
+            string streamName,
+            string columnName)
         {
             _selectList.Add(new SelectClauseStreamWildcard(streamName, columnName));
             return this;
@@ -270,7 +270,7 @@ namespace com.espertech.esper.common.client.soda
 
             if (_selectList != null && !_selectList.IsEmpty())
             {
-                String delimiter = "";
+                string delimiter = "";
                 foreach (SelectClauseElement element in _selectList)
                 {
                     writer.Write(delimiter);

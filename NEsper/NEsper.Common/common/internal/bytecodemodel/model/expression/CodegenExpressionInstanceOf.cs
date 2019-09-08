@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type clazz,
             bool not)
         {
-            this._lhs = lhs;
-            this._clazz = clazz;
-            this._not = not;
+            _lhs = lhs;
+            _clazz = clazz;
+            _not = not;
         }
 
         public void Render(

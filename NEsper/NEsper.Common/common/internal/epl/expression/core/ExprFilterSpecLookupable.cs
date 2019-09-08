@@ -24,13 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Type returnType,
             bool isNonPropertyGetter)
         {
-            Expression = expression ??
-                         throw new ArgumentNullException(nameof(expression));
-            this.getter = getter ?? 
-                          throw new ArgumentNullException(nameof(getter));
+            this.getter = getter; // apparently, the getter can be null (wth)
+            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
             // For type consistency for recovery and serde define as boxed type
-            ReturnType = returnType?.GetBoxedType() ??
-                         throw new ArgumentNullException(nameof(returnType));
+            ReturnType = returnType?.GetBoxedType();
             IsNonPropertyGetter = isNonPropertyGetter;
         }
 
@@ -73,11 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override string ToString()
         {
-            return "ExprFilterSpecLookupable{" +
-                   "expression='" +
-                   Expression +
-                   '\'' +
-                   '}';
+            return $"ExprFilterSpecLookupable{{expression='{Expression}'}}";
         }
     }
 } // end of namespace

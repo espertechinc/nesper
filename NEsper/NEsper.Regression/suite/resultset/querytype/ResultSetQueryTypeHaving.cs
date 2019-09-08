@@ -122,11 +122,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string filterClause)
         {
             var epl =
-                "@Name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.min(a.Price, b.Price) as spread " +
+                "@Name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
                 "from SupportMarketDataBean(Symbol='SYM1')#length(1) as a, " +
                 "SupportMarketDataBean(Symbol='SYM2')#length(1) as b " +
                 filterClause +
-                " Math.Max(a.Price, b.Price) - Math.min(a.Price, b.Price) >= 1.4";
+                " Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) >= 1.4";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendPriceEvent(env, "SYM1", 20);

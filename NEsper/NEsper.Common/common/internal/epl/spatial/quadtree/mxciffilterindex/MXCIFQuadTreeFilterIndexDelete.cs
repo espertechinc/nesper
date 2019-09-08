@@ -15,29 +15,29 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
-    public class MXCIFQuadTreeFilterIndexDelete<TL>
+    public class MXCIFQuadTreeFilterIndexDelete
     {
         public static void Delete(
             double x,
             double y,
             double width,
             double height,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
             var root = tree.Root;
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y, width, height);
             tree.Root = DeleteFromNode(x, y, width, height, root, tree);
         }
 
-        private static MXCIFQuadTreeNode<object> DeleteFromNode(
+        private static MXCIFQuadTreeNode DeleteFromNode(
             double x,
             double y,
             double width,
             double height,
-            MXCIFQuadTreeNode<object> node,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTreeNode node,
+            MXCIFQuadTree tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 var removed = DeleteFromData(x, y, width, height, leaf.Data);
                 if (removed) {
                     leaf.DecCount();
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return leaf;
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             var quadrant = node.Bb.GetQuadrantApplies(x, y, width, height);
             if (quadrant == QuadrantAppliesEnum.NW) {
                 branch.Nw = DeleteFromNode(x, y, width, height, branch.Nw, tree);
@@ -73,10 +73,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 }
             }
 
-            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf<object> nwLeaf) ||
-                !(branch.Ne is MXCIFQuadTreeNodeLeaf<object> neLeaf) ||
-                !(branch.Sw is MXCIFQuadTreeNodeLeaf<object> swLeaf) ||
-                !(branch.Se is MXCIFQuadTreeNodeLeaf<object> seLeaf)) {
+            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf nwLeaf) ||
+                !(branch.Ne is MXCIFQuadTreeNodeLeaf neLeaf) ||
+                !(branch.Sw is MXCIFQuadTreeNodeLeaf swLeaf) ||
+                !(branch.Se is MXCIFQuadTreeNodeLeaf seLeaf)) {
                 return branch;
             }
 
@@ -85,13 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return branch;
             }
 
-            var collection = new List<XYWHRectangleWValue<TL>>();
+            var collection = new List<XYWHRectangleWValue>();
             var count = MergeChildNodes(collection, branch.Data);
             count += MergeChildNodes(collection, nwLeaf.Data);
             count += MergeChildNodes(collection, neLeaf.Data);
             count += MergeChildNodes(collection, swLeaf.Data);
             count += MergeChildNodes(collection, seLeaf.Data);
-            return new MXCIFQuadTreeNodeLeaf<object>(branch.Bb, branch.Level, collection, count);
+            return new MXCIFQuadTreeNodeLeaf(branch.Bb, branch.Level, collection, count);
         }
 
         private static bool DeleteFromData(
@@ -105,12 +105,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return false;
             }
 
-            if (!(data is ICollection<XYWHRectangleWValue<TL>>)) {
-                var rectangle = (XYWHRectangleWValue<TL>) data;
+            if (!(data is ICollection<XYWHRectangleWValue>)) {
+                var rectangle = (XYWHRectangleWValue) data;
                 return rectangle.CoordinateEquals(x, y, width, height);
             }
 
-            var collection = (ICollection<XYWHRectangleWValue<TL>>) data;
+            var collection = (ICollection<XYWHRectangleWValue>) data;
             foreach (var rectangles in collection) {
                 if (rectangles.CoordinateEquals(x, y, width, height)) {
                     collection.Remove(rectangles);
@@ -122,19 +122,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         }
 
         private static int MergeChildNodes(
-            ICollection<XYWHRectangleWValue<TL>> target,
+            ICollection<XYWHRectangleWValue> target,
             object data)
         {
             if (data == null) {
                 return 0;
             }
 
-            if (data is XYWHRectangleWValue<TL> dataRect) {
+            if (data is XYWHRectangleWValue dataRect) {
                 target.Add(dataRect);
                 return 1;
             }
 
-            var coll = (ICollection<XYWHRectangleWValue<TL>>) data;
+            var coll = (ICollection<XYWHRectangleWValue>) data;
             target.AddAll(coll);
             return coll.Count;
         }

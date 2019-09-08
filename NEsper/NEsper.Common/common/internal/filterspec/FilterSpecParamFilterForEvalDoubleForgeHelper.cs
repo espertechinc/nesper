@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 
@@ -22,33 +23,43 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope,
             CodegenMethod method)
         {
-            var anonymousClass =
-                CodegenExpressionBuilder.NewAnonymousClass(method.Block, typeof(FilterSpecParamFilterForEvalDouble));
+            var getFilterValueDouble = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP)
+                .WithBody(
+                    block => block.BlockReturn(
+                        CodegenExpressionBuilder.Cast(
+                            typeof(double),
+                            eval.MakeCodegen(classScope, method))));
 
-            var getFilterValueDouble = CodegenMethod
-                .MakeMethod(typeof(double), originator, classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            anonymousClass.AddMethod("GetFilterValueDouble", getFilterValueDouble);
-            getFilterValueDouble.Block.MethodReturn(
-                CodegenExpressionBuilder.Cast(
-                    typeof(double),
-                    eval.MakeCodegen(
-                        classScope,
-                        getFilterValueDouble)));
+            //anonymousClass.AddMethod("GetFilterValueDouble", getFilterValueDouble);
+            //getFilterValueDouble.Block.MethodReturn(
+            //    CodegenExpressionBuilder.Cast(
+            //        typeof(double),
+            //        eval.MakeCodegen(
+            //            classScope,
+            //            getFilterValueDouble)));
 
-            var getFilterValue = CodegenMethod
-                .MakeMethod(typeof(object), originator, classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            anonymousClass.AddMethod("GetFilterValue", getFilterValue);
-            getFilterValue.Block.MethodReturn(
-                CodegenExpressionBuilder.ExprDotMethod(
-                    CodegenExpressionBuilder.Ref("this"),
-                    "GetFilterValueDouble",
-                    FilterSpecParam.REF_MATCHEDEVENTMAP,
-                    ExprForgeCodegenNames.REF_EXPREVALCONTEXT,
-                    FilterSpecParam.REF_STMTCTXFILTEREVALENV));
+            //var getFilterValue = new CodegenExpressionLambda(method.Block)
+            //    .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP)
+            //    .WithBody(
+            //        block => block.BlockReturn(
+            //            CodegenExpressionBuilder.ExprDotMethod(
+            //                CodegenExpressionBuilder.Ref("this"),
+            //                "GetFilterValueDouble",
+            //                FilterSpecParam.REF_MATCHEDEVENTMAP,
+            //                ExprForgeCodegenNames.REF_EXPREVALCONTEXT,
+            //                FilterSpecParam.REF_STMTCTXFILTEREVALENV)));
 
-            return anonymousClass;
+            //anonymousClass.AddMethod("GetFilterValue", getFilterValue);
+            //getFilterValue.Block.MethodReturn(
+            //    CodegenExpressionBuilder.ExprDotMethod(
+            //        CodegenExpressionBuilder.Ref("this"),
+            //        "GetFilterValueDouble",
+            //        FilterSpecParam.REF_MATCHEDEVENTMAP,
+            //        ExprForgeCodegenNames.REF_EXPREVALCONTEXT,
+            //        FilterSpecParam.REF_STMTCTXFILTEREVALENV));
+
+            return CodegenExpressionBuilder.NewInstance<ProxyFilterSpecParamFilterForEvalDouble>(getFilterValueDouble);
         }
     }
 }

@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.client.context
         /// </summary>
         /// <param name="contextPartitionIdentifier">provides context partition information, may</param>
         /// <returns>true to pass filter, false to reject</returns>
-        Boolean Filter(ContextPartitionIdentifier contextPartitionIdentifier);
+        bool Filter(ContextPartitionIdentifier contextPartitionIdentifier);
     }
 }

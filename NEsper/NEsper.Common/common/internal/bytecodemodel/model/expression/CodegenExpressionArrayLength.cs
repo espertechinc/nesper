@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionArrayLength(CodegenExpression expression)
         {
-            this._expression = expression;
+            _expression = expression;
         }
 
         public void Render(

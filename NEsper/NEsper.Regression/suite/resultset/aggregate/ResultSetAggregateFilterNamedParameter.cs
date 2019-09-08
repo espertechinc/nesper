@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "ta,tb,wa,wb,sa,sb".SplitCsv(),
+                new [] { "ta","tb","wa","wb","sa","sb" },
                 new[] {ta, tb, wa, wb, sa, sb});
         }
 
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "myrate,myqtyrate".SplitCsv();
+                var fields = new [] { "myrate","myqtyrate" };
                 var epl = "@Name('s0') select " +
                           "rate(LongPrimitive, filter:TheString like 'A%') as myrate, " +
                           "rate(LongPrimitive, IntPrimitive, filter:TheString like 'A%') as myqtyrate " +
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // invalid correlated subquery
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select sum(IntPrimitive, filter:s0.P00='a') from SupportBean) from SupportBean_S0 as s0",
+                    "select (select sum(IntPrimitive, filter:S0.P00='a') from SupportBean) from SupportBean_S0 as S0",
                     "Failed to plan subquery number 1 querying SupportBean: Subselect aggregation functions cannot aggregate across correlated properties");
             }
         }
@@ -691,7 +691,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "aMaxby,aMinby,aSorted,bMaxby,bMinby,bSorted".SplitCsv();
+                var fields = new [] { "aMaxby","aMinby","aSorted","bMaxby","bMinby","bSorted" };
                 var epl = "@Name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "minby(IntPrimitive, filter:TheString like 'A%').TheString as aMinby," +
@@ -773,7 +773,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "aSorted,bSorted".SplitCsv();
+                var fields = new [] { "aSorted","bSorted" };
                 var epl = "@Name('s0') select " +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'A%') as aSorted," +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'B%') as bSorted" +
@@ -821,7 +821,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "aMaxby,aMaxbyever,aMinby,aMinbyever".SplitCsv();
+                var fields = new [] { "aMaxby","aMaxbyever","aMinby","aMinbyever" };
                 var epl = "@Name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "maxbyever(IntPrimitive, filter:TheString like 'A%').TheString as aMaxbyever," +
@@ -888,7 +888,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "aFirst,aLast,aWindow,bFirst,bLast,bWindow".SplitCsv();
+                var fields = new [] { "aFirst","aLast","aWindow","bFirst","bLast","bWindow" };
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "last(IntPrimitive, filter:TheString like 'A%') as aLast," +
@@ -993,7 +993,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "aFirst,aFirstever,aLast,aLastever,aCountever".SplitCsv();
+                var fields = new [] { "aFirst","aFirstever","aLast","aLastever","aCountever" };
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "firstever(IntPrimitive, filter:TheString like 'A%') as aFirstever," +

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
@@ -51,17 +52,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(soda, eplInto, path);
 
             var key = grouped ? "[\"E1\"]" : "";
-            var eplSelect = "@Name('s0') select " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.last(*).IntPrimitive as c0, " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.window(*).countOf() as c1, " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.window(IntPrimitive).take(1) as c2" +
-                            " from SupportBean_S0";
+            var eplSelect = string.Format(
+                "@Name('s0') select " +
+                "varaggNDM{0}.windowSupportBean.last(*).IntPrimitive as c0, " + 
+                "varaggNDM{0}.windowSupportBean.window(*).countOf() as c1, " + 
+                "varaggNDM{0}.windowSupportBean.window(IntPrimitive).take(1) as c2" + 
+                " from SupportBean_S0",
+                key);
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
             object[][] expectedAggType = {
                 new object[] {"c0", typeof(int?)},
@@ -220,48 +217,39 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 bool soda,
                 AtomicLong milestone)
             {
-                var myBean = typeof(MyBean).Name;
+                var myBean = TypeHelper.MaskTypeName<MyBean>();
                 var path = new RegressionPath();
-                var eplType = "create objectarray schema MyEvent as (p0 string);" +
-                              "create objectarray schema PopulateEvent as (" +
-                              "key string, ts long" +
-                              ", mb " +
-                              myBean +
-                              ", mbarr " +
-                              myBean +
-                              "[]" +
-                              ", me MyEvent, mearr MyEvent[])";
+                var eplType = 
+                    $"create objectarray schema MyEvent as (p0 string);" +
+                    $"create objectarray schema PopulateEvent as (" +
+                    $" key string," +
+                    $" ts long," +
+                    $" mb {myBean}," + 
+                    $" mbarr {myBean}[]," +
+                    $" me MyEvent," +
+                    $" mearr MyEvent[])";
                 env.CompileDeployWBusPublicType(eplType, path);
 
-                var eplDeclare = "create table varaggPWD (key string" +
-                                 (grouped ? " primary key" : "") +
-                                 ", ts long" +
-                                 ", mb " +
-                                 myBean +
-                                 ", mbarr " +
-                                 myBean +
-                                 "[]" +
-                                 ", me MyEvent, mearr MyEvent[])";
+                var primaryKey = (grouped ? "primary key" : "");
+                var eplDeclare =
+                    "create table varaggPWD " +
+                    $"(key string {primaryKey}" +
+                    $", ts long" +
+                    $", mb {myBean}" +
+                    $", mbarr {myBean}[]" +
+                    $", me MyEvent" +
+                    $", mearr MyEvent[])";
                 env.CompileDeploy(soda, eplDeclare, path);
 
                 var key = grouped ? "[\"E1\"]" : "";
-                var eplSelect = "@Name('s0') select " +
-                                "varaggPWD" +
-                                key +
-                                ".ts.getMinuteOfHour() as c0, " +
-                                "varaggPWD" +
-                                key +
-                                ".mb.getMyProperty() as c1, " +
-                                "varaggPWD" +
-                                key +
-                                ".mbarr.takeLast(1) as c2, " +
-                                "varaggPWD" +
-                                key +
-                                ".me.p0 as c3, " +
-                                "varaggPWD" +
-                                key +
-                                ".mearr.selectFrom(i -> i.p0) as c4 " +
-                                "from SupportBean_S0";
+                var eplSelect =
+                    $"@Name('s0') select " +
+                    $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " + 
+                    $"varaggPWD{key}.mb.getMyProperty() as c1, " +
+                    $"varaggPWD{key}.mbarr.takeLast(1) as c2, " +
+                    $"varaggPWD{key}.me.p0 as c3, " +
+                    $"varaggPWD{key}.mearr.selectFrom(i -> i.p0) as c4 " +
+                    $" from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path);
                 env.AddListener("s0");
 
@@ -278,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var output = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     output,
-                    "c0,c1,c3".SplitCsv(),
+                    new [] { "c0","c1","c3" },
                     new object[] {55, "x", "p0value"});
                 Assert.AreEqual(1, ((ICollection<object>) output.Get("c2")).Count);
                 Assert.AreEqual("[0_p0, 1_p0]", output.Get("c4").ToString());

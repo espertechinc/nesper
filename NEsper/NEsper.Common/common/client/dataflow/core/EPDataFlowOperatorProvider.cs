@@ -22,6 +22,6 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <returns>
         /// operator instance, or null if the default empty construct instantiation for the operator class should be used
         /// </returns>
-        Object Provide(EPDataFlowOperatorProviderContext context);
+        object Provide(EPDataFlowOperatorProviderContext context);
     }
 }

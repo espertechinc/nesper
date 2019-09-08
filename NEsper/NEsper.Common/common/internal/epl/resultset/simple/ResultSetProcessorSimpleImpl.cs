@@ -176,13 +176,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         ConstantTrue()))
                 .IfRefNull("result")
                 .BlockReturn(
-                    StaticMethod(typeof(Collections), "GetEmptyEnumerator", new[] {typeof(MultiKey<EventBean>)}))
+                    StaticMethod(typeof(Collections), "GetEmptyEnumerator", new[] {typeof(EventBean)}))
                 .MethodReturn(
                     ExprDotMethod(
-                        StaticMethod(
-                            typeof(Arrays),
-                            "Enumerate",
-                            Cast(typeof(EventBean[]), GetProperty(Ref("result"), "First"))),
+                        StaticMethod(typeof(Arrays), "Enumerate", GetProperty(Ref("result"), "First")),
                         "GetEnumerator"));
         }
 
@@ -302,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar<UniformPair<EventBean[]>>(
+                method.Block.DeclareVar<UniformPair<ISet<MultiKey<EventBean>>>>(
                         "pair",
                         StaticMethod(
                             typeof(EventBeanUtility),
@@ -312,8 +309,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         ExprDotMethod(
                             Ref("this"),
                             "ProcessJoinResult",
-                            Cast(typeof(ISet<EventBean>), GetProperty(Ref("pair"), "First")),
-                            Cast(typeof(ISet<EventBean>), GetProperty(Ref("pair"), "Second")),
+                            GetProperty(Ref("pair"), "First"),
+                            GetProperty(Ref("pair"), "Second"),
                             REF_ISSYNTHESIZE));
                 return;
             }
@@ -336,8 +333,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         ExprDotMethod(
                             Ref("this"),
                             "ProcessViewResult",
-                            Cast(typeof(EventBean[]), GetProperty(Ref("pair"), "First")),
-                            Cast(typeof(EventBean[]), GetProperty(Ref("pair"), "Second")),
+                            GetProperty(Ref("pair"), "First"),
+                            GetProperty(Ref("pair"), "Second"),
                             REF_ISSYNTHESIZE));
                 return;
             }

@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluators that should return the event collection
             if (CollectionUtil.IsAnySet(allowEventBeanCollType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanCollType[i] && parameterTypes[i] == typeof(ICollection<object>)) {
+                    if (allowEventBeanCollType[i] && parameterTypes[i].IsGenericCollection()) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }
@@ -175,8 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 if (numMethodParams > 1 && parameterTypes[numMethodParams - 2] == typeof(EPLMethodInvocationContext)) {
                     var rewrittenForges = new ExprForge[childForges.Length + 1];
                     Array.Copy(childForges, 0, rewrittenForges, 0, numMethodParams - 2);
-                    var node = new ExprEvalMethodContext(functionName);
-                    rewrittenForges[numMethodParams - 2] = node;
+                    rewrittenForges[numMethodParams - 2] = new ExprEvalMethodContext(functionName);
                     Array.Copy(
                         childForges,
                         numMethodParams - 2,

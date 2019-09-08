@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                     "abc",
                     typeof(SupportConcatWCodegenAggregationFunctionForge));
                 var func = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                    "abc".SplitCsv(),
+                    new [] { "abc" },
                     typeof(SupportAggMFMultiRTForge));
                 config.Compiler.AddPlugInAggregationMultiFunction(func);
             };
@@ -140,11 +140,11 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             configurer = config => {
                 var funcOne = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                    "abc,def".SplitCsv(),
+                    new [] { "abc","def" },
                     typeof(SupportAggMFMultiRTForge));
                 config.Compiler.AddPlugInAggregationMultiFunction(funcOne);
                 var funcTwo = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                    "def,xyz".SplitCsv(),
+                    new [] { "def","xyz" },
                     typeof(SupportAggMFMultiRTForge));
                 config.Compiler.AddPlugInAggregationMultiFunction(funcTwo);
             };
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             configurer = config => {
                 var configTwo =
-                    new ConfigurationCompilerPlugInAggregationMultiFunction("thefunction2".SplitCsv(), "x y z");
+                    new ConfigurationCompilerPlugInAggregationMultiFunction(new [] { "thefunction2" }, "x y z");
                 config.Compiler.AddPlugInAggregationMultiFunction(configTwo);
             };
             TryInvalidConfigurationCompiler(

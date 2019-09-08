@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = Boxing.GetBoxedType(forge.Method.ReturnType);
+            var returnType = forge.Method.ReturnType.GetBoxedType();
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
                 .AddParam(forge.Method.DeclaringType, "target");
@@ -142,14 +142,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return LocalMethod(methodNode, inner);
         }
 
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="optionalStatementName">name</param>
-        /// <param name="method">method name</param>
-        /// <param name="targetClassName">target class name</param>
-        /// <param name="args">args</param>
-        /// <param name="t">throwable</param>
         public static void HandleTargetException(
             string optionalStatementName,
             MethodInfo method,
@@ -169,5 +161,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 t);
             Log.Error(message, t);
         }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="optionalStatementName">name</param>
+        /// <param name="methodName">method name</param>
+        /// <param name="methodParams">method parameters (types only)</param>
+        /// <param name="targetClassName">target class name</param>
+        /// <param name="args">args</param>
+        /// <param name="t">throwable</param>
+        public static void HandleTargetException(
+            string optionalStatementName,
+            string methodName,
+            Type[] methodParams,
+            string targetClassName,
+            object[] args,
+            Exception t)
+        {
+            if (t is TargetException)
+            {
+                t = ((TargetException) t).InnerException;
+            }
+
+            var message = TypeHelper.GetMessageInvocationTarget(
+                optionalStatementName,
+                methodName,
+                methodParams,
+                targetClassName,
+                args,
+                t);
+            Log.Error(message, t);
+        }
+
+
     }
 } // end of namespace

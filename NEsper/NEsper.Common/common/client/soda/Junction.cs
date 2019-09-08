@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Property to add to the conjunction (AND) or disjunction (OR). </summary>
         /// <param name="propertyName">is the name of the property</param>
         /// <returns>expression</returns>
-        public Junction Add(String propertyName)
+        public Junction Add(string propertyName)
         {
             Children.Add(new PropertyValueExpression(propertyName));
             return this;

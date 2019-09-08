@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.client.context
 
         /// <summary>Ctor. </summary>
         /// <param name="keys">partitioning keys</param>
-        public ContextPartitionIdentifierPartitioned(Object[] keys)
+        public ContextPartitionIdentifierPartitioned(object[] keys)
         {
             _keys = keys;
         }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.context
             return Collections.AreEqual(_keys, ((ContextPartitionIdentifierPartitioned) other)._keys);
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "ContextPartitionIdentifierPartitioned{" +
                    "keys=" +

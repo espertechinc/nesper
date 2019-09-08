@@ -115,10 +115,14 @@ namespace com.espertech.esper.compiler.@internal.util
                     }
 
                     if (IsNamespaceWildcard(parseNodeImport.Imported)) {
-                        imports.Add(new ImportNamespace(parseNodeImport.Imported, null));
+                        imports.Add(
+                            new ImportNamespace(
+                                GetNamespace(parseNodeImport.Imported)));
                     }
                     else {
-                        imports.Add(new ImportType(parseNodeImport.Imported, null));
+                        imports.Add(
+                            new ImportType(
+                                parseNodeImport.Imported));
                     }
 
                     continue;
@@ -475,7 +479,7 @@ namespace com.espertech.esper.compiler.@internal.util
             return -1;
         }
 
-        public static string GetPackageName(string importName)
+        public static string GetNamespace(string importName)
         {
             return importName.Substring(0, importName.Length - 2);
         }

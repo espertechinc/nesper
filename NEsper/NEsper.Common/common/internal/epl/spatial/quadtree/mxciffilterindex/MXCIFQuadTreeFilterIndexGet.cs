@@ -15,32 +15,32 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
-    public class MXCIFQuadTreeFilterIndexGet<TL>
+    public class MXCIFQuadTreeFilterIndexGet
     {
-        public static TL Get(
+        public static object Get(
             double x,
             double y,
             double width,
             double height,
-            MXCIFQuadTree<object> tree)
+            MXCIFQuadTree tree)
         {
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(tree.Root.Bb, x, y, width, height);
             return Get(x, y, width, height, tree.Root);
         }
 
-        private static TL Get(
+        private static object Get(
             double x,
             double y,
             double width,
             double height,
-            MXCIFQuadTreeNode<object> node)
+            MXCIFQuadTreeNode node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object>) {
-                var leaf = (MXCIFQuadTreeNodeLeaf<object>) node;
+            if (node is MXCIFQuadTreeNodeLeaf) {
+                var leaf = (MXCIFQuadTreeNodeLeaf) node;
                 return GetFromData(x, y, width, height, leaf.Data);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch<object>) node;
+            var branch = (MXCIFQuadTreeNodeBranch) node;
             var q = node.Bb.GetQuadrantApplies(x, y, width, height);
             switch (q) {
                 case QuadrantAppliesEnum.NW:
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             throw new IllegalStateException("Not applicable to any quadrant");
         }
 
-        private static TL GetFromData(
+        private static object GetFromData(
             double x,
             double y,
             double width,
@@ -70,26 +70,25 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             object data)
         {
             if (data == null) {
-                return default(TL);
+                return null;
             }
 
-            if (data is XYWHRectangleWValue<TL>) {
-                var value = (XYWHRectangleWValue<TL>) data;
+            if (data is XYWHRectangleWValue) {
+                var value = (XYWHRectangleWValue) data;
                 if (value.CoordinateEquals(x, y, width, height)) {
                     return value.Value;
                 }
 
-                return default(TL);
+                return null;
             }
 
-            var collection = (ICollection<XYWHRectangleWValue<TL>>) data;
-            foreach (var rectangle in collection) {
+            foreach (var rectangle in (ICollection<XYWHRectangleWValue>) data) {
                 if (rectangle.CoordinateEquals(x, y, width, height)) {
-                    return (TL) rectangle.Value;
+                    return rectangle.Value;
                 }
             }
 
-            return default(TL);
+            return null;
         }
     }
 } // end of namespace

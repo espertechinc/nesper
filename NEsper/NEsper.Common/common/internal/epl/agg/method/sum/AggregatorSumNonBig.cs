@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -150,7 +151,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method)
         {
             var coercer = GetCoercerNonBigIntDec(valueType);
-            method.Block.AssignRef(sum, Op(sum, enter ? "+" : "-", coercer.CoerceCodegen(value, valueType)));
+            var opcode = enter ? "+" : "-";
+            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, valueType)));
         }
 
         private void ApplyTable(
@@ -159,7 +161,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(sum, Op(sum, enter ? "+" : "-", Cast(sumType, value)));
+            var coercer = GetCoercerNonBigIntDec(sumType);
+            var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
+            var opcode = enter ? "+" : "-";
+            method.Block.AssignRef(sum, Op(sum, opcode, 
+                coercer.CoerceCodegen(value, valueType)));
         }
     }
 } // end of namespace

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenLocalMethodBuilder(CodegenMethod methodNode)
         {
-            this._methodNode = methodNode;
+            _methodNode = methodNode;
         }
 
         public CodegenLocalMethodBuilder Pass(CodegenExpression expression)

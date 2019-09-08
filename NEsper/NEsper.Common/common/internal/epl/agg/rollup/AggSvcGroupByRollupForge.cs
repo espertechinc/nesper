@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.IfCondition(ExprDotMethod(AggregationServiceCodegenNames.REF_ROLLUPLEVEL, "IsAggregationTop"))
+            method.Block.IfCondition(ExprDotName(AggregationServiceCodegenNames.REF_ROLLUPLEVEL, "IsAggregationTop"))
                 .AssignRef(REF_CURRENTROW, REF_AGGREGATORTOPGROUP)
                 .IfElse()
                 .AssignRef(

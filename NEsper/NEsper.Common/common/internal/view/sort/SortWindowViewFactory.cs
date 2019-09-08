@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         protected internal IComparer<object> comparator;
         protected internal EventType eventType;
         protected internal bool[] isDescendingValues;
-        protected internal ExprEvaluator size;
+        protected internal ExprEvaluator sizeEvaluator;
         protected internal ExprEvaluator[] sortCriteriaEvaluators;
         protected internal Type[] sortCriteriaTypes;
         protected internal bool useCollatorSort;
@@ -42,9 +42,10 @@ namespace com.espertech.esper.common.@internal.view.sort
             set => sortCriteriaEvaluators = value;
         }
 
-        public ExprEvaluator Size {
-            get => size;
-            set => size = value;
+        public ExprEvaluator SizeEvaluator
+        {
+            get => sizeEvaluator;
+            set => sizeEvaluator = value;
         }
 
         public IComparer<object> IComparer => comparator;
@@ -54,13 +55,18 @@ namespace com.espertech.esper.common.@internal.view.sort
             set => isDescendingValues = value;
         }
 
-        public bool IsUseCollatorSort => useCollatorSort;
+        public bool IsUseCollatorSort {
+            get => useCollatorSort;
+            set => useCollatorSort = value;
+        }
 
         public Type[] SortCriteriaTypes {
+            get => sortCriteriaTypes;
             set => sortCriteriaTypes = value;
         }
 
         public bool UseCollatorSort {
+            get => useCollatorSort;
             set => useCollatorSort = value;
         }
 
@@ -80,7 +86,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         {
             var sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
-                size,
+                sizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
             IStreamSortRankRandomAccess sortedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory

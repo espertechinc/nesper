@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             EPAssertionUtil.AssertProps(
                 env.CompileExecuteFAF("select * from " + windowName, path).Array[0],
-                "p0,p1".SplitCsv(),
+                new [] { "p0","p1" },
                 new object[] {p0, p1});
         }
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(s1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "order,select,order.P00,select.P10".SplitCsv(),
+                    new [] { "order","select","order.P00","select.P10" },
                     new object[] {s0, s1, "S0_1", "S1_1"});
 
                 env.UndeployAll();

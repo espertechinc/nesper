@@ -46,6 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            var leftResultType = valueEval.EvaluationType.GetBoxedType();
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .ApplyTri(
@@ -53,21 +54,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     method,
                     symbols)
                 .DeclareVar(
-                    valueEval.EvaluationType,
+                    leftResultType,
                     "leftResult",
                     valueEval.EvaluateCodegen(valueEval.EvaluationType, parent, symbols, classScope))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
-            var leftResultType = valueEval.EvaluationType.GetBoxedType();
             var nrSymbols = new SubselectForgeNRSymbol(leftResultType);
-            var child = parent.MakeChildWithScope(subselect.EvaluationType, GetType(), nrSymbols, classScope)
+            var child = parent
+                .MakeChildWithScope(subselect.EvaluationType, GetType(), nrSymbols, classScope)
                 .AddParam(leftResultType, NAME_LEFTRESULT)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), NAME_ISNEWDATA)
                 .AddParam(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS)
-                .AddParam(
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT);
+                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             child.Block.MethodReturn(CodegenEvaluateInternal(child, nrSymbols, classScope));
             method.Block.MethodReturn(
                 LocalMethod(

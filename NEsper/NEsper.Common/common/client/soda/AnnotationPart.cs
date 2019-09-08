@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="value">to add</param>
         public void AddValue(object value)
         {
-            Attributes.Add(new AnnotationAttribute("value", value));
+            Attributes.Add(new AnnotationAttribute("Value", value));
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.client.soda
         public static AnnotationPart NameAnnotation(string name)
         {
             var part = new AnnotationPart();
-            part.Name = "name";
+            part.Name = "Name";
             part.AddValue(name);
             return part;
         }

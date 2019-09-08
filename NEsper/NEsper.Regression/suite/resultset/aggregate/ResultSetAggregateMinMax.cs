@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "lower,upper,lowerever,upperever".SplitCsv();
+                var fields = new [] { "lower","upper","lowerever","upperever" };
                 var path = new RegressionPath();
 
                 var epl = "create window NamedWindow5m#length(2) as select * from SupportBean;\n" +
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "maxi,mini,max0,min0".SplitCsv();
+                var fields = new [] { "maxi","mini","max0","min0" };
                 var epl = "@Name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
                           "(select max(Id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
                           " from SupportBean";

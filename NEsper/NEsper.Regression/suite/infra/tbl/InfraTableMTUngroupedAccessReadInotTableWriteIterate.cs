@@ -49,16 +49,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (s0 sum(int), s1 sum(double), s2 sum(long))";
+            var eplCreateVariable = "create table vartotal (S0 sum(int), S1 sum(double), S2 sum(long))";
             env.CompileDeploy(eplCreateVariable, path);
 
-            var eplInto = "into table vartotal select sum(IntPrimitive) as s0, " +
-                          "sum(DoublePrimitive) as s1, sum(LongPrimitive) as s2 from SupportBean";
+            var eplInto = "into table vartotal select " +
+                          "sum(IntPrimitive) as S0, " +
+                          "sum(DoublePrimitive) as S1, " +
+                          "sum(LongPrimitive) as S2 " +
+                          "from SupportBean";
             env.CompileDeploy(eplInto, path);
             env.SendEventBean(MakeSupportBean("E", 1, 1, 1));
 
             env.CompileDeploy(
-                "@Name('iterate') select vartotal.s0 as c0, vartotal.s1 as c1, vartotal.s2 as c2 from SupportBean_S0#lastevent",
+                "@Name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
                 path);
             env.SendEventBean(new SupportBean_S0(0));
 

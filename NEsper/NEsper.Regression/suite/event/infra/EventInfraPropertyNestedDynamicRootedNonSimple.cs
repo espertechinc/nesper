@@ -137,23 +137,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           "item?.indexed[0] as indexed1, " +
-                           "exists(item?.indexed[0]) as exists_indexed1, " +
-                           "item?.indexed[1]? as indexed2, " +
-                           "exists(item?.indexed[1]?) as exists_indexed2, " +
+                           "item?.Indexed[0] as indexed1, " +
+                           "exists(item?.Indexed[0]) as exists_indexed1, " +
+                           "item?.Indexed[1]? as indexed2, " +
+                           "exists(item?.Indexed[1]?) as exists_indexed2, " +
                            "item?.ArrayProperty[1]? as array, " +
                            "exists(item?.ArrayProperty[1]?) as exists_array, " +
-                           "item?.mapped('keyOne') as mapped1, " +
-                           "exists(item?.mapped('keyOne')) as exists_mapped1, " +
-                           "item?.mapped('keyTwo')? as mapped2,  " +
-                           "exists(item?.mapped('keyTwo')?) as exists_mapped2,  " +
-                           "item?.mapProperty('xOne')? as map, " +
-                           "exists(item?.mapProperty('xOne')?) as exists_map " +
+                           "item?.Mapped('keyOne') as mapped1, " +
+                           "exists(item?.Mapped('keyOne')) as exists_mapped1, " +
+                           "item?.Mapped('keyTwo')? as mapped2,  " +
+                           "exists(item?.Mapped('keyTwo')?) as exists_mapped2,  " +
+                           "item?.MapProperty('xOne')? as map, " +
+                           "exists(item?.MapProperty('xOne')?) as exists_map " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var propertyNames = "Indexed1,indexed2,array,mapped1,mapped2,map".SplitCsv();
+            var propertyNames = new [] { "Indexed1","indexed2","array","mapped1","mapped2","map" };
             var eventType = env.Statement("s0").EventType;
             foreach (var propertyName in propertyNames) {
                 Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));

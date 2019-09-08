@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("Volume"));
             Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("mySum"));
 
-            var fields = "symbol,Volume,mySum".SplitCsv();
+            var fields = new [] { "symbol","Volume","mySum" };
             SendEvent(env, SYMBOL_DELL, 10000, 49);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 

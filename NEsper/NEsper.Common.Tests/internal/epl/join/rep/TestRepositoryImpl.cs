@@ -115,8 +115,8 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             var it = repository.GetCursors(0);
             Assert.IsTrue(it.MoveNext());
             var cursor = it.Current;
-            Assert.AreSame(s0Event, cursor.TheEvent);
-            Assert.AreSame(0, cursor.Stream);
+            Assert.That(s0Event, Is.SameAs(cursor.TheEvent));
+            Assert.That(cursor.Stream, Is.Zero);
 
             Assert.IsFalse(it.MoveNext());
             TryIteratorEmpty(it);

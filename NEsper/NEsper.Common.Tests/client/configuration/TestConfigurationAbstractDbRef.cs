@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.configuration
         {
             TryInvalid(
                 typeof(Console),
-                "Unsupported type 'System.Console' when expecting any of: [String, Decimal, Boolean, Byte, Short, Int, Long, Float, Double, ByteArray]");
+                "Unsupported type 'System.Console' when expecting any of: [BOOLEAN, BYTE, BYTE_ARRAY, DECIMAL, DOUBLE, FLOAT, INT32, INT64, INT16, STRING, TIMESTAMP]");
 
             var config = new ConfigurationCommonDBRef();
             config.AddTypeBinding(typeof(long), typeof(int));

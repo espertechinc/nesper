@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
-                    "s1.col1,s1.col2".SplitCsv(),
+                    new [] { "S1.col1","S1.col2" },
                     new object[] {10, 11});
 
                 env.UndeployAll();
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventMap(outerData, "OuterType");
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
-                    "one.i1,two.i2".SplitCsv(),
+                    new [] { "one.i1","two.i2" },
                     new object[] {1, 2});
 
                 env.UndeployAll();
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "insert into MyWindowNW select Symbol as a, Volume as b, Volume as c from SupportMarketDataBean;\n" +
                     "insert into MyWindowNW select key as a, boxed as b, primitive as c from MyMapWithKeyPrimitiveBoxed;\n" +
                     "@Name('s1') select a, b, c from MyWindowNW;\n" +
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindowNW as s1 where s0.Symbol = s1.a;\n";
+                    "@Name('delete') on SupportMarketDataBean as S0 delete from MyWindowNW as S1 where S0.Symbol = S1.a;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s1").AddListener("delete");
 
                 var eventType = env.Statement("create").EventType;
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L, 10L);
-                var fields = "stringValOne,stringValTwo,intVal,longVal".SplitCsv();
+                var fields = new [] { "stringValOne","stringValTwo","intVal","longVal" };
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.IsTrue(theEvent is MappedEventBean);
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    "key,primitive".SplitCsv(),
+                    new [] { "key","primitive" },
                     new object[] {"k1", 100L});
 
                 env.UndeployAll();

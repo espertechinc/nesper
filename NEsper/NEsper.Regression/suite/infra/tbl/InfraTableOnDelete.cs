@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "key,thesum".SplitCsv();
+                var fields = new [] { "key","thesum" };
                 env.CompileDeploy("create table varagg as (key string primary key, thesum sum(int))", path);
                 env.CompileDeploy(
                     "into table varagg select sum(IntPrimitive) as thesum from SupportBean group by TheString",

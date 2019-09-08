@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = "lasteveru,firsteveru,windowb".SplitCsv();
+            var fields = new [] { "lasteveru","firsteveru","windowb" };
             var path = new RegressionPath();
             var eplDeclare = "create table varagg (" +
                              "lasteveru lastever(*) @type('SupportBean'), " +
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = "maxbyeveru,minbyeveru,sortedb".SplitCsv();
+            var fields = new [] { "maxbyeveru","minbyeveru","sortedb" };
             var path = new RegressionPath();
 
             var eplDeclare = "create table varagg (" +
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = "maxb,maxu,minb,minu".SplitCsv();
+            var fields = new [] { "maxb","maxu","minb","minu" };
             var path = new RegressionPath();
             var eplDeclare = "create table varagg (" +
                              "maxb max(int), maxu maxever(int), minb min(int), minu minever(int))";
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var result = env.CompileExecuteFAF("select * from MyTable", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "thewin,thesort".SplitCsv(),
+                    new [] { "thewin","thesort" },
                     new[] {
                         new object[] {new[] {sb1, sb2}, new[] {sb2, sb1}}
                     });
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "sumint".SplitCsv();
+                var fields = new [] { "sumint" };
                 var path = new RegressionPath();
 
                 var eplCreateTable = "@Name('Create-Table') create table MyTable(sumint sum(int))";
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@Name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
-                var eplQueryTable = "@Name('s0') select (select sumint from MyTable) as c0 from SupportBean_S0 as s0";
+                var eplQueryTable = "@Name('s0') select (select sumint from MyTable) as c0 from SupportBean_S0 as S0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pkey,sumint".SplitCsv();
+                var fields = new [] { "pkey","sumint" };
                 var valueList = "E1,E2,E3";
                 var path = new RegressionPath();
 
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplQueryTable =
-                    "@Name('s0') select (select sumint from MyTable where pkey = s0.P00) as c0 from SupportBean_S0 as s0";
+                    "@Name('s0') select (select sumint from MyTable where pkey = S0.P00) as c0 from SupportBean_S0 as S0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);
@@ -589,7 +589,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl =
-                    "@Name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(BigDecimal), c2 sum(BigInteger), c3 sum(BigDecimal));\n" +
+                    "@Name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(decimal), c2 sum(BigInteger), c3 sum(decimal));\n" +
                     "into table MyTable select avg(Bigint) as c0, avg(DecimalOne) as c1, sum(Bigint) as c2, sum(DecimalOne) as c3  from SupportBeanNumeric#lastevent;\n";
                 env.CompileDeploy(epl);
 

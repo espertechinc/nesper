@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.dataflow.core
     {
         /// <summary>Ctor. </summary>
         /// <param name="message">error message</param>
-        public EPDataFlowAlreadyExistsException(String message)
+        public EPDataFlowAlreadyExistsException(string message)
             : base(message)
         {
         }

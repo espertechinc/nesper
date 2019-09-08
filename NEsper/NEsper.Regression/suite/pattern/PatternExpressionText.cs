@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every b=SupportBean_B -[10]> d=SupportBean_D", null);
             TryAssertion(env, "every (b=SupportBean_B -> every d=SupportBean_D)", null);
             TryAssertion(env, "every (a_1=SupportBean_A -> b=SupportBean_B -> a_2=SupportBean_A)", null);
-            TryAssertion(env, "c=SupportBean_C => d=SupportBean_D -> a=SupportBean_A", null);
+            TryAssertion(env, "c=SupportBean_C -> d=SupportBean_D -> a=SupportBean_A", null);
             TryAssertion(env, "every (a_1=SupportBean_A -> b=SupportBean_B -> a_2=SupportBean_A)", null);
             TryAssertion(env, "every (a_1=SupportBean_A -[10]> b=SupportBean_B -[10]> a_2=SupportBean_A)", null);
             TryAssertion(env, "every (every a=SupportBean_A -> every b=SupportBean_B)", null);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "[:4] b=SupportBean_B until g=SupportBean_G", null);
             TryAssertion(env, "[1:] b=SupportBean_B until g=SupportBean_G", null);
             TryAssertion(env, "[1:2] b=SupportBean_B until a=SupportBean_A", null);
-            TryAssertion(env, "c=SupportBean_C => [2] b=SupportBean_B -> d=SupportBean_D", null);
+            TryAssertion(env, "c=SupportBean_C -> [2] b=SupportBean_B -> d=SupportBean_D", null);
             TryAssertion(
                 env,
                 "d=SupportBean_D until timer:interval(7 sec)",
