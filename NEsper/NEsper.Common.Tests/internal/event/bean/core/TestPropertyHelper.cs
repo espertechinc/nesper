@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.common.magic;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.container;
@@ -82,10 +81,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             IList<PropertyStem> result = new List<PropertyStem>();
             result.Add(new PropertyStem("x", (MethodInfo) null, null));
-            result.Add(new PropertyStem("class", (MethodInfo) null, null));
-            result.Add(new PropertyStem("GetHashCode", (MethodInfo) null, null));
-            result.Add(new PropertyStem("ToString", (MethodInfo) null, null));
-            result.Add(new PropertyStem("GetType", (MethodInfo) null, null));
+
+            // Add all methods from System.Object that have no parameters, these
+            // would be getters like GetType(), GetHashCode(), ToString().
+            foreach (var method in typeof(object)
+                .GetMethods()
+                .Where(m => m.ReturnType != typeof(void) &&
+                            m.GetParameters().Length == 0)) {
+                result.Add(new PropertyStem(method.Name, method, null));
+            }
+
+            // Ensure that there are at least two properties.
+            Assert.That(result.Count, Is.GreaterThan(1));
 
             PropertyHelper.RemovePlatformProperties(result);
 
@@ -98,8 +105,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var supportEventTypeFactory = SupportEventTypeFactory.GetInstance(container);
             var bean = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBeanPropertyNames());
-            var method = typeof(SupportBeanPropertyNames).GetMethod("getA", new Type[0]);
-            EventPropertyGetter getter = PropertyHelper.GetGetter(method, EventBeanTypedEventFactoryCompileTime.INSTANCE,
+            var property = typeof(SupportBeanPropertyNames).GetProperty("A");
+            var getter = PropertyHelper.GetGetter(property, EventBeanTypedEventFactoryCompileTime.INSTANCE,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
             Assert.AreEqual("", getter.Get(bean));
         }

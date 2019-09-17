@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewGroupObjectArrayEvent());
-            execs.Add(new ViewGroupStats());
+            //execs.Add(new ViewGroupObjectArrayEvent());
+            //execs.Add(new ViewGroupStats());
             execs.Add(new ViewGroupReclaimTimeWindow());
             execs.Add(new ViewGroupReclaimAgedHint());
             execs.Add(new ViewGroupCorrel());
@@ -283,8 +283,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "p1","sp2" };
-                var epl = "@Name('s0') select p1,sum(p2) as sp2 from OAEventStringInt#groupwin(p1)#length(2)";
+                var fields = new [] { "P1","sp2" };
+                var epl = "@Name('s0') select P1,sum(P2) as sp2 from OAEventStringInt#groupwin(P1)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {"A", 10}, "OAEventStringInt");

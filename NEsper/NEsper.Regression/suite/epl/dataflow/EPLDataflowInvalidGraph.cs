@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidCompile(
                     env,
                     "create dataflow MyGraph MySource -> myout",
-                    "Incorrect syntax near end-of-input expecting a left curly bracket '{' but found end-of-input at line 1 column 41 [");
+                    "Incorrect syntax near end-of-input expecting a left curly bracket '{' but found EOF at line 1 column 41 [");
 
                 // duplicate data flow name
                 epl = "create dataflow MyGraph Emitter -> outstream<?> {};\n" +

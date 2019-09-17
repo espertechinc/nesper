@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.property
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (!propertyDesc.PropertyType.Equals(EventPropertyType.SIMPLE)) {
+            if (!propertyDesc.PropertyType.Equals(PropertyType.SIMPLE)) {
                 return null;
             }
 
@@ -95,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             if (def is IDictionary<string, object>) {
-                return typeof(IDictionary<object, object>);
+                return typeof(IDictionary<string, object>);
             }
 
             if (def is TypeBeanOrUnderlying) {

@@ -116,6 +116,11 @@ namespace com.espertech.esper.common.client.configuration.common
             }
         }
 
+        public override string ToString()
+        {
+            return $"ImportType: {nameof(Namespace)}: {Namespace}, {nameof(TypeNameBase)}: {TypeNameBase}, {nameof(TypeName)}: {TypeName}, {nameof(AssemblyName)}: {AssemblyName}";
+        }
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

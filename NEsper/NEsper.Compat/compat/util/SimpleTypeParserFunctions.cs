@@ -12,7 +12,7 @@ using System.Numerics;
 
 using com.espertech.esper.compat.datetime;
 
-namespace com.espertech.esper.common.@internal.util
+namespace com.espertech.esper.compat.util
 {
     public class SimpleTypeParserFunctions
     {

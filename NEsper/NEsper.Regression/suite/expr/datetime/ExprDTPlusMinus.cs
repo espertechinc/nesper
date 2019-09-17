@@ -38,18 +38,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = new[] {
-                    "val0", "val1", "val2", "val3",
-                    "val6", "val7", "val8", "val9"
+                    "val1a", "val1b", "val1c", "val1d", "val1e",
+                    "val2a", "val2b", "val2c", "val2d", "val2e",
                 };
                 var epl = "@Name('s0') select " +
-                          "current_timestamp.plus(varmsec) as val0," +
-                          "DtoDate.plus(varmsec) as val1," +
-                          "LongDate.plus(varmsec) as val2," +
-                          "DtxDate.plus(varmsec) as val3," +
-                          "current_timestamp.minus(varmsec) as val6," +
-                          "DtoDate.minus(varmsec) as val7," +
-                          "LongDate.minus(varmsec) as val8," +
-                          "DtxDate.minus(varmsec) as val9" +
+                          
+                          "current_timestamp.plus(varmsec) as val1a," +
+                          "DateTimeEx.plus(varmsec) as val1b," +
+                          "DateTimeOffset.plus(varmsec) as val1c," +
+                          "DateTime.plus(varmsec) as val1d," +
+                          "LongDate.plus(varmsec) as val1e," +
+
+                          "current_timestamp.minus(varmsec) as val2a," +
+                          "DateTimeEx.minus(varmsec) as val2b," +
+                          "DateTimeOffset.minus(varmsec) as val2c," +
+                          "DateTime.minus(varmsec) as val2d," +
+                          "LongDate.minus(varmsec) as val2e" +
+
                           " from SupportDateTime";
 
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -57,8 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(long?), typeof(DateTimeOffset), typeof(long?), typeof(DateTimeEx),
-                        typeof(long?), typeof(DateTimeOffset), typeof(long?), typeof(DateTimeEx)
+                        typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?),
+                        typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?)
                     });
 
                 env.SendEventBean(SupportDateTime.Make(null));
@@ -67,12 +72,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new[] {
-                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null,
-                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null
+                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null,
+                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null,
                     });
 
-                var expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "dtx");
-                var expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "util", "long", "dtx");
+                var expectedPlus = SupportDateTime.GetArrayCoerced(startTime, "long", "dtx", "dto", "date", "long");
+                var expectedMinus = SupportDateTime.GetArrayCoerced(startTime, "long", "dtx", "dto", "date", "long");
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
                 EPAssertionUtil.AssertProps(
@@ -89,15 +94,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 expectedPlus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T09:00:01.000",
                     "long",
-                    "util",
-                    "long",
-                    "dtx");
+                    "dtx", 
+                    "dto",
+                    "date",
+                    "long");
                 expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T08:59:59.000",
                     "long",
-                    "util",
-                    "long",
-                    "dtx");
+                    "dtx",
+                    "dto",
+                    "date",
+                    "long");
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -113,11 +120,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-28T09:00:00.000",
+                    "long", 
+                    "dtx",
+                    "dto",
+                    "date",
+                    "long");
+                expectedPlus = SupportDateTime.GetArrayCoerced(
+                    "2002-06-1T09:00:00.000",
                     "long",
-                    "util",
-                    "long",
-                    "dtx");
-                expectedPlus = SupportDateTime.GetArrayCoerced("2002-06-1T09:00:00.000", "long", "util", "long", "dtx");
+                    "dtx",
+                    "dto",
+                    "date",
+                    "long");
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -137,16 +151,33 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fields = new [] { "val0","val1","val2","val3","val6","val7","val8","val9" };
+                var fields = new[] {
+                    "val1a",
+                    "val1b",
+                    "val1c",
+                    "val1d",
+                    "val1e",
+
+                    "val2a",
+                    "val2b",
+                    "val2c",
+                    "val2d",
+                    "val2e"
+                };
                 var eplFragment = "@Name('s0') select " +
-                                  "current_timestamp.plus(1 hour 10 sec 20 msec) as val0," +
-                                  "DtoDate.plus(1 hour 10 sec 20 msec) as val1," +
-                                  "LongDate.plus(1 hour 10 sec 20 msec) as val2," +
-                                  "DtxDate.plus(1 hour 10 sec 20 msec) as val3," +
-                                  "current_timestamp.minus(1 hour 10 sec 20 msec) as val6," +
-                                  "DtoDate.minus(1 hour 10 sec 20 msec) as val7," +
-                                  "LongDate.minus(1 hour 10 sec 20 msec) as val8," +
-                                  "DtxDate.minus(1 hour 10 sec 20 msec) as val9" +
+                                  
+                                  "current_timestamp.plus(1 hour 10 sec 20 msec) as val1a," +
+                                  "DateTimeEx.plus(1 hour 10 sec 20 msec) as val1b," +
+                                  "DateTimeOffset.plus(1 hour 10 sec 20 msec) as val1c," +
+                                  "DateTime.plus(1 hour 10 sec 20 msec) as val1d," +
+                                  "LongDate.plus(1 hour 10 sec 20 msec) as val1e," +
+
+                                  "current_timestamp.minus(1 hour 10 sec 20 msec) as val2a," +
+                                  "DateTimeEx.minus(1 hour 10 sec 20 msec) as val2b" +
+                                  "DateTimeOffset.minus(1 hour 10 sec 20 msec) as val2c," +
+                                  "DateTime.minus(1 hour 10 sec 20 msec) as val2d," +
+                                  "LongDate.minus(1 hour 10 sec 20 msec) as val2e" +
+
                                   " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");
@@ -154,23 +185,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(long?), typeof(DateTimeOffset?), typeof(long?), typeof(DateTimeEx),
-                        typeof(long?), typeof(DateTimeOffset?), typeof(long?), typeof(DateTimeEx)
+                        typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?),
+                        typeof(long?), typeof(DateTimeEx), typeof(DateTimeOffset?), typeof(DateTime?), typeof(long?)
                     });
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 var expectedPlus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T010:00:10.020",
                     "long",
-                    "util",
-                    "long",
-                    "dtx");
+                    "dtx",
+                    "dto",
+                    "date",
+                    "long");
                 var expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T07:59:49.980",
                     "long",
-                    "util",
-                    "long",
-                    "dtx");
+                    "dtx",
+                    "dto",
+                    "date",
+                    "long");
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -183,10 +216,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "long",
                     "null",
                     "null",
+                    "null",
                     "null");
                 expectedMinus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T07:59:49.980",
                     "long",
+                    "null",
                     "null",
                     "null",
                     "null");

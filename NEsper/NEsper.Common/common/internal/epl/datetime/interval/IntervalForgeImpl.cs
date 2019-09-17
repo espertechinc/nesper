@@ -446,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool isNewData,
                 ExprEvaluatorContext context)
             {
-                var time = ((DateTimeEx) parameter).TimeInMillis;
+                var time = ((DateTimeEx) parameter).UtcMillis;
                 return intervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
             }
 
@@ -468,7 +468,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .AddParam(typeof(DateTimeEx), "parameter");
 
                 methodNode.Block
-                    .DeclareVar<long>("time", ExprDotName(Ref("parameter"), "TimeInMillis"))
+                    .DeclareVar<long>("time", ExprDotName(Ref("parameter"), "UtcMillis"))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
                             Ref("startTs"),
@@ -544,8 +544,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpression timeZoneField =
-                    codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalOpDateTimeOffsetEval), codegenClassScope)
                     .AddParam(typeof(long), "startTs")
@@ -558,8 +556,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         StaticMethod(
                             typeof(DatetimeLongCoercerDateTimeOffset),
                             "CoerceToMillis",
-                            Ref("parameter"),
-                            timeZoneField))
+                            Ref("parameter")))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
                             Ref("startTs"),
@@ -850,8 +847,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return intervalComputer.Codegen(
                     startTs,
                     endTs,
-                    ExprDotName(paramStartTs, "TimeInMillis"),
-                    ExprDotName(paramEndTs, "TimeInMillis"),
+                    ExprDotName(paramStartTs, "UtcMillis"),
+                    ExprDotName(paramEndTs, "UtcMillis"),
                     parentNode,
                     exprSymbol,
                     codegenClassScope);
@@ -880,8 +877,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return intervalComputer.Compute(
                     startTs,
                     endTs,
-                    ((DateTimeEx) parameterStartTs).TimeInMillis,
-                    ((DateTimeEx) parameterEndTs).TimeInMillis,
+                    ((DateTimeEx) parameterStartTs).UtcMillis,
+                    ((DateTimeEx) parameterEndTs).UtcMillis,
                     eventsPerStream,
                     isNewData,
                     context);
@@ -913,21 +910,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpression timeZoneField =
-                    codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 return intervalComputer.Codegen(
                     startTs,
                     endTs,
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        paramStartTs,
-                        timeZoneField),
+                        paramStartTs),
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        paramEndTs,
-                        timeZoneField),
+                        paramEndTs),
                     parentNode,
                     exprSymbol,
                     codegenClassScope);

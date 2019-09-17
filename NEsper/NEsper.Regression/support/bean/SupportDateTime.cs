@@ -17,50 +17,58 @@ namespace com.espertech.esper.regressionlib.support.bean
     {
         public SupportDateTime(
             long? longDate,
-            DateTimeOffset? dtoDate,
-            DateTimeEx dtxDate)
+            DateTimeEx dateTimeEx,
+            DateTimeOffset? dateTimeOffset,
+            DateTime? dateTime)
         {
             LongDate = longDate;
-            DtoDate = dtoDate;
-            DtxDate = dtxDate;
+            DateTimeOffset = dateTimeOffset;
+            DateTimeEx = dateTimeEx;
+            DateTime = dateTime;
         }
 
         public long? LongDate { get; }
 
-        public DateTimeOffset? DtoDate { get; }
+        public DateTimeEx DateTimeEx { get; }
 
-        public DateTimeEx DtxDate { get; }
+        public DateTimeOffset? DateTimeOffset { get; }
+
+        public DateTime? DateTime { get; }
 
         public string Key { get; set; }
 
         public static DateTimeEx ToDateTimeEx(long value)
         {
-            return DateTimeEx.GetInstance(TimeZoneInfo.Local, value);
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value);
         }
 
         public static DateTimeOffset ToDateTimeOffset(long value)
         {
-            return value.TimeFromMillis(null);
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value)
+                .DateTime;
         }
 
         public static DateTime ToDate(long value)
         {
-            return value.TimeFromMillis();
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value)
+                .DateTime
+                .DateTime;
         }
 
         public static SupportDateTime Make(string datestr)
         {
             if (datestr == null) {
-                return new SupportDateTime(null, null, null);
+                return new SupportDateTime(null, null, null, null);
             }
 
             // expected : 2002-05-30T09:00:00
             var dateTimeEx = DateTimeParsingFunctions.ParseDefaultEx(datestr);
 
             return new SupportDateTime(
-                dateTimeEx.TimeInMillis,
+                dateTimeEx.UtcMillis,
+                dateTimeEx,
                 dateTimeEx.UtcDateTime,
-                dateTimeEx);
+                dateTimeEx.UtcDateTime.DateTime);
         }
 
         public static SupportDateTime Make(
@@ -88,22 +96,21 @@ namespace com.espertech.esper.regressionlib.support.bean
                 case "long":
                     return msec;
 
+                case "date":
                 case "datetime":
                     return msec.TimeFromMillis();
 
-                case "dto":
-                case "util":
-                    return msec.TimeFromMillis(null);
-
                 case "dtx":
-                case "cal":
-                    return DateTimeEx.GetInstance(TimeZoneInfo.Local, msec.TimeFromMillis(null));
+                    return DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec.TimeFromMillis(null));
+
+                case "dto":
+                    return msec.TimeFromMillis(null);
 
                 case "str[utc]":
                     return msec.TimeFromMillis(TimeZoneInfo.Utc).ToString();
 
                 case "str":
-                    return msec.TimeFromMillis(TimeZoneInfo.Local).ToString();
+                    return msec.TimeFromMillis(TimeZoneInfo.Utc).ToString();
 
                 case "null":
                     return null;

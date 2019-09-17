@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public static Regex ExprRegexNodeCompilePattern(string text)
         {
             try {
-                return new Regex(text);
+                return new Regex($"^{text}$");
             }
             catch (ArgumentException ex) {
                 throw new EPException("Error compiling regex pattern '" + text + "': " + ex.Message, ex);

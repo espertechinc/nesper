@@ -33,20 +33,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2" };
+                var fields = new [] { "val0","val1","val2", "val3" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.roundCeiling('hour') as val0," +
-                                  "LongDate.roundCeiling('hour') as val1," +
-                                  "DtxDate.roundCeiling('hour') as val2" +
+                                  "DateTimeEx.roundCeiling('hour') as val0," +
+                                  "DateTimeOffset.roundCeiling('hour') as val1," +
+                                  "DateTime.roundCeiling('hour') as val2," +
+                                  "LongDate.roundCeiling('hour') as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
+                        typeof(DateTimeEx),
                         typeof(DateTimeOffset?),
-                        typeof(long?),
-                        typeof(DateTimeEx)
+                        typeof(DateTime?),
+                        typeof(long?)
                     });
 
                 var startTime = "2002-05-30T09:01:02.003";
@@ -56,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expectedTime, "util", "long", "dtx"));
+                    SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long"));
 
                 env.UndeployAll();
             }
@@ -68,13 +70,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.roundCeiling('msec') as val0," +
-                                  "DtoDate.roundCeiling('sec') as val1," +
-                                  "DtoDate.roundCeiling('minutes') as val2," +
-                                  "DtoDate.roundCeiling('hour') as val3," +
-                                  "DtoDate.roundCeiling('day') as val4," +
-                                  "DtoDate.roundCeiling('month') as val5," +
-                                  "DtoDate.roundCeiling('year') as val6" +
+                                  "DateTimeOffset.roundCeiling('msec') as val0," +
+                                  "DateTimeOffset.roundCeiling('sec') as val1," +
+                                  "DateTimeOffset.roundCeiling('minutes') as val2," +
+                                  "DateTimeOffset.roundCeiling('hour') as val3," +
+                                  "DateTimeOffset.roundCeiling('day') as val4," +
+                                  "DateTimeOffset.roundCeiling('month') as val5," +
+                                  "DateTimeOffset.roundCeiling('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -116,13 +118,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.roundFloor('msec') as val0," +
-                                  "DtoDate.roundFloor('sec') as val1," +
-                                  "DtoDate.roundFloor('minutes') as val2," +
-                                  "DtoDate.roundFloor('hour') as val3," +
-                                  "DtoDate.roundFloor('day') as val4," +
-                                  "DtoDate.roundFloor('month') as val5," +
-                                  "DtoDate.roundFloor('year') as val6" +
+                                  "DateTimeOffset.roundFloor('msec') as val0," +
+                                  "DateTimeOffset.roundFloor('sec') as val1," +
+                                  "DateTimeOffset.roundFloor('minutes') as val2," +
+                                  "DateTimeOffset.roundFloor('hour') as val3," +
+                                  "DateTimeOffset.roundFloor('day') as val4," +
+                                  "DateTimeOffset.roundFloor('month') as val5," +
+                                  "DateTimeOffset.roundFloor('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -164,13 +166,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.roundHalf('msec') as val0," +
-                                  "DtoDate.roundHalf('sec') as val1," +
-                                  "DtoDate.roundHalf('minutes') as val2," +
-                                  "DtoDate.roundHalf('hour') as val3," +
-                                  "DtoDate.roundHalf('day') as val4," +
-                                  "DtoDate.roundHalf('month') as val5," +
-                                  "DtoDate.roundHalf('year') as val6" +
+                                  "DateTimeOffset.roundHalf('msec') as val0," +
+                                  "DateTimeOffset.roundHalf('sec') as val1," +
+                                  "DateTimeOffset.roundHalf('minutes') as val2," +
+                                  "DateTimeOffset.roundHalf('hour') as val3," +
+                                  "DateTimeOffset.roundHalf('day') as val4," +
+                                  "DateTimeOffset.roundHalf('month') as val5," +
+                                  "DateTimeOffset.roundHalf('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -205,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // test rounding up/down
                 env.UndeployAll();
                 fields = new [] { "val0" };
-                eplFragment = "@Name('s0') select DtoDate.roundHalf('min') as val0 from SupportDateTime";
+                eplFragment = "@Name('s0') select DateTimeOffset.roundHalf('min') as val0 from SupportDateTime";
                 env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:29.999"));

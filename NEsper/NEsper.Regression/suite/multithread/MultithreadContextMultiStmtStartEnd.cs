@@ -46,8 +46,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.Deploy(compiledContext, runtime);
             path.Add(compiledContext);
 
-            var epl = "context MyContext select fieldOne, count(*) as cnt from MyEvent " +
-                      "group by fieldOne output last when terminated;\n";
+            var epl = "context MyContext select FieldOne, count(*) as cnt from MyEvent " +
+                      "group by FieldOne output last when terminated;\n";
             var compiledStmt = SupportCompileDeployUtil.Compile(epl, configuration, path);
             var listeners = new SupportUpdateListener[100];
 

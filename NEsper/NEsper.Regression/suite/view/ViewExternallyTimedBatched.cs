@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -97,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             var doubles = doubleList.SplitCsv();
             var result = new object[doubles.Length];
             for (var i = 0; i < result.Length; i++) {
-                result[i] = double.Parse(doubles[i]);
+                result[i] = SimpleTypeParserFunctions.ParseDouble(doubles[i]);
             }
 
             return result;
@@ -211,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new [] { "Id" };
                 var epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute)";
+                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -300,11 +301,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var milestone = new AtomicLong();
 
                 var epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute, 5000)";
+                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 5000)";
                 TryAssertionWithRefTime(env, epl, milestone);
 
                 epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute, 65000)";
+                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 65000)";
                 TryAssertionWithRefTime(env, epl, milestone);
             }
         }

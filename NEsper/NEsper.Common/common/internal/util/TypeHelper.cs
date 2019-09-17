@@ -29,6 +29,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
+using com.espertech.esper.compat.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -139,15 +140,15 @@ namespace com.espertech.esper.common.@internal.util
             this Type param,
             bool useFullName = true)
         {
-            return GetCleanName(param, useFullName);
+            return CleanName(param, useFullName);
         }
 
-        public static string GetCleanName<T>()
+        public static string CleanName<T>()
         {
-            return GetCleanName(typeof(T), true);
+            return CleanName(typeof(T), true);
         }
 
-        public static string GetCleanName(
+        public static string CleanName(
             this Type type,
             bool useFullName = true)
         {
@@ -158,7 +159,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (type.IsArray)
             {
-                return GetCleanName(type.GetElementType()) + "[]";
+                return CleanName(type.GetElementType()) + "[]";
             }
 
             if (type.IsGenericType)
@@ -179,7 +180,7 @@ namespace com.espertech.esper.common.@internal.util
                 foreach (var genericType in type.GetGenericArguments())
                 {
                     builder.Append(separator);
-                    builder.Append(GetCleanName(genericType, useFullName));
+                    builder.Append(CleanName(genericType, useFullName));
                     separator = ", ";
                 }
 
@@ -190,9 +191,9 @@ namespace com.espertech.esper.common.@internal.util
             return useFullName ? type.FullName : type.Name;
         }
 
-        public static string GetCleanName<T>(bool useFullName)
+        public static string CleanName<T>(bool useFullName)
         {
-            return GetCleanName(typeof(T), useFullName);
+            return CleanName(typeof(T), useFullName);
         }
 
         /// <summary>
@@ -603,7 +604,7 @@ namespace com.espertech.esper.common.@internal.util
             if (!IsNumeric(boxedOne) || !IsNumeric(boxedTwo))
             {
                 throw new CoercionException(
-                    "Cannot coerce types " + GetCleanName(typeOne) + " and " + GetCleanName(typeTwo));
+                    "Cannot coerce types " + CleanName(typeOne) + " and " + CleanName(typeTwo));
             }
 
             if (boxedOne == typeof(decimal?) ||
@@ -671,7 +672,7 @@ namespace com.espertech.esper.common.@internal.util
             object numToCoerce,
             Type resultBoxedType)
         {
-            resultBoxedType = resultBoxedType.GetBoxedType();
+            //resultBoxedType = resultBoxedType.GetBoxedType();
 
             if (numToCoerce.GetType() == resultBoxedType)
             {
@@ -1180,7 +1181,7 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     if (types[i] != typeof(string))
                     {
-                        throw new CoercionException("Cannot coerce to String type " + types[i].GetCleanName());
+                        throw new CoercionException("Cannot coerce to String type " + types[i].CleanName());
                     }
                 }
 
@@ -1200,7 +1201,7 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     if (types[i] != typeof(bool?))
                     {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].GetCleanName());
+                        throw new CoercionException("Cannot coerce to bool type " + types[i].CleanName());
                     }
                 }
 
@@ -1214,7 +1215,7 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     if (types[i] != typeof(char?))
                     {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].GetCleanName());
+                        throw new CoercionException("Cannot coerce to bool type " + types[i].CleanName());
                     }
                 }
 
@@ -1240,7 +1241,7 @@ namespace com.espertech.esper.common.@internal.util
                     if (IsBuiltinDataType(type))
                     {
                         throw new CoercionException(
-                            "Cannot coerce to " + GetCleanName(types[0]) + " type " + GetCleanName(type));
+                            "Cannot coerce to " + CleanName(types[0]) + " type " + CleanName(type));
                     }
 
                     if (type != types[0])
@@ -1255,7 +1256,7 @@ namespace com.espertech.esper.common.@internal.util
             // test for numeric
             if (!isAllNumeric)
             {
-                throw new CoercionException("Cannot coerce to numeric type " + GetCleanName(types[0]));
+                throw new CoercionException("Cannot coerce to numeric type " + CleanName(types[0]));
             }
 
             // Use arithmatic coercion type as the final authority, considering all types
@@ -1549,10 +1550,11 @@ namespace com.espertech.esper.common.@internal.util
                         : typeof(DateTimeOffset);
 
                 case "dtx":
+                case "datetimeex":
                     return typeof(DateTimeEx);
 
-                case "Bigint":
-                case "Biginteger":
+                case "bigint":
+                case "biginteger":
                     return boxed
                         ? typeof(BigInteger?)
                         : typeof(BigInteger);
@@ -2113,23 +2115,23 @@ namespace com.espertech.esper.common.@internal.util
             catch (TypeInstantiationException ex)
             {
                 throw new TypeInstantiationException(
-                    "Unable to instantiate from class '" + GetCleanName(type) + "' via default constructor", ex);
+                    "Unable to instantiate from class '" + CleanName(type) + "' via default constructor", ex);
             }
             catch (TargetInvocationException ex)
             {
                 throw new TypeInstantiationException(
-                    "Invocation exception when instantiating class '" + GetCleanName(type) +
+                    "Invocation exception when instantiating class '" + CleanName(type) +
                     "' via default constructor", ex);
             }
             catch (MethodAccessException ex)
             {
                 throw new TypeInstantiationException(
-                    "Method access when instantiating class '" + GetCleanName(type) + "' via default constructor", ex);
+                    "Method access when instantiating class '" + CleanName(type) + "' via default constructor", ex);
             }
             catch (MemberAccessException ex)
             {
                 throw new TypeInstantiationException(
-                    "Member access when instantiating class '" + GetCleanName(type) + "' via default constructor", ex);
+                    "Member access when instantiating class '" + CleanName(type) + "' via default constructor", ex);
             }
         }
 
@@ -2143,7 +2145,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var implementedOrExtendedType = typeof(T);
             var typeName = type.FullName;
-            var typeNameClean = GetCleanName(type);
+            var typeNameClean = CleanName(type);
 
             if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
             {
@@ -2151,12 +2153,12 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     throw new TypeInstantiationException(
                         "Type '" + typeNameClean + "' does not implement interface '" +
-                        GetCleanName(implementedOrExtendedType) + "'");
+                        CleanName(implementedOrExtendedType) + "'");
                 }
 
                 throw new TypeInstantiationException(
                     "Type '" + typeNameClean + "' does not extend '" +
-                    GetCleanName(implementedOrExtendedType) + "'");
+                    CleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -2211,12 +2213,12 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     throw new TypeInstantiationException(
                         "Class '" + typeName + "' does not implement interface '" +
-                        GetCleanName(implementedOrExtendedType) + "'");
+                        CleanName(implementedOrExtendedType) + "'");
                 }
 
                 throw new TypeInstantiationException(
                     "Class '" + typeName + "' does not extend '" +
-                    GetCleanName(implementedOrExtendedType) + "'");
+                    CleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -2276,12 +2278,12 @@ namespace com.espertech.esper.common.@internal.util
                 {
                     throw new TypeInstantiationException(
                         "Type '" + typeName + "' does not implement interface '" +
-                        GetCleanName(implementedOrExtendedType) + "'");
+                        CleanName(implementedOrExtendedType) + "'");
                 }
 
                 throw new TypeInstantiationException(
                     "Type '" + typeName + "' does not extend '" +
-                    GetCleanName(implementedOrExtendedType) + "'");
+                    CleanName(implementedOrExtendedType) + "'");
             }
 
             try
@@ -2937,8 +2939,8 @@ namespace com.espertech.esper.common.@internal.util
             {
                 throw new ExprValidationException(
                     "Hook provider for hook type '" + hookType + "' " +
-                    "class '" + GetCleanName(clazz) + "' does not implement the required '" +
-                    GetCleanName(interfaceExpected) +
+                    "class '" + CleanName(clazz) + "' does not implement the required '" +
+                    CleanName(interfaceExpected) +
                     "' interface");
             }
 
@@ -2950,7 +2952,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 throw new ExprValidationException(
                     "Failed to instantiate hook provider of hook type '" + hookType + "' " +
-                    "class '" + GetCleanName(clazz) + "' :" + e.Message);
+                    "class '" + CleanName(clazz) + "' :" + e.Message);
             }
         }
 
@@ -2987,7 +2989,7 @@ namespace com.espertech.esper.common.@internal.util
             return "Invocation exception when invoking method '" + method.Name +
                    "' of class '" + classOrPropertyName +
                    "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + GetCleanName(e.GetType()) + " : " +
+                   " for statement '" + statementName + "': " + CleanName(e.GetType()) + " : " +
                    e.Message;
         }
 
@@ -3044,7 +3046,7 @@ namespace com.espertech.esper.common.@internal.util
             return "Invocation exception when invoking method '" + methodName +
                    "' of class '" + classOrPropertyName +
                    "' passing parameters " + parameters +
-                   " for statement '" + statementName + "': " + GetCleanName(e.GetType()) + " : " +
+                   " for statement '" + statementName + "': " + CleanName(e.GetType()) + " : " +
                    e.Message;
         }
 

@@ -29,29 +29,29 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
                 var end = start + duration;
 
                 LongdateStart = start;
-                DtxStart = SupportDateTime.ToDateTimeEx(start);
-                DtoStart = DateTimeParsingFunctions.ParseDefaultDateTimeOffset(datestr);
-                DateTimeStart = DtoStart.TranslateTo(TimeZoneInfo.Local).DateTime;
+                DateTimeExStart = SupportDateTime.ToDateTimeEx(start);
+                DateTimeOffsetStart = DateTimeParsingFunctions.ParseDefaultDateTimeOffset(datestr);
+                DateTimeStart = DateTimeOffsetStart.TranslateTo(TimeZoneInfo.Utc).DateTime;
                 LongdateEnd = end;
-                DtxEnd = SupportDateTime.ToDateTimeEx(end);
-                DtoEnd = DtoStart.AddMilliseconds(duration);
-                DateTimeEnd = DtoEnd.TranslateTo(TimeZoneInfo.Local).DateTime;
+                DateTimeExEnd = SupportDateTime.ToDateTimeEx(end);
+                DateTimeOffsetEnd = DateTimeOffsetStart.AddMilliseconds(duration);
+                DateTimeEnd = DateTimeOffsetEnd.TranslateTo(TimeZoneInfo.Utc).DateTime;
             }
         }
 
         public long? LongdateStart { get; }
 
-        public DateTimeEx DtxStart { get; }
-
         public long? LongdateEnd { get; }
 
-        public DateTimeEx DtxEnd { get; }
+        public DateTimeEx DateTimeExStart { get; }
 
-        public DateTimeOffset DtoStart { get; }
+        public DateTimeEx DateTimeExEnd { get; }
+        
+        public DateTimeOffset DateTimeOffsetStart { get; }
+
+        public DateTimeOffset DateTimeOffsetEnd { get; }
 
         public DateTime DateTimeStart { get; }
-
-        public DateTimeOffset DtoEnd { get; }
 
         public DateTime DateTimeEnd { get; }
 

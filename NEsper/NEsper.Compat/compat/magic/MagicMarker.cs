@@ -12,12 +12,14 @@ using System.Linq.Expressions;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.util;
 
 namespace com.espertech.esper.compat.magic
 {
     public class MagicMarker
     {
-        public static MagicMarker SingletonInstance { get; } = new MagicMarker(null);
+        public static MagicMarker SingletonInstance { get; } = new MagicMarker(
+            new DefaultGenericTypeCasterFactory());
 
         private GenericTypeCasterFactory _typeCasterFactory;
 
@@ -308,5 +310,13 @@ namespace com.espertech.esper.compat.magic
             return eLambda.Compile();
         }
         #endregion
+    }
+
+    public class DefaultGenericTypeCasterFactory : GenericTypeCasterFactory
+    {
+        public GenericTypeCaster<T> Get<T>()
+        {
+            return CastHelper.GetCastConverter<T>();
+        }
     }
 }

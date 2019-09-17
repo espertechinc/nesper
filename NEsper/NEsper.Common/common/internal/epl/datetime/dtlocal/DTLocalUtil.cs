@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             return ops;
         }
 
-        protected internal static void EvaluateCalOpsCalendar(
+        internal static void EvaluateCalOpsCalendar(
             IList<CalendarOp> calendarOps,
             DateTimeEx dtx,
             EventBean[] eventsPerStream,
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             }
         }
 
-        protected internal static void EvaluateCalOpsCalendarCodegen(
+        internal static void EvaluateCalOpsCalendarCodegen(
             CodegenBlock block,
             IList<CalendarForge> calendarForges,
             CodegenExpressionRef dtx,
@@ -55,12 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             foreach (CalendarForge calendarForge in calendarForges) {
-                block.Expression(
-                    calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
+                // block.Expression
+                block.AssignRef(dtx, calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
             }
         }
 
-        protected internal static DateTimeOffset EvaluateCalOpsLDT(
+        internal static DateTimeOffset EvaluateCalOpsDto(
             IList<CalendarOp> calendarOps,
             DateTimeOffset dto,
             EventBean[] eventsPerStream,
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             return dto;
         }
 
-        protected internal static void EvaluateCalOpsLDTCodegen(
+        internal static void EvaluateCalOpsDtoCodegen(
             CodegenBlock block,
             string resultVariable,
             IList<CalendarForge> calendarForges,
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             }
         }
 
-        protected internal static DateTime EvaluateCalOpsZDT(
+        internal static DateTime EvaluateCalOpsDtx(
             IList<CalendarOp> calendarOps,
             DateTime dateTime,
             EventBean[] eventsPerStream,
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             return dateTime;
         }
 
-        protected internal static void EvaluateCalOpsZDTCodegen(
+        internal static void EvaluateCalOpsDtxCodegen(
             CodegenBlock block,
             string resultVariable,
             IList<CalendarForge> calendarForges,

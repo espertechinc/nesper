@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             Assert.That(filledIterator.MoveNext(), Is.False);
             //Assert.That(() => filledIterator.Current, Throws.InstanceOf<NoSuchElementException>());
 
-            Assert.That(emptyIterator.MoveNext(), Is.True);
+            Assert.That(emptyIterator.MoveNext(), Is.False);
             //Assert.That(() => emptyIterator.Current, Throws.InstanceOf<NoSuchElementException>());
         }
 

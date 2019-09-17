@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using NUnit.Framework;
 
@@ -42,20 +43,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             IList<PropertyStem> descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
             IList<PropertyStem> expected = new List<PropertyStem>();
-            expected.Add(new PropertyStem("fieldLegacyVal", typeof(SupportLegacyBean).GetField("fieldLegacyVal"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("fieldStringArray", typeof(SupportLegacyBean).GetField("fieldStringArray"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("fieldMapped", typeof(SupportLegacyBean).GetField("fieldMapped"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("fieldNested", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("fieldLegacyVal", typeof(SupportLegacyBean).GetField("fieldLegacyVal"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("fieldStringArray", typeof(SupportLegacyBean).GetField("fieldStringArray"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("fieldMapped", typeof(SupportLegacyBean).GetField("fieldMapped"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("fieldNested", typeof(SupportLegacyBean).GetField("fieldNested"), PropertyType.SIMPLE));
 
-            expected.Add(new PropertyStem("ReadLegacyBeanVal", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("ReadStringArray", typeof(SupportLegacyBean).GetMethod("ReadStringArray"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("ReadStringIndexed", typeof(SupportLegacyBean).GetMethod("ReadStringIndexed", new Type[] { typeof(int) }), EventPropertyType.INDEXED));
-            expected.Add(new PropertyStem("ReadMapByKey", typeof(SupportLegacyBean).GetMethod("ReadMapByKey", new Type[] { typeof(string) }), EventPropertyType.MAPPED));
-            expected.Add(new PropertyStem("ReadMap", typeof(SupportLegacyBean).GetMethod("ReadMap"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("ReadLegacyNested", typeof(SupportLegacyBean).GetMethod("ReadLegacyNested"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadLegacyBeanVal", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadStringArray", typeof(SupportLegacyBean).GetMethod("ReadStringArray"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadStringIndexed", typeof(SupportLegacyBean).GetMethod("ReadStringIndexed", new Type[] { typeof(int) }), PropertyType.INDEXED));
+            expected.Add(new PropertyStem("ReadMapByKey", typeof(SupportLegacyBean).GetMethod("ReadMapByKey", new Type[] { typeof(string) }), PropertyType.MAPPED));
+            expected.Add(new PropertyStem("ReadMap", typeof(SupportLegacyBean).GetMethod("ReadMap"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadLegacyNested", typeof(SupportLegacyBean).GetMethod("ReadLegacyNested"), PropertyType.SIMPLE));
 
-            expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), PropertyType.SIMPLE));
             EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
 

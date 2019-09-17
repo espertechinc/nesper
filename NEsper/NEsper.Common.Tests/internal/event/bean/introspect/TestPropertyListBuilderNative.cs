@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using NUnit.Framework;
 
@@ -44,8 +45,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var descList = builder.AssessProperties(typeof(SupportLegacyBean));
 
             IList<PropertyStem> expected = new List<PropertyStem>();
-            expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), PropertyType.SIMPLE));
+            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), PropertyType.SIMPLE));
             EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
     }

@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.rettype
 
             if (epType is ClassEPType) {
                 var type = (ClassEPType) epType;
-                return "class " + type.Clazz.GetCleanName();
+                return "class " + type.Clazz.CleanName();
             }
 
             if (epType is NullEPType) {

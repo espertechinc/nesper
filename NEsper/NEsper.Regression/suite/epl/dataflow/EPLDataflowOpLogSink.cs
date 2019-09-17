@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                            "    format : 'json',\n" +
                            "    layout : '%t [%e]',\n" +
                            "    log : false,\n" +
-                           "    lineFeed : true,\n" +
+                           "    linefeed : true,\n" +
                            "    title : 'My Custom Title:'\n" +
                            "  }";
             env.CompileDeploy(docSmple);
@@ -61,13 +61,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             bool? linefeed)
         {
             var graph = "@Name('flow') create dataflow MyConsoleOut\n" +
-                        "Emitter -> instream<SupportBean>{Name : 'e1'}\n" +
+                        "Emitter -> instream<SupportBean>{name : 'e1'}\n" +
                         "LogSink(instream) {\n" +
                         (format == null ? "" : "  format: '" + format + "',\n") +
                         (log == null ? "" : "  log: " + log + ",\n") +
                         (layout == null ? "" : "  layout: '" + layout + "',\n") +
                         (title == null ? "" : "  title: '" + title + "',\n") +
-                        (linefeed == null ? "" : "  lineFeed: " + linefeed + ",\n") +
+                        (linefeed == null ? "" : "  linefeed: " + linefeed + ",\n") +
                         "}";
             env.CompileDeploy(graph);
 

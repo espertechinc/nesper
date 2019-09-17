@@ -12,15 +12,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
+using com.espertech.esper.compat.util;
 
-namespace com.espertech.esper.common.magic
+namespace com.espertech.esper.compat.magic
 {
     public class MagicType
     {
@@ -156,7 +152,7 @@ namespace com.espertech.esper.common.magic
                     propertyInfo,
                     propertyInfo.GetGetMethod(),
                     propertyInfo.GetSetMethod(),
-                    EventPropertyType.SIMPLE);
+                    PropertyType.SIMPLE);
 
                 AddProperty(csName, ciName, prop);
             }
@@ -170,7 +166,7 @@ namespace com.espertech.esper.common.magic
                     methodInfo,
                     methodInfo,
                     setter,
-                    EventPropertyType.SIMPLE);
+                    PropertyType.SIMPLE);
 
                 AddProperty(csName, ciName, prop);
             }
@@ -211,7 +207,7 @@ namespace com.espertech.esper.common.magic
                     accessorInfo,
                     accessorInfo,
                     null,
-                    EventPropertyType.MAPPED);
+                    PropertyType.MAPPED);
 
                 AddProperty(csName, ciName, prop);
             }
@@ -230,7 +226,7 @@ namespace com.espertech.esper.common.magic
                     propertyInfo,
                     propertyInfo.GetGetMethod(),
                     propertyInfo.GetSetMethod(),
-                    EventPropertyType.INDEXED);
+                    PropertyType.INDEXED);
 
                 AddProperty(csName, ciName, prop);
             }
@@ -243,7 +239,7 @@ namespace com.espertech.esper.common.magic
                     methodInfo,
                     methodInfo,
                     null,
-                    EventPropertyType.INDEXED);
+                    PropertyType.INDEXED);
 
                 AddProperty(csName, ciName, prop);
             }
@@ -288,7 +284,7 @@ namespace com.espertech.esper.common.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == EventPropertyType.SIMPLE);
+                magicProperty => magicProperty.EventPropertyType == PropertyType.SIMPLE);
         }
 
         /// <summary>
@@ -300,7 +296,7 @@ namespace com.espertech.esper.common.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == EventPropertyType.MAPPED);
+                magicProperty => magicProperty.EventPropertyType == PropertyType.MAPPED);
         }
 
         /// <summary>
@@ -312,7 +308,7 @@ namespace com.espertech.esper.common.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == EventPropertyType.INDEXED);
+                magicProperty => magicProperty.EventPropertyType == PropertyType.INDEXED);
         }
 
         /// <summary>
@@ -353,44 +349,35 @@ namespace com.espertech.esper.common.magic
             PropertyResolutionStyle resolutionStyle)
         {
             switch (resolutionStyle) {
-                case PropertyResolutionStyle.CASE_SENSITIVE:
-                    do {
-                        var property = _csPropertyTable.Get(propertyName);
-                        if (property != null)
+                case PropertyResolutionStyle.CASE_SENSITIVE: {
+                    var property = _csPropertyTable.Get(propertyName);
+                    if (property != null)
+                        return property;
+                    return _parent?.ResolveProperty(propertyName, resolutionStyle);
+                }
+
+                case PropertyResolutionStyle.CASE_INSENSITIVE: {
+                    var property = _ciPropertyTable.Get(propertyName.ToUpper());
+                    if (property != null)
+                        return property;
+                    return _parent?.ResolveProperty(propertyName, resolutionStyle);
+                }
+
+                case PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE: {
+                    var property = _ciPropertyTable.Get(propertyName.ToUpper());
+                    if (property != null) {
+                        if (property.IsUnique) {
                             return property;
-                        if (_parent != null)
-                            return _parent.ResolveProperty(propertyName, resolutionStyle);
-                        return null;
-                    } while (false);
-
-                case PropertyResolutionStyle.CASE_INSENSITIVE:
-                    do {
-                        var property = _ciPropertyTable.Get(propertyName.ToUpper());
-                        if (property != null)
-                            return property;
-                        if (_parent != null)
-                            return _parent.ResolveProperty(propertyName, resolutionStyle);
-                        return null;
-                    } while (false);
-
-                case PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE:
-                    do {
-                        var property = _ciPropertyTable.Get(propertyName.ToUpper());
-                        if (property != null) {
-                            if (property.IsUnique) {
-                                return property;
-                            }
-
-                            throw new EPException(
-                                "Unable to determine which property to use for \"" +
-                                propertyName +
-                                "\" because more than one property matched");
                         }
 
-                        if (_parent != null)
-                            return _parent.ResolveProperty(propertyName, resolutionStyle);
-                        return null;
-                    } while (false);
+                        throw new ArgumentException(
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
+                            "\" because more than one property matched");
+                    }
+
+                    return _parent?.ResolveProperty(propertyName, resolutionStyle);
+                }
             }
 
             return null;
@@ -658,6 +645,44 @@ namespace com.espertech.esper.common.magic
             return null;
         }
 
+        /// <summary>
+        /// Static cast method used in assignment.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static T CastTo<T>(object value)
+        {
+            if (value is T)
+                return (T) value;
+
+            // Arrays need to be converted by looking at the internal elements
+            // within the array.  Since value is more than likely going to be
+            // an array of System.Object, the conversion is basically a recursive
+            // call to this method.
+            if (typeof(T).IsArray) {
+                var valueArray = value as object[];
+                if (valueArray == null) {
+                    return default(T); // null
+                }
+
+                var subType = typeof(T).GetElementType();
+                var subCast = typeof(MagicPropertyInfo)
+                    .GetMethod("CastTo")
+                    .MakeGenericMethod(subType);
+
+                var returnArray = Array.CreateInstance(subType, valueArray.Length);
+                for (int ii = 0; ii < valueArray.Length; ii++) {
+                    returnArray.SetValue(subCast.Invoke(null, new[] {valueArray[ii]}), ii);
+                }
+
+                return (T) ((object) returnArray);
+            }
+
+            var genericTypeCaster = CastHelper.GetCastConverter<T>();
+            return genericTypeCaster(value);
+        }
+
         private static readonly ILockable TypeCacheLock = new MonitorSpinLock(60000);
 
         private static readonly Dictionary<Type, MagicType> TypeCacheTable =
@@ -727,7 +752,7 @@ namespace com.espertech.esper.common.magic
         /// Gets or sets the event type of the property.
         /// </summary>
         /// <value>The type of the property.</value>
-        public EventPropertyType EventPropertyType { get; protected set; }
+        public PropertyType EventPropertyType { get; protected set; }
 
         /// <summary>
         /// Returns a function that can be used to obtain the value of the
@@ -748,44 +773,6 @@ namespace com.espertech.esper.common.magic
         /// </summary>
         /// <value><c>true</c> if this instance can write; otherwise, <c>false</c>.</value>
         abstract public bool CanWrite { get; }
-
-        /// <summary>
-        /// Static cast method used in assignment.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
-        public static T CastTo<T>(object value)
-        {
-            if (value is T)
-                return (T) value;
-
-            // Arrays need to be converted by looking at the internal elements
-            // within the array.  Since value is more than likely going to be
-            // an array of System.Object, the conversion is basically a recursive
-            // call to this method.
-            if (typeof(T).IsArray) {
-                var valueArray = value as object[];
-                if (valueArray == null) {
-                    return default(T); // null
-                }
-
-                var subType = typeof(T).GetElementType();
-                var subCast = typeof(MagicPropertyInfo)
-                    .GetMethod("CastTo")
-                    .MakeGenericMethod(subType);
-
-                var returnArray = Array.CreateInstance(subType, valueArray.Length);
-                for (int ii = 0; ii < valueArray.Length; ii++) {
-                    returnArray.SetValue(subCast.Invoke(null, new[] {valueArray[ii]}), ii);
-                }
-
-                return (T) ((object) returnArray);
-            }
-
-            var genericTypeCaster = CastHelper.GetCastConverter<T>();
-            return genericTypeCaster(value);
-        }
     }
 
     public class SimpleMagicPropertyInfo : MagicPropertyInfo
@@ -894,7 +881,7 @@ namespace com.espertech.esper.common.magic
             MemberInfo member,
             MethodInfo getMethod,
             MethodInfo setMethod,
-            EventPropertyType propertyType)
+            PropertyType propertyType)
         {
             Name = name;
             Member = member;

@@ -138,11 +138,17 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             builder.Append("using ");
 
-            if (importDecl.IsStatic) {
-                builder.Append("static ");
+            if (importDecl.IsNamespaceImport) {
+                builder.Append(importDecl.Namespace);
+            }
+            else {
+                builder.Append(importDecl.TypeName);
+                builder.Append(" = ");
+                builder.Append(importDecl.Namespace);
+                builder.Append(".");
+                builder.Append(importDecl.TypeName);
             }
 
-            builder.Append(importDecl.Namespace);
             builder.Append(";\n");
         }
     }

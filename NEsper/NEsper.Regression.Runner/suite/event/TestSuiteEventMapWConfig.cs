@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
         public static string GetCastMessage(Type from, Type to)
         {
-            return from.GetCleanName() + " cannot be cast to " + to.GetCleanName();
+            return from.CleanName() + " cannot be cast to " + to.CleanName();
         }
     }
 } // end of namespace

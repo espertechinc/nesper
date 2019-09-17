@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core

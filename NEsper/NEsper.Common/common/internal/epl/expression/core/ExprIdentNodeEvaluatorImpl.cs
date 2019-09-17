@@ -107,8 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return ConstantNull();
             }
 
-            Type castTargetType = GetCodegenReturnType(requiredType);
-            bool useUnderlying = exprSymbol.IsAllowUnderlyingReferences &&
+            var castTargetType = GetCodegenReturnType(requiredType);
+            var useUnderlying = exprSymbol.IsAllowUnderlyingReferences &&
                                  !identNode.ResolvedPropertyName.Contains("?") &&
                                  !(eventType is WrapperEventType) &&
                                  !(eventType is VariantEventType);
@@ -123,7 +123,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
             }
 
-            // NOTE: Must use boxed variant because we return null.
             CodegenMethod method = codegenMethodScope.MakeChild(
                 castTargetType.GetBoxedType(), this.GetType(), codegenClassScope);
             CodegenBlock block = method.Block;

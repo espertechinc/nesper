@@ -150,13 +150,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = new [] { "a_Id","count_b","first_b","last_b" };
             var text = "@Name('s0') select * from TemperatureSensorEvent\n" +
                        "match_recognize (\n" +
-                       "  partition by device\n" +
+                       "  partition by Device\n" +
                        "  measures A.Id as a_Id, count(B.Id) as count_b, first(B.Id) as first_b, last(B.Id) as last_b\n" +
                        "  pattern (A B*)\n" +
                        "  interval 5 seconds or terminated\n" +
                        "  define\n" +
-                       "    A as A.temp > 100,\n" +
-                       "    B as B.temp > 100)";
+                       "    A as A.Temp > 100,\n" +
+                       "    B as B.Temp > 100)";
 
             env.CompileDeploy(text).AddListener("s0");
 

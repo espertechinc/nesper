@@ -16,6 +16,15 @@ namespace com.espertech.esper.compat
 {
     public static class StringExtensions
     {
+        public static string[] Repeat(this string value, int count)
+        {
+            string[] array = new string[count];
+            for (int ii = 0; ii < count; ii++) {
+                array[ii] = value;
+            }
+            return array;
+        }
+
         public static string Between(this string input, int startIndex, int endIndex)
         {
             return input.Substring(startIndex, endIndex - startIndex);

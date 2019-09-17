@@ -144,12 +144,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     else if (desc.StaticDateFormat != null) {
                         casterParserComputerForge = new StringToDateTimExWStaticFormatComputer(
                             desc.StaticDateFormat,
-                            TimeZoneInfo.Local); // Note how code-generation does not use the default time zone
+                            TimeZoneInfo.Utc); // Note how code-generation does not use the default time zone
                     }
                     else {
                         casterParserComputerForge = new StringToDateTimeExWExprFormatComputer(
                             desc.DynamicDateFormat,
-                            TimeZoneInfo.Local);
+                            TimeZoneInfo.Utc);
                     }
                 }
                 else if (targetType == typeof(DateTimeOffset) ||
@@ -464,7 +464,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 "Invalid format, expected string-format or " +
                 expected.GetSimpleName() +
                 " but received " +
-                received.GetCleanName());
+                received.CleanName());
         }
 
         private Type ApplyDimensions(Type targetType)

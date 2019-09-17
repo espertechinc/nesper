@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         public void TestComputeDelta()
         {
             TimePeriodComputeConstGivenCalAddEval addMonth = new TimePeriodComputeConstGivenCalAddEval();
-            addMonth.TimeZone = TimeZoneInfo.Local;
+            addMonth.TimeZone = TimeZoneInfo.Utc;
             addMonth.TimeAbacus = TimeAbacusMilliseconds.INSTANCE;
             TimePeriodAdder[] adders = new TimePeriodAdder[1];
             adders[0] = new TimePeriodAdderMonth();

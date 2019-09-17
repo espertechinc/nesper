@@ -151,7 +151,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         dateTime.Minute,
                         dateTime.Second,
-                        value);
+                        value,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.SECOND:
                     return new DateTime(
                         dateTime.Year,
@@ -160,7 +161,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         dateTime.Minute,
                         value,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.MINUTE:
                     return new DateTime(
                         dateTime.Year,
@@ -169,7 +171,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         value,
                         dateTime.Second,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.HOUR_OF_DAY:
                     return new DateTime(
                         dateTime.Year,
@@ -178,7 +181,8 @@ namespace com.espertech.esper.compat.datetime
                         value,
                         dateTime.Minute,
                         dateTime.Second,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.DATE:
                 case DateTimeFieldEnum.DAY_OF_MONTH:
                     return new DateTime(
@@ -188,7 +192,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         dateTime.Minute,
                         dateTime.Second,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.MONTH:
                     return new DateTime(
                         dateTime.Year,
@@ -197,7 +202,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         dateTime.Minute,
                         dateTime.Second,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 case DateTimeFieldEnum.YEAR:
                     return new DateTime(
                         value,
@@ -206,7 +212,8 @@ namespace com.espertech.esper.compat.datetime
                         dateTime.Hour,
                         dateTime.Minute,
                         dateTime.Second,
-                        dateTime.Millisecond);
+                        dateTime.Millisecond,
+                        dateTime.Kind);
                 default:
                     throw new ArgumentException("invalid datetime");
             }

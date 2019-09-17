@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(void), typeof(CalendarWithDateForgeOp), codegenClassScope)
+                .MakeChild(typeof(DateTimeEx), typeof(CalendarWithDateForgeOp), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "value");
 
             var block = methodNode.Block;
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="dto">localdatetime</param>
+        /// <param name="dto">date time offset</param>
         /// <param name="year">year</param>
         /// <param name="month">month</param>
         /// <param name="day">day</param>
@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="dateTime">zoneddatetime</param>
+        /// <param name="dateTime">dateTime</param>
         /// <param name="year">year</param>
         /// <param name="month">month</param>
         /// <param name="day">day</param>

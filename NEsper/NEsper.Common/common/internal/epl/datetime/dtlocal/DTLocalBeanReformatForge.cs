@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -61,8 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 block.IfRefNullReturnNull("timestamp");
             }
 
+            CodegenExpression derefTimestamp = Ref("timestamp");
+            if (getterResultType.IsNullable()) {
+                derefTimestamp = ExprDotName(derefTimestamp, "Value");
+            }
+
             block.MethodReturn(
-                inner.Codegen(@Ref("timestamp"), getterResultType, methodNode, exprSymbol, codegenClassScope));
+                inner.Codegen(derefTimestamp, getterResultType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, target);
         }
     }

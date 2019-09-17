@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.util
             EPAssertionUtil.AssertEqualsExactOrder(new [] { "R2","R1","A","1_1","0" }, GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "R1", "0");
-            TryInvalid(graph, "Circular dependency detected between [0, R1, A, 1_1]");
+            TryInvalid(graph, "Circular dependency detected between [\"0\", \"R1\", \"A\", \"1_1\"]");
         }
 
         [Test]
@@ -96,13 +96,13 @@ namespace com.espertech.esper.common.@internal.util
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();
             Add(graph, "1_1", "1");
             Add(graph, "1", "1_1");
-            TryInvalid(graph, "Circular dependency detected between [1, 1_1]");
+            TryInvalid(graph, "Circular dependency detected between [\"1\", \"1_1\"]");
 
             graph = new LinkedHashMap<string, ICollection<string>>();
             Add(graph, "1", "2");
             Add(graph, "2", "3");
             Add(graph, "3", "1");
-            TryInvalid(graph, "Circular dependency detected between [3, 2, 1]");
+            TryInvalid(graph, "Circular dependency detected between [\"3\", \"2\", \"1\"]");
         }
 
         [Test]

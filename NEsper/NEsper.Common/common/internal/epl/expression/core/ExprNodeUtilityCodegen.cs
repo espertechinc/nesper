@@ -107,11 +107,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
                 result = LocalMethod(evalMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT);
 
-                if (optCoercionType != null && forge.EvaluationType.GetBoxedType() != optCoercionType.GetBoxedType()) {
+                var forgeEvaluationType = forge.EvaluationType.GetBoxedType();
+                if (optCoercionType != null && forgeEvaluationType != optCoercionType.GetBoxedType()) {
                     var coercer = SimpleNumberCoercerFactory.GetCoercer(
-                        forge.EvaluationType,
+                        forgeEvaluationType,
                         optCoercionType.GetBoxedType());
-                    evaluate.Block.DeclareVar(forge.EvaluationType, "result", result);
+                    evaluate.Block.DeclareVar(forgeEvaluationType, "result", result);
                     result = coercer.CoerceCodegen(Ref("result"), forge.EvaluationType);
                 }
             }

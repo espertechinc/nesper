@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.util
@@ -21,13 +23,13 @@ namespace com.espertech.esper.common.@internal.util
                 new object[] {"System.String", DatabaseTypeEnum.STRING},
                 new object[] {"System.String", DatabaseTypeEnum.STRING},
                 new object[] {"decimal", DatabaseTypeEnum.DECIMAL},
-                new object[] {typeof(bool?).Name, DatabaseTypeEnum.BOOLEAN},
-                new object[] {typeof(byte).Name, DatabaseTypeEnum.BYTE},
+                new object[] {typeof(bool?).FullName, DatabaseTypeEnum.BOOLEAN},
+                new object[] {typeof(byte).FullName, DatabaseTypeEnum.BYTE},
                 new object[] {"short", DatabaseTypeEnum.INT16},
                 new object[] {"int", DatabaseTypeEnum.INT32},
                 new object[] {"System.Int32", DatabaseTypeEnum.INT32},
-                new object[] {typeof(int).Name, DatabaseTypeEnum.INT32},
-                new object[] {typeof(int?).Name, DatabaseTypeEnum.INT32}
+                new object[] {typeof(int).FullName, DatabaseTypeEnum.INT32},
+                new object[] {typeof(int?).FullName, DatabaseTypeEnum.INT32}
             };
 
             for (var i = 0; i < types.Length; i++) {
@@ -43,7 +45,7 @@ namespace com.espertech.esper.common.@internal.util
                 new object[] {DatabaseTypeEnum.STRING, typeof(string)},
                 new object[] {DatabaseTypeEnum.DECIMAL, typeof(decimal?)},
                 new object[] {DatabaseTypeEnum.BOOLEAN, typeof(bool?)},
-                new object[] {DatabaseTypeEnum.BYTE, typeof(byte)},
+                new object[] {DatabaseTypeEnum.BYTE, typeof(byte?)},
                 new object[] {DatabaseTypeEnum.INT16, typeof(short?)},
                 new object[] {DatabaseTypeEnum.INT32, typeof(int?)},
                 new object[] {DatabaseTypeEnum.INT64, typeof(long?)},
@@ -54,7 +56,7 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < types.Length; i++) {
                 var val = (DatabaseTypeEnum) types[i][0];
-                Assert.AreEqual(types[i][1], val.GetBinding().DataType);
+                Assert.AreEqual(types[i][1], val.GetBinding().DataType.GetBoxedType());
                 Assert.AreEqual(types[i][1], val.GetBoxedType());
             }
         }

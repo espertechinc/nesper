@@ -57,14 +57,6 @@ namespace com.espertech.esper.common.@internal.util
             catch (IOException ex) {
                 throw new EPException("Could not read configuration: " + resourceName, ex);
             }
-            finally {
-                try {
-                    stream.Close();
-                }
-                catch (IOException ioe) {
-                    Log.Warn("could not close input stream for: " + resourceName, ioe);
-                }
-            }
 
             return document;
         }

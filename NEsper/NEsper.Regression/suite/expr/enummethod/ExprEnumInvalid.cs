@@ -51,18 +51,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 "Failed to validate select-clause expression 'Contained.notAMethod()': Could not find event property, enumeration method or instance method named 'notAMethod' in collection of events of type '");
 
             // invalid lambda expression for non-lambda func
-            epl = "select makeTest(x->1) from SupportBean_ST0_Container";
+            epl = "select MakeTest(x->1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'makeTest()': Unexpected lambda-expression encountered as parameter to UDF or static method 'makeTest' [select makeTest(x->1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'MakeTest()': Unexpected lambda-expression encountered as parameter to UDF or static method 'MakeTest' [select MakeTest(x->1) from SupportBean_ST0_Container]");
 
             // invalid lambda expression for non-lambda func
-            epl = "select SupportBean_ST0_Container.makeTest(x->1) from SupportBean_ST0_Container";
+            epl = "select SupportBean_ST0_Container.MakeTest(x->1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'SupportBean_ST0_Container.makeTest()': Unexpected lambda-expression encountered as parameter to UDF or static method 'makeTest' [select SupportBean_ST0_Container.makeTest(x->1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'SupportBean_ST0_Container.MakeTest()': Unexpected lambda-expression encountered as parameter to UDF or static method 'MakeTest' [select SupportBean_ST0_Container.MakeTest(x->1) from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.take('a') from SupportBean_ST0_Container";
@@ -147,14 +147,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received int [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.allOf(x -> 1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received int [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container";

@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             catch (EPException ex) {
                 Assert.AreEqual(
                     "Unexpected event object type '" +
-                    typeof(SupportBean).GetCleanName() +
+                    typeof(SupportBean).CleanName() +
                     "' encountered, please supply a XmlDocument or XmlElement node",
                     ex.Message);
             }

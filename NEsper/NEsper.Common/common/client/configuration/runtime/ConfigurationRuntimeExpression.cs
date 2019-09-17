@@ -21,8 +21,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         public ConfigurationRuntimeExpression()
         {
-            TimeZone = TimeZoneInfo.Local;
-            //TimeZone = TimeZone.CurrentTimeZone;
+            TimeZone = TimeZoneInfo.Utc;
             IsSelfSubselectPreeval = true;
         }
 

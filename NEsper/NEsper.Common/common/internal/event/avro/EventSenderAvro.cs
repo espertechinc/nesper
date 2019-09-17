@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().GetCleanName() + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
             var eventBean = eventBeanTypedEventFactory.AdapterForTypedAvro(theEvent, eventType);

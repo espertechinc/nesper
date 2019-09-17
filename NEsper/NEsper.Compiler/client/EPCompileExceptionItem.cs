@@ -63,23 +63,24 @@ namespace com.espertech.esper.compiler.client
         /// <returns>line number</returns>
         public int LineNumber { get; }
 
-        public string GetMessage()
-        {
-            StringBuilder msg;
-            if (!string.IsNullOrWhiteSpace(base.Message)) {
-                msg = new StringBuilder(base.Message);
-            }
-            else {
-                msg = new StringBuilder("Unexpected exception");
-            }
+        public override string Message {
+            get {
+                StringBuilder msg;
+                if (!string.IsNullOrWhiteSpace(base.Message)) {
+                    msg = new StringBuilder(base.Message);
+                }
+                else {
+                    msg = new StringBuilder("Unexpected exception");
+                }
 
-            if (Expression != null) {
-                msg.Append(" [");
-                msg.Append(Expression);
-                msg.Append(']');
-            }
+                if (Expression != null) {
+                    msg.Append(" [");
+                    msg.Append(Expression);
+                    msg.Append(']');
+                }
 
-            return msg.ToString();
+                return msg.ToString();
+            }
         }
     }
 } // end of namespace

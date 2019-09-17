@@ -1545,9 +1545,11 @@ namespace com.espertech.esper.compat.collections
                 for (int ii = 0; ii < @objects.Length; ii++)
                 {
                     var item = @objects[ii];
-                    int itemHash = item?.GetHashCode() ?? 0;
-                    result *= 397;
-                    result ^= itemHash;
+                    if (item != null) {
+                        int itemHash = item.GetHashCode();
+                        result *= 397;
+                        result ^= itemHash;
+                    }
                 }
             }
 

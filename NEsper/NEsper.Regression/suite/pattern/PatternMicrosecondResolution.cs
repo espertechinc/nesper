@@ -202,9 +202,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             int monthToAdd)
         {
             return DateTimeEx
-                .GetInstance(TimeZoneInfo.Local, timeInMillis)
+                .GetInstance(TimeZoneInfo.Utc, timeInMillis)
                 .AddMonths(monthToAdd)
-                .TimeInMillis;
+                .UtcMillis;
         }
     }
 } // end of namespace

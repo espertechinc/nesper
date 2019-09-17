@@ -19,9 +19,9 @@ using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUt
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    public class DTLocalDateTimeOpsIntervalForge : DTLocalForgeCalOpsIntervalBase
+    public class DTLocalCalOpsIntervalForge : DTLocalForgeCalOpsIntervalBase
     {
-        public DTLocalDateTimeOpsIntervalForge(
+        public DTLocalCalOpsIntervalForge(
             IList<CalendarForge> calendarForges,
             IntervalForge intervalForge)
             : base(
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
         }
 
-        public override DTLocalEvaluator DTEvaluator => new DTLocalDateTimeOpsIntervalEval(
+        public override DTLocalEvaluator DTEvaluator => new DTLocalCalOpsIntervalEval(
             GetCalendarOps(calendarForges),
             intervalForge.Op);
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return DTLocalDateTimeOpsIntervalEval.Codegen(
+            return DTLocalCalOpsIntervalEval.Codegen(
                 this,
                 inner,
                 codegenMethodScope,
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
         {
-            return new DTLocalDateTimeOpsIntervalEval(GetCalendarOps(calendarForges), intervalForge.Op);
+            return new DTLocalCalOpsIntervalEval(GetCalendarOps(calendarForges), intervalForge.Op);
         }
 
         public override CodegenExpression Codegen(
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return DTLocalDateTimeOpsIntervalEval.Codegen(
+            return DTLocalCalOpsIntervalEval.Codegen(
                 this,
                 start,
                 end,

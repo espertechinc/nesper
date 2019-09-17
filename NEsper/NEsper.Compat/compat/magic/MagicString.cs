@@ -6,18 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.common.@internal.@event.core
+using System;
+
+namespace com.espertech.esper.compat.magic
 {
-    /// <summary> Enumeration of property types.</summary>
-    public enum EventPropertyType
+    public class MagicString
     {
-        /// <summary> Simple property.</summary>
-        SIMPLE,
-
-        /// <summary> Indexed property.</summary>
-        INDEXED,
-
-        /// <summary> Mapped property.</summary>
-        MAPPED
+        public static Func<string, string> GetStringConformer(bool isCaseSensitive)
+        {
+            return isCaseSensitive ? (Func<string, string>) (s => s) : (s => s.ToUpper());
+        }
     }
 }

@@ -17,15 +17,17 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    public class DTLocalDateTimeOpsIntervalEval : DTLocalEvaluatorCalOpsIntervalBase
+    public class DTLocalCalOpsIntervalEval : DTLocalEvaluatorCalOpsIntervalBase
     {
-        public DTLocalDateTimeOpsIntervalEval(
+        public DTLocalCalOpsIntervalEval(
             IList<CalendarOp> calendarOps,
             IntervalOp intervalOp)
             : base(calendarOps, intervalOp)
@@ -39,24 +41,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dateTime = (DateTime) target;
-            dateTime = EvaluateCalOpsZDT(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+            dateTime = EvaluateCalOpsDtx(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = DatetimeLongCoercerDateTime.CoerceToMillis(dateTime);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsIntervalForge forge,
+            DTLocalCalOpsIntervalForge forge,
             CodegenExpression inner,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
+                .MakeChild(typeof(bool?), typeof(DTLocalCalOpsIntervalEval), codegenClassScope)
                 .AddParam(typeof(DateTime), "target");
 
             var block = methodNode.Block;
-            EvaluateCalOpsZDTCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+            EvaluateCalOpsDtxCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
             block.DeclareVar<long>(
                 "time",
                 StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("target")));
@@ -76,46 +78,63 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var end = (DateTime) endTimestamp;
             var deltaMSec = DatetimeLongCoercerDateTime.CoerceToMillis(end) -
                             DatetimeLongCoercerDateTime.CoerceToMillis(start);
-            start = EvaluateCalOpsZDT(calendarOps, start, eventsPerStream, isNewData, exprEvaluatorContext);
+            start = EvaluateCalOpsDtx(calendarOps, start, eventsPerStream, isNewData, exprEvaluatorContext);
             var startLong = DatetimeLongCoercerDateTime.CoerceToMillis(start);
             var endTime = startLong + deltaMSec;
             return intervalOp.Evaluate(startLong, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsIntervalForge forge,
+            DTLocalCalOpsIntervalForge forge,
             CodegenExpression start,
             CodegenExpression end,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope
-                .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "start")
-                .AddParam(typeof(DateTime), "end");
+            CodegenExpression timeZoneField = codegenClassScope
+                .AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChild(typeof(bool?), typeof(DTLocalCalOpsIntervalEval), codegenClassScope)
+                .AddParam(typeof(DateTime), "startTimestamp")
+                .AddParam(typeof(DateTime), "endTimestamp");
 
-            var block = methodNode.Block
+            CodegenBlock block = methodNode.Block
                 .DeclareVar<long>(
-                    "startMs",
-                    StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("start")))
+                    "startLong",
+                    StaticMethod(typeof(DateTimeHelper), "UtcMillis", Ref("startTimestamp")))
                 .DeclareVar<long>(
-                    "endMs",
-                    StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("end")))
-                .DeclareVar<long>("deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
-                .DeclareVar<DateTime>("result", start);
-            EvaluateCalOpsZDTCodegen(block, "result", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar<long>(
-                "startLong",
-                StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("result")));
-            block.DeclareVar<long>("endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
-            block.MethodReturn(
-                forge.intervalForge.Codegen(
-                    Ref("startLong"),
-                    Ref("endTime"),
-                    methodNode,
-                    exprSymbol,
-                    codegenClassScope));
+                    "endLong",
+                    StaticMethod(typeof(DateTimeHelper), "UtcMillis", Ref("endTimestamp")))
+                .DeclareVar<DateTimeEx>(
+                    "dtx",
+                    StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .Expression(
+                    ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("startLong")));
+
+            EvaluateCalOpsCalendarCodegen(
+                block,
+                forge.calendarForges,
+                Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
+
+            block
+                .DeclareVar<long>(
+                    "startTime",
+                    GetProperty(Ref("dtx"), "UtcMillis"))
+                .DeclareVar<long>(
+                    "endTime",
+                    Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))
+                .MethodReturn(
+                    forge.intervalForge.Codegen(
+                        Ref("startTime"),
+                        Ref("endTime"),
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
+
             return LocalMethod(methodNode, start, end);
         }
     }

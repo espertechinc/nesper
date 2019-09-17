@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                     "dateTime",
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(DateTimeHelper),
-                        "UtcFromMills",
+                        "UtcFromMillis",
                         CodegenExpressionBuilder.Ref("ts")))
                 .MethodReturn(CodegenExpressionBuilder.Ref("dateTime"));
             return CodegenExpressionBuilder.LocalMethod(methodNode, inner);

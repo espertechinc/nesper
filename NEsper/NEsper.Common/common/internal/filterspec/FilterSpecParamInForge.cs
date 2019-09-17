@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             //param.AddMethod("GetFilterValue", getFilterValue);
 
             if (_inListConstantsOnly != null) {
-                getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
+                getFilterValue.Block.BlockReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
             }
             else if (!_hasCollMapOrArray) {
                 getFilterValue.Block.DeclareVar<object[]>(
@@ -216,7 +216,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         .BlockEnd();
                 }
 
-                getFilterValue.Block.MethodReturn(
+                getFilterValue.Block.BlockReturn(
                     NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "ToArray")));
             }
 

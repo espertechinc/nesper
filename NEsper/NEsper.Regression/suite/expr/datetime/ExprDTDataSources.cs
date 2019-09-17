@@ -42,17 +42,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             AtomicLong milestone)
         {
             var methods = Collections.List(
-                "getMinuteOfHour",
-                "getMonthOfYear",
-                "getDayOfMonth",
-                "getDayOfWeek",
-                "getDayOfYear",
-                "getEra",
-                "gethourOfDay",
-                "getmillisOfSecond",
-                "getsecondOfMinute",
-                "getweekyear",
-                "getyear");
+                "getMinuteOfHour",    // c0
+                "getMonthOfYear",     // c1
+                "getDayOfMonth",      // c2
+                "getDayOfWeek",       // c3
+                "getDayOfYear",       // c4
+                "getHourOfDay",       // c5
+                "getMillisOfSecond",  // c6
+                "getSecondOfMinute",  // c7
+                "getWeekyear",        // c8
+                "getYear"             // c9
+                );
             var epl = new StringBuilder();
             epl.Append("@Name('s0') select ");
             var count = 0;
@@ -73,14 +73,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.CompileDeployAddListenerMile(epl.ToString(), "s0", milestone.GetAndIncrement());
 
             var sdt = SupportDateTime.Make("2002-05-30T09:01:02.003");
-            sdt.DtxDate.SetMillis(3);
+            sdt.DateTimeEx.SetMillis(3);
             env.SendEventBean(sdt);
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "c0","c1","c2","c3","c4","c5","c6","c7","c8","c9","c10" },
+                new [] { "c0","c1","c2","c3","c4","c5","c6","c7","c8","c9" },
                 new object[] {
-                    1, 4, 30, 5, 150, 1, 9, 3, 2, 22, 2002
+                    1, 5, 30, 4, 150, 9, 3, 2, 22, 2002
                 });
 
             env.UndeployAll();
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "utildate","longdate","caldate","zoneddate","localdate" };
+                var fields = new [] { "LongDate","DateTime","DateTimeOffset", "DateTimeEx" };
                 var milestone = new AtomicLong();
 
                 foreach (var field in fields) {
@@ -145,24 +145,37 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "2002-05-30T09:01:02.003"; // use 2-digit hour, see https://bugs.openjdk.java.net/browse/JDK-8066806
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                var fields =
-                    "valmoh,valmoy,valdom,valdow,valdoy,valera,valhod,valmos,valsom,valwye,valyea,val1,val2,val3"
-                        .SplitCsv();
+                var fields = Collections.Array(
+                    "valmoh",
+                    "valmoy",
+                    "valdom",
+                    "valdow",
+                    "valdoy",
+                    "valhod",
+                    "valmos",
+                    "valsom",
+                    "valwye",
+                    "valyea",
+                    "val0",
+                    "val1",
+                    "val2",
+                    "val3");
+
                 var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.getMinuteOfHour() as valmoh," +
                                   "current_timestamp.getMonthOfYear() as valmoy," +
                                   "current_timestamp.getDayOfMonth() as valdom," +
                                   "current_timestamp.getDayOfWeek() as valdow," +
                                   "current_timestamp.getDayOfYear() as valdoy," +
-                                  "current_timestamp.getEra() as valera," +
-                                  "current_timestamp.gethourOfDay() as valhod," +
-                                  "current_timestamp.getmillisOfSecond()  as valmos," +
-                                  "current_timestamp.getsecondOfMinute() as valsom," +
-                                  "current_timestamp.getweekyear() as valwye," +
-                                  "current_timestamp.getyear() as valyea," +
-                                  "DtoDate.gethourOfDay() as val1," +
-                                  "LongDate.gethourOfDay() as val2," +
-                                  "DtxDate.gethourOfDay() as val3" +
+                                  "current_timestamp.getHourOfDay() as valhod," +
+                                  "current_timestamp.getMillisOfSecond()  as valmos," +
+                                  "current_timestamp.getSecondOfMinute() as valsom," +
+                                  "current_timestamp.getWeekyear() as valwye," +
+                                  "current_timestamp.getYear() as valyea," +
+                                  "DateTimeEx.getHourOfDay() as val0," +
+                                  "DateTimeOffset.getHourOfDay() as val1," +
+                                  "DateTime.getHourOfDay() as val2," +
+                                  "LongDate.getHourOfDay() as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 foreach (var field in fields) {
@@ -174,7 +187,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {
-                        1, 4, 30, 5, 150, 1, 9, 3, 2, 22, 2002, 9, 9, 9, 9, 9
+                        1,    // valmoh
+                        5,    // valmoy
+                        30,   // valdom
+                        4,    // valdow
+                        150,  // valdoy
+                        9,    // valhod
+                        3,    // valmos
+                        2,    // valsom
+                        22,   // valwye
+                        2002, // valyea
+                        9,    // val0
+                        9,    // val1
+                        9,    // val2    
+                        9     // val3
                     });
 
                 env.UndeployAll();
@@ -215,10 +241,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // test PONO inheritance via create-schema
                 path.Clear();
                 var eplPONO = "create schema InterfaceType as " +
-                              typeof(SupportStartTSEndTSInterface).Name +
-                              " starttimestamp startTS endtimestamp endTS;\n" +
+                              typeof(SupportStartTSEndTSInterface).FullName +
+                              " starttimestamp StartTS endtimestamp EndTS;\n" +
                               "create schema DerivedType as " +
-                              typeof(SupportStartTSEndTSImpl).Name +
+                              typeof(SupportStartTSEndTSImpl).FullName +
                               " inherits InterfaceType";
                 env.CompileDeployWBusPublicType(eplPONO, path);
 
@@ -226,8 +252,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "@Name('s2') select * from DerivedType dt where dt.before(current_timestamp())",
                     path);
                 env.Deploy(compiled);
-                Assert.AreEqual("startTS", env.Statement("s2").EventType.StartTimestampPropertyName);
-                Assert.AreEqual("endTS", env.Statement("s2").EventType.EndTimestampPropertyName);
+                Assert.AreEqual("StartTS", env.Statement("s2").EventType.StartTimestampPropertyName);
+                Assert.AreEqual("EndTS", env.Statement("s2").EventType.EndTimestampPropertyName);
 
                 env.UndeployAll();
 

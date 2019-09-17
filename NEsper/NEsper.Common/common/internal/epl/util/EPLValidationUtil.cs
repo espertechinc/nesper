@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     "expected a boolean-type result for expression parameter " +
                     parameterNum +
                     " but received " +
-                    providedType.GetCleanName());
+                    providedType.CleanName());
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && !providedType.IsNumeric()) {
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     "expected a number-type result for expression parameter " +
                     parameterNum +
                     " but received " +
-                    providedType.GetCleanName());
+                    providedType.CleanName());
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.SPECIFIC) {
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "-type result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.GetCleanName());
+                        providedType.CleanName());
                 }
             }
 
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "expected a time-period expression or a numeric-type result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.GetCleanName());
+                        providedType.CleanName());
                 }
             }
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " +
                         parameterNum +
                         " but received " +
-                        providedType.GetCleanName());
+                        providedType.CleanName());
                 }
             }
         }

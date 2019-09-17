@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 
@@ -162,8 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var block = methodNode.Block
                 .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
-            var leftTypeUncoerced = forges[0].EvaluationType;
-            var leftTypeCoerced = forge.CoercionType;
+            var leftTypeUncoerced = forges[0].EvaluationType.GetBoxedType();
+            var leftTypeCoerced = forge.CoercionType.GetBoxedType();
 
             block.DeclareVar(
                 leftTypeUncoerced,
@@ -181,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         codegenClassScope));
 
             for (var i = 1; i < forges.Length; i++) {
-                var reftype = forges[i].EvaluationType;
+                var reftype = forges[i].EvaluationType.GetBoxedType();
                 var refforge = forges[i];
                 var refname = "r" + i;
 
@@ -195,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                if (reftype.IsImplementsInterface(typeof(ICollection<object>))) {
+                if (TypeHelper.IsImplementsInterface(reftype, typeof(ICollection<object>))) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         if (!leftTypeUncoerced.IsPrimitive) {
@@ -206,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }
-                else if (reftype.IsImplementsInterface(typeof(IDictionary<object, object>))) {
+                else if (TypeHelper.IsImplementsInterface(reftype, typeof(IDictionary<object, object>))) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         if (!leftTypeUncoerced.IsPrimitive) {

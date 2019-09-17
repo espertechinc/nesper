@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestHashCode()
         {
-            Assert.IsTrue(pair1a.GetHashCode() == ("a".GetHashCode() ^ "b".GetHashCode()));
+            Assert.IsTrue(pair1a.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
             Assert.IsTrue(pair2a.GetHashCode() == "a".GetHashCode());
             Assert.IsTrue(pair3a.GetHashCode() == "b".GetHashCode());
             Assert.IsTrue(pair4a.GetHashCode() == 0);

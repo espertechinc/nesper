@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
@@ -52,12 +53,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var properties = propertyListBuilder.AssessProperties(clazz);
 
             var propertyDescriptors = new EventPropertyDescriptor[properties.Count];
-            IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap =
+            var propertyDescriptorMap =
                 new Dictionary<string, EventPropertyDescriptor>();
             var propertyNames = new string[properties.Count];
-            IDictionary<string, PropertyInfo> simpleProperties = new Dictionary<string, PropertyInfo>();
-            IDictionary<string, PropertyStem> mappedPropertyDescriptors = new Dictionary<string, PropertyStem>();
-            IDictionary<string, PropertyStem> indexedPropertyDescriptors = new Dictionary<string, PropertyStem>();
+            var simpleProperties = new Dictionary<string, PropertyInfo>();
+            var mappedPropertyDescriptors = new Dictionary<string, PropertyStem>();
+            var indexedPropertyDescriptors = new Dictionary<string, PropertyStem>();
 
             IDictionary<string, IList<PropertyInfo>> simpleSmartPropertyTable = null;
             IDictionary<string, IList<PropertyInfo>> mappedSmartPropertyTable = null;
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 bool isMapped;
                 bool isFragment;
 
-                if (desc.PropertyType == EventPropertyType.SIMPLE) {
+                if (desc.PropertyType == PropertyType.SIMPLE) {
                     EventPropertyGetterSPIFactory getter;
                     Type type;
                     if (desc.ReadMethod != null) {
@@ -105,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     isRequiresMapkey = false;
                     isIndexed = false;
                     isMapped = false;
-                    if (type.IsImplementsInterface(typeof(IDictionary<object, object>))) {
+                    if (TypeHelper.IsImplementsInterface(type, typeof(IDictionary<object, object>))) {
                         isMapped = true;
                         // We do not yet allow to fragment maps entries.
                         // Class genericType = TypeHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
@@ -166,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         propertyInfoList.Add(propertyInfo);
                     }
                 }
-                else if (desc.PropertyType == EventPropertyType.MAPPED) {
+                else if (desc.PropertyType == PropertyType.MAPPED) {
                     mappedPropertyDescriptors.Put(propertyName, desc);
 
                     underlyingType = desc.ReturnType;
@@ -192,7 +193,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         propertyInfoList.Add(propertyInfo);
                     }
                 }
-                else if (desc.PropertyType == EventPropertyType.INDEXED) {
+                else if (desc.PropertyType == PropertyType.INDEXED) {
                     indexedPropertyDescriptors.Put(propertyName, desc);
 
                     underlyingType = desc.ReturnType;

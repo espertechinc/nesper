@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.support.schedule
                     return input => input.DateTimeExEnd.DateTime;
 
                 case SupportDateTimeFieldType.DATE:
-                    return input => input.UtildateEnd;
+                    return input => input.DateTimeEnd;
 
                 case SupportDateTimeFieldType.MSEC:
                     return input => input.LongdateEnd;

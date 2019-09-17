@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 .AddParam(typeof(EventBean), "theEvent")
                 .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar<IDictionary<string, object>>(
                     "map",
                     ExprDotName(Ref("wrapperEvent"), "DecoratingProperties"))
                 .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope));

@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 var message = TypeHelper.GetMessageInvocationTarget(
                     statementName,
                     method,
-                    target.GetType().GetCleanName(),
+                    target.GetType().CleanName(),
                     args,
                     e);
                 Log.Error(message, e);

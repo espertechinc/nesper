@@ -690,9 +690,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                                 "' contributes property '" +
                                 prop.PropertyName +
                                 "' defined as '" +
-                                assigned.GetCleanName() +
+                                assigned.CleanName() +
                                 "' which overrides the same property of type '" +
-                                ((Type) existing).GetCleanName() +
+                                ((Type) existing).CleanName() +
                                 "'");
                         }
                     }
@@ -1940,7 +1940,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 message += ", the name '" +
                            eventTypeName +
                            "' refers to a " +
-                           existingType.UnderlyingType.GetCleanName() +
+                           existingType.UnderlyingType.CleanName() +
                            " event type";
             }
             else {

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -83,13 +84,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 block.IfRefNullReturnNull("end");
             }
 
+            CodegenExpression startValue = Ref("start");
+            if (forge.getterStartReturnType.IsNullable()) {
+                startValue = ExprDotName(startValue, "Value");
+            }
+
+            CodegenExpression endValue = Ref("end");
+            if (forge.getterEndReturnType.IsNullable()) {
+                endValue = ExprDotName(endValue, "Value");
+            }
+
             block.MethodReturn(
                 forge.inner.Codegen(
-                    Ref("start"), 
-                    Ref("end"), 
+                    startValue,
+                    endValue,
                     methodNode, 
                     exprSymbol, 
                     codegenClassScope));
+
             return LocalMethod(methodNode, inner);
         }
     }

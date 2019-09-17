@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             SupportQueryPlanIndexHook.Reset();
             var eplUnique = "@Name('s0')" +
                             INDEX_CALLBACK_HOOK +
-                            "select s1 as c0, " +
+                            "select S1 as c0, " +
                             "(select S2 from SupportSimpleBeanTwo#unique(" +
                             uniqueFields +
                             ") as ssb2 " +
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         new object[] {"EY", null});
                 };
 
-                TryAssertion(env, false, "s2,i2", "", BACKING_UNINDEXED, assertNoWhere);
+                TryAssertion(env, false, "S2,I2", "", BACKING_UNINDEXED, assertNoWhere);
 
                 // test no where clause with unique on multiple props, exact specification of where-clause
                 IndexAssertionEventSend assertSendEvents = () => {
@@ -131,81 +131,81 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "D2,I2",
+                    "where ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.d2 = ssb1.d1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.D2 = ssb1.D1 and ssb2.I2 = ssb1.I1",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.d2 = ssb1.d1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.D2 = ssb1.D1 and ssb2.I2 = ssb1.I1",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1",
                     BACKING_MULTI_DUPS,
                     assertSendEvents);
-                TryAssertion(env, false, "d2,i2", "where ssb2.d2 = ssb1.d1", BACKING_SINGLE_DUPS, assertSendEvents);
+                TryAssertion(env, false, "D2,I2", "where ssb2.D2 = ssb1.D1", BACKING_SINGLE_DUPS, assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1 and ssb2.l2 between 1 and 1000",
+                    "D2,I2",
+                    "where ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.L2 between 1 and 1000",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,i2",
-                    "where ssb2.d2 = ssb1.d1 and ssb2.l2 between 1 and 1000",
+                    "D2,I2",
+                    "where ssb2.D2 = ssb1.D1 and ssb2.L2 between 1 and 1000",
                     BACKING_COMPOSITE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "i2,d2,l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.d2 = ssb1.d1",
+                    "I2,D2,L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.D2 = ssb1.D1",
                     BACKING_MULTI_DUPS,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "i2,d2,l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "I2,D2,L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,l2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "D2,L2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "d2,l2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1 and ssb2.s2 between 'E3' and 'E4'",
+                    "D2,L2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.S2 between 'E3' and 'E4'",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
-                TryAssertion(env, false, "l2", "where ssb2.l2 = ssb1.l1", BACKING_SINGLE_UNIQUE, assertSendEvents);
-                TryAssertion(env, true, "l2", "where ssb2.l2 = ssb1.l1", BACKING_SINGLE_DUPS, assertSendEvents);
+                TryAssertion(env, false, "l2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_UNIQUE, assertSendEvents);
+                TryAssertion(env, true, "l2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_DUPS, assertSendEvents);
                 TryAssertion(
                     env,
                     false,
-                    "l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb1.i1 between 1 and 20",
+                    "L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb1.I1 between 1 and 20",
                     BACKING_SINGLE_UNIQUE,
                     assertSendEvents);
 
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.i1 > ssb2.i2", BACKING_SORTED, assertGreater);
+                TryAssertion(env, false, "s2", "where ssb1.I1 > ssb2.I2", BACKING_SORTED, assertGreater);
 
                 // greater-equals
                 IndexAssertionEventSend assertGreaterEquals = () => {
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.i1 >= ssb2.i2", BACKING_SORTED, assertGreaterEquals);
+                TryAssertion(env, false, "s2", "where ssb1.I1 >= ssb2.I2", BACKING_SORTED, assertGreaterEquals);
 
                 // less
                 IndexAssertionEventSend assertLess = () => {
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.i1 < ssb2.i2", BACKING_SORTED, assertLess);
+                TryAssertion(env, false, "s2", "where ssb1.I1 < ssb2.I2", BACKING_SORTED, assertLess);
 
                 // less-equals
                 IndexAssertionEventSend assertLessEquals = () => {
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.i1 <= ssb2.i2", BACKING_SORTED, assertLessEquals);
+                TryAssertion(env, false, "s2", "where ssb1.I1 <= ssb2.I2", BACKING_SORTED, assertLessEquals);
             }
         }
 

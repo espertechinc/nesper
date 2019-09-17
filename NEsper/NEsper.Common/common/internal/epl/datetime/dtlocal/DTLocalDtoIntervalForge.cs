@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public override DTLocalEvaluator DTEvaluator =>
-            new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Local);
+            new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Utc);
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
         {
-            return new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Local);
+            return new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Utc);
         }
 
         public override CodegenExpression Codegen(

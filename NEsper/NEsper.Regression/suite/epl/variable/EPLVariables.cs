@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new MySimpleVariableService());
 
                 var epStatement = env
-                    .CompileDeploy("@Name('s0') select mySimpleVariableService.doSomething() as c0 from SupportBean")
+                    .CompileDeploy("@Name('s0') select mySimpleVariableService.DoSomething() as c0 from SupportBean")
                     .Statement("s0");
 
                 var latch = new CountDownLatch(1);
@@ -415,13 +415,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // declared via EPL
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create constant variable MySimpleVariableService myService = MySimpleVariableServiceFactory.makeService()",
+                    "create constant variable MySimpleVariableService myService = MySimpleVariableServiceFactory.MakeService()",
                     path);
 
                 // exercise
                 var epl = "@Name('s0') select " +
-                          "myService.doSomething() as c0, " +
-                          "myInitService.doSomething() as c1 " +
+                          "myService.DoSomething() as c0, " +
+                          "myInitService.DoSomething() as c1 " +
                           "from SupportBean";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -884,7 +884,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type System.Int32 cannot be assigned a value of type System.String",
+                        "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.String",
                         ex.Message);
                 }
 
@@ -895,7 +895,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type System.Int32 cannot be assigned a value of type System.Long",
+                        "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.Int64",
                         ex.Message);
                 }
 
@@ -1619,7 +1619,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_3"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                 Array.Sort(typeSet.PropertyNames);
-                Assert.IsTrue(Equals(typeSet.PropertyNames, fieldsVar));
+                CollectionAssert.AreEquivalent(fieldsVar, typeSet.PropertyNames);
 
                 SendSupportBean(env, "S1", 3);
                 EPAssertionUtil.AssertProps(

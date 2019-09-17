@@ -18,21 +18,21 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     {
         public SupportDateTime(
             long? longDate,
-            DateTimeEx dtxDate,
-            DateTimeOffset? dtoDate,
+            DateTimeEx dateTimeEx,
+            DateTimeOffset? dateTimeOffset,
             DateTime? dateTime)
         {
             LongDate = longDate;
-            DtxDate = dtxDate;
-            DtoDate = dtoDate;
+            DateTimeEx = dateTimeEx;
+            DateTimeOffset = dateTimeOffset;
             DateTime = dateTime;
         }
 
         public long? LongDate { get; }
 
-        public DateTimeEx DtxDate { get; }
+        public DateTimeEx DateTimeEx { get; }
 
-        public DateTimeOffset? DtoDate { get; }
+        public DateTimeOffset? DateTimeOffset { get; }
 
         public DateTime? DateTime { get; }
 
@@ -40,18 +40,18 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
 
         public static DateTimeEx ToDateTimeEx(long value)
         {
-            return DateTimeEx.GetInstance(TimeZoneInfo.Local, value);
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value);
         }
 
         public static DateTimeOffset ToDateTimeOffset(long value)
         {
-            return DateTimeEx.GetInstance(TimeZoneInfo.Local, value)
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value)
                 .DateTime;
         }
 
         public static DateTimeOffset ToDateTime(long value)
         {
-            return DateTimeEx.GetInstance(TimeZoneInfo.Local, value)
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, value)
                 .DateTime
                 .DateTime;
         }
@@ -64,15 +64,13 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             }
 
             // expected : 2002-05-30T09:00:00
-            var dto = DateTimeParsingFunctions.ParseDefaultDateTimeOffset(datestr);
-            var dtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, dto);
-            dtx.SetMillis(0);
+            var dateTimeEx = DateTimeParsingFunctions.ParseDefaultEx(datestr);
 
             return new SupportDateTime(
-                dto.TimeInMillis(),
-                dtx,
-                dto,
-                dto.DateTime);
+                dateTimeEx.UtcMillis,
+                dateTimeEx,
+                dateTimeEx.UtcDateTime,
+                dateTimeEx.UtcDateTime.DateTime);
         }
 
         public static SupportDateTime Make(
@@ -93,52 +91,39 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         }
 
         private static object Coerce(
-            long time,
+            long msec,
             string format)
         {
             if (format.Equals("long", StringComparison.InvariantCultureIgnoreCase))
             {
-                return time;
+                return msec;
             }
 
             if (format.Equals("dtx", StringComparison.InvariantCultureIgnoreCase))
             {
-                return DateTimeEx.GetInstance(TimeZoneInfo.Local, time);
+                return DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec);
             }
 
             if (format.Equals("dto", StringComparison.InvariantCultureIgnoreCase))
             {
-                return DateTimeEx.GetInstance(TimeZoneInfo.Local, time)
+                return DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec)
                     .DateTime;
             }
 
-            if (format.Equals("datetime", StringComparison.InvariantCultureIgnoreCase))
+            if (format.Equals("datetime", StringComparison.InvariantCultureIgnoreCase) ||
+                format.Equals("date", StringComparison.InvariantCultureIgnoreCase))
             {
-                return DateTimeEx.GetInstance(TimeZoneInfo.Local, time)
+                return DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec)
                     .DateTime
                     .DateTime;
             }
 
             if (format.Equals("sdf", StringComparison.InvariantCultureIgnoreCase))
             {
-                var dtx = DateTimeEx.GetInstance(TimeZoneInfo.Local, time);
+                var dtx = DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec);
                 var sdf = new SimpleDateFormat();
                 return sdf.Format(dtx);
             }
-
-#if FALSE
-            if (format.Equals("dtf_isodt", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var date = LocalDateTime.OfInstant(Instant.OfEpochMilli(time), TimeZoneInfo.Local);
-                return DateTimeFormatter.ISO_DATE_TIME.Format(date);
-            }
-
-            if (format.Equals("dtf_isozdt", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var date = ZonedDateTime.OfInstant(Instant.OfEpochMilli(time), TimeZoneInfo.Local);
-                return DateTimeFormatter.ISO_ZONED_DATE_TIME.Format(date);
-            }
-#endif
 
             if (format.Equals("null", StringComparison.InvariantCultureIgnoreCase))
             {

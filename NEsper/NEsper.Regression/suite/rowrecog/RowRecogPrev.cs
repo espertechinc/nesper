@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
-                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.abs(prev(A.Value, 0)) >= 0," +
+                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.Abs(prev(A.Value, 0)) >= 0," +
                            "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
                            ")";
 
@@ -149,8 +149,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = new [] { "cat","a_string","b_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#time(5) " +
                            "match_recognize (" +
-                           "  partition by cat" +
-                           "  measures A.cat as cat, A.TheString as a_string, B.TheString as b_string" +
+                           "  partition by Cat" +
+                           "  measures A.Cat as cat, A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
                            "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
@@ -254,8 +254,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = new [] { "a_string" };
                 var text = "@Name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
-                           "  partition by cat " +
-                           "  measures A.cat as cat, A.TheString as a_string" +
+                           "  partition by Cat " +
+                           "  measures A.Cat as cat, A.TheString as a_string" +
                            "  all matches pattern (A) " +
                            "  define " +
                            "    A as PREV(A.Value) = (A.Value - 1)" +
@@ -372,8 +372,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = new [] { "a_string","a_cat","a_value","b_value" };
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by TheString, cat" +
-                           "  measures A.TheString as a_string, A.cat as a_cat, A.Value as a_value, B.Value as b_value " +
+                           "  partition by TheString, Cat" +
+                           "  measures A.TheString as a_string, A.Cat as a_cat, A.Value as a_value, B.Value as b_value " +
                            "  all matches pattern (A B) " +
                            "  define " +
                            "    A as (A.Value > PREV(A.Value))," +

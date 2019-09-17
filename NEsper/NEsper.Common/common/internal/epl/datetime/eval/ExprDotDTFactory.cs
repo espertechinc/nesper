@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             // verify input
             var message = "Date-time enumeration method '" +
                           dtMethodName +
-                          "' requires either a DateTimeEx, Date, long, DateTimeOffset or DateTime value as input or events of an event type that declares a timestamp property";
+                          "' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property";
             if (inputType is EventEPType) {
                 if (((EventEPType) inputType).EventType.StartTimestampPropertyName == null) {
                     throw new ExprValidationException(message);
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     var classEPType = (ClassEPType) inputType;
                     if (!TypeHelper.IsDateTime(classEPType.Clazz)) {
                         throw new ExprValidationException(
-                            message + " but received " + TypeHelper.GetCleanName(classEPType.Clazz));
+                            message + " but received " + TypeHelper.CleanName(classEPType.Clazz));
                     }
                 }
             }
@@ -77,21 +77,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             while (true) {
                 // handle the first one only if its a calendar op
                 var forges = GetForges(currentParameters);
-                var opFactory = currentMethod.ForgeFactory;
+                var opFactory = currentMethod.GetForgeFactory();
 
                 // compile parameter abstract for validation against available footprints
                 DotMethodFPProvided footprintProvided = DotMethodUtil.GetProvidedFootprint(currentParameters);
 
                 // validate parameters
                 DotMethodUtil.ValidateParametersDetermineFootprint(
-                    currentMethod.Footprints,
+                    currentMethod.GetFootprints(),
                     DotMethodTypeEnum.DATETIME,
                     currentMethodName,
                     footprintProvided,
                     DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
                 if (opFactory is CalendarForgeFactory) {
-                    var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(
+                    var calendarForge = ((CalendarForgeFactory) currentMethod.GetForgeFactory()).GetOp(
                         currentMethod,
                         currentMethodName,
                         currentParameters,
@@ -145,13 +145,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 }
 
                 // see if there is more
-                if (chainSpecStack.IsEmpty() || !DateTimeMethodEnum.IsDateTimeMethod(chainSpecStack.First.Name)) {
+                if (chainSpecStack.IsEmpty() || !DatetimeMethodEnumHelper.IsDateTimeMethod(chainSpecStack.First.Name)) {
                     break;
                 }
 
                 // pull next
                 var next = chainSpecStack.RemoveFirst();
-                currentMethod = DateTimeMethodEnum.FromName(next.Name);
+                currentMethod = DatetimeMethodEnumHelper.FromName(next.Name);
                 currentParameters = next.Parameters;
                 currentMethodName = next.Name;
 

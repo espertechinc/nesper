@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[0].Items;
-                Assert.AreEqual("[P00]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                Assert.AreEqual("[\"P00\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
                 TryAssertionSingleIdx(env);
                 env.UndeployAll();
@@ -616,7 +616,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                Assert.AreEqual("[P10]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                Assert.AreEqual("[\"P10\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
                 env.SendEventBean(new SupportBean_S1(100, "x"));
                 env.SendEventBean(new SupportBean_S1(101, "a"));
@@ -651,7 +651,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
                 env.SendEventBean(new SupportBean_S1(100, "x", "y"));
                 env.SendEventBean(new SupportBean_S1(101, "x", "a"));

@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWOT select * from OrderBean", path);
 
                 var stmtText =
-                    "@Name('s0') on OrderWindowNWOT[Books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
+                    "@Name('s0') on OrderWindowNWOT[Books] owb select sbw.* from SupportBeanWindow sbw where TheString = Title";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // try where in root
                 var stmtText =
-                    "@Name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews] bookReviews order by ReviewId asc";
+                    "@Name('s0') select ReviewId from OrderBean[Books where Title = 'Enders Game'][Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in different levels
                 env.UndeployAll();
                 stmtText =
-                    "@Name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews where ReviewId in (1, 10)] bookReviews order by ReviewId asc";
+                    "@Name('s0') select ReviewId from OrderBean[Books where Title = 'Enders Game'][Reviews where ReviewId in (1, 10)] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in combination
                 env.UndeployAll();
                 stmtText =
-                    "@Name('s0') select ReviewId from OrderBean[Books as bc][Reviews as rw where rw.ReviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews order by ReviewId asc";
+                    "@Name('s0') select ReviewId from OrderBean[Books as bc][Reviews as rw where rw.ReviewId in (1, 10) and bc.Title = 'Enders Game'] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());

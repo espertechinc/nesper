@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -127,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             Assert.AreEqual(priorPrice, @event.Get("priorPrice"));
             Assert.AreEqual(prevtailPrice, @event.Get("prevtailPrice"));
             Assert.AreEqual(prevCountPrice, @event.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(prevWindowPrice, (object[]) @event.Get("prevWindowPrice"));
+            CollectionAssert.AreEqual(prevWindowPrice, (IEnumerable) @event.Get("prevWindowPrice"));
         }
 
         internal class ViewTimeAccumMonthScoped : RegressionExecution

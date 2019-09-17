@@ -48,7 +48,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public static long TimeInMillis(this DateTimeOffset dateTime)
+        public static long UtcMillis(this DateTimeOffset dateTime)
         {
             return DateTimeHelper.TicksToMillis(dateTime.UtcTicks) - DateTimeConstants.Boundary;
         }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static DateTimeOffset TimeFromMillis(this long millis, TimeZoneInfo timeZone)
         {
-            timeZone = timeZone ?? TimeZoneInfo.Local;
+            timeZone = timeZone ?? TimeZoneInfo.Utc;
             var baseDateTime = new DateTimeOffset(DateTimeHelper.MillisToTicks(millis + DateTimeConstants.Boundary), BaseUtcOffset);
             var timeZoneOffset = timeZone.GetUtcOffset(baseDateTime);
             return baseDateTime.ToOffset(timeZoneOffset);
@@ -157,7 +157,7 @@ namespace com.espertech.esper.compat
 
         public static DateTimeOffset Now(TimeZoneInfo timeZone)
         {
-            timeZone = timeZone ?? TimeZoneInfo.Local;
+            timeZone = timeZone ?? TimeZoneInfo.Utc;
             return TimeZoneInfo.ConvertTime(DateTimeOffset.Now, timeZone);
         }
 
@@ -289,6 +289,5 @@ namespace com.espertech.esper.compat
                     throw new NotSupportedException();
             }
         }
-
     }
 }

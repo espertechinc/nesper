@@ -15,13 +15,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 {
     public class DatetimeLongCoercerFactory
     {
-        private static readonly DatetimeLongCoercerLong DATETIME_LONG_COERCER_LONG = new DatetimeLongCoercerLong();
+        private static readonly DatetimeLongCoercerLong DATETIME_LONG_COERCER_LONG =
+            new DatetimeLongCoercerLong();
 
         private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME =
             new DatetimeLongCoercerDateTime();
 
-        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME_OFFSET =
-            new DatetimeLongCoercerDateTime();
+        private static readonly DatetimeLongCoercerDateTimeOffset DATETIME_LONG_COERCER_DATETIME_OFFSET =
+            new DatetimeLongCoercerDateTimeOffset();
 
         private static readonly DatetimeLongCoercerDateTimeEx DATETIME_LONG_COERCER_DTX =
             new DatetimeLongCoercerDateTimeEx();

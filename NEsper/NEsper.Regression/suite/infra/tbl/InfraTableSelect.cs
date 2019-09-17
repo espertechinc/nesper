@@ -450,10 +450,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[][] expectedType = {
                     new object[] {"key", typeof(string)},
                     new object[] {"totalInt", typeof(int?)},
-                    new object[] {"P0", typeof(string)},
+                    new object[] {"p0", typeof(string)},
                     new object[] {"winsb", typeof(SupportBean[])},
                     new object[] {"totalLong", typeof(long?)},
-                    new object[] {"P1", typeof(string)},
+                    new object[] {"p1", typeof(string)},
                     new object[] {"winsb0", typeof(SupportBean_S0[])}
                 };
 
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S1 " +
                     "merge MyTable where P10 = key when matched then " +
-                    "update set P0 = P11, P1 = P12",
+                    "update set p0 = P11, p1 = P12",
                     path);
 
                 var e1Sb = MakeSupportBean("G1", 10, 100);

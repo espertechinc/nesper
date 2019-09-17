@@ -82,24 +82,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         private static void RunUnfilteredStreamPrior(RegressionEnvironment env)
         {
             // check type
-            Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("idS1"));
+            Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("IdS1"));
 
             // test no event, should return null
             env.SendEventBean(new SupportBean_S0(0));
-            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
             // test one event
             env.SendEventBean(new SupportBean_S1(10));
             env.SendEventBean(new SupportBean_S0(1));
-            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
             // resend event
             env.SendEventBean(new SupportBean_S0(2));
-            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
             // test second event
             env.SendEventBean(new SupportBean_S0(3));
-            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+            Assert.AreEqual(10, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
         }
 
         private static void TryAssertMultiRowUnfiltered(
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     FilterStream.Create("SupportBean_S1").AddView("length", Expressions.Constant(1000)));
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "idS1");
+                model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "IdS1");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
                 model = env.CopyMayFail(model);
 
@@ -376,26 +376,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select (select " +
-                               typeof(SupportStaticMethodLib).Name +
-                               ".minusOne(Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
+                               typeof(SupportStaticMethodLib).FullName +
+                               ".MinusOne(Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // check type
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("idS1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("IdS1"));
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 // test one event
                 env.SendEventBean(new SupportBean_S1(10));
                 env.SendEventBean(new SupportBean_S0(1));
-                Assert.AreEqual(9d, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(9d, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 // resend event
                 env.SendEventBean(new SupportBean_S0(2));
-                Assert.AreEqual(9d, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(9d, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 env.UndeployAll();
             }
@@ -411,20 +411,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // check type
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("idS1"));
+                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("IdS1"));
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 // test one event
                 env.SendEventBean(new SupportBean_S1(10));
                 env.SendEventBean(new SupportBean_S0(1));
-                Assert.AreEqual(1000, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(1000, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 // resend event
                 env.SendEventBean(new SupportBean_S0(2));
-                Assert.AreEqual(1000, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(1000, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 env.UndeployAll();
             }
@@ -441,11 +441,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(1, "X"));
                 env.SendEventBean(new SupportBean_S0(1));
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 env.SendEventBean(new SupportBean_S1(1, "A"));
                 env.SendEventBean(new SupportBean_S0(1));
-                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("idS1"));
+                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("IdS1"));
 
                 env.UndeployAll();
             }
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var stmtText =
                     "@Name('s0') select (select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
-                TryAssertMultiRowUnfiltered(env, stmtText, "idS1");
+                TryAssertMultiRowUnfiltered(env, stmtText, "IdS1");
             }
         }
 
@@ -467,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var stmtText =
                     "@Name('s0') select (select Id from SupportBean_S1#length(2)) as IdS1 from SupportBean_S0";
-                TryAssertMultiRowUnfiltered(env, stmtText, "idS1");
+                TryAssertMultiRowUnfiltered(env, stmtText, "IdS1");
             }
         }
 
@@ -477,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var stmtText =
                     "@Name('s0') select (select Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0";
-                TryAssertSingleRowUnfiltered(env, stmtText, "idS1");
+                TryAssertSingleRowUnfiltered(env, stmtText, "IdS1");
             }
         }
 

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         public override DTLocalEvaluator DTEvaluator => new DTLocalDtxOpsIntervalEval(
             GetCalendarOps(calendarForges),
             intervalForge.Op,
-            TimeZoneInfo.Local);
+            TimeZoneInfo.Utc);
 
         public override CodegenExpression Codegen(
             CodegenExpression inner,
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
         {
-            return new DTLocalDtxOpsIntervalEval(GetCalendarOps(calendarForges), intervalForge.Op, TimeZoneInfo.Local);
+            return new DTLocalDtxOpsIntervalEval(GetCalendarOps(calendarForges), intervalForge.Op, TimeZoneInfo.Utc);
         }
 
         public override CodegenExpression Codegen(

@@ -22,9 +22,9 @@ using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUt
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    public class DTLocalDateTimeOpsReformatEval : DTLocalEvaluatorCalopReformatBase
+    public class DTLocalCalOpsReformatEval : DTLocalEvaluatorCalopReformatBase
     {
-        public DTLocalDateTimeOpsReformatEval(
+        public DTLocalCalOpsReformatEval(
             IList<CalendarOp> calendarOps,
             ReformatOp reformatOp)
             : base(calendarOps, reformatOp)
@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTime dateTime = (DateTime) target;
-            dateTime = EvaluateCalOpsZDT(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+            dateTime = EvaluateCalOpsDtx(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalDateTimeOpsReformatForge forge,
+            DTLocalCalOpsReformatForge forge,
             CodegenExpression inner,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                     forge.reformatForge.ReturnType,
-                    typeof(DTLocalDateTimeOpsReformatEval),
+                    typeof(DTLocalCalOpsReformatEval),
                     codegenClassScope)
                 .AddParam(typeof(DateTime), "dateTime");
 
             CodegenBlock block = methodNode.Block;
-            DTLocalUtil.EvaluateCalOpsZDTCodegen(
+            DTLocalUtil.EvaluateCalOpsDtxCodegen(
                 block,
                 "dateTime",
                 forge.calendarForges,

@@ -53,8 +53,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtoIntervalEval), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "target");
@@ -65,8 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("target"),
-                        timeZoneField))
+                        @Ref("target")))
                 .MethodReturn(
                     forge.intervalForge.Codegen(@Ref("time"), @Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -92,8 +89,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtoIntervalEval), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "startTimestamp")
@@ -105,15 +100,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("startTimestamp"),
-                        timeZoneField))
+                        @Ref("startTimestamp")))
                 .DeclareVar<long>(
                     "end",
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("endTimestamp"),
-                        timeZoneField))
+                        @Ref("endTimestamp")))
                 .MethodReturn(
                     forge.intervalForge.Codegen(@Ref("start"), @Ref("end"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, start, end);

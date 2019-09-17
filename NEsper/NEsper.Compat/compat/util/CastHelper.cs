@@ -9,9 +9,7 @@
 using System;
 using System.Numerics;
 
-using com.espertech.esper.compat;
-
-namespace com.espertech.esper.common.@internal.util
+namespace com.espertech.esper.compat.util
 {
     using TypeParser = Func<string, object>;
 
@@ -97,7 +95,7 @@ namespace com.espertech.esper.common.@internal.util
                 return PrimitiveCastDecimal;
             }
 
-            if (t.IsBigInteger()) {
+            if (t == typeof(BigInteger)) {
                 return PrimitiveCastBigInteger;
             }
 

@@ -50,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
             MetricsRegistry metricsRegistry,
             TextWriter writer,
             MetricPredicate predicate)
-            : this(metricsRegistry, writer, predicate, Clock.DefaultClock, TimeZoneInfo.Local)
+            : this(metricsRegistry, writer, predicate, Clock.DefaultClock, TimeZoneInfo.Utc)
         {
         }
 

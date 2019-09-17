@@ -150,17 +150,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 // Try in a 3-way followed by
-                testCase = new EventExpressionCase("b=SupportBean_B() => timer:interval(6.000) -> d=SupportBean_D");
+                testCase = new EventExpressionCase("b=SupportBean_B() -> timer:interval(6.000) -> d=SupportBean_D");
                 testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B() => timer:interval(2.001) -> d=SupportBean_D())");
+                    "every (b=SupportBean_B() -> timer:interval(2.001) -> d=SupportBean_D())");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B() => timer:interval(2.000) -> d=SupportBean_D())");
+                    "every (b=SupportBean_B() -> timer:interval(2.000) -> d=SupportBean_D())");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);

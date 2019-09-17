@@ -318,7 +318,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             {
                 var propName = (string) expected[i][0];
                 var propType = (Type) expected[i][1];
-                Assert.AreEqual(propType, mapType.GetPropertyType(propName), "failed for property:" + propName);
+                var mapPropType = mapType.GetPropertyType(propName);
+                Assert.AreEqual(propType, mapPropType, "failed for property:" + propName);
             }
 
             // assert property names

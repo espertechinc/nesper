@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
@@ -16,43 +15,56 @@ namespace com.espertech.esper.regressionlib.support.bean
 {
     public abstract class SupportTimeStartBase
     {
-        public SupportTimeStartBase(
+        protected SupportTimeStartBase(
             string key,
             string datestr,
             long duration)
         {
             Key = key;
 
-            if (datestr != null) {
+            if (datestr != null)
+            {
                 // expected : 2002-05-30T09:00:00.000
-                var start = DateTimeParsingFunctions.ParseDefaultMSec(datestr);
-                var end = start + duration;
+                var start = DateTimeParsingFunctions.ParseDefaultEx(datestr);
 
-                LongdateStart = start;
-                UtildateStart = SupportDateTime.ToDate(start);
-                DateTimeExStart = SupportDateTime.ToDateTimeEx(start);
-                LongdateEnd = end;
-                UtildateEnd = SupportDateTime.ToDate(end);
-                DateTimeExEnd = SupportDateTime.ToDateTimeEx(end);
+                DateTimeExStart = start;
+                DateTimeOffsetStart = DateTimeExStart.DateTime;
+                DateTimeStart = DateTimeOffsetStart.DateTime;
+                LongdateStart = start.UtcMillis;
+
+                var end = start.Clone().AddTimeSpan(TimeSpan.FromMilliseconds(duration));
+
+                DateTimeExEnd = end;
+                DateTimeOffsetEnd = DateTimeExEnd.DateTime;
+                DateTimeEnd = DateTimeOffsetEnd.DateTime;
+                LongdateEnd = end.UtcMillis;
+
+#if false
+                Console.WriteLine("DateTimeExStart: " + DateTimeExStart + " / " + DateTimeExStart.Millisecond);
+                Console.WriteLine("DateTimeOffsetStart: " + DateTimeOffsetStart + " / " + DateTimeOffsetStart.Millisecond);
+                Console.WriteLine("DateTimeStart: " + DateTimeStart + " / " + DateTimeStart.Millisecond);
+
+                Console.WriteLine("DateTimeExEnd: " + DateTimeExEnd + " / " + DateTimeExEnd.Millisecond);
+                Console.WriteLine("DateTimeOffsetEnd: " + DateTimeOffsetEnd + " / " + DateTimeOffsetEnd.Millisecond);
+                Console.WriteLine("DateTimeEnd: " + DateTimeEnd + " / " + DateTimeEnd.Millisecond);
+#endif
             }
         }
 
-        [PropertyName("longdateStart")]
         public long? LongdateStart { get; }
 
-        [PropertyName("utildateStart")]
-        public DateTime UtildateStart { get; }
+        public DateTime DateTimeStart { get; }
 
-        [PropertyName("dateTimeExStart")]
+        public DateTimeOffset DateTimeOffsetStart { get; }
+
         public DateTimeEx DateTimeExStart { get; }
 
-        [PropertyName("longdateEnd")]
         public long? LongdateEnd { get; }
 
-        [PropertyName("utildateEnd")]
-        public DateTime UtildateEnd { get; }
+        public DateTime DateTimeEnd { get; }
 
-        [PropertyName("dateTimeExEnd")]
+        public DateTimeOffset DateTimeOffsetEnd { get; }
+
         public DateTimeEx DateTimeExEnd { get; }
 
         public string Key { get; set; }

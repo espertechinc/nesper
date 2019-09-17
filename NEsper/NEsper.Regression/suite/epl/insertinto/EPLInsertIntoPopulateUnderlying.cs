@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var theEvent = (SupportBeanCtorOne) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
             Assert.AreEqual(theString, theEvent.TheString);
             Assert.AreEqual(intBoxed, theEvent.IntBoxed);
-            Assert.AreEqual(boolPrimitive, theEvent.IsBoolPrimitive);
+            Assert.AreEqual(boolPrimitive, theEvent.BoolPrimitive);
             Assert.AreEqual(intPrimitive, theEvent.IntPrimitive);
         }
 

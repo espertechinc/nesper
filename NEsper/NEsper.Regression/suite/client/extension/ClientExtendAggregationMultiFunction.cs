@@ -193,8 +193,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(eplScalarArray).AddListener("s0");
 
             object[][] expectedScalarArray = {
-                new object[] {"c0", typeof(string[]), null, null}, new object[] {"c1", typeof(int?[]), null, null},
-                new object[] {"c2", typeof(bool?), null, null}, new object[] {"c3", typeof(bool?), null, null}
+                new object[] {"c0", typeof(string[]), null, null},
+                new object[] {"c1", typeof(int[]), null, null},
+                new object[] {"c2", typeof(bool?), null, null},
+                new object[] {"c3", typeof(bool?), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedScalarArray,
@@ -227,7 +229,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(eplScalar).AddListener("s0");
 
             object[][] expectedScalar = {
-                new object[] {"c0", typeof(string), null, null}, new object[] {"c1", typeof(int?), null, null}
+                new object[] {"c0", typeof(string), null, null},
+                new object[] {"c1", typeof(int?), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedScalar,

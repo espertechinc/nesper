@@ -12,6 +12,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.visitor
 {

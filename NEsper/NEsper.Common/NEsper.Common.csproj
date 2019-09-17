@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <Folder Include="common\internal\epl\expression\funcs\cast\" />
+    <Folder Include="common\magic\" />
   </ItemGroup>
 
   <ItemGroup>

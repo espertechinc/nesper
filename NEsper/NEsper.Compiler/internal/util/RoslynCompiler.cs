@@ -14,6 +14,7 @@ using System.Reflection;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using Microsoft.CodeAnalysis;

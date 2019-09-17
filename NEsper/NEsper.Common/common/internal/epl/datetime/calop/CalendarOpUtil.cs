@@ -46,15 +46,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             var fieldname = (string) exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
             try {
-                return EnumHelper.Parse<DateTimeFieldEnum>(fieldname);
+                return CalendarFieldEnumExtensions
+                    .FromString(fieldname)
+                    .ToDateTimeFieldEnum();
             }
             catch (ArgumentException e) {
                 throw new ExprValidationException(
-                    GetMessage(methodName) +
-                    " datetime-field name '" +
-                    fieldname +
-                    "' is not recognized, " +
-                    GetValidFieldNamesMessage(),
+                    string.Format("{0} datetime-field name '{1}' is not recognized, {2}",
+                        GetMessage(methodName),
+                        fieldname,
+                        GetValidFieldNamesMessage()),
                     e);
             }
         }
@@ -151,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 " invalid format, expected string-format or " +
                 expected.Name +
                 " but received " +
-                received.GetCleanName());
+                received.CleanName());
         }
 
         private static string ValidateConstant(

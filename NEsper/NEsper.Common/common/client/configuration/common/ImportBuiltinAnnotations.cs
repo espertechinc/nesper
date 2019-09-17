@@ -21,5 +21,10 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             return BuiltinAnnotation.BUILTIN.Get(providedTypeName.ToLowerInvariant());
         }
+
+        public override string ToString()
+        {
+            return $"ImportBuiltinAnnotations";
+        }
     }
 }

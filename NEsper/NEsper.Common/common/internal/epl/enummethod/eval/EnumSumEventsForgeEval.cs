@@ -41,13 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ExprDotEvalSumMethod method = forge.sumMethodFactory.SumAggregator;
+            var method = forge.sumMethodFactory.SumAggregator;
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            foreach (EventBean next in beans) {
+            var beans = (ICollection<EventBean>) enumcoll;
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
-                object value = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var value = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 method.Enter(value);
             }
 
@@ -60,24 +60,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.innerExpression.EvaluationType;
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    forge.sumMethodFactory.ValueType,
+                    forge.sumMethodFactory.ValueType.GetBoxedType(),
                     typeof(EnumSumEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             forge.sumMethodFactory.CodegenDeclare(block);
 
-            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(
-                    innerType,
+                    innerType.GetBoxedType(),
                     "value",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {

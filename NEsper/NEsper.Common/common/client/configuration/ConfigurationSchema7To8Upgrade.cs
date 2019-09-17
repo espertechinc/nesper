@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.client.configuration
 
                         if (nodeName == "metrics-reporting") {
                             RenameAttribute(element, "engine-interval", "runtime-interval");
-                            RenameAttribute(element, "jmx-engine-metrics", "jmx-runtime-metrics");
+                            RenameAttribute(element, "engine-metrics", "runtime-metrics");
                         }
 
                         MoveChild(element, runtime);

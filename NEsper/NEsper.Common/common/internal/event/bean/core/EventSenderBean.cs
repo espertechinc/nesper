@@ -88,9 +88,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         else {
                             throw new EPException(
                                 "Event object of type " +
-                                theEvent.GetType().GetCleanName() +
+                                theEvent.GetType().CleanName() +
                                 " does not equal, extend or implement the type " +
-                                beanEventType.UnderlyingType.GetCleanName() +
+                                beanEventType.UnderlyingType.CleanName() +
                                 " of event type '" +
                                 beanEventType.Name +
                                 "'");

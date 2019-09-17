@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
             }
 
-            throw new ArgumentException("unable to find a value for type", nameof(type));
+            throw new ArgumentException($"unable to find a value for type \"{type}\"", nameof(type));
         }
 
         public static Type GetDataType(this DatabaseTypeEnum value)

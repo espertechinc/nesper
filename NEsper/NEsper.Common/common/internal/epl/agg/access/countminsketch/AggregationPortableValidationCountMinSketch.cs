@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                             "Mismatching parameter return type, expected any of " +
                             CompatExtensions.RenderAny(acceptableValueTypes) +
                             " but received " +
-                            TypeHelper.GetCleanName(clazz));
+                            TypeHelper.CleanName(clazz));
                     }
                 }
             }

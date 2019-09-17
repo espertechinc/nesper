@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
+                .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(long), "ts")
                 .Block
                 .DeclareVar<DateTimeEx>(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope
-                .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
+                .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(DateTime), "input")
                 .Block
                 .DeclareVar<DateTimeEx>(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
-                .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
+                .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "input")
                 .Block
                 .MethodReturn(GetProperty(Ref("input"), "DateTime"));

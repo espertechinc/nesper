@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotName(Ref("d"), "Time")))
+                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", ExprDotMethod(Ref("d"), "UtcMillis")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotName(Ref("d"), "Time")))
+                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", ExprDotMethod(Ref("d"), "UtcMillis")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return _dateTimeExEval.EvaluateInternal(
-                DateTimeEx.GetInstance(TimeZoneInfo.Local, dateTimeOffset));
+                DateTimeEx.UtcInstance(dateTimeOffset));
         }
 
         public object Evaluate(
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return _dateTimeExEval.EvaluateInternal(
-                DateTimeEx.GetInstance(TimeZoneInfo.Local, dateTime));
+                DateTimeEx.UtcInstance(dateTime));
         }
 
         public object Evaluate(

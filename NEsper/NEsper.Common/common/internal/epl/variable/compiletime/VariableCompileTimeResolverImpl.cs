@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {

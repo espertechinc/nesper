@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [RangeStart: RangeEnd]";
+                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = Key and IntBoxed in [RangeStart: RangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups

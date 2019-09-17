@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.firstevent
 {
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            yield return firstEvent;
+            return EnumerationHelper.SingletonNullable(firstEvent);
         }
 
         public override string ToString()

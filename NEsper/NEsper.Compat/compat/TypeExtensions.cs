@@ -278,7 +278,7 @@ namespace com.espertech.esper.compat
 
         public static DateTimeOffset AsDateTimeOffset(this object value)
         {
-            return AsDateTimeOffset(value, TimeZoneInfo.Local);
+            return AsDateTimeOffset(value, TimeZoneInfo.Utc);
         }
 
         public static DateTimeOffset AsDateTimeOffset(this object value, TimeZoneInfo timeZone)

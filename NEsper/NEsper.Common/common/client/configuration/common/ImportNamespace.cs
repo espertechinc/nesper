@@ -88,6 +88,11 @@ namespace com.espertech.esper.common.client.configuration.common
             }
         }
 
+        public override string ToString()
+        {
+            return $"ImportNamespace: {nameof(Namespace)}: {Namespace}, {nameof(AssemblyName)}: {AssemblyName}";
+        }
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

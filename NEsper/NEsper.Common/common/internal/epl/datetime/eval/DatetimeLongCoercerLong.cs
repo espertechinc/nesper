@@ -32,11 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             }
 
             if (value is DateTimeOffset) {
-                return ((DateTimeOffset) value).TimeInMillis();
+                return ((DateTimeOffset) value).UtcMillis();
             }
 
             if (value is DateTimeEx) {
-                return ((DateTimeEx) value).TimeInMillis;
+                return ((DateTimeEx) value).UtcMillis;
             }
 
             throw new ArgumentException("invalid value for datetime", "value");

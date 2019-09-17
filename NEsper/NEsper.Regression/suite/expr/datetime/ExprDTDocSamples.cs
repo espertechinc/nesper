@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy("select timeTaken.format() as timeTakenStr from RFIDEvent");
-            env.CompileDeploy("select timeTaken.Get('month') as timeTakenMonth from RFIDEvent");
+            env.CompileDeploy("select timeTaken.get('month') as timeTakenMonth from RFIDEvent");
             env.CompileDeploy("select timeTaken.getMonthOfYear() as timeTakenMonth from RFIDEvent");
             env.CompileDeploy("select timeTaken.minus(2 minutes) as timeTakenMinus2Min from RFIDEvent");
             env.CompileDeploy("select timeTaken.minus(2*60*1000) as timeTakenMinus2Min from RFIDEvent");
@@ -30,28 +30,40 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.CompileDeploy("select timeTaken.set('month', 3) as timeTakenMonth from RFIDEvent");
             env.CompileDeploy("select timeTaken.withDate(2002, 4, 30) as timeTakenDated from RFIDEvent");
             env.CompileDeploy("select timeTaken.withMax('sec') as timeTakenMaxSec from RFIDEvent");
-            env.CompileDeploy("select timeTaken.toCalendar() as timeTakenCal from RFIDEvent");
-            env.CompileDeploy("select timeTaken.toDate() as timeTakenDate from RFIDEvent");
+            env.CompileDeploy("select timeTaken.toDateTimeEx() as timeTakenCal from RFIDEvent");
+            env.CompileDeploy("select timeTaken.toDateTime() as timeTakenDate from RFIDEvent");
             env.CompileDeploy("select timeTaken.toMillisec() as timeTakenLong from RFIDEvent");
 
             // test pattern use
             var milestone = new AtomicLong();
             TryRun(
                 env,
-                "a.longdateStart.after(b)",
+                "a.LongdateStart.after(b)",
                 "2002-05-30T09:00:00.000",
                 "2002-05-30T08:59:59.999",
                 true,
                 milestone);
             TryRun(
                 env,
-                "a.after(b.longdateStart)",
+                "a.after(b.LongdateStart)",
                 "2002-05-30T09:00:00.000",
                 "2002-05-30T08:59:59.999",
                 true,
                 milestone);
-            TryRun(env, "a.after(b)", "2002-05-30T09:00:00.000", "2002-05-30T08:59:59.999", true, milestone);
-            TryRun(env, "a.after(b)", "2002-05-30T08:59:59.999", "2002-05-30T09:00:00.000", false, milestone);
+            TryRun(
+                env,
+                "a.after(b)",
+                "2002-05-30T09:00:00.000",
+                "2002-05-30T08:59:59.999",
+                true,
+                milestone);
+            TryRun(
+                env,
+                "a.after(b)",
+                "2002-05-30T08:59:59.999",
+                "2002-05-30T09:00:00.000",
+                false,
+                milestone);
         }
 
         private void TryRun(

@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                                     "' underlying type " +
                                     streamEventType.UnderlyingType.Name +
                                     " cannot be assigned a value of type " +
-                                    TypeHelper.GetCleanName(returnType));
+                                    TypeHelper.CleanName(returnType));
                             }
                         }
                         else if (returnType.IsGenericEnumerable()) {

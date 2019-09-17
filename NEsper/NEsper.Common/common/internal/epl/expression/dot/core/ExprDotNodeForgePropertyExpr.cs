@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             string expectedType,
             object received)
         {
-            var receivedText = received == null ? "null" : received.GetType().GetCleanName();
+            var receivedText = received == null ? "null" : received.GetType().CleanName();
             return string.Format(
                 "Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
                 statementName,

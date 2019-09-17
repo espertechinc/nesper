@@ -22,14 +22,6 @@ namespace com.espertech.esper.compat
         private static readonly IDictionary<string, TimeZoneInfo> TimeZoneInfoDictionary =
             new Dictionary<string, TimeZoneInfo>();
 
-        /// <summary>
-        /// Returns the local timezone.
-        /// </summary>
-        public static TimeZoneInfo Local
-        {
-            get { return TimeZoneInfo.Local; }
-        }
-
         public static TimeZoneInfo GetTimeZoneInfo(string specOrId)
         {
             using (TimeZoneInfoLock.Acquire())

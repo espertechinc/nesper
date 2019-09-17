@@ -56,6 +56,7 @@ namespace com.espertech.esper.regressionrun.Runner
                     config.Compiler.Logging.EnableCode = true;
                 }
             }
+
             return config;
         }
     }

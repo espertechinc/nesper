@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
                     "Unexpected event object of type " +
-                    theEvent.GetType().GetCleanName() +
+                    theEvent.GetType().CleanName() +
                     ", expected " +
-                    typeof(IDictionary<string, object>).GetCleanName());
+                    typeof(IDictionary<string, object>).CleanName());
             }
 
             var map = (IDictionary<string, object>) theEvent;
@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
                     "Unexpected event object of type " +
-                    theEvent.GetType().GetCleanName() +
+                    theEvent.GetType().CleanName() +
                     ", expected " +
-                    typeof(IDictionary<string, object>).GetCleanName());
+                    typeof(IDictionary<string, object>).CleanName());
             }
 
             var map = (IDictionary<string, object>) theEvent;

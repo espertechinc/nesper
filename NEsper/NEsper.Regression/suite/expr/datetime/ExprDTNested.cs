@@ -20,20 +20,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "val0", "val1", "val2", "val3", "val4" };
+            var fields = new [] { "val0", "val1", "val2", "val3" };
             var eplFragment = "@Name('s0') select " +
-                              "DtoDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
-                              "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
-                              "DtxDate.set('hour', 1).set('minute', 2).set('second', 3) as val2" +
+                              "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
+                              "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
+                              "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3) as val2," +
+                              "DateTime.set('hour', 1).set('minute', 2).set('second', 3) as val3" +
                               " from SupportDateTime";
             env.CompileDeploy(eplFragment).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 fields,
                 new[] {
-                    typeof(DateTimeOffset?),
                     typeof(long?),
-                    typeof(DateTimeEx)
+                    typeof(DateTimeEx),
+                    typeof(DateTimeOffset?),
+                    typeof(DateTime?)
                 });
 
             var startTime = "2002-05-30T09:00:00.000";
@@ -43,20 +45,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "util", "long", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "dtx", "dto", "date"));
 
             env.UndeployAll();
 
             eplFragment = "@Name('s0') select " +
-                          "DtoDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val0," +
-                          "LongDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val1," +
-                          "DtxDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val2" +
+                          "LongDate.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val0," +
+                          "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val1," +
+                          "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val2," +
+                          "DateTime.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val3" +
                           " from SupportDateTime";
             env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 fields,
                 new[] {
+                    typeof(DateTimeEx),
                     typeof(DateTimeEx),
                     typeof(DateTimeEx),
                     typeof(DateTimeEx)
@@ -66,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dtx", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dtx", "dtx", "dtx"));
 
             env.UndeployAll();
         }

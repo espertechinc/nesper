@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.view.length
     public class LengthWindowViewRStream : ViewSupport,
         DataWindowView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly LengthWindowViewFactory lengthWindowViewFactory;
-        private readonly LinkedHashSet<EventBean> indexedEvents;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly LengthWindowViewFactory _lengthWindowViewFactory;
+        private readonly LinkedHashSet<EventBean> _indexedEvents;
 
         /// <summary>
         ///     Constructor creates a moving window extending the specified number of elements into the past.
@@ -42,17 +42,17 @@ namespace com.espertech.esper.common.@internal.view.length
                 throw new ArgumentException("Illegal argument for size of length window");
             }
 
-            this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
-            this.lengthWindowViewFactory = lengthWindowViewFactory;
+            _agentInstanceContext = agentInstanceContext.AgentInstanceContext;
+            _lengthWindowViewFactory = lengthWindowViewFactory;
             Size = size;
-            indexedEvents = new LinkedHashSet<EventBean>();
+            _indexedEvents = new LinkedHashSet<EventBean>();
         }
 
         /// <summary>
         ///     Returns true if the window is empty, or false if not empty.
         /// </summary>
         /// <returns>true if empty</returns>
-        public bool IsEmpty => indexedEvents.IsEmpty();
+        public bool IsEmpty => _indexedEvents.IsEmpty();
 
         /// <summary>
         ///     Returns the size of the length window.
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.view.length
         /// <returns>size of length window</returns>
         public int Size { get; }
 
-        public ViewFactory ViewFactory => lengthWindowViewFactory;
+        public ViewFactory ViewFactory => _lengthWindowViewFactory;
 
         public override EventType EventType => parent.EventType;
 
@@ -68,16 +68,16 @@ namespace com.espertech.esper.common.@internal.view.length
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthWindowViewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(
-                lengthWindowViewFactory,
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _lengthWindowViewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(
+                _lengthWindowViewFactory,
                 newData,
                 oldData);
 
             EventBean[] expiredArr = null;
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
-                    indexedEvents.Remove(anOldData);
+                    _indexedEvents.Remove(anOldData);
                     InternalHandleRemoved(anOldData);
                 }
 
@@ -88,47 +88,48 @@ namespace com.espertech.esper.common.@internal.view.length
             // we don't care about removed data from a prior view
             if (newData != null) {
                 foreach (var newEvent in newData) {
-                    indexedEvents.Add(newEvent);
+                    _indexedEvents.Add(newEvent);
                     InternalHandleAdded(newEvent);
                 }
             }
 
             // Check for any events that get pushed out of the window
-            var expiredCount = indexedEvents.Count - Size;
+            var expiredCount = _indexedEvents.Count - Size;
             if (expiredCount > 0) {
                 expiredArr = new EventBean[expiredCount];
-                var it = indexedEvents.GetEnumerator();
-                for (var i = 0; i < expiredCount; i++) {
-                    expiredArr[i] = it.Current;
+                using (var it = _indexedEvents.GetEnumerator()) {
+                    for (var ii = 0; it.MoveNext() && ii < expiredCount; ii++) {
+                        expiredArr[ii] = it.Current;
+                    }
                 }
 
                 foreach (var anExpired in expiredArr) {
-                    indexedEvents.Remove(anExpired);
+                    _indexedEvents.Remove(anExpired);
                     InternalHandleExpired(anExpired);
                 }
             }
 
             // If there are child views, call update method
             if (child != null) {
-                agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                    lengthWindowViewFactory,
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                    _lengthWindowViewFactory,
                     newData,
                     expiredArr);
                 child.Update(newData, expiredArr);
-                agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return indexedEvents.GetEnumerator();
+            return _indexedEvents.GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(indexedEvents, true, lengthWindowViewFactory.ViewName, null);
+            viewDataVisitor.VisitPrimary(_indexedEvents, true, _lengthWindowViewFactory.ViewName, null);
         }
 
         public void InternalHandleExpired(EventBean oldData)

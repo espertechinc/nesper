@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by value" +
+                           "  partition by Value" +
                            "  measures A.TheString as a_string " +
                            "  pattern (A B) " +
                            "  define " +
@@ -685,11 +685,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                Assert.IsTrue("aq".Matches("^aq|^Id"));
-                Assert.IsTrue("Id".Matches("^aq|^Id"));
+                Assert.IsTrue("aq".Matches("^aq|^id"));
+                Assert.IsTrue("id".Matches("^aq|^id"));
                 Assert.IsTrue("ad".Matches("a(q|i)?d"));
                 Assert.IsTrue("aqd".Matches("a(q|i)?d"));
-                Assert.IsTrue("aId".Matches("a(q|i)?d"));
+                Assert.IsTrue("aid".Matches("a(q|i)?d"));
                 Assert.IsFalse("aed".Matches("a(q|i)?d"));
                 Assert.IsFalse("a".Matches("(a(b?)c)?"));
             }

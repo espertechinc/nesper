@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             indexed = new IndexedProperty[4];
             indexed[0] = new IndexedProperty("Indexed", 0);
             indexed[1] = new IndexedProperty("Indexed", 1);
-            indexed[2] = new IndexedProperty("arrayProperty", 0);
-            indexed[3] = new IndexedProperty("arrayProperty", 1);
+            indexed[2] = new IndexedProperty("ArrayProperty", 0);
+            indexed[3] = new IndexedProperty("ArrayProperty", 1);
 
             theEvent = SupportEventBeanFactory.CreateObject(
                 supportEventTypeFactory,

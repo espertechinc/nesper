@@ -53,9 +53,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 MAP_TYPENAME,
                 new SupportBean(),
                 "Unexpected event object of type " +
-                typeof(SupportBean).GetCleanName() +
+                typeof(SupportBean).CleanName() +
                 ", expected " +
-                typeof(IDictionary<string, object>).GetCleanName());
+                typeof(IDictionary<string, object>).CleanName());
 
             // Object-Array
             RunAssertionSuccess(env, OA_TYPENAME);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 OA_TYPENAME,
                 new SupportBean(),
-                "Unexpected event object of type " + typeof(SupportBean).GetCleanName() + ", expected Object[]");
+                "Unexpected event object of type " + typeof(SupportBean).CleanName() + ", expected Object[]");
 
             // XML
             RunAssertionSuccess(env, XML_TYPENAME, SupportXML.GetDocument("<Myevent/>").DocumentElement);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 XML_TYPENAME,
                 new SupportBean(),
                 "Unexpected event object type '" +
-                typeof(SupportBean).GetCleanName() +
+                typeof(SupportBean).CleanName() +
                 "' encountered, please supply a XmlDocument or XmlElement node");
             RunAssertionInvalid(
                 env,
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 AVRO_TYPENAME,
                 new SupportBean(),
                 "Unexpected event object type '" +
-                typeof(SupportBean).GetCleanName() +
+                typeof(SupportBean).CleanName() +
                 "' encountered, please supply a GenericRecord");
 
             // No such type

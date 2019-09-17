@@ -8,7 +8,7 @@
 
 using System;
 
-namespace com.espertech.esper.common.client.annotation
+namespace com.espertech.esper.compat.magic
 {
     public class PropertyNameAttribute : Attribute
     {

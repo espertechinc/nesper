@@ -35,22 +35,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val0",
                     "val1",
                     "val2",
-                    "val3",
-                    "val4"
+                    "val3"
                 };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.set('month', 0) as val0," +
-                                  "LongDate.set('month', 0) as val1," +
-                                  "DtxDate.set('month', 0) as val2" +
+                                  "DateTimeEx.set('month', 0) as val0," +
+                                  "DateTimeOffset.set('month', 0) as val1," +
+                                  "DateTime.set('month', 0) as val2," +
+                                  "LongDate.set('month', 0) as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
+                        typeof(DateTimeEx),
                         typeof(DateTimeOffset?),
-                        typeof(long?),
-                        typeof(DateTimeEx)
+                        typeof(DateTime?),
+                        typeof(long?)
                     });
 
                 var startTime = "2002-05-30T09:00:00.000";
@@ -72,14 +73,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.set('msec', 1) as val0," +
-                                  "DtoDate.set('sec', 2) as val1," +
-                                  "DtoDate.set('minutes', 3) as val2," +
-                                  "DtoDate.set('hour', 13) as val3," +
-                                  "DtoDate.set('day', 5) as val4," +
-                                  "DtoDate.set('month', 6) as val5," +
-                                  "DtoDate.set('year', 7) as val6," +
-                                  "DtoDate.set('week', 8) as val7" +
+                                  "DateTimeOffset.set('msec', 1) as val0," +
+                                  "DateTimeOffset.set('sec', 2) as val1," +
+                                  "DateTimeOffset.set('minutes', 3) as val2," +
+                                  "DateTimeOffset.set('hour', 13) as val3," +
+                                  "DateTimeOffset.set('day', 5) as val4," +
+                                  "DateTimeOffset.set('month', 6) as val5," +
+                                  "DateTimeOffset.set('year', 7) as val6," +
+                                  "DateTimeOffset.set('week', 8) as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

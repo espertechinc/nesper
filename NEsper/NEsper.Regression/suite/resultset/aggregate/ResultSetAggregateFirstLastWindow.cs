@@ -586,7 +586,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test as part of function
-                env.CompileDeploy("select Math.abs(last(IntPrimitive)) from SupportBean").UndeployAll();
+                env.CompileDeploy("select Math.Abs(last(IntPrimitive)) from SupportBean").UndeployAll();
             }
         }
 

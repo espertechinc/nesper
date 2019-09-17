@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
-namespace com.espertech.esper.common.magic
+namespace com.espertech.esper.compat.magic
 {
     public static class MagicStringDictionaryExtensions
     {

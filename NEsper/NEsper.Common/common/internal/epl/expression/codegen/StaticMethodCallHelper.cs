@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             var args = new StaticMethodCodegenArgDesc[forges.Length];
             for (var i = 0; i < forges.Length; i++) {
                 var child = forges[i];
-                var childType = child.EvaluationType;
+                var childType = child.EvaluationType.GetBoxedType();
                 var name = "r" + i;
                 if (childType == null) {
                     args[i] = new StaticMethodCodegenArgDesc(name, parameterTypes[i], ConstantNull());

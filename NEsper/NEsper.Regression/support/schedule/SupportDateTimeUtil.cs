@@ -55,9 +55,9 @@ namespace com.espertech.esper.regressionlib.support.schedule
             int monthToAdd)
         {
             return DateTimeEx
-                .GetInstance(TimeZoneInfo.Local, timeInMillis)
+                .GetInstance(TimeZoneInfo.Utc, timeInMillis)
                 .AddMonths(monthToAdd)
-                .TimeInMillis;
+                .UtcMillis;
         }
     }
 } // end of namespace

@@ -335,7 +335,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +
                     "' is expected to return a boolean value but returns " +
-                    TypeHelper.GetCleanName(filterEvaluator.Forge.EvaluationType));
+                    TypeHelper.CleanName(filterEvaluator.Forge.EvaluationType));
             }
         }
 

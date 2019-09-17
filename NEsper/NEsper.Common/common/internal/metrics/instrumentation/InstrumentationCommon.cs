@@ -32,6 +32,7 @@ using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.metrics.instrumentation
 {

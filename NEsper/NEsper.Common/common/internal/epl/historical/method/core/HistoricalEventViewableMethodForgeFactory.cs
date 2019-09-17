@@ -412,7 +412,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             if (fail) {
                 throw new ExprValidationException(
-                    "Getter method '" + typeGetterMethod.Name + "' does not return " + metadataClass.GetCleanName());
+                    "Getter method '" + typeGetterMethod.Name + "' does not return " + metadataClass.CleanName());
             }
 
             return typeGetterMethod;

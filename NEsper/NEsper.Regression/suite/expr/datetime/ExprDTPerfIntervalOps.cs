@@ -23,8 +23,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.CompileDeploy("insert into AWindow select * from SupportTimeStartEndA", path);
 
             var eventTypeNW = env.Statement("create").EventType;
-            Assert.AreEqual("longdateStart", eventTypeNW.StartTimestampPropertyName);
-            Assert.AreEqual("longdateEnd", eventTypeNW.EndTimestampPropertyName);
+            Assert.AreEqual("LongdateStart", eventTypeNW.StartTimestampPropertyName);
+            Assert.AreEqual("LongdateEnd", eventTypeNW.EndTimestampPropertyName);
 
             // preload
             for (var i = 0; i < 10000; i++) {
@@ -40,15 +40,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             RunAssertion(env, path, eplBefore, "2002-05-30T09:00:00.000", 0, "AEarlier");
 
             var eplBeforeMSec =
-                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.longdateEnd.before(b.longdateStart)";
+                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.LongdateEnd.before(b.LongdateStart)";
             RunAssertion(env, path, eplBeforeMSec, "2002-05-30T09:00:00.000", 0, "AEarlier");
 
             var eplBeforeMSecMix1 =
-                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.longdateEnd.before(b)";
+                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.LongdateEnd.before(b)";
             RunAssertion(env, path, eplBeforeMSecMix1, "2002-05-30T09:00:00.000", 0, "AEarlier");
 
             var eplBeforeMSecMix2 =
-                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.before(b.longdateStart)";
+                "select a.Key as c0 from AWindow as a, SupportTimeStartEndB b unidirectional where a.before(b.LongdateStart)";
             RunAssertion(env, path, eplBeforeMSecMix2, "2002-05-30T09:00:00.000", 0, "AEarlier");
 
             // assert AFTER

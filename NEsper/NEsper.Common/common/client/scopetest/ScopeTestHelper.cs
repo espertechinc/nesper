@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Text;
 
 using com.espertech.esper.common.@internal.util;
@@ -113,6 +114,12 @@ namespace com.espertech.esper.common.client.scopetest
                 if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection()) {
                     if (AreCollectionsEqual(expected, actual)) {
                         return;
+                    }
+                } else if (expected is Array expectedArray && actual is Array actualArray) {
+                    if (expectedArray.GetType().GetElementType() == actualArray.GetType().GetElementType()) {
+                        if (Arrays.AreEqual(expectedArray, actualArray)) {
+                            return;
+                        }
                     }
                 }
             }

@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.collection
+namespace com.espertech.esper.compat.collections
 {
     /// <summary>
     /// General-purpose pair of values of any type. The pair only equals another pair if
@@ -86,12 +86,7 @@ namespace com.espertech.esper.collection
         /// </returns>
         public override int GetHashCode()
         {
-            Object o1 = First;
-            Object o2 = Second;
-
-            return
-                (o1 != null ? o1.GetHashCode() * 397 : 0) ^
-                (o2 != null ? o2.GetHashCode() : 0);
+            return CompatExtensions.HashAll<object>(First, Second);
         }
 
         /// <summary>

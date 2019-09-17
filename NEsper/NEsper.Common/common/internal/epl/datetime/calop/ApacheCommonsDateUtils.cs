@@ -250,7 +250,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             // Manually truncate milliseconds, seconds and minutes, rather than using
             // DateTimeEx methods.
 
-            var time = val.TimeInMillis();
+            var time = val.UtcMillis();
             var done = false;
 
             // truncate milliseconds
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             // truncate seconds
             var seconds = val.Second;
             if (!done && (MODIFY_TRUNCATE == modType || seconds < 30)) {
-                time = time - seconds * 1000L;
+                time -= seconds * 1000L;
             }
 
             if (field == DateTimeFieldEnum.MINUTE) {
@@ -276,11 +276,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             // truncate minutes
             var minutes = val.Minute;
             if (!done && (MODIFY_TRUNCATE == modType || minutes < 30)) {
-                time = time - minutes * 60000L;
+                time -= minutes * 60000L;
             }
 
             // reset time
-            if (val.TimeInMillis() != time) {
+            if (val.UtcMillis() != time) {
                 val = time.TimeFromMillis(timeZone);
             }
             // ----------------- Fix for LANG-59 ----------------------- END ----------------
@@ -384,6 +384,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             throw new ArgumentException("The field " + field + " is not supported");
+        }
+
+        public static DateTimeEx Modify(
+            DateTimeEx val,
+            DateTimeFieldEnum field,
+            int modType)
+        {
+            return DateTimeEx.GetInstance(
+                val.TimeZone,
+                Modify(val.DateTime, field, modType, val.TimeZone));
         }
     }
 }

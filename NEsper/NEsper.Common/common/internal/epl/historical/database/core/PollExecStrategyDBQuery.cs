@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using DataMap = System.Collections.Generic.IDictionary<string, object>;

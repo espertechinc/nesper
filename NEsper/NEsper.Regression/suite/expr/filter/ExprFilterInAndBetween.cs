@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.intTwo))]";
+                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);

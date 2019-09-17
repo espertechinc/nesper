@@ -16,8 +16,8 @@ namespace com.espertech.esper.compat
     ///     structure, they can take into account the timezone the date was associated with.
     /// </summary>
     public class DateTimeEx
-        : IComparable<DateTimeEx>,
-            IComparable
+        : IComparable<DateTimeEx>
+        , IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DateTimeEx" /> class.
@@ -70,9 +70,11 @@ namespace com.espertech.esper.compat
 
         public int Millisecond => DateTime.Millisecond;
 
-        public DayOfWeek DayOfWeek => DateTime.DayOfWeek;
+        public DayOfWeek DayOfWeekEnum => DateTime.DayOfWeek;
 
-        public long TimeInMillis => DateTime.TimeInMillis();
+        public int DayOfWeek => (int) DateTime.DayOfWeek;
+
+        public long UtcMillis => DateTime.UtcMillis();
 
         public int DayOfYear => DateTime.DateTime.DayOfYear;
 
@@ -279,7 +281,7 @@ namespace com.espertech.esper.compat
 
         public override string ToString()
         {
-            return ToString(TimeZoneInfo.Local);
+            return ToString(TimeZoneInfo.Utc);
         }
 
         public static bool operator >(
@@ -439,6 +441,17 @@ namespace com.espertech.esper.compat
             int value)
         {
             DateTime = DateTime.AddUsingField(field, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a timespan to the current time.
+        /// </summary>
+        /// <param name="timeSpan">The time span.</param>
+        /// <returns></returns>
+        public DateTimeEx AddTimeSpan(TimeSpan timeSpan)
+        {
+            DateTime += timeSpan;
             return this;
         }
 

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().GetCleanName() + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().GetCleanName() + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;

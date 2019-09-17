@@ -74,12 +74,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = new [] { "a_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A.Id as a_Id, B.Id as b_Id\n" +
                       "  pattern (match_recognize_permute(A, B))\n" +
                       "  define \n" +
-                      "\tA as A.temp < 100, \n" +
-                      "\tB as B.temp >= 100)";
+                      "\tA as A.Temp < 100, \n" +
+                      "\tB as B.Temp >= 100)";
 
             env.CompileDeploy(epl).AddListener("s0");
 

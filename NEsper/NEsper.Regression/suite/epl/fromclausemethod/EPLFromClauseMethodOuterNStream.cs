@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy(expression).AddListener("s0");
 
-            var fields = new [] { "s0Id","valh0","valh1" };
+            var fields = new [] { "S0Id","valh0","valh1" };
             object[][] resultOne = {
                 new object[] {null, "H01", null}, new object[] {null, "H02", null}, new object[] {null, null, "H11"},
                 new object[] {null, null, "H12"}
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy(expression).AddListener("s0");
 
-            var fields = new [] { "id","valh0","valh1" };
+            var fields = new [] { "Id","valh0","valh1" };
             EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
             SendBeanInt(env, "E1", 0, 0, 0, 0, 1, 1);
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.CompileDeploy(expression).AddListener("s0");
 
-            var fields = new [] { "id","valh0","valh1" };
+            var fields = new [] { "Id","valh0","valh1" };
             EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
             SendBeanInt(env, "E1", 0, 0, 0, 0, 1, 1);
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id", "valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 0, 0, 1);
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1","valh2" };
+                var fields = new [] { "Id", "valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 0, 0, 0, 1);
@@ -511,7 +511,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1","valh2" };
+                var fields = new [] { "Id", "valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 0, 0, 0, 1);
@@ -628,7 +628,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "s0Id","s1Id","valh0" };
+                var fields = new [] { "S0Id","S1Id","valh0" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);

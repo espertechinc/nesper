@@ -121,11 +121,11 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             service.Add(100, callbacks[0], slots[0][0]);
 
             service.Add(
-                ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE),
+                ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), service.Time, TimeZoneInfo.Utc, TimeAbacusMilliseconds.INSTANCE),
                 callbacks[1],
                 slots[0][0]);
             service.Add(
-                ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE),
+                ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), service.Time, TimeZoneInfo.Utc, TimeAbacusMilliseconds.INSTANCE),
                 callbacks[1],
                 slots[0][0]);
         }
@@ -211,10 +211,10 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         public void TestWaitAndSpecTogether()
         {
             var dateTimeEx = DateTimeEx.GetInstance(
-                TimeZoneInfo.Local,
-                new DateTime(2004, 12, 9, 15, 27, 10));
+                TimeZoneInfo.Utc,
+                new DateTime(2004, 12, 9, 15, 27, 10, DateTimeKind.Utc));
             dateTimeEx.SetMillis(500);
-            var startTime = dateTimeEx.TimeInMillis;
+            var startTime = dateTimeEx.UtcMillis;
 
             service.Time = startTime;
 
@@ -227,13 +227,13 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             spec.AddValue(ScheduleUnit.SECONDS, 20);
 
             service.Add(
-                ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE),
+                ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, service.Time, TimeZoneInfo.Utc, TimeAbacusMilliseconds.INSTANCE),
                 callbacks[3],
                 slots[1][1]);
 
             spec.AddValue(ScheduleUnit.SECONDS, 15);
             service.Add(
-                ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE),
+                ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, service.Time, TimeZoneInfo.Utc, TimeAbacusMilliseconds.INSTANCE),
                 callbacks[4],
                 slots[2][0]);
 

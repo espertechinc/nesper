@@ -870,8 +870,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl = "create context MyContext initiated by SupportInKeywordBean as mie terminated after 24 hours;\n" +
-                      "@Name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.ints);\n" +
-                      "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.ints));\n";
+                      "@Name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.Ints);\n" +
+                      "@Name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.Ints));\n";
             env.CompileDeploy(epl).AddListener("s1").AddListener("s2");
 
             env.SendEventBean(new SupportInKeywordBean(new[] {1, 2}));
@@ -1289,28 +1289,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                TryInKeyword(env, "ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+                TryInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
                 TryInKeyword(
                     env,
-                    "mapOfIntKey",
+                    "MapOfIntKey",
                     new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")),
                     milestone);
-                TryInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+                TryInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
-                TryNotInKeyword(env, "ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
+                TryNotInKeyword(env, "Ints", new SupportInKeywordBean(new[] {1, 2}), milestone);
                 TryNotInKeyword(
                     env,
-                    "mapOfIntKey",
+                    "MapOfIntKey",
                     new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")),
                     milestone);
-                TryNotInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+                TryNotInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
                 TryInArrayContextProvided(env, milestone);
 
                 TryInvalidCompile(
                     env,
-                    "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.longs))]",
-                    "Implicit conversion from datatype 'long' to 'Integer' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
+                    "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.Longs))]",
+                    "Implicit conversion from datatype 'System.Int64' to 'System.Int32' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
             }
         }
 

@@ -22,77 +22,77 @@ namespace com.espertech.esper.common.@internal.view.intersect
     public class IntersectViewFactory : ViewFactory,
         DataWindowViewFactory
     {
-        protected internal IThreadLocal<IntersectAsymetricViewLocalState> asymetricViewLocalState;
-        protected internal int batchViewIndex;
-        protected internal IThreadLocal<IntersectBatchViewLocalState> batchViewLocalState;
-        protected internal IThreadLocal<IntersectDefaultViewLocalState> defaultViewLocalState;
-        protected internal EventType eventType;
-        protected internal bool hasAsymetric;
-        protected internal ViewFactory[] intersecteds;
+        private IThreadLocal<IntersectAsymetricViewLocalState> _asymetricViewLocalState;
+        private int _batchViewIndex;
+        private IThreadLocal<IntersectBatchViewLocalState> _batchViewLocalState;
+        private IThreadLocal<IntersectDefaultViewLocalState> _defaultViewLocalState;
+        private EventType _eventType;
+        private bool _hasAsymetric;
+        private ViewFactory[] _intersecteds;
 
         public int BatchViewIndex {
-            get => batchViewIndex;
-            set => batchViewIndex = value;
+            get => _batchViewIndex;
+            set => _batchViewIndex = value;
         }
 
-        public bool IsAsymetric => hasAsymetric;
+        public bool IsAsymetric => _hasAsymetric;
 
-        public IntersectBatchViewLocalState BatchViewLocalStatePerThread => batchViewLocalState.GetOrCreate();
+        public IntersectBatchViewLocalState BatchViewLocalStatePerThread => _batchViewLocalState.GetOrCreate();
 
-        public IntersectDefaultViewLocalState DefaultViewLocalStatePerThread => defaultViewLocalState.GetOrCreate();
+        public IntersectDefaultViewLocalState DefaultViewLocalStatePerThread => _defaultViewLocalState.GetOrCreate();
 
         public IntersectAsymetricViewLocalState AsymetricViewLocalStatePerThread =>
-            asymetricViewLocalState.GetOrCreate();
+            _asymetricViewLocalState.GetOrCreate();
 
         public bool HasAsymetric {
-            set => hasAsymetric = value;
+            set => _hasAsymetric = value;
         }
 
         public ViewFactory[] Intersecteds {
-            get => intersecteds;
-            set => intersecteds = value;
+            get => _intersecteds;
+            set => _intersecteds = value;
         }
 
         public void Init(
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            foreach (var grouped in intersecteds) {
+            foreach (var grouped in _intersecteds) {
                 grouped.Init(viewFactoryContext, services);
             }
 
-            if (batchViewIndex != -1) {
-                batchViewLocalState = new SlimThreadLocal<IntersectBatchViewLocalState>(
+            if (_batchViewIndex != -1) {
+                _batchViewLocalState = new SlimThreadLocal<IntersectBatchViewLocalState>(
                     () =>
                         new IntersectBatchViewLocalState(
-                            new EventBean[intersecteds.Length][],
-                            new EventBean[intersecteds.Length][]));
+                            new EventBean[_intersecteds.Length][],
+                            new EventBean[_intersecteds.Length][]));
             }
-            else if (hasAsymetric) {
-                asymetricViewLocalState = new SlimThreadLocal<IntersectAsymetricViewLocalState>(
+            else if (_hasAsymetric) {
+                _asymetricViewLocalState = new SlimThreadLocal<IntersectAsymetricViewLocalState>(
                     () =>
-                        new IntersectAsymetricViewLocalState(new EventBean[intersecteds.Length][]));
+                        new IntersectAsymetricViewLocalState(new EventBean[_intersecteds.Length][]));
             }
             else {
-                defaultViewLocalState = new SlimThreadLocal<IntersectDefaultViewLocalState>(
+                _defaultViewLocalState = new SlimThreadLocal<IntersectDefaultViewLocalState>(
                     () =>
-                        new IntersectDefaultViewLocalState(new EventBean[intersecteds.Length][]));
+                        new IntersectDefaultViewLocalState(new EventBean[_intersecteds.Length][]));
             }
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IList<View> views = new List<View>();
-            foreach (var viewFactory in intersecteds) {
+            foreach (var viewFactory in _intersecteds) {
                 agentInstanceViewFactoryContext.IsRemoveStream = true;
                 views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
             }
 
-            if (batchViewIndex != -1) {
+            if (_batchViewIndex != -1) {
                 return new IntersectBatchView(agentInstanceViewFactoryContext, this, views);
             }
 
-            if (hasAsymetric) {
+            if (_hasAsymetric) {
                 return new IntersectAsymetricView(agentInstanceViewFactoryContext, this, views);
             }
 
@@ -100,8 +100,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         }
 
         public EventType EventType {
-            get => eventType;
-            set => eventType = value;
+            get => _eventType;
+            set => _eventType = value;
         }
 
         public string ViewName => "intersect";

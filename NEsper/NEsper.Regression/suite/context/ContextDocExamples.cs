@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context ByCustomerAndAccount\n" +
-                "  select context.name, context.Id, context.Key1, context.Key2 from BankTxn");
+                "  select context.name, context.id, context.key1, context.key2 from BankTxn");
             UndeployClearPath(env, path);
             Create(env, path, "create context ByCust partition by CustId from BankTxn");
             Create(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context ByCust\n" +
                 "select * from SecurityEvent as t1 unidirectional, BankTxn#time(30) t2\n" +
-                "where t1.customerName = t2.customerName");
+                "where t1.CustomerName = t2.CustomerName");
             UndeployClearPath(env, path);
             Create(
                 env,
@@ -79,14 +79,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CategoryByTemp\n" +
-                "select context.name, context.Id, context.label from SensorEvent");
+                "select context.name, context.id, context.label from SensorEvent");
             Create(env, path, "create context NineToFive start (0, 9, *, *, *) end (0, 17, *, *, *)");
-            Create(env, path, "context NineToFive select * from TrafficEvent(speed >= 100)");
+            Create(env, path, "context NineToFive select * from TrafficEvent(Speed >= 100)");
             Create(
                 env,
                 path,
                 "context NineToFive\n" +
-                "select context.name, context.startTime, context.endTime from TrafficEvent(speed >= 100)");
+                "select context.name, context.startTime, context.endTime from TrafficEvent(Speed >= 100)");
             Create(
                 env,
                 path,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxTrainEnter\n" +
-                "select *, context.te.TrainId, context.Id, context.name from TrainLeaveEvent(TrainId = context.te.TrainId)");
+                "select *, context.te.TrainId, context.id, context.name from TrainLeaveEvent(TrainId = context.te.TrainId)");
             Create(
                 env,
                 path,
@@ -115,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(Temp) from SensorEvent output snapshot when terminated");
+                "select context.id, avg(Temp) from SensorEvent output snapshot when terminated");
             Create(
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(Temp) from SensorEvent output snapshot every 1 minute and when terminated");
+                "select context.id, avg(Temp) from SensorEvent output snapshot every 1 minute and when terminated");
             Create(
                 env,
                 path,
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context ByCustomerHash\n" +
-                "select context.name, context.Id from BankTxn");
+                "select context.name, context.id from BankTxn");
 
             Create(
                 env,
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context NineToFiveSegmented\n" +
                 "select context.NineToFive.startTime, context.SegmentedByCustomer.Key1 from BankTxn");
-            Create(env, path, "context NineToFiveSegmented select context.Name, context.Id from BankTxn");
+            Create(env, path, "context NineToFiveSegmented select context.name, context.id from BankTxn");
 
             Create(env, path, "create context MyContext start MyStartEvent end MyEndEvent");
             Create(env, path, "create context MyContext2 initiated MyEvent(Level > 0) terminated after 10 seconds");

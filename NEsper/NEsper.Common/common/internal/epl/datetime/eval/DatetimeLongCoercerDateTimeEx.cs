@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public long Coerce(object date)
         {
-            return ((DateTimeEx) date).TimeInMillis;
+            return ((DateTimeEx) date).UtcMillis;
         }
 
         public CodegenExpression Codegen(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 throw new IllegalStateException("Expected a DateTimeEx type");
             }
 
-            return ExprDotName(value, "TimeInMillis");
+            return ExprDotName(value, "UtcMillis");
         }
     }
 } // end of namespace

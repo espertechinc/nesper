@@ -121,8 +121,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var copy = new EPStatement[stmts.Length];
             Array.Copy(stmts, 0, copy, 0, stmts.Length);
             return new EPDeployment(
-                deploymentId, deployed.ModuleProvider.ModuleName, deployed.ModulePropertiesCached, copy,
-                CollectionUtil.CopyArray(deployed.DeploymentIdDependencies), new DateTime(deployed.LastUpdateDate));
+                deploymentId,
+                deployed.ModuleProvider.ModuleName,
+                deployed.ModulePropertiesCached,
+                copy,
+                CollectionUtil.CopyArray(deployed.DeploymentIdDependencies),
+                new DateTime(deployed.LastUpdateDate));
         }
 
         public void UndeployAll()

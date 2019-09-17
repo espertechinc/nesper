@@ -219,8 +219,11 @@ namespace com.espertech.esper.compat.collections
 
         public static bool TryRemove<K, V>(this IDictionary<K, V> dictionary, K key, out V value)
         {
-            dictionary.TryGetValue(key, out value);
-            return dictionary.Remove(key);
+            if (dictionary.TryGetValue(key, out value)) {
+                return dictionary.Remove(key);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -310,6 +313,13 @@ namespace com.espertech.esper.compat.collections
             dictionary.TryGetValue(key, out V temp);
             dictionary[key] = value;
             return temp;
+        }
+
+        public static bool TryPush<K, V>(this IDictionary<K, V> dictionary, K key, V value, out V outPreviousValue)
+        {
+            bool rvalue = dictionary.TryGetValue(key, out outPreviousValue);
+            dictionary[key] = value;
+            return rvalue;
         }
 
         public static V PutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value)

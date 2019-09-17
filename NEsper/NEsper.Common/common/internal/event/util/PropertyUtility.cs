@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             var message = "Failed to obtain field value for field " +
                           field.Name +
                           " on class " +
-                          declaring.GetCleanName() +
+                          declaring.CleanName() +
                           ": " +
                           e.Message;
             throw new PropertyAccessException(message, e);
@@ -49,18 +49,18 @@ namespace com.espertech.esper.common.@internal.@event.util
             object @object,
             InvalidCastException e)
         {
-            var classNameExpected = declared.GetCleanName();
+            var classNameExpected = declared.CleanName();
             string classNameReceived;
             if (@object != null) {
-                classNameReceived = @object.GetType().GetCleanName();
+                classNameReceived = @object.GetType().CleanName();
             }
             else {
                 classNameReceived = "null";
             }
 
             if (classNameExpected.Equals(classNameReceived)) {
-                classNameExpected = declared.GetCleanName();
-                classNameReceived = @object != null ? @object.GetType().GetCleanName() : "null";
+                classNameExpected = declared.CleanName();
+                classNameReceived = @object != null ? @object.GetType().CleanName() : "null";
             }
 
             var message = "Mismatched getter instance to event bean type, expected " +
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             var message = "Failed to invoke method " +
                           method.Name +
                           " on class " +
-                          declaring.GetCleanName() +
+                          declaring.CleanName() +
                           ": " +
                           e.Message;
             throw new PropertyAccessException(message, e);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             var message = "Failed to invoke method " +
                           method.Name +
                           " on class " +
-                          declaring.GetCleanName() +
+                          declaring.CleanName() +
                           ": " +
                           e.InnerException.Message;
             throw new PropertyAccessException(message, e);
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.@event.util
             var message = "Failed to invoke method " +
                           method.Name +
                           " on class " +
-                          declaring.GetCleanName() +
+                          declaring.CleanName() +
                           ": " +
                           t.Message;
             throw new PropertyAccessException(message, t);

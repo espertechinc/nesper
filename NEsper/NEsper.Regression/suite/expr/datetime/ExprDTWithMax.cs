@@ -31,11 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2" };
+                var fields = new [] { "val0","val1","val2", "val3" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTime.withMax('month') as val0," +
-                                  "DtoDate.withMax('month') as val1" +
-                                  "DtxDate.withMax('month') as val2," +
+                                  "DateTimeOffset.withMax('month') as val1," +
+                                  "DateTimeEx.withMax('month') as val2," +
                                   "LongDate.withMax('month') as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
@@ -68,14 +68,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
                 var eplFragment = "@Name('s0') select " +
-                                  "DtoDate.withMax('msec') as val0," +
-                                  "DtoDate.withMax('sec') as val1," +
-                                  "DtoDate.withMax('minutes') as val2," +
-                                  "DtoDate.withMax('hour') as val3," +
-                                  "DtoDate.withMax('day') as val4," +
-                                  "DtoDate.withMax('month') as val5," +
-                                  "DtoDate.withMax('year') as val6," +
-                                  "DtoDate.withMax('week') as val7" +
+                                  "DateTimeOffset.withMax('msec') as val0," +
+                                  "DateTimeOffset.withMax('sec') as val1," +
+                                  "DateTimeOffset.withMax('minutes') as val2," +
+                                  "DateTimeOffset.withMax('hour') as val3," +
+                                  "DateTimeOffset.withMax('day') as val4," +
+                                  "DateTimeOffset.withMax('month') as val5," +
+                                  "DateTimeOffset.withMax('year') as val6," +
+                                  "DateTimeOffset.withMax('week') as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

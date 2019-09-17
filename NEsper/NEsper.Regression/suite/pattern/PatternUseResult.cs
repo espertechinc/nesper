@@ -21,7 +21,7 @@ using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -375,16 +375,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@Name('s0') select * from pattern [" +
-                                 "every tradeevent1=SupportTradeEvent(userId in ('U1000','U1001','U1002') ) -> " +
-                                 "(tradeevent2=SupportTradeEvent(userId in ('U1000','U1001','U1002') and " +
-                                 "  userId != tradeevent1.userId and " +
-                                 "  ccypair = tradeevent1.ccypair and " +
-                                 "  direction = tradeevent1.direction) -> " +
-                                 " tradeevent3=SupportTradeEvent(userId in ('U1000','U1001','U1002') and " +
-                                 "  userId != tradeevent1.userId and " +
-                                 "  userId != tradeevent2.userId and " +
-                                 "  ccypair = tradeevent1.ccypair and " +
-                                 "  direction = tradeevent1.direction)" +
+                                 "every tradeevent1=SupportTradeEvent(UserId in ('U1000','U1001','U1002') ) -> " +
+                                 "(tradeevent2=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
+                                 "  UserId != tradeevent1.UserId and " +
+                                 "  Ccypair = tradeevent1.Ccypair and " +
+                                 "  Direction = tradeevent1.Direction) -> " +
+                                 "  tradeevent3=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
+                                 "  UserId != tradeevent1.UserId and " +
+                                 "  UserId != tradeevent2.UserId and " +
+                                 "  Ccypair = tradeevent1.Ccypair and " +
+                                 "  Direction = tradeevent1.Direction)" +
                                  ") where timer:within(600 sec)]";
 
                 env.CompileDeploy(expression);

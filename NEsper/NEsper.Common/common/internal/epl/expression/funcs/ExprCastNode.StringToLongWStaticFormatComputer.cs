@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 object input)
             {
                 try {
-                    return format.Parse(input.ToString()).TimeInMillis;
+                    return format.Parse(input.ToString()).UtcMillis;
                 }
                 catch (ParseException e) {
                     throw ExprCastNode.HandleParseException(format, input.ToString(), e);

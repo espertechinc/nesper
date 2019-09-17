@@ -86,19 +86,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(void), typeof(CalendarWithTimeForgeOp), codegenClassScope)
+                .MakeChild(typeof(DateTimeEx), typeof(CalendarWithTimeForgeOp), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "dateTime");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
-            block.StaticMethod(
-                typeof(CalendarWithTimeForgeOp),
-                "ActionSetHMSMDateTimeEx",
-                Ref("dateTime"),
-                Ref("hour"),
-                Ref("minute"),
-                Ref("second"),
-                Ref("msec"));
+            block.MethodReturn(
+                StaticMethod(
+                    typeof(CalendarWithTimeForgeOp),
+                    "ActionSetHMSMDateTimeEx",
+                    Ref("dateTime"),
+                    Ref("hour"),
+                    Ref("minute"),
+                    Ref("second"),
+                    Ref("msec")));
             return LocalMethod(methodNode, dtx);
         }
 

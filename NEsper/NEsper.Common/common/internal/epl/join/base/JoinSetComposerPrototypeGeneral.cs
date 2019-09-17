@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     }
 
                     if (it != null) {
-                        for (; it.MoveNext();) {
+                        while (it.MoveNext()) {
                             events.Add(it.Current);
                         }
 

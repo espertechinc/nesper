@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             public static long StringToLongWStaticISOParse(string input)
             {
                 try {
-                    return TimerScheduleISO8601Parser.ParseDate(input).TimeInMillis;
+                    return TimerScheduleISO8601Parser.ParseDate(input).UtcMillis;
                 }
                 catch (ScheduleParameterException ex) {
                     throw HandleParseISOException(input, ex);

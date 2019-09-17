@@ -33,21 +33,21 @@ namespace com.espertech.esper.common.@internal.schedule
             var expectedDate = timeFormat.Parse(expected);
 
             var result = ScheduleComputeHelper.ComputeNextOccurance(
-                spec, nowDate.TimeInMillis, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE);
-            var resultDate = DateTimeEx.GetInstance(TimeZoneInfo.Local, result);
+                spec, nowDate.UtcMillis, TimeZoneInfo.Utc, TimeAbacusMilliseconds.INSTANCE);
+            var resultDate = DateTimeEx.GetInstance(TimeZoneInfo.Utc, result);
 
             if (!resultDate.Equals(expectedDate))
             {
                 Log.Debug(".checkCorrect Difference in result found, spec=" + spec);
                 Log.Debug(
                     ".checkCorrect      now=" + timeFormat.Format(nowDate) +
-                    " long=" + nowDate.TimeInMillis);
+                    " long=" + nowDate.UtcMillis);
                 Log.Debug(
                     ".checkCorrect expected=" + timeFormat.Format(expectedDate) +
-                    " long=" + expectedDate.TimeInMillis);
+                    " long=" + expectedDate.UtcMillis);
                 Log.Debug(
                     ".checkCorrect   result=" + timeFormat.Format(resultDate) +
-                    " long=" + resultDate.TimeInMillis);
+                    " long=" + resultDate.UtcMillis);
                 Assert.IsTrue(false);
             }
         }
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.schedule
 
             var result = ScheduleComputeHelper.ComputeNextOccurance(
                 spec, nowDate,
-                TimeZoneInfo.Local,
+                TimeZoneInfo.Utc,
                 TimeAbacusMilliseconds.INSTANCE);
-            var resultDate = DateTimeEx.GetInstance(TimeZoneInfo.Local, result);
+            var resultDate = DateTimeEx.GetInstance(TimeZoneInfo.Utc, result);
 
             if (result != expectedDate)
             {
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     " long=" + expectedDate);
                 Log.Debug(
                     ".checkCorrect   result=" + timeFormat.Format(resultDate) +
-                    " long=" + resultDate.TimeInMillis);
+                    " long=" + resultDate.UtcMillis);
                 Assert.IsTrue(false);
             }
         }

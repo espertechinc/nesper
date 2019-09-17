@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
             else
             {
-                Assert.AreEqual(DateTimeParsingFunctions.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.TimeInMillis);
+                Assert.AreEqual(DateTimeParsingFunctions.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.UtcMillis);
             }
         }
 
@@ -241,8 +241,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             AssertTimeParse("1997-07-16T19:20:30.123Z", 1997, 6, 16, 19, 20, 30, 123, "GMT+00:00");
 
             // local timezone, with and without msec
-            AssertTimeParse("1997-07-16T19:20:30.123", 1997, 6, 16, 19, 20, 30, 123, TimeZoneInfo.Local.DisplayName);
-            AssertTimeParse("1997-07-16T19:20:30", 1997, 6, 16, 19, 20, 30, 0, TimeZoneInfo.Local.DisplayName);
+            AssertTimeParse("1997-07-16T19:20:30.123", 1997, 6, 16, 19, 20, 30, 123, TimeZoneInfo.Utc.DisplayName);
+            AssertTimeParse("1997-07-16T19:20:30", 1997, 6, 16, 19, 20, 30, 0, TimeZoneInfo.Utc.DisplayName);
         }
     }
 } // end of namespace

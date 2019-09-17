@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 return;
             }
 
-            var evalType = forges[0].EvaluationType;
+            var evalType = forges[0].EvaluationType.GetBoxedType();
             method.Block.DeclareVar(
                 evalType,
                 "value",
@@ -122,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 return;
             }
 
-            var evalType = forges[0].EvaluationType;
+            var evalType = forges[0].EvaluationType.GetBoxedType();
             method.Block.DeclareVar(
                 evalType,
                 "value",

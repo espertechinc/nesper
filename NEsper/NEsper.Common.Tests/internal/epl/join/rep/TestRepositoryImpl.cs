@@ -31,12 +31,6 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         private EventBean s0Event;
         private RepositoryImpl repository;
 
-        private void TryIteratorEmpty<T>(IEnumerator<T> it)
-        {
-            it.MoveNext();
-            Assert.That(() => it.Current, Throws.InstanceOf<NoSuchElementException>());
-        }
-
         private Cursor[] Read(IEnumerator<Cursor> iterator)
         {
             IList<Cursor> cursors = new List<Cursor>();
@@ -119,7 +113,6 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             Assert.That(cursor.Stream, Is.Zero);
 
             Assert.IsFalse(it.MoveNext());
-            TryIteratorEmpty(it);
 
             // try invalid get cursor for no results
             Assert.That(() => repository.GetCursors(2), Throws.InstanceOf<NullReferenceException>());

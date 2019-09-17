@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return CodegenLong(
-                ExprDotMethod(inner, "TimeInMillis"),
+                ExprDotMethod(inner, "UtcMillis"),
                 codegenMethodScope,
                 exprSymbol,
                 codegenClassScope);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return CodegenLong(
-                ExprDotMethod(inner, "TimeInMillis"),
+                ExprDotMethod(inner, "UtcMillis"),
                 codegenMethodScope,
                 exprSymbol,
                 codegenClassScope);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return CodegenLong(
-                ExprDotMethod(inner, "TimeInMillis"),
+                ExprDotMethod(inner, "UtcMillis"),
                 codegenMethodScope,
                 exprSymbol,
                 codegenClassScope);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 return null;
             }
 
-            return EvaluateInternal(dateTimeEx.TimeInMillis);
+            return EvaluateInternal(dateTimeEx.UtcMillis);
         }
 
         public object Evaluate(

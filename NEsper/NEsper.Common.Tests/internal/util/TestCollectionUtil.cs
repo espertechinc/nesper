@@ -249,12 +249,14 @@ namespace com.espertech.esper.common.@internal.util
                 var expected = (string[]) testdata[i][1];
                 var input = (string[]) testdata[i][0];
                 var received = CollectionUtil.CopySortArray(input);
-                if (!Equals(expected, received))
-                {
-                    Assert.Fail("Failed for input " + input.RenderAny() +
-                                " expected " + expected.RenderAny() +
-                                " received " + received.RenderAny());
-                }
+                CollectionAssert.AreEqual(expected, received);
+
+                //if (!Equals(expected, received))
+                //{
+                //    Assert.Fail("Failed for input " + input.RenderAny() +
+                //                " expected " + expected.RenderAny() +
+                //                " received " + received.RenderAny());
+                //}
 
                 Assert.AreNotSame(input, expected);
             }
@@ -275,9 +277,9 @@ namespace com.espertech.esper.common.@internal.util
 
             for (var i = 0; i < testdata.Length; i++)
             {
-                var expected = (string) testdata[i][1];
-                var input = (string[]) testdata[i][0];
-                Assert.AreEqual("Failed for input " + input, expected, CollectionUtil.ToString(ToSet(input)));
+                string expected = (string) testdata[i][1];
+                string[] input = (string[]) testdata[i][0];
+                Assert.AreEqual(expected, CollectionUtil.ToString(ToSet(input)), "Failed for input " + input);
             }
         }
     }

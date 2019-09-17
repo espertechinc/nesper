@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             MappedProperty mpd = new MappedProperty("dummy", "dummy");
             Assert.IsNull(mpd.GetPropertyType(eventType,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
-            mpd = new MappedProperty("mapProperty", "dummy");
+            mpd = new MappedProperty("MapProperty", "dummy");
             Assert.AreEqual(typeof(string), mpd.GetPropertyType(eventType,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }

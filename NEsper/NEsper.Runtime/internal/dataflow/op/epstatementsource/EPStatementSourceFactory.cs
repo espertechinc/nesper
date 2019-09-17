@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.epstatementsource
             set => IsSubmitEventBean = value;
         }
 
-        public bool IsSubmitEventBean { get; private set; }
+        public bool IsSubmitEventBean { get; set; }
 
         public ExprEvaluator StatementDeploymentId { get; set; }
 

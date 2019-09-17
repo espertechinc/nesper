@@ -264,31 +264,22 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     if (annotationAttribute.AnnotationType.IsEnum && (value is string valueString)) {
                         valueString = valueString.Trim();
 
-                        // find case-sensitive exact match first
-                        foreach (Enum e in Enum.GetValues(annotationAttribute.AnnotationType)) {
-                            if (e.GetName() == valueString) {
-                                return e;
-                            }
+                        var annotationType = annotationAttribute.AnnotationType;
+                        try {
+                            return Enum.Parse(annotationType, valueString, true);
                         }
-
-                        // find case-insensitive match
-                        var valueUppercase = valueString.ToUpperInvariant();
-                        foreach (Enum e in Enum.GetValues(annotationAttribute.AnnotationType)) {
-                            if (e.GetName().ToUpperInvariant() == valueUppercase) {
-                                return e;
-                            }
+                        catch (ArgumentException) {
+                            throw new AnnotationException(
+                                "Annotation '" +
+                                annotationClass.FullName +
+                                "' requires an enum-value '" +
+                                annotationAttribute.AnnotationType.FullName +
+                                "' for attribute '" +
+                                annotationAttribute.Name +
+                                "' but received '" +
+                                value +
+                                "' which is not one of the enum choices");
                         }
-
-                        throw new AnnotationException(
-                            "Annotation '" +
-                            annotationClass.Name +
-                            "' requires an enum-value '" +
-                            annotationAttribute.AnnotationType.FullName +
-                            "' for attribute '" +
-                            annotationAttribute.Name +
-                            "' but received '" +
-                            value +
-                            "' which is not one of the enum choices");
                     }
 
                     // cast as required

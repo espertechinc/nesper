@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             return EvaluateInternal(
-                dateTimeEx.TimeInMillis,
+                dateTimeEx.UtcMillis,
                 eventsPerStream,
                 newData,
                 exprEvaluatorContext);
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotName(Ref("d"), "Time"),
+                        ExprDotMethod(Ref("d"), "UtcMillis"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotName(Ref("d"), "Time"),
+                        ExprDotMethod(Ref("d"), "UtcMillis"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotName(Ref("dateTime"), "TimeInMillis"),
+                        ExprDotName(Ref("dateTime"), "UtcMillis"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -197,9 +197,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 return null;
             }
 
-            var first = forge.startCoercer.Coerce(firstObj);
-            var second = forge.secondCoercer.Coerce(secondObj);
-            if (forge.includeBoth) {
+            var first = forge.StartCoercer.Coerce(firstObj);
+            var second = forge.SecondCoercer.Coerce(secondObj);
+            if (forge.IncludeBoth) {
                 if (first <= second) {
                     return first <= ts && ts <= second;
                 }
@@ -208,8 +208,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             bool includeLowEndpoint;
-            if (forge.includeLow != null) {
-                includeLowEndpoint = forge.includeLow.Value;
+            if (forge.IncludeLow != null) {
+                includeLowEndpoint = forge.IncludeLow.Value;
             }
             else {
                 var value = evalIncludeLow.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
@@ -221,8 +221,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             bool includeHighEndpoint;
-            if (forge.includeHigh != null) {
-                includeHighEndpoint = forge.includeHigh.Value;
+            if (forge.IncludeHigh != null) {
+                includeHighEndpoint = forge.IncludeHigh.Value;
             }
             else {
                 var value = evalIncludeHigh.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
@@ -291,34 +291,38 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(long), "ts");
 
             var block = methodNode.Block;
+
             CodegenLongCoercion(
                 block,
                 "first",
-                forge.start,
-                forge.startCoercer,
+                forge.Start,
+                forge.StartCoercer,
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
+
             CodegenLongCoercion(
                 block,
                 "second",
-                forge.end,
-                forge.secondCoercer,
+                forge.End,
+                forge.SecondCoercer,
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
+
             CodegenExpression first = Ref("first");
             CodegenExpression second = Ref("second");
             CodegenExpression ts = Ref("ts");
-            if (forge.includeBoth) {
+
+            if (forge.IncludeBoth) {
                 block.IfCondition(Relational(first, LE, second))
                     .BlockReturn(And(Relational(first, LE, ts), Relational(ts, LE, second)))
                     .MethodReturn(And(Relational(second, LE, ts), Relational(ts, LE, first)));
             }
-            else if (forge.includeLow != null && forge.includeHigh != null) {
-                block.IfCondition(Relational(ts, forge.includeLow.Value ? LT : LE, first))
+            else if (forge.IncludeLow != null && forge.IncludeHigh != null) {
+                block.IfCondition(Relational(ts, forge.IncludeLow.Value ? LT : LE, first))
                     .BlockReturn(ConstantFalse())
-                    .IfCondition(Relational(ts, forge.includeHigh.Value ? GT : GE, second))
+                    .IfCondition(Relational(ts, forge.IncludeHigh.Value ? GT : GE, second))
                     .BlockReturn(ConstantFalse())
                     .MethodReturn(ConstantTrue());
             }
@@ -326,19 +330,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 CodegenBooleanEval(
                     block,
                     "includeLowEndpoint",
-                    forge.includeLow.Value,
-                    forge.forgeIncludeLow,
+                    forge.IncludeLow,
+                    forge.ForgeIncludeLow,
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
+
                 CodegenBooleanEval(
                     block,
                     "includeLowHighpoint",
-                    forge.includeHigh.Value,
-                    forge.forgeIncludeHigh,
+                    forge.IncludeHigh,
+                    forge.ForgeIncludeHigh,
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
+
                 block.MethodReturn(
                     StaticMethod(
                         typeof(ReformatBetweenNonConstantParamsForgeOp),
@@ -375,11 +381,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             var refname = variable + "Obj";
-            block.DeclareVar<bool?>(
-                    refname,
-                    forge.EvaluateCodegen(typeof(bool?), codegenMethodScope, exprSymbol, codegenClassScope))
+            block.DeclareVar<bool?>(refname, forge.EvaluateCodegen(typeof(bool?), codegenMethodScope, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull(refname)
-                .DeclareVar<bool>(variable, Ref(refname));
+                .DeclareVar<bool>(variable, ExprDotName(Ref(refname), "Value"));
         }
 
         private static void CodegenLongCoercion(
@@ -404,11 +408,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 evaluationType,
                 refname,
                 assignment.Forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
-            if (!evaluationType.IsPrimitive) {
+            if (!evaluationType.IsValueType) {
                 block.IfRefNullReturnNull(refname);
             }
 
             block.DeclareVar<long>(variable, coercer.Codegen(Ref(refname), evaluationType, codegenClassScope));
+
+            //block.Debug("CodegenLongCoercion: {0} => {1}", Ref(refname), Ref(variable));
         }
     }
 } // end of namespace

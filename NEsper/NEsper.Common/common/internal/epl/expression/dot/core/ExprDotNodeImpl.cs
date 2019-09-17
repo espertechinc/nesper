@@ -403,7 +403,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                                 "Parameter expression to mapped property '" +
                                 propertyName +
                                 "' is expected to return a string-type value but returns " +
-                                paramEval.EvaluationType.GetCleanName());
+                                paramEval.EvaluationType.CleanName());
                         }
 
                         var mappedGetter =
@@ -427,7 +427,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                                 "Parameter expression to mapped property '" +
                                 propertyName +
                                 "' is expected to return a Integer-type value but returns " +
-                                paramEval.EvaluationType.GetCleanName());
+                                paramEval.EvaluationType.CleanName());
                         }
 
                         var indexedGetter =
@@ -792,7 +792,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         "Parameter expression to mapped property '" +
                         propertyDesc.PropertyName +
                         "' is expected to return a string-type value but returns " +
-                        parameterForge.EvaluationType.GetCleanName());
+                        parameterForge.EvaluationType.CleanName());
                 }
 
                 mappedGetter =
@@ -809,7 +809,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         "Parameter expression to indexed property '" +
                         propertyDesc.PropertyName +
                         "' is expected to return a Integer-type value but returns " +
-                        parameterForge.EvaluationType.GetCleanName());
+                        parameterForge.EvaluationType.CleanName());
                 }
 
                 indexedGetter =

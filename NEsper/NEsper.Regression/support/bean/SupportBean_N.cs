@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             IntBoxed = intBoxed;
             DoublePrimitive = doublePrimitive;
             DoubleBoxed = doubleBoxed;
-            IsBoolPrimitive = boolPrimitive;
+            BoolPrimitive = boolPrimitive;
             BoolBoxed = boolBoxed;
         }
 
@@ -45,24 +45,13 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public double? DoubleBoxed { get; }
 
-        public bool IsBoolPrimitive { get; }
+        public bool BoolPrimitive { get; }
 
         public bool? BoolBoxed { get; }
 
         public override string ToString()
         {
-            return "intPrim=" +
-                   IntPrimitive +
-                   " IntBoxed=" +
-                   IntBoxed +
-                   " doublePrim=" +
-                   DoublePrimitive +
-                   " DoubleBoxed=" +
-                   DoubleBoxed +
-                   " boolPrim=" +
-                   IsBoolPrimitive +
-                   " BoolBoxed=" +
-                   BoolBoxed;
+            return $"IntPrimitive={IntPrimitive}; IntBoxed={IntBoxed}; DoublePrimitive={DoublePrimitive} DoubleBoxed={DoubleBoxed}; BoolPrimitive={BoolPrimitive}; BoolBoxed={BoolBoxed}";
         }
 
         protected bool Equals(SupportBean_N other)
@@ -71,7 +60,7 @@ namespace com.espertech.esper.regressionlib.support.bean
                    IntBoxed == other.IntBoxed &&
                    DoublePrimitive.Equals(other.DoublePrimitive) &&
                    DoubleBoxed.Equals(other.DoubleBoxed) &&
-                   IsBoolPrimitive == other.IsBoolPrimitive &&
+                   BoolPrimitive == other.BoolPrimitive &&
                    BoolBoxed == other.BoolBoxed;
         }
 
@@ -99,7 +88,7 @@ namespace com.espertech.esper.regressionlib.support.bean
                 hashCode = (hashCode * 397) ^ IntBoxed.GetHashCode();
                 hashCode = (hashCode * 397) ^ DoublePrimitive.GetHashCode();
                 hashCode = (hashCode * 397) ^ DoubleBoxed.GetHashCode();
-                hashCode = (hashCode * 397) ^ IsBoolPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ BoolPrimitive.GetHashCode();
                 hashCode = (hashCode * 397) ^ BoolBoxed.GetHashCode();
                 return hashCode;
             }

@@ -10,6 +10,8 @@ using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,15 +31,46 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenClassScope codegenClassScope)
         {
             if (valueType != typeof(DateTime)) {
-                throw new IllegalStateException("Expected a DateTime type");
+                throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
             }
 
-            return ExprDotMethodChain(value).Add("toInstant").Add("toEpochMilli");
+            var timeZoneField = codegenClassScope.AddOrGetFieldSharable(
+                RuntimeSettingsTimeZoneField.INSTANCE);
+            return StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", value, timeZoneField);
+            //return ExprDotMethodChain(value).Add("toInstant").Add("toEpochMilli");
+        }
+
+        public static long CoerceToMillis(DateTime? dateTime)
+        {
+            if (dateTime == null) {
+                throw new ArgumentNullException(nameof(dateTime), nameof(dateTime) + " cannot be null");
+            }
+
+            return CoerceToMillis(dateTime.Value);
         }
 
         public static long CoerceToMillis(DateTime dateTime)
         {
             return dateTime.UtcMillis();
+        }
+
+        public static long CoerceToMillis(DateTime? dateTime, TimeZoneInfo timeZoneInfo)
+        {
+            if (dateTime == null)
+            {
+                throw new ArgumentNullException(nameof(dateTime), nameof(dateTime) + " cannot be null");
+            }
+
+            return CoerceToMillis(dateTime, timeZoneInfo);
+        }
+        
+        public static long CoerceToMillis(DateTime dateTime, TimeZoneInfo timeZoneInfo)
+        {
+            return dateTime
+                .ToDateTimeOffset(timeZoneInfo)
+                .ToUniversalTime()
+                .UtcDateTime
+                .UtcMillis();
         }
     }
 } // end of namespace

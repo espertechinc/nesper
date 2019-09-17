@@ -457,10 +457,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (ExprValidationException e) {
                     throw new ExprValidationException(
-                        "Failed to resolve enumeration method, date-time method or mapped property '" +
-                        mappedProperty +
-                        "': " +
-                        e.Message);
+                        $"Failed to resolve enumeration method, date-time method or mapped property '{mappedProperty}': {e.Message}",
+                        e);
                 }
 
                 return result;

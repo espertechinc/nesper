@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var text = "@Name('s0') select * from SupportRecogBean " +
                        "match_recognize (" +
-                       "  partition by value " +
+                       "  partition by Value " +
                        "  measures A.TheString as a_string, C.TheString as c_string " +
                        "  all matches " +
                        "  pattern (A B*? C) " +

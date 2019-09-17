@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             var topk = state.Topk;
             output.WriteBoolean(topk != null);
             if (topk != null) {
-                output.WriteInt(topk.TopkMax);
+                output.WriteInt(topk.TopKMax);
                 var topMap = topk.Topk;
                 output.WriteInt(topMap.Count);
                 foreach (var entry in topMap) {

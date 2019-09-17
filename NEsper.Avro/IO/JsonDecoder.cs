@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.magic;
+using com.espertech.esper.compat.util;
 
 using NEsper.Avro.Extensions;
 

@@ -136,9 +136,9 @@ namespace com.espertech.esper.common.@internal.type
         [Test]
         public void TestInvalidGetComputer()
         {
-            // Since we only do Double, Long and String compares
+            // Since we only do double, long and string compares
             TryInvalid(typeof(bool));
-            TryInvalid(typeof(long));
+            TryInvalid(typeof(byte));
             TryInvalid(typeof(short));
             TryInvalid(typeof(SupportBean));
         }

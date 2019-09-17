@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.lastevent
 {
@@ -33,23 +34,23 @@ namespace com.espertech.esper.common.@internal.view.lastevent
     public class LastEventView : ViewSupport,
         DataWindowView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly LastEventViewFactory viewFactory;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly LastEventViewFactory _viewFactory;
 
         /// <summary>
         ///     The last new element posted from a parent view.
         /// </summary>
-        protected internal EventBean lastEvent;
+        private EventBean _lastEvent;
 
         public LastEventView(
             LastEventViewFactory viewFactory,
             AgentInstanceContext agentInstanceContext)
         {
-            this.viewFactory = viewFactory;
-            this.agentInstanceContext = agentInstanceContext;
+            _viewFactory = viewFactory;
+            _agentInstanceContext = agentInstanceContext;
         }
 
-        public ViewFactory ViewFactory => viewFactory;
+        public ViewFactory ViewFactory => _viewFactory;
 
         public override EventType EventType => parent.EventType;
 
@@ -57,26 +58,26 @@ namespace com.espertech.esper.common.@internal.view.lastevent
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _viewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_viewFactory, newData, oldData);
 
             OneEventCollection oldDataToPost = null;
 
             if (newData != null && newData.Length == 1 && (oldData == null || oldData.Length == 0)) {
-                var currentLast = lastEvent;
-                lastEvent = newData[0];
+                var currentLast = _lastEvent;
+                _lastEvent = newData[0];
                 if (child != null) {
                     var oldDataToPostHere = currentLast == null ? null : new[] {currentLast};
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, oldDataToPostHere);
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPostHere);
                     child.Update(newData, oldDataToPostHere);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
             else {
                 if (newData != null && newData.Length != 0) {
-                    if (lastEvent != null) {
+                    if (_lastEvent != null) {
                         oldDataToPost = new OneEventCollection();
-                        oldDataToPost.Add(lastEvent);
+                        oldDataToPost.Add(_lastEvent);
                     }
 
                     if (newData.Length > 1) {
@@ -89,18 +90,18 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                         }
                     }
 
-                    lastEvent = newData[newData.Length - 1];
+                    _lastEvent = newData[newData.Length - 1];
                 }
 
                 if (oldData != null) {
                     for (var i = 0; i < oldData.Length; i++) {
-                        if (oldData[i] == lastEvent) {
+                        if (oldData[i] == _lastEvent) {
                             if (oldDataToPost == null) {
                                 oldDataToPost = new OneEventCollection();
                             }
 
                             oldDataToPost.Add(oldData[i]);
-                            lastEvent = null;
+                            _lastEvent = null;
                         }
                     }
                 }
@@ -109,29 +110,29 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                 if (child != null) {
                     if (oldDataToPost != null && !oldDataToPost.IsEmpty()) {
                         var oldDataArray = oldDataToPost.ToArray();
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, oldDataArray);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataArray);
                         child.Update(newData, oldDataArray);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, null);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, null);
                         child.Update(newData, null);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            yield return lastEvent;
+            return EnumerationHelper.SingletonNullable(_lastEvent);
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(lastEvent, viewFactory.ViewName);
+            viewDataVisitor.VisitPrimary(_lastEvent, _viewFactory.ViewName);
         }
 
         public override string ToString()

@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading;
 
 namespace com.espertech.esper.compat
 {
+    [Serializable]
     public class AtomicLong
     {
         private long _value;

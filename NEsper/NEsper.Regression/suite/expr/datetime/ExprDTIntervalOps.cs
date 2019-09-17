@@ -251,8 +251,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
                 var epl = "@Name('s0') select " +
                           "LongDate.set('month', 1).before(LongPrimitive) as c0, " +
-                          "DtoDate.set('month', 1).before(LongPrimitive) as c1," +
-                          "DtxDate.set('month', 1).before(LongPrimitive) as c2" +
+                          "DateTimeOffset.set('month', 1).before(LongPrimitive) as c1," +
+                          "DateTimeEx.set('month', 1).before(LongPrimitive) as c2" +
                           "from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
-                          "a.longdateStart.before(b.longdateStart) as c0," +
+                          "a.LongdateStart.before(b.LongdateStart) as c0," +
                           "a.before(b) as c1 " +
                           " from SupportTimeStartEndA#lastevent as a, " +
                           "      SupportTimeStartEndB#lastevent as b";
@@ -484,20 +484,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "a.before(b)",
                     "a.before(b, 1 millisecond)",
                     "a.before(b, 1 millisecond, 1000000000L)",
-                    "a.longdateStart.before(b)",
-                    "a.utildateStart.before(b)",
-                    "a.caldateStart.before(b)",
-                    "a.before(b.longdateStart)",
-                    "a.before(b.utildateStart)",
-                    "a.before(b.caldateStart)",
-                    "a.longdateStart.before(b.longdateStart)",
-                    "a.longdateStart.before(b.longdateStart)",
-                    "a.utildateStart.before(b.utildateStart)",
-                    "a.caldateStart.before(b.caldateStart)",
-                    "a.utildateStart.before(b.caldateStart)",
-                    "a.utildateStart.before(b.longdateStart)",
-                    "a.caldateStart.before(b.utildateStart)",
-                    "a.caldateStart.before(b.longdateStart)"
+                    "a.LongdateStart.before(b)",
+                    "a.DateTimeStart.before(b)",
+                    "a.DateTimeExStart.before(b)",
+                    "a.before(b.LongdateStart)",
+                    "a.before(b.DateTimeStart)",
+                    "a.before(b.DateTimeExStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.DateTimeStart.before(b.DateTimeStart)",
+                    "a.DateTimeExStart.before(b.DateTimeExStart)",
+                    "a.DateTimeStart.before(b.DateTimeExStart)",
+                    "a.DateTimeStart.before(b.LongdateStart)",
+                    "a.DateTimeExStart.before(b.DateTimeStart)",
+                    "a.DateTimeExStart.before(b.LongdateStart)"
                 };
                 var seedTime = "2002-05-30T09:00:00.000";
                 foreach (var expression in expressions) {

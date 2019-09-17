@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             TheString = theString;
             IntBoxed = intBoxed;
             IntPrimitive = intPrimitive;
-            IsBoolPrimitive = boolPrimitive;
+            BoolPrimitive = boolPrimitive;
         }
 
         public SupportBeanCtorOne(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             TheString = theString;
             IntBoxed = intBoxed;
             IntPrimitive = intPrimitive;
-            IsBoolPrimitive = false;
+            BoolPrimitive = false;
         }
 
         public SupportBeanCtorOne(
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             TheString = theString;
             IntBoxed = intBoxed;
             IntPrimitive = 99;
-            IsBoolPrimitive = false;
+            BoolPrimitive = false;
         }
 
         public SupportBeanCtorOne(string theString)
@@ -56,6 +56,6 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public int IntPrimitive { get; }
 
-        public bool IsBoolPrimitive { get; }
+        public bool BoolPrimitive { get; }
     }
 } // end of namespace

@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
@@ -131,15 +132,35 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenExpression val)
         {
             var type = typeof(T);
-            var chronoUnit = EnumValue(typeof(ChronoUnit), field.GetName());
+
+            // 
+            Type typeHelper;
+            if (type == typeof(DateTime)) {
+                typeHelper = typeof(DateTimeHelper);
+            } else if (type == typeof(DateTimeOffset)) {
+                typeHelper = typeof(DateTimeOffsetHelper);
+            } else if (type == typeof(DateTimeEx)) {
+                throw new ArgumentException("bad place");
+            } else {
+                throw new ArgumentException("unable to determine type helper for " + type);
+            }
+
+            var dateTimeField = EnumValue<DateTimeFieldEnum>(field);
             if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return ExprDotMethod(val, "TruncatedTo", chronoUnit);
+                return StaticMethod(typeHelper, "TruncatedTo", dateTimeField);
             }
 
             if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return ExprDotMethodChain(val)
-                    .Add("Plus", Constant(1), chronoUnit)
-                    .Add("TruncatedTo", chronoUnit);
+                return StaticMethod(
+                    typeHelper,
+                    "TruncatedTo",
+                    StaticMethod(
+                        typeof(DateTimeFieldMath),
+                        "AddUsingField",
+                        val,
+                        dateTimeField,
+                        Constant(1)),
+                    dateTimeField);
             }
 
             throw new EPException("Round-half operation not supported for " + type.Name);

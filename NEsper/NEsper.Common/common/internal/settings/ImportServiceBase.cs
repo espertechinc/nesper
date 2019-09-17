@@ -353,13 +353,13 @@ namespace com.espertech.esper.common.@internal.settings
             var message = "Could not find constructor ";
             if (paramTypes.Length > 0) {
                 message += "in class '" +
-                           clazz.GetCleanName() +
+                           clazz.CleanName() +
                            "' with matching parameter number and expected parameter type(s) '" +
                            expected +
                            "'";
             }
             else {
-                message += "in class '" + clazz.GetCleanName() + "' taking no parameters";
+                message += "in class '" + clazz.CleanName() + "' taking no parameters";
             }
 
             if (e.NearestMissCtor != null) {
@@ -399,7 +399,7 @@ namespace com.espertech.esper.common.@internal.settings
                 message += "method named '" +
                            methodName +
                            "' in class '" +
-                           clazz.GetCleanName() +
+                           clazz.CleanName() +
                            "' with matching parameter number and expected parameter type(s) '" +
                            expected +
                            "'";
@@ -408,7 +408,7 @@ namespace com.espertech.esper.common.@internal.settings
                 message += "method named '" +
                            methodName +
                            "' in class '" +
-                           clazz.GetCleanName() +
+                           clazz.CleanName() +
                            "' taking no parameters";
             }
 

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
         public override string ToString()
         {
-            return Value + "@" + Version + "@" + new DateTime(Timestamp);
+            return Value + "@" + Version + "@" + new DateTime(Timestamp, DateTimeKind.Utc);
         }
     }
 } // End of namespace

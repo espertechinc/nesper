@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTimeOffset dto = (DateTimeOffset) target;
-            return DTLocalUtil.EvaluateCalOpsLDT(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
+            return DTLocalUtil.EvaluateCalOpsDto(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .MakeChild(typeof(DateTimeOffset), typeof(DTLocalDtxOpsDtoEval), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "target");
             CodegenBlock block = methodNode.Block;
-            DTLocalUtil.EvaluateCalOpsLDTCodegen(
+            DTLocalUtil.EvaluateCalOpsDtoCodegen(
                 block,
                 "target",
                 forge.calendarForges,

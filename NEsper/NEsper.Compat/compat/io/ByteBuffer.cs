@@ -10,17 +10,61 @@ namespace com.espertech.esper.compat.io
 {
     public class ByteBuffer
     {
-        private byte[] _buffer;
+        private readonly byte[] _buffer;
 
         public ByteBuffer(byte[] source)
         {
-            _buffer = source;
+            _buffer = source ?? new byte[0];
         }
 
-        public byte[] Array
+        public byte[] Array => _buffer;
+
+        public int Length => _buffer.Length;
+
+        protected bool Equals(ByteBuffer other)
         {
-            get => _buffer;
-            set => _buffer = value;
+            if (_buffer.Length != other._buffer.Length) {
+                return false;
+            }
+
+            for (int ii = 0; ii < _buffer.Length; ii++) {
+                if (_buffer[ii] != other._buffer[ii]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType()) {
+                return false;
+            }
+
+            return Equals((ByteBuffer) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            if (_buffer.Length == 0) {
+                return 0;
+            }
+
+            int hash = _buffer[0];
+            for (int ii = 1; ii < _buffer.Length; ii++) {
+                hash = hash * 397 ^ _buffer[1];
+            }
+
+            return hash;
         }
     }
 }

@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public static bool IsDatetimeOrEnumMethod(string name)
         {
-            return EnumMethodEnumExtensions.IsEnumerationMethod(name) || DateTimeMethodEnum.IsDateTimeMethod(name);
+            return EnumMethodEnumExtensions.IsEnumerationMethod(name) || DatetimeMethodEnumHelper.IsDateTimeMethod(name);
         }
 
         public static ExprDotEnumerationSourceForge GetEnumerationSource(
@@ -352,12 +352,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
 
                 // resolve datetime
-                if (DateTimeMethodEnum.IsDateTimeMethod(chainElement.Name) &&
+                if (DatetimeMethodEnumHelper.IsDateTimeMethod(chainElement.Name) &&
                     (!matchingMethod ||
                      methodTarget == typeof(DateTimeEx) ||
                      methodTarget == typeof(DateTimeOffset) ||
                      methodTarget == typeof(DateTime))) {
-                    var dateTimeMethod = DateTimeMethodEnum.FromName(chainElement.Name);
+                    var dateTimeMethod = DatetimeMethodEnumHelper.FromName(chainElement.Name);
                     var datetimeImpl = ExprDotDTFactory.ValidateMake(
                         validationContext.StreamTypeService,
                         chainSpecStack,

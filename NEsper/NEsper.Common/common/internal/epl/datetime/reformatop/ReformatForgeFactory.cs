@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 return new ReformatToDateTimeOffsetForge(timeAbacus);
             }
 
-            if (method == DateTimeMethodEnum.TODATETIMEOFFSET) {
+            if (method == DateTimeMethodEnum.TODATETIME) {
                 return new ReformatToDateTimeForge(timeAbacus);
             }
 

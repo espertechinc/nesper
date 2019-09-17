@@ -9,14 +9,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -37,17 +38,57 @@ namespace com.espertech.esper.compiler.@internal.util
             return GenerateCode(imports, clazz);
         }
 
+        private static bool DoesImportResolveType(
+            Type type,
+            ImportDecl import,
+            Assembly[] assemblies)
+        {
+            if (import.IsNamespaceImport) {
+                var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
+                foreach (var assembly in assemblies) {
+                    var importType = assembly.GetType(importName, false, false);
+                    if (importType != null) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return import.TypeName == type.Name;
+        }
+
+        private static bool IsAmbiguous(
+            Type type,
+            ISet<ImportDecl> imports,
+            Assembly[] assemblies)
+        {
+            int resolutionPaths = imports.Count(import => DoesImportResolveType(type, import, assemblies));
+            return resolutionPaths > 1;
+        }
+
         private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
         {
-            ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
-            imports.Add(new ImportDecl(false, typeof(Int32).Namespace));
-            imports.Add(new ImportDecl(false, typeof(CompatExtensions).Namespace));
-            imports.Add(new ImportDecl(false, typeof(UnsupportedOperationException).Namespace));
-            imports.Add(new ImportDecl(false, typeof(Enumerable).Namespace));
+            var typeList = types
+                .Where(type => type != null && type != typeof(void) && !type.IsPrimitive)
+                .ToList();
 
-            foreach (var type in types) {
-                if (type != null && !type.IsPrimitive) {
-                    imports.Add(new ImportDecl(false, type.Namespace));
+            ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
+            imports.Add(new ImportDecl(typeof(Int32).Namespace));
+            imports.Add(new ImportDecl(typeof(CompatExtensions).Namespace));
+            imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace));
+            imports.Add(new ImportDecl(typeof(Enumerable).Namespace));
+
+            foreach (var type in typeList) {
+                imports.Add(new ImportDecl(type.Namespace));
+            }
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            // Ensure that all types can be imported without any ambiguity.
+            foreach (var type in typeList) {
+                if (IsAmbiguous(type, imports, assemblies)) {
+                    imports.Add(new ImportDecl(type.Namespace, type.Name));
                 }
             }
 

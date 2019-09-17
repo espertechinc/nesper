@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
@@ -35,7 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ActionCodegen(NewInstance<DateTimeEx>(inner));
+            CodegenExpression timeZoneField =
+                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            CodegenExpression dateTimeExpr = 
+                StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField, inner);
+
+            return ActionCodegen(dateTimeExpr);
         }
 
         public CodegenExpression CodegenDateTimeEx(
@@ -44,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ActionCodegen(ExprDotName(inner, "Time"));
+            return ActionCodegen(ExprDotName(inner, "UtcMillis"));
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -82,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return Action(DateTimeEx.GetInstance(TimeZoneInfo.Local, ts));
+            return Action(DateTimeEx.UtcInstance(ts));
         }
 
         public object Evaluate(

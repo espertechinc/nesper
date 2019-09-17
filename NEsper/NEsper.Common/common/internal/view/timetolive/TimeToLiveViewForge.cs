@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if (validated[0].Forge.EvaluationType.GetBoxedType() != typeof(long)) {
+            if (validated[0].Forge.EvaluationType.GetBoxedType() != typeof(long?)) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 

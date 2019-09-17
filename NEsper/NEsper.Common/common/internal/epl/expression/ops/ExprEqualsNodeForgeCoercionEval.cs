@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -84,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode lhs,
             ExprNode rhs)
         {
-            var lhsType = lhs.Forge.EvaluationType;
-            var rhsType = rhs.Forge.EvaluationType;
+            var lhsType = lhs.Forge.EvaluationType.GetBoxedType();
+            var rhsType = rhs.Forge.EvaluationType.GetBoxedType();
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
@@ -93,10 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(lhsType, "l", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
-                .DeclareVar(
-                    rhsType,
-                    "r",
-                    rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                .DeclareVar(rhsType, "r", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
             if (!forge.ForgeRenderable.IsIs) {
                 if (!lhsType.IsPrimitive) {

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalDtxOpsLongEval(GetCalendarOps(calendarForges), TimeZoneInfo.Local, timeAbacus);
+            get => new DTLocalDtxOpsLongEval(GetCalendarOps(calendarForges), TimeZoneInfo.Utc, timeAbacus);
         }
 
         public CodegenExpression Codegen(

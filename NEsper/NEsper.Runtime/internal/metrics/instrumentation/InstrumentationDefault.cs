@@ -36,6 +36,7 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 namespace com.espertech.esper.runtime.@internal.metrics.instrumentation

@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             if (!(value is IDictionary<string, object>)) {
                 var detail = "expects an " +
-                             type.GetCleanName() +
+                             type.CleanName() +
                              " but receives a value of type " +
                              value.GetType().Name;
                 throw new ExprValidationException(
@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw new ExprValidationException(
                     message +
                     ", class " +
-                    clazz.GetCleanName() +
+                    clazz.CleanName() +
                     " does not implement the interface");
             }
 
@@ -709,7 +709,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var msg = "Property '" + propertyName + "'";
             if (includeClassNameInEx) {
-                msg += " of class " + containingType.GetCleanName();
+                msg += " of class " + containingType.CleanName();
             }
 
             msg += " " + detailText;

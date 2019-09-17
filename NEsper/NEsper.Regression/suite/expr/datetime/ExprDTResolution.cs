@@ -55,7 +55,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(0);
             var epl =
-                "@Name('s0') select * from MyEvent(Id='A') as a unidirectional, MyEvent(Id='B')#lastevent as b where a.withDate(2002, 4, 30).before(b)";
+                "@Name('s0') select * from " +
+                "MyEvent(Id='A') as a unidirectional, " +
+                "MyEvent(Id='B')#lastevent as b" +
+                " where a.withDate(2002, 4, 30).before(b)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"B", tsB, tsB}, "MyEvent");
@@ -102,9 +105,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var time = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:05:06.007");
-                var dtxTime = DateTimeEx.GetInstance(TimeZoneInfo.Local, time);
+                var dtxTime = DateTimeEx.GetInstance(TimeZoneInfo.Utc, time);
 
-                var dtxMod = DateTimeEx.GetInstance(TimeZoneInfo.Local, time)
+                var dtxMod = DateTimeEx.GetInstance(TimeZoneInfo.Utc, time)
                     .SetHour(1)
                     .SetMinute(2)
                     .SetSecond(3)
@@ -112,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 var select =
                     "LongDate.withTime(1, 2, 3, 4) as c0," +
-                    "LongDate.set('hour', 1).set('minute', 2).set('second', 3).set('millisecond', 4).toCalendar() as c1," +
+                    "LongDate.set('hour', 1).set('minute', 2).set('second', 3).set('millisecond', 4).toDateTimeEx() as c1," +
                     "LongDate.get('month') as c2," +
                     "current_timestamp.get('month') as c3," +
                     "current_timestamp.getMinuteOfHour() as c4," +
-                    "current_timestamp.toDate() as c5," +
-                    "current_timestamp.toCalendar() as c6," +
+                    "current_timestamp.toDateTime() as c5," +
+                    "current_timestamp.toDateTimeEx() as c6," +
                     "current_timestamp.minus(1) as c7";
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
 
@@ -125,11 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     RunAssertionLongProperty(
                         env,
                         time,
-                        new SupportDateTime(time, null, null),
+                        new SupportDateTime(time, null, null, null),
                         select,
                         fields,
                         new object[] {
-                            dtxMod.TimeInMillis,
+                            dtxMod.UtcMillis,
                             dtxMod, 4, 4, 5,
                             dtxTime.DateTime,
                             dtxTime,
@@ -140,11 +143,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     RunAssertionLongProperty(
                         env,
                         time * 1000,
-                        new SupportDateTime(time * 1000 + 123, null, null),
+                        new SupportDateTime(time * 1000 + 123, null, null, null),
                         select,
                         fields,
                         new object[] {
-                            dtxMod.TimeInMillis * 1000 + 123,
+                            dtxMod.UtcMillis * 1000 + 123,
                             dtxMod, 4, 4, 5,
                             dtxTime.DateTime,
                             dtxTime,

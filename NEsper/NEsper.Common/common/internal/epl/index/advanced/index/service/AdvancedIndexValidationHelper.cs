@@ -124,9 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 " that is providing " +
                 name +
                 "-values expecting type " +
-                TypeHelper.GetCleanName(expectedType) +
+                TypeHelper.CleanName(expectedType) +
                 " but received type " +
-                TypeHelper.GetCleanName(receivedType));
+                TypeHelper.CleanName(receivedType));
         }
     }
 } // end of namespace

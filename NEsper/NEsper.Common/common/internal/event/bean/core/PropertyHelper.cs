@@ -15,9 +15,10 @@ using System.Reflection;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.magic;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// </summary>
         /// <param name="method">to return getter for</param>
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
-        /// <param name="beanEventTypeFactory">bean facory</param>
+        /// <param name="beanEventTypeFactory">bean factory</param>
         /// <returns>property getter</returns>
         public static EventPropertyGetterSPI GetGetter(
             MethodInfo method,
@@ -39,6 +40,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new ReflectionPropMethodGetter(method, eventBeanTypedEventFactory, beanEventTypeFactory);
+        }
+
+        /// <summary>
+        ///     Return getter for the given property.
+        /// </summary>
+        /// <param name="property">property to resolve</param>
+        /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
+        /// <param name="beanEventTypeFactory">bean factory</param>
+        public static EventPropertyGetterSPI GetGetter(
+            PropertyInfo property,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+        {
+            return new ReflectionPropMethodGetter(property, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
 
         /// <summary>
@@ -259,7 +274,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     continue;
                 }
 
-                result.Add(new PropertyStem(inferredName, methods[i], EventPropertyType.MAPPED));
+                result.Add(new PropertyStem(inferredName, methods[i], PropertyType.MAPPED));
                 uniquePropertyNames.Add(inferredName);
             }
         }

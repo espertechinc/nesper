@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             CodegenBlock block = methodNode.Block.DeclareVar<DateTimeEx>(
-                "dtx",
-                Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "Clone")));
+                "dtx", ExprDotMethod(@Ref("target"), "Clone"));
             EvaluateCalOpsCalendarCodegen(
                 block,
                 forge.calendarForges,

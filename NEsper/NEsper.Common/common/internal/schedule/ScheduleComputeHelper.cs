@@ -367,7 +367,7 @@ namespace com.espertech.esper.common.@internal.schedule
             }
 
             if (timeZone == null) {
-                timeZone = TimeZoneInfo.Local;
+                timeZone = TimeZoneInfo.Utc;
             }
 
             var baseDateTime = new DateTime(
@@ -514,7 +514,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             public bool Fits(DateTimeEx dateTime)
             {
-                if (_dayCode != dateTime.DayOfWeek) {
+                if (_dayCode != dateTime.DayOfWeekEnum) {
                     return false;
                 }
 
@@ -553,7 +553,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             public bool Fits(DateTimeEx dateTime)
             {
-                if (_dayCode != null && _dayCode != dateTime.DayOfWeek) {
+                if (_dayCode != null && _dayCode != dateTime.DayOfWeekEnum) {
                     return false;
                 }
 
@@ -580,7 +580,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                return (dateTime.DayOfWeek == DayOfWeek.Saturday);
+                return (dateTime.DayOfWeekEnum == DayOfWeek.Saturday);
             }
         }
 
@@ -609,7 +609,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             public bool Fits(DateTimeEx dateTime)
             {
-                if (_dayCode != null && _dayCode != dateTime.DayOfWeek) {
+                if (_dayCode != null && _dayCode != dateTime.DayOfWeekEnum) {
                     return false;
                 }
 
@@ -627,7 +627,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return true;
                 }
 
-                var dayOfWeek = dateTime.DayOfWeek;
+                var dayOfWeek = dateTime.DayOfWeekEnum;
                 return day >= max - 2 && dayOfWeek == DayOfWeek.Friday;
             }
         }
@@ -686,7 +686,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return work.Day;
                 }
 
-                if (work.DayOfWeek == DayOfWeek.Saturday) {
+                if (work.DayOfWeekEnum == DayOfWeek.Saturday) {
                     if (work.Day > 1) {
                         work = work.AddUsingField(DateTimeFieldEnum.DAY_OF_MONTH, -1);
                         return work.Day;
@@ -712,7 +712,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
         private static bool IsWeekday(DateTimeEx dateTime)
         {
-            var dayOfWeek = dateTime.DayOfWeek;
+            var dayOfWeek = dateTime.DayOfWeekEnum;
             return !(dayOfWeek < DayOfWeek.Monday || dayOfWeek > DayOfWeek.Friday);
         }
 

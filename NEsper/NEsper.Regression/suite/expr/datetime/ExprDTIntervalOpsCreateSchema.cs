@@ -33,11 +33,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
 
             // test Bean-type Date-type timestamps
+            var typeName = typeof(SupportBean).Name;
             var startA = "2002-05-30T09:00:00.000";
-            var epl = " create schema SupportBeanXXX as " +
-                      typeof(SupportBean).Name +
-                      " starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
-            epl += "@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
+            var epl = 
+                $"create schema SupportBeanXXX as {typeName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n" +
+                $"@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
+
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             var theEvent = new SupportBean();
@@ -113,19 +114,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object startB,
             object endB)
         {
-            var epl = eventRepresentationEnum.GetAnnotationText() +
-                      " create schema TypeA as (startts " +
-                      typeOfDatetimeProp +
-                      ", endts " +
-                      typeOfDatetimeProp +
-                      ") starttimestamp startts endtimestamp endts;\n";
-            epl += eventRepresentationEnum.GetAnnotationText() +
-                   " create schema TypeB as (startts " +
-                   typeOfDatetimeProp +
-                   ", endts " +
-                   typeOfDatetimeProp +
-                   ") starttimestamp startts endtimestamp endts;\n";
+            var epl = $"{eventRepresentationEnum.GetAnnotationText()} " +
+                      $"create schema TypeA as (startts {typeOfDatetimeProp}, endts {typeOfDatetimeProp}) " +
+                      $"starttimestamp startts endtimestamp endts;\n";
+
+            epl += $"{eventRepresentationEnum.GetAnnotationText()} " +
+                   $"create schema TypeB as (startts {typeOfDatetimeProp}, endts {typeOfDatetimeProp}) " +
+                   $"starttimestamp startts endtimestamp endts;\n";
+
             epl += "@Name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
+
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             MakeSendEvent(env, "TypeA", eventRepresentationEnum, startA, endA);

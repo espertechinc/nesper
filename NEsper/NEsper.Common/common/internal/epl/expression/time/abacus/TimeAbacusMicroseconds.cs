@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             DateTimeEx dateTime,
             long remainder)
         {
-            return dateTime.TimeInMillis * 1000 + remainder;
+            return dateTime.UtcMillis * 1000 + remainder;
         }
 
         public long OneSecond => 1000000;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", sec)));
+            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", ExprDotName(sec, "Value"))));
         }
 
         public CodegenExpression DateTimeSetCodegen(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
                 .DeclareVar<long>("millis", Op(Ref("fromTime"), "/", Constant(1000)))
-                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("millis")))
+                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("millis")))
                 .MethodReturn(Op(Ref("fromTime"), "-", Op(Ref("millis"), "*", Constant(1000))));
             return LocalMethodBuild(method).Pass(startLong).Pass(dateTime).Call();
         }
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpression startRemainder,
             CodegenClassScope codegenClassScope)
         {
-            return Op(Op(ExprDotName(dateTime, "TimeInMillis"), "*", Constant(1000)), "+", startRemainder);
+            return Op(Op(ExprDotName(dateTime, "UtcMillis"), "*", Constant(1000)), "+", startRemainder);
         }
 
         public DateTimeEx ToDateTimeEx(long ts)

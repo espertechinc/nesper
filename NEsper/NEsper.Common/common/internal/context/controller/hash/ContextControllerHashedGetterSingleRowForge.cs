@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 tryBlock,
                 reflectionMethod,
                 statementName,
-                reflectionMethod.DeclaringType.GetCleanName(),
+                reflectionMethod.DeclaringType.CleanName(),
                 true,
                 args);
 

@@ -122,8 +122,15 @@ namespace com.espertech.esper.compat.datetime
         public static DateTime GetWithMaximumDay(this DateTime dateTime)
         {
             var daysInMonth = Calendar.GetDaysInMonth(dateTime.Year, dateTime.Month);
-            return new DateTime(dateTime.Year, dateTime.Month, daysInMonth, dateTime.Hour, dateTime.Minute,
-                                dateTime.Second, dateTime.Millisecond);
+            return new DateTime(
+                dateTime.Year, 
+                dateTime.Month, 
+                daysInMonth, 
+                dateTime.Hour, 
+                dateTime.Minute,
+                dateTime.Second, 
+                dateTime.Millisecond,
+                dateTime.Kind);
         }
 
         public static DateTimeOffset GetWithMaximumDay(this DateTimeOffset dateTime, TimeZoneInfo timeZone = null)
@@ -147,8 +154,15 @@ namespace com.espertech.esper.compat.datetime
             if (dateTime.Day < daysInMonth)
                 daysInMonth = dateTime.Day;
 
-            return new DateTime(dateTime.Year, 12, daysInMonth, dateTime.Hour, dateTime.Minute,
-                                dateTime.Second, dateTime.Millisecond);
+            return new DateTime(
+                dateTime.Year,
+                12,
+                daysInMonth,
+                dateTime.Hour,
+                dateTime.Minute,
+                dateTime.Second,
+                dateTime.Millisecond,
+                dateTime.Kind);
         }
 
         public static DateTimeOffset GetWithMaximumMonth(this DateTimeOffset dateTime, TimeZoneInfo timeZone = null)
@@ -157,16 +171,27 @@ namespace com.espertech.esper.compat.datetime
             if (dateTime.Day < daysInMonth)
                 daysInMonth = dateTime.Day;
 
-            if (timeZone == null)
-            {
+            if (timeZone == null) {
                 return new DateTimeOffset(
-                    dateTime.Year, 12, daysInMonth, dateTime.Hour, dateTime.Minute,
-                    dateTime.Second, dateTime.Millisecond, dateTime.Offset);
+                    dateTime.Year,
+                    12,
+                    daysInMonth,
+                    dateTime.Hour,
+                    dateTime.Minute,
+                    dateTime.Second,
+                    dateTime.Millisecond,
+                    dateTime.Offset);
             }
 
             return DateTimeOffsetHelper.CreateDateTime(
-                dateTime.Year, 12, daysInMonth, dateTime.Hour, dateTime.Minute,
-                dateTime.Second, dateTime.Millisecond, timeZone);
+                dateTime.Year,
+                12,
+                daysInMonth,
+                dateTime.Hour,
+                dateTime.Minute,
+                dateTime.Second,
+                dateTime.Millisecond,
+                timeZone);
         }
 
         public static DateTime MoveToWeek(this DateTime dateTime, int targetWeek)

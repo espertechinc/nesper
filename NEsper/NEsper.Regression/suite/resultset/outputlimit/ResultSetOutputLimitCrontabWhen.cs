@@ -164,10 +164,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             int second,
             int millis)
         {
-            var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local)
+            var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc)
                 .Set(2008, 1, day, hour, minute, second)
                 .SetMillis(millis);
-            env.AdvanceTime(dateTimeEx.TimeInMillis);
+            env.AdvanceTime(dateTimeEx.UtcMillis);
         }
 
         internal class ResultSetOutputCrontabAtVariable : RegressionExecution

@@ -217,7 +217,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             FastMethod method)
         {
             var message = "Unexpected exception when invoking method '" + method.Name +
-                          "' on subscriber class '" + subscriber.GetType().GetCleanName() +
+                          "' on subscriber class '" + subscriber.GetType().CleanName() +
                           "' for parameters " + (paramList == null ? "null" : paramList.Render()) +
                           " : " + e.GetType().Name + " : " + e.Message;
             logger.Error(message, e);

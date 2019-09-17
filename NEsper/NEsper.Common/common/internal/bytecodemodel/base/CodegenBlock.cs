@@ -783,5 +783,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             throw new NotImplementedException();
         }
+
+        public CodegenBlock Debug(
+            string formatString,
+            params CodegenExpression[] @params)
+        {
+            var passThroughParams = new CodegenExpression[@params.Length + 1];
+            passThroughParams[0] = Constant("DEBUG: " + formatString);
+            Array.Copy(@params, 0, passThroughParams, 1, @params.Length);
+            // Console.WriteLine -
+            return StaticMethod(typeof(Console), "WriteLine", passThroughParams);
+        }
     }
 } // end of namespace

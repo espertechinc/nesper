@@ -113,6 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             {
                 // for simple population: ByteBuffer bytes = generateBytesModulo(i, space);
                 var bytes = GenerateBytesRandom(random, space);
+                //var bytes = GenerateBytesModulo(i, space);
                 if (!sent.TryGetValue(bytes, out var count))
                 {
                     sent.Put(bytes, 1L);

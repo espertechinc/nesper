@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             else {
                 throw new EPException(
                     "Unexpected event object type '" +
-                    node.GetType().GetCleanName() +
+                    node.GetType().CleanName() +
                     "' encountered, please supply a XmlDocument or XmlElement node");
             }
 

@@ -21,6 +21,8 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
+using com.espertech.esper.common.@internal.epl.dataflow.ops;
+using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -135,7 +137,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(FilterServiceProfile.READMOSTLY, runtime.Execution.FilterServiceProfile);
             Assert.AreEqual(1, runtime.Execution.DeclaredExprValueCacheSize);
             Assert.IsTrue(runtime.Expression.IsSelfSubselectPreeval);
-            Assert.AreEqual(TimeZoneInfo.Local, runtime.Expression.TimeZone);
+            Assert.AreEqual(TimeZoneInfo.Utc, runtime.Expression.TimeZone);
             Assert.IsNull(runtime.ExceptionHandling.HandlerFactories);
             Assert.AreEqual(UndeployRethrowPolicy.WARN, runtime.ExceptionHandling.UndeployRethrowPolicy);
             Assert.IsNull(runtime.ConditionHandling.HandlerFactories);
@@ -164,17 +166,25 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("com.mycompany.myapp.MySampleEventTwo", common.EventTypeNames.Get("MySampleEventTwo"));
             Assert.AreEqual("com.mycompany.package.MyLegacyTypeEvent", common.EventTypeNames.Get("MyLegacyTypeEvent"));
 
+            // need the assembly for commons - to be certain, we are using a class that is not in any of the
+            // namespaces listed below, but is in the NEsper.Commons assembly.
+            var commonsAssembly = typeof(BeanEventBean).Assembly;
+            
             // assert auto imports
             Assert.AreEqual(9, common.Imports.Count);
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("System")));
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("System.Text")));
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.espertech.esper.common.internal.epl.dataflow.ops")));
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp")));
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp", "AssemblyA")));
-            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp", "AssemblyB.dll")));
-            Assert.That(common.Imports, Contains.Item(new ImportType("com.mycompany.myapp.ClassOne")));
-            Assert.That(common.Imports, Contains.Item(new ImportType("com.mycompany.myapp.ClassTwo", "AssemblyB.dll")));
-            Assert.That(common.Imports, Contains.Item(ImportBuiltinAnnotations.Instance));
+            CollectionAssert.AreEquivalent(
+                new Import[] {
+                    new ImportNamespace("System"),
+                    new ImportNamespace("System.Text"),
+                    new ImportNamespace("com.espertech.esper.common.internal.epl.dataflow.ops", commonsAssembly.FullName),
+                    new ImportNamespace("com.mycompany.myapp"),
+                    new ImportNamespace("com.mycompany.myapp", "AssemblyA"),
+                    new ImportNamespace("com.mycompany.myapp", "AssemblyB.dll"),
+                    new ImportType("com.mycompany.myapp.ClassOne"),
+                    new ImportType("com.mycompany.myapp.ClassTwo", "AssemblyB.dll"),
+                    ImportBuiltinAnnotations.Instance
+                },
+                common.Imports);
 
             // assert XML DOM - no schema
             Assert.AreEqual(2, common.EventTypesXMLDOM.Count);

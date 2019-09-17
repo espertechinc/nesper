@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.suite.epl.variable;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.Runner;
@@ -61,14 +62,14 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestInvalidConfig()
         {
             TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), config => config.Common.AddVariable("invalidvar1", typeof(int?), "abc"),
-                "Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type System.Int32 cannot be initialized by value 'abc': java.lang.NumberFormatException: For input string: \"abc\"");
+                "Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " + typeof(int?).CleanName() + " cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format.");
             TryInvalidConfigurationRuntime(SupportConfigFactory.GetConfiguration(), config => config.Common.AddVariable("invalidvar1", typeof(int?), "abc"),
-                "Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type System.Int32 cannot be initialized by value 'abc': java.lang.NumberFormatException: For input string: \"abc\"");
+                "Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " + typeof(int?).CleanName() + " cannot be initialized by value 'abc': System.FormatException: Input string was not in a correct format.");
 
             TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), config => config.Common.AddVariable("invalidvar1", typeof(int?), 1.1d),
-                "Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type System.Int32 cannot be initialized by a value of type System.Double");
+                "Failed compiler startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " + typeof(int?).CleanName() + " cannot be initialized by a value of type System.Double");
             TryInvalidConfigurationRuntime(SupportConfigFactory.GetConfiguration(), config => config.Common.AddVariable("invalidvar1", typeof(int?), 1.1d),
-                "Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type System.Int32 cannot be initialized by a value of type System.Double");
+                "Failed runtime startup: Error configuring variable 'invalidvar1': Variable 'invalidvar1' of declared type " + typeof(int?).CleanName() + " cannot be initialized by a value of type System.Double");
         }
     }
 } // end of namespace

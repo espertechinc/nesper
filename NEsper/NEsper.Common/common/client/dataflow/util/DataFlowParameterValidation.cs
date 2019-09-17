@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.client.dataflow.util
                 string message = "Failed to validate return type of parameter '" +
                                  name +
                                  "', expected '" +
-                                 TypeHelper.GetCleanName(expectedReturnType) +
+                                 TypeHelper.CleanName(expectedReturnType) +
                                  "' but received '" +
-                                 TypeHelper.GetCleanName(returnType) +
+                                 TypeHelper.CleanName(returnType) +
                                  "'";
                 throw new ExprValidationException(message);
             }

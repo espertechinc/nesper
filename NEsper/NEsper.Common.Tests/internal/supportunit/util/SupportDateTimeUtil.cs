@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
             return DateTimeEx
                 .GetInstance(TimeZoneInfo.Utc, timeInMillis)
                 .AddMonths(monthToAdd)
-                .TimeInMillis;
+                .UtcMillis;
         }
     }
 } // end of namespace

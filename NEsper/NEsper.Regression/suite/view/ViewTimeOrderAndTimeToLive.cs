@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 20000);
                 var epl =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(Timestamp, 10 sec)";
+                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // 1st event is old

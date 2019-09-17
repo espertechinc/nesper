@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('v0') create variable Object varobject = null", path);
                 env.CompileDeploy(
-                    "@Name('v1') create variable " + typeof(SupportBean_A).Name + " varbean = null",
+                    "@Name('v1') create variable " + typeof(SupportBean_A).FullName + " varbean = null",
                     path);
                 env.CompileDeploy("@Name('v2') create variable SupportBean_S0 vartype = null", path);
                 var depIdVarobject = env.DeploymentId("v0");

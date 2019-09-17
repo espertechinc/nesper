@@ -789,6 +789,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
                 .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+
+            processMethod.Block.Debug(
+                "eventsPerStream: {0}",
+                ExprDotMethod(Ref("eventsPerStream"), "RenderAny"));
+
             processMethod.Block.Apply(
                 InstrumentationCode.Instblock(
                     classScope,

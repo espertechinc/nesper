@@ -16,7 +16,8 @@ namespace com.espertech.esper.compat.datetime
     {
         public static long ParseDefaultMSec(string dateTimeString)
         {
-            return ParseDefaultEx(dateTimeString).TimeInMillis;
+            var utcDate = ParseDefaultEx(dateTimeString);
+            return utcDate.UtcMillis;
         }
 
         public static DateTimeOffset ParseDefaultDateTimeOffset(string dateTimeString)
@@ -31,7 +32,8 @@ namespace com.espertech.esper.compat.datetime
 
         public static DateTimeEx ParseIso8601Ex(string dateTimeString)
         {
-            var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            //var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            var timeZone = TimeZoneInfo.Utc;
             if (DateTimeOffset.TryParseExact(dateTimeString, "s", null, DateTimeStyles.None, out var dateTime)) {
                 return DateTimeEx.GetInstance(timeZone, dateTime);
             }
@@ -41,7 +43,7 @@ namespace com.espertech.esper.compat.datetime
 
         public static DateTimeEx ParseDefaultEx(string dateTimeString)
         {
-            DateTimeOffset dateTime;
+            DateTimeOffset dateTimeOffset;
 
             var match = Regex.Match(dateTimeString, @"^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)\.(\d+)$");
             if (match != Match.Empty)
@@ -57,25 +59,29 @@ namespace com.espertech.esper.compat.datetime
                     match.Groups[7].Value);
             }
 
-            var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            var timeZone = TimeZoneInfo.Utc;
+            //var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
 
-            if ((DateTimeOffset.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.fff", null, DateTimeStyles.None, out dateTime)) ||
-                (DateTimeOffset.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.ff", null, DateTimeStyles.None, out dateTime)))
-                return new DateTimeEx(dateTime, timeZone);
+            DateTime dateTime;
+
+            if ((DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.fff", null, DateTimeStyles.None, out dateTime)) ||
+                (DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.ff", null, DateTimeStyles.None, out dateTime))) {
+                return DateTimeEx.GetInstance(timeZone, dateTime);
+            }
 
             // there is an odd situation where we intend to parse down to milliseconds but someone passes a four digit value
             // - in this case, Java interprets this as a millisecond value but the CLR will interpret this as a tenth of a
             // - millisecond value.  to be consistent, I've made our implementation behave in a fashion similar to the java
             // - implementation.
 
-            if (DateTimeOffset.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.ffff", null, DateTimeStyles.None, out dateTime))
+            if (DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.ffff", null, DateTimeStyles.None, out dateTime))
             {
                 var millis = (dateTime.Ticks % 10000000) / 1000;
                 dateTime = dateTime.AddMilliseconds(-millis / 10).AddMilliseconds(millis);
-                return new DateTimeEx(dateTime, timeZone);
+                return DateTimeEx.GetInstance(timeZone, dateTime);
             }
 
-            return new DateTimeEx(DateTimeOffset.Parse(dateTimeString), timeZone);
+            return DateTimeEx.GetInstance(timeZone, DateTime.Parse(dateTimeString));
         }
 
         public static DateTimeEx ParseDefaultExWZone(string dateTimeWithZone)
@@ -109,7 +115,7 @@ namespace com.espertech.esper.compat.datetime
                     var timeZoneText = match.Groups[4].Value;
                     var timeZone = (timeZoneText != string.Empty)
                         ? TimeZoneHelper.GetTimeZoneInfo(timeZoneText)
-                        : TimeZoneInfo.Local;
+                        : TimeZoneInfo.Utc;
                     return new DateTimeEx(dateTime, timeZone);
                 }
 
@@ -120,18 +126,19 @@ namespace com.espertech.esper.compat.datetime
                     var timeZoneText = match.Groups[3].Value;
                     var timeZone = (timeZoneText != string.Empty)
                         ? TimeZoneHelper.GetTimeZoneInfo(timeZoneText)
-                        : TimeZoneInfo.Local;
+                        : TimeZoneInfo.Utc;
                     return new DateTimeEx(dateTime, timeZone);
                 }
             }
 
-            var timeZoneEx = dateTimeWithZone.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            var timeZoneEx = TimeZoneInfo.Utc;
+            //var timeZoneEx = dateTimeWithZone.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
             return new DateTimeEx(DateTimeOffset.Parse(dateTimeWithZone), timeZoneEx);
         }
 
         public static long ParseDefaultMSecWZone(string dateTimeWithZone)
         {
-            return ParseDefaultExWZone(dateTimeWithZone).TimeInMillis;
+            return ParseDefaultExWZone(dateTimeWithZone).UtcMillis;
         }
     }
 }

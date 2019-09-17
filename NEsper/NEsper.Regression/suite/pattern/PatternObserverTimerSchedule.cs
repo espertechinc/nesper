@@ -516,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         public static long GetThe1980Long()
         {
-            return GetThe1980Calendar().TimeInMillis;
+            return GetThe1980Calendar().UtcMillis;
         }
 
         public static int GetTheSeconds()

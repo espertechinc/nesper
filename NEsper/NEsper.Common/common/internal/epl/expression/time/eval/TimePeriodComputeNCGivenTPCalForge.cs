@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             timePeriodForge.Evaluators,
             timePeriodForge.Adders,
             timePeriodForge.TimeAbacus,
-            TimeZoneInfo.Local,
+            TimeZoneInfo.Utc,
             indexMicroseconds);
 
         public CodegenExpression MakeEvaluator(

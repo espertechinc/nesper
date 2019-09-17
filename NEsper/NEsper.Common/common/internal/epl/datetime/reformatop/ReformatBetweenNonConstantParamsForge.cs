@@ -22,17 +22,35 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
     public class ReformatBetweenNonConstantParamsForge : ReformatForge
     {
-        protected internal readonly ExprNode end;
-        protected internal readonly DatetimeLongCoercer secondCoercer;
+        private readonly ExprNode end;
+        private readonly DatetimeLongCoercer secondCoercer;
 
-        protected internal readonly ExprNode start;
-        protected internal readonly DatetimeLongCoercer startCoercer;
-        protected internal ExprForge forgeIncludeHigh;
-        protected internal ExprForge forgeIncludeLow;
+        private readonly ExprNode start;
+        private readonly DatetimeLongCoercer startCoercer;
+        private ExprForge forgeIncludeHigh;
+        private ExprForge forgeIncludeLow;
 
-        protected internal bool includeBoth;
-        protected internal bool? includeHigh;
-        protected internal bool? includeLow;
+        private bool includeBoth;
+        private bool? includeHigh;
+        private bool? includeLow;
+
+        public ExprNode End => end;
+
+        public DatetimeLongCoercer SecondCoercer => secondCoercer;
+
+        public ExprNode Start => start;
+
+        public DatetimeLongCoercer StartCoercer => startCoercer;
+
+        public ExprForge ForgeIncludeHigh => forgeIncludeHigh;
+
+        public ExprForge ForgeIncludeLow => forgeIncludeLow;
+
+        public bool IncludeBoth => includeBoth;
+
+        public bool? IncludeHigh => includeHigh;
+
+        public bool? IncludeLow => includeLow;
 
         public ReformatBetweenNonConstantParamsForge(IList<ExprNode> parameters)
         {

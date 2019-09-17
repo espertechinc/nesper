@@ -117,10 +117,6 @@ namespace com.espertech.esper.common.@internal.util
                 ThreadLogUtil.TraceLock(TRY_TEXT + " write " + _name, Lock);
             }
 
-            if (_writerLock != null) {
-                throw new IllegalStateException("writer lock already acquired");
-            }
-
             try {
                 _writerLock = Lock.WriteLock.Acquire(msec);
             }
@@ -142,10 +138,6 @@ namespace com.espertech.esper.common.@internal.util
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " write " + _name, Lock);
-            }
-
-            if (_writerLock == null) {
-                throw new IllegalStateException("write lock not acquired");
             }
 
             _writerLock.Dispose();
@@ -171,10 +163,6 @@ namespace com.espertech.esper.common.@internal.util
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read " + _name, Lock);
             }
 
-            if (_readerLock != null) {
-                throw new IllegalStateException("reader lock already acquired");
-            }
-
             _readerLock = Lock.ReadLock.Acquire();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
@@ -189,10 +177,6 @@ namespace com.espertech.esper.common.@internal.util
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " read " + _name, Lock);
-            }
-
-            if (_readerLock == null) {
-                throw new IllegalStateException("reader lock not acquired");
             }
 
             _readerLock.Dispose();

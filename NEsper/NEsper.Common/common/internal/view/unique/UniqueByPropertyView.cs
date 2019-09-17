@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -35,43 +36,43 @@ namespace com.espertech.esper.common.@internal.view.unique
     public class UniqueByPropertyView : ViewSupport,
         DataWindowView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly EventBean[] eventsPerStream = new EventBean[1];
-        private readonly IDictionary<object, EventBean> mostRecentEvents = new Dictionary<object, EventBean>();
-        private readonly UniqueByPropertyViewFactory viewFactory;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
+        private readonly IDictionary<object, EventBean> _mostRecentEvents = new Dictionary<object, EventBean>().WithNullKeySupport();
+        private readonly UniqueByPropertyViewFactory _viewFactory;
 
         public UniqueByPropertyView(
             UniqueByPropertyViewFactory viewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            this.viewFactory = viewFactory;
-            agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
+            _viewFactory = viewFactory;
+            _agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
         }
 
         /// <summary>
         ///     Returns true if the view is empty.
         /// </summary>
         /// <returns>true if empty</returns>
-        public bool IsEmpty => mostRecentEvents.IsEmpty();
+        public bool IsEmpty => _mostRecentEvents.IsEmpty();
 
-        public ViewFactory ViewFactory => viewFactory;
+        public ViewFactory ViewFactory => _viewFactory;
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, viewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(viewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _viewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_viewFactory, newData, oldData);
 
             if (newData != null && newData.Length == 1 && (oldData == null || oldData.Length == 0)) {
                 // Shortcut
                 var key = GetUniqueKey(newData[0]);
-                var lastValue = mostRecentEvents.Push(key, newData[0]);
+                var lastValue = _mostRecentEvents.Push(key, newData[0]);
                 if (child != null) {
                     var oldDataToPost = lastValue == null ? null : new[] {lastValue};
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, oldDataToPost);
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPost);
                     child.Update(newData, oldDataToPost);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
             else {
@@ -88,18 +89,18 @@ namespace com.espertech.esper.common.@internal.view.unique
 
                         // If there are no child views, just update the own collection
                         if (child == null) {
-                            mostRecentEvents.Put(key, newData[i]);
+                            _mostRecentEvents.Put(key, newData[i]);
                             continue;
                         }
 
                         // Post the last value as old data
-                        var lastValue = mostRecentEvents.Get(key);
+                        var lastValue = _mostRecentEvents.Get(key);
                         if (lastValue != null) {
-                            postOldData.Add(lastValue);
+                            postOldData?.Add(lastValue);
                         }
 
                         // Override with recent event
-                        mostRecentEvents.Put(key, newData[i]);
+                        _mostRecentEvents.Put(key, newData[i]);
                     }
                 }
 
@@ -109,46 +110,46 @@ namespace com.espertech.esper.common.@internal.view.unique
                         var key = GetUniqueKey(oldData[i]);
 
                         // If the old event is the current unique event, remove and post as old data
-                        var lastValue = mostRecentEvents.Get(key);
+                        var lastValue = _mostRecentEvents.Get(key);
                         if (lastValue == null || !lastValue.Equals(oldData[i])) {
                             continue;
                         }
 
-                        postOldData.Add(lastValue);
-                        mostRecentEvents.Remove(key);
+                        postOldData?.Add(lastValue);
+                        _mostRecentEvents.Remove(key);
                     }
                 }
 
                 // If there are child views, fireStatementStopped update method
                 if (child != null) {
                     if (postOldData.IsEmpty()) {
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newData, null);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, null);
                         child.Update(newData, null);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
                         EventBean[] postOldDataArray = postOldData.ToArray();
-                        agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                            viewFactory,
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                            _viewFactory,
                             newData,
                             postOldDataArray);
                         child.Update(newData, postOldDataArray);
-                        agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                        _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }
             }
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(
-                mostRecentEvents,
+                _mostRecentEvents,
                 true,
                 UniqueByPropertyViewFactory.NAME,
-                mostRecentEvents.Count,
-                mostRecentEvents.Count);
+                _mostRecentEvents.Count,
+                _mostRecentEvents.Count);
         }
 
         public override EventType EventType {
@@ -160,7 +161,7 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return mostRecentEvents.Values.GetEnumerator();
+            return _mostRecentEvents.Values.GetEnumerator();
         }
 
         public override string ToString()
@@ -170,15 +171,15 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         internal object GetUniqueKey(EventBean theEvent)
         {
-            eventsPerStream[0] = theEvent;
-            var criteriaExpressionsEvals = viewFactory.CriteriaEvals;
+            _eventsPerStream[0] = theEvent;
+            var criteriaExpressionsEvals = _viewFactory.CriteriaEvals;
             if (criteriaExpressionsEvals.Length == 1) {
-                return criteriaExpressionsEvals[0].Evaluate(eventsPerStream, true, agentInstanceContext);
+                return criteriaExpressionsEvals[0].Evaluate(_eventsPerStream, true, _agentInstanceContext);
             }
 
             var values = new object[criteriaExpressionsEvals.Length];
             for (var i = 0; i < criteriaExpressionsEvals.Length; i++) {
-                values[i] = criteriaExpressionsEvals[i].Evaluate(eventsPerStream, true, agentInstanceContext);
+                values[i] = criteriaExpressionsEvals[i].Evaluate(_eventsPerStream, true, _agentInstanceContext);
             }
 
             return new HashableMultiKey(values);

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var time = ((DateTimeEx) target).TimeInMillis;
+            var time = ((DateTimeEx) target).UtcMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             methodNode.Block
-                .DeclareVar<long>("time", ExprDotName(Ref("target"), "TimeInMillis"))
+                .DeclareVar<long>("time", ExprDotName(Ref("target"), "UtcMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = ((DateTimeEx) startTimestamp).TimeInMillis;
-            var end = ((DateTimeEx) endTimestamp).TimeInMillis;
+            var start = ((DateTimeEx) startTimestamp).UtcMillis;
+            var end = ((DateTimeEx) endTimestamp).UtcMillis;
             return intervalOp.Evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -80,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             methodNode.Block.MethodReturn(
                 forge.intervalForge.Codegen(
-                    ExprDotName(Ref("start"), "TimeInMillis"),
-                    ExprDotName(Ref("end"), "TimeInMillis"),
+                    ExprDotName(Ref("start"), "UtcMillis"),
+                    ExprDotName(Ref("end"), "UtcMillis"),
                     methodNode,
                     exprSymbol,
                     codegenClassScope));

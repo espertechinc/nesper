@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
@@ -123,7 +124,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     "Configured field named '" +
                     fieldDesc.AccessorFieldName +
                     "' not found for class " +
-                    clazz.GetCleanName());
+                    clazz.CleanName());
             }
 
             return MakeFieldDesc(field, fieldDesc.Name);
@@ -139,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             FieldInfo field,
             string name)
         {
-            return new PropertyStem(name, field, EventPropertyType.SIMPLE);
+            return new PropertyStem(name, field, PropertyType.SIMPLE);
         }
 
         /// <summary>
@@ -153,20 +154,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             MethodInfo method,
             string name)
         {
-            EventPropertyType propertyType;
+            PropertyType propertyType;
 
             var parameterTypes = method.GetParameterTypes();
             if (parameterTypes.Length == 1) {
                 var parameterType = parameterTypes[0];
                 if (parameterType == typeof(string)) {
-                    propertyType = EventPropertyType.MAPPED;
+                    propertyType = PropertyType.MAPPED;
                 }
                 else {
-                    propertyType = EventPropertyType.INDEXED;
+                    propertyType = PropertyType.INDEXED;
                 }
             }
             else {
-                propertyType = EventPropertyType.SIMPLE;
+                propertyType = PropertyType.SIMPLE;
             }
 
             return new PropertyStem(name, method, propertyType);

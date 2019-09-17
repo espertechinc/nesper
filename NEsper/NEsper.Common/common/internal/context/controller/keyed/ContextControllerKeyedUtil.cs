@@ -150,11 +150,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                                 "' found mismatch of property types, property '" +
                                 names[i] +
                                 "' of type '" +
-                                types[i].GetCleanName() +
+                                types[i].CleanName() +
                                 "' compared to property '" +
                                 property +
                                 "' of type '" +
-                                typeBoxed.GetCleanName() +
+                                typeBoxed.CleanName() +
                                 "'");
                         }
                     }

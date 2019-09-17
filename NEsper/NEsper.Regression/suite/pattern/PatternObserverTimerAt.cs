@@ -78,14 +78,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         private static void TryAssertion(RegressionEnvironment env)
         {
-            var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+            var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
             dateTimeEx.SetMillis(0);
             dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
 
             var invocations = new List<string>();
             for (var i = 0; i < 24 * 60 * 7; i++) { // run for 1 week
                 dateTimeEx.AddMinutes(1);
-                SendTimer(dateTimeEx.TimeInMillis, env);
+                SendTimer(dateTimeEx.UtcMillis, env);
 
                 if (env.Listener("s0").GetAndClearIsInvoked()) {
                     // System.out.println("invoked at calendar " + cal.getTime().toString());
@@ -178,10 +178,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.Set(2005, 3, 9, 8);
                 dateTimeEx.SetMillis(0);
-                var startTime = dateTimeEx.TimeInMillis;
+                var startTime = dateTimeEx.UtcMillis;
 
                 // Start a 2004-12-9 8:00:00am and send events every 10 minutes
                 // "A1"    8:10
@@ -339,10 +339,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var expression = "@Name('s0') select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
 
-                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
                 dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
-                SendTimer(dateTimeEx.TimeInMillis, env);
+                SendTimer(dateTimeEx.UtcMillis, env);
 
                 env.CompileDeploy(expression);
                 env.AddListener("s0");
@@ -359,10 +359,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var expression = "@Name('s0') select * from pattern [every timer:at(?::int,?::int,*,*,[1,2,3,4,5])]";
 
-                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
                 dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
-                SendTimer(dateTimeEx.TimeInMillis, env);
+                SendTimer(dateTimeEx.UtcMillis, env);
 
                 var compiled = env.Compile(expression);
                 env.Deploy(
@@ -386,10 +386,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var expression = "@Name('s0') select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
 
-                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
                 dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
-                SendTimer(dateTimeEx.TimeInMillis, env);
+                SendTimer(dateTimeEx.UtcMillis, env);
 
                 var compiled = env.Compile(expression);
                 env.Deploy(compiled).AddListener("s0");
@@ -405,10 +405,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var expression = "@Name('s0') select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
 
-                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Local);
+                var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
                 dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
-                SendTimer(dateTimeEx.TimeInMillis, env);
+                SendTimer(dateTimeEx.UtcMillis, env);
 
                 env.CompileDeploy(expression).AddListener("s0");
                 TryAssertion(env);
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 Assert.AreEqual(epl, model.ToEPL());
 
                 // test timezone
-                var baseUtcOffset = TimeZoneInfo.Local.BaseUtcOffset;
+                var baseUtcOffset = TimeZoneInfo.Utc.BaseUtcOffset;
                 var expectedUtcOffset = TimeSpan.FromMilliseconds(-5 * 60 * 60 * 1000);
                 if (baseUtcOffset.Equals(expectedUtcOffset)) {
                     // asserting only in EST timezone, see schedule util tests

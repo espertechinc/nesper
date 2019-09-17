@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             var formatYYYYMMdd = new SimpleDateFormat("yyyyMMdd");
             var dateYYMMddDate = formatYYYYMMdd.Parse("20100510");
-            var dtxYYMMddDate = DateTimeEx.GetInstance(TimeZoneInfo.Local, dateYYMMddDate);
+            var dtxYYMMddDate = DateTimeEx.GetInstance(TimeZoneInfo.Utc, dateYYMMddDate);
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -80,8 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 new object[] {
                     dateYYMMddDate.DateTime, // c0
                     dateYYMMddDate.DateTime.DateTime, // c1
-                    dateYYMMddDate.TimeInMillis, // c2
-                    dateYYMMddDate.TimeInMillis, // c3
+                    dateYYMMddDate.UtcMillis, // c2
+                    dateYYMMddDate.UtcMillis, // c3
                     dtxYYMMddDate, // c4
                     dtxYYMMddDate, // c5
                     4, // c6
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var expectedDateTimeEx = date == null ? null : dateFormat.Parse(date);
             var expectedDateTimeOffset = expectedDateTimeEx?.DateTime;
             var expectedDateTime = expectedDateTimeOffset?.DateTime;
-            var expectedLong = expectedDateTimeEx?.TimeInMillis;
+            var expectedLong = expectedDateTimeEx?.UtcMillis;
 
             var result = env.Listener("s0").AssertOneGetNewAndReset();
 
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 20,
                 30,
                 0,
-                TimeZoneInfo.Local.Id);
+                TimeZoneInfo.Utc.Id);
             SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c3"), 1997, 6, 16, 19, 20, 30, 450, "GMT+00:00");
             SupportDateTimeUtil.CompareDate((DateTimeEx) @event.Get("c4"), 1997, 6, 16, 19, 20, 30, 450, "GMT+01:00");
             SupportDateTimeUtil.CompareDate(
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 20,
                 30,
                 450,
-                TimeZoneInfo.Local.Id);
+                TimeZoneInfo.Utc.Id);
 
             Assert.That(@event.Get("c6"), Is.InstanceOf<long>());
             Assert.That(@event.Get("c7"), Is.InstanceOf<DateTime>());
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             AtomicLong milestone)
         {
             var sdt = SupportDateTime.Make("2002-05-30T09:00:00.000");
-            var sdfDate = sdt.DtxDate.DateTime.ToString("s");
+            var sdfDate = sdt.DateTimeEx.DateTime.ToString("s");
 
             var epl = "@Name('s0') select " +
                       "cast('" +
@@ -339,10 +339,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.SendEventBean(new SupportBean());
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
 
-            Assert.That(@event.Get("c0"), Is.EqualTo(sdt.DtxDate));
-            Assert.That(@event.Get("c1"), Is.EqualTo(sdt.DtxDate.DateTime));
-            Assert.That(@event.Get("c2"), Is.EqualTo(sdt.DtxDate.DateTime.DateTime));
-            Assert.That(@event.Get("c3"), Is.EqualTo(sdt.DtxDate.TimeInMillis));
+            Assert.That(@event.Get("c0"), Is.EqualTo(sdt.DateTimeEx));
+            Assert.That(@event.Get("c1"), Is.EqualTo(sdt.DateTimeEx.DateTime));
+            Assert.That(@event.Get("c2"), Is.EqualTo(sdt.DateTimeEx.DateTime.DateTime));
+            Assert.That(@event.Get("c3"), Is.EqualTo(sdt.DateTimeEx.UtcMillis));
 
             env.UndeployAll();
         }

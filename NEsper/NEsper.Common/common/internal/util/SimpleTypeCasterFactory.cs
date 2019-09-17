@@ -10,6 +10,7 @@ using System;
 using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.util;
 
 namespace com.espertech.esper.common.@internal.util
 {

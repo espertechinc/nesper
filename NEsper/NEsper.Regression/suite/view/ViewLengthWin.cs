@@ -194,13 +194,16 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select mapped('keyOne') as a," +
-                          "Indexed[1] as b, nested.NestedNested.NestedNestedValue as c, mapProperty, " +
+                var epl = "@Name('s0') select " +
+                          "Mapped('keyOne') as a," +
+                          "Indexed[1] as b, " +
+                          "Nested.NestedNested.NestedNestedValue as c, " +
+                          "MapProperty, " +
                           "ArrayProperty[0] " +
                           "  from SupportBeanComplexProps#length(3) " +
-                          " where mapped('keyOne') = 'valueOne' and " +
-                          " indexed[1] = 2 and " +
-                          " nested.NestedNested.NestedNestedValue = 'nestedNestedValue'";
+                          " where Mapped('keyOne') = 'valueOne' and " +
+                          " Indexed[1] = 2 and " +
+                          " Nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventObject = SupportBeanComplexProps.MakeDefaultBean();

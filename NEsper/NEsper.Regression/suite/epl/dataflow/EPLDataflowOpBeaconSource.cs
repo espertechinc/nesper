@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "> {" +
                 "  iterations : 3," +
                 "  p0 : 'abc'," +
-                "  p1 : Math.Round(Math.random() * 10) + 1," +
+                "  p1 : Math.Round(Math.Random() * 10) + 1," +
                 "  p2 : 1d," +
                 "}" +
                 "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "    iterations : 1,\n" +
                           "    interval : 10, // every 10 seconds\n" +
                           "    initialDelay : 5, // start after 5 seconds\n" +
-                          "    Price : Math.random() * 100,\n" +
+                          "    Price : Math.Random() * 100,\n" +
                           "  }";
                 env.CompileDeploy(epl);
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");

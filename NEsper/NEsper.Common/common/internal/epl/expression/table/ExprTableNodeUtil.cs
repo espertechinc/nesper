@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         " expression '" +
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) +
                         "' returns '" +
-                        TypeHelper.GetCleanName(actual) +
+                        TypeHelper.CleanName(actual) +
                         "' but the table expects '" +
-                        TypeHelper.GetCleanName(expected) +
+                        TypeHelper.CleanName(expected) +
                         "'");
                 }
             }

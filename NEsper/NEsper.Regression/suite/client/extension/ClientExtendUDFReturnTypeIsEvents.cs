@@ -48,7 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean("id0,Id1,Id2,Id3,Id4", 0));
-            var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<IDictionary<string, object>>();
+            var real = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
+            var coll = real.Unwrap<IDictionary<string, object>>();
+            //var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<IDictionary<string, object>>();
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
                 new [] { "Id" },

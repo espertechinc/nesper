@@ -99,8 +99,12 @@ namespace com.espertech.esper.regressionlib.framework
                 return; // skip message validation
             }
 
+            StringAssert.StartsWith(message, ex.Message);
+
+            //Assert.That(ex.Message, Does.StartWith(message));
+
+#if DEPRECATED
             if (message.Length > 10) {
-                // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
                 if (!ex.Message.StartsWith(message)) {
                     log.Error("Expected:" + message + "\nReceived:" + ex.Message, ex);
                     Assert.Fail("\nExpected:" + message + "\nReceived:" + ex.Message);
@@ -111,6 +115,7 @@ namespace com.espertech.esper.regressionlib.framework
                 log.Error("No assertion provided, received: " + ex.Message, ex);
                 Assert.Fail("No assertion provided, received: " + ex.Message);
             }
+#endif
         }
 
         public static void AssertMessage(
@@ -121,6 +126,9 @@ namespace com.espertech.esper.regressionlib.framework
                 return; // skip message validation
             }
 
+            Assert.That(exceptionMessage, Does.StartWith(exceptionMessage));
+
+#if DEPRECATED
             if (expected.Length > 10) {
                 // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
                 if (!exceptionMessage.StartsWith(expected)) {
@@ -133,6 +141,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Console.Out.WriteLine(exceptionMessage);
                 Assert.Fail("No assertion provided, received: " + exceptionMessage);
             }
+#endif
         }
 
         public static void TryInvalidIterate(

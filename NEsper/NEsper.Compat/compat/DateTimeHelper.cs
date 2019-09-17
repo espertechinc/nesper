@@ -115,12 +115,16 @@ namespace com.espertech.esper.compat
 
         public static long UtcMillis(this DateTime dateTime)
         {
-            if (dateTime.Kind == DateTimeKind.Utc)
+            if (dateTime.Kind == DateTimeKind.Utc) {
                 return TicksToMillis(dateTime.Ticks) - DateTimeConstants.Boundary;
-            else if (dateTime.Kind == DateTimeKind.Local)
+            }
+            else if (dateTime.Kind == DateTimeKind.Local) {
                 return TicksToMillis(dateTime.ToUniversalTime().Ticks) - DateTimeConstants.Boundary;
-
-            throw new ArgumentException("dateTime does not have kind specified");
+            }
+            else {
+                // We interpret any datetime that does not have this specified as assumed UTC.
+                return TicksToMillis(dateTime.Ticks) - DateTimeConstants.Boundary;
+            }
         }
 
         public static DateTime UtcFromMillis(this long millis)
@@ -189,8 +193,9 @@ namespace com.espertech.esper.compat
 
         public static string Print(this long timeInMillis, TimeZoneInfo timeZoneInfo = null)
         {
-            if (timeZoneInfo == null)
-                timeZoneInfo = TimeZoneInfo.Local;
+            if (timeZoneInfo == null) {
+                timeZoneInfo = TimeZoneInfo.Utc;
+            }
 
             return Print(DateTimeOffsetHelper.TimeFromMillis(timeInMillis, timeZoneInfo));
         }
@@ -226,49 +231,105 @@ namespace com.espertech.esper.compat
             this DateTime dt,
             int value)
         {
-            return new DateTime(value, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond);
+            return new DateTime(
+                value,
+                dt.Month,
+                dt.Day,
+                dt.Hour,
+                dt.Minute,
+                dt.Second,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithMonth(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, value, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond);
+            return new DateTime(
+                dt.Year,
+                value,
+                dt.Day,
+                dt.Hour,
+                dt.Minute,
+                dt.Second,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithDay(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, dt.Month, value, dt.Hour, dt.Minute, dt.Second, dt.Millisecond);
+            return new DateTime(
+                dt.Year,
+                dt.Month,
+                value,
+                dt.Hour,
+                dt.Minute,
+                dt.Second,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithHour(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, dt.Month, dt.Day, value, dt.Minute, dt.Second, dt.Millisecond);
+            return new DateTime(
+                dt.Year,
+                dt.Month,
+                dt.Day,
+                value,
+                dt.Minute,
+                dt.Second,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithMinute(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, value, dt.Second, dt.Millisecond);
+            return new DateTime(
+                dt.Year,
+                dt.Month,
+                dt.Day,
+                dt.Hour,
+                value,
+                dt.Second,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithSecond(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, value, dt.Millisecond);
+            return new DateTime(
+                dt.Year,
+                dt.Month,
+                dt.Day,
+                dt.Hour,
+                dt.Minute,
+                value,
+                dt.Millisecond,
+                dt.Kind);
         }
 
         public static DateTime WithMilli(
             this DateTime dt,
             int value)
         {
-            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, value);
+            return new DateTime(
+                dt.Year,
+                dt.Month,
+                dt.Day,
+                dt.Hour,
+                dt.Minute,
+                dt.Second,
+                value,
+                dt.Kind);
         }
 
         public static DateTime With(this DateTime dt, DateTimeFieldEnum field, int value)
@@ -299,23 +360,77 @@ namespace com.espertech.esper.compat
 
         public static DateTime TruncatedTo(this DateTime dt, DateTimeFieldEnum field)
         {
-            switch (field)
-            {
+            switch (field) {
                 case DateTimeFieldEnum.MILLISEC:
                     return dt;
+
                 case DateTimeFieldEnum.SECOND:
-                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0);
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        dt.Day,
+                        dt.Hour,
+                        dt.Minute,
+                        dt.Second,
+                        0,
+                        dt.Kind);
+
                 case DateTimeFieldEnum.MINUTE:
-                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0);
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        dt.Day,
+                        dt.Hour,
+                        dt.Minute,
+                        0,
+                        0,
+                        dt.Kind);
+
                 case DateTimeFieldEnum.HOUR:
-                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0, 0);
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        dt.Day,
+                        dt.Hour,
+                        0,
+                        0,
+                        0,
+                        dt.Kind);
+
                 case DateTimeFieldEnum.DAY:
                 case DateTimeFieldEnum.DATE:
-                    return new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0);
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        dt.Day,
+                        0,
+                        0,
+                        0,
+                        0,
+                        dt.Kind);
+
                 case DateTimeFieldEnum.MONTH:
-                    return new DateTime(dt.Year, dt.Month, 1, 0, 0, 0, 0);
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        dt.Kind);
+
                 case DateTimeFieldEnum.YEAR:
-                    return new DateTime(dt.Year, 1, 1, 0, 0, 0, 0);
+                    return new DateTime(
+                        dt.Year,
+                        1,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        dt.Kind);
+
                 default:
                     throw new NotSupportedException();
             }

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var field = Constant(_field);
-            return ExprDotMethod(dateTimeEx, "set", field, ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
+            return ExprDotMethod(dateTimeEx, "SetFieldValue", field, ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
         }
 
         public CodegenExpression CodegenDateTimeOffset(

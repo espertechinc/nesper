@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.suite.expr.datetime;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.schedule;
@@ -44,6 +45,8 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
         private static void Configure(Configuration configuration)
         {
+            configuration.Common.AddImportType(typeof(DateTimeParsingFunctions));
+
             foreach (var clazz in new[] {
                 typeof(SupportDateTime),
                 typeof(SupportTimeStartEndA),
@@ -63,13 +66,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
             common.AddVariable("V_END", typeof(long), -1);
 
             var leg = new ConfigurationCommonEventTypeBean();
-            leg.StartTimestampPropertyName = "longdateStart";
+            leg.StartTimestampPropertyName = "LongdateStart";
             configuration.Common.AddEventType("A", typeof(SupportTimeStartEndA), leg);
             configuration.Common.AddEventType("B", typeof(SupportTimeStartEndB), leg);
 
             var configBean = new ConfigurationCommonEventTypeBean();
-            configBean.StartTimestampPropertyName = "longdateStart";
-            configBean.EndTimestampPropertyName = "longdateEnd";
+            configBean.StartTimestampPropertyName = "LongdateStart";
+            configBean.EndTimestampPropertyName = "LongdateEnd";
             configuration.Common.AddEventType("SupportTimeStartEndA", typeof(SupportTimeStartEndA), configBean);
             configuration.Common.AddEventType("SupportTimeStartEndB", typeof(SupportTimeStartEndB), configBean);
 

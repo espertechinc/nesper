@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,19 +21,19 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         // Wherein: Object either is ByteBuffer or Deque<ByteBuffer>
 
-        public CountMinSketchStateTopk(int topkMax)
+        public CountMinSketchStateTopk(int topKMax)
         {
-            TopkMax = topkMax;
+            TopKMax = topKMax;
             _lastFreqForItem = new Dictionary<ByteBuffer, long>();
             Topk = new OrderedDictionary<long, object>(SimpleComparer<long>.Reverse);
         }
 
         public CountMinSketchStateTopk(
-            int topkMax,
+            int topKMax,
             OrderedDictionary<long, object> topk,
             IDictionary<ByteBuffer, long> lastFreqForItem)
         {
-            TopkMax = topkMax;
+            TopKMax = topKMax;
             Topk = topk;
             _lastFreqForItem = lastFreqForItem;
         }
@@ -57,13 +58,13 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             }
         }
 
-        public int TopkMax { get; }
+        public int TopKMax { get; }
 
         public void UpdateExpectIncreasing(
             byte[] value,
             long frequency)
         {
-            var filled = _lastFreqForItem.Count == TopkMax;
+            var filled = _lastFreqForItem.Count == TopKMax;
             if (!filled) {
                 var valueBuffer = new ByteBuffer(value);
                 UpdateInternal(valueBuffer, frequency);
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             ByteBuffer valueBuffer,
             long frequency)
         {
-            if (_lastFreqForItem.TryRemove(valueBuffer, out var previousUpdateFrequency)) {
+            if (_lastFreqForItem.TryPush(valueBuffer, frequency, out var previousUpdateFrequency)) {
                 RemoveItemFromSorted(previousUpdateFrequency, valueBuffer);
             }
 
@@ -127,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         private void TrimItems()
         {
-            while (_lastFreqForItem.Count > TopkMax) {
+            while (_lastFreqForItem.Count > TopKMax) {
                 if (Topk.Count == 0) {
                     break;
                 }

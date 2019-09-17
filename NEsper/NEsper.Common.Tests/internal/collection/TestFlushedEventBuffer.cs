@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.collection

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.type
         public void TestAllComputers()
         {
             Type[] testClasses = {
-                typeof(float?), typeof(double?), typeof(int?), typeof(long?)
+                typeof(float), typeof(double), typeof(int), typeof(long)
             };
 
             foreach (var clazz in testClasses)
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
 
                     if (type == MathArithTypeEnum.DIVIDE)
                     {
-                        Assert.AreEqual(typeof(double?), result.GetType());
+                        Assert.AreEqual(typeof(double), result.GetType());
                         if (clazz == typeof(int?) || clazz == typeof(long?))
                         {
                             Assert.AreEqual(0.75d, result.AsDouble(), "clazz=" + clazz);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             // Since we only do Double, Float, Integer and Long as results
             TryInvalid(typeof(string));
-            TryInvalid(typeof(long));
+            TryInvalid(typeof(char));
             TryInvalid(typeof(short));
             TryInvalid(typeof(byte));
         }

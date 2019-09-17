@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", sec)));
+            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", ExprDotName(sec, "Value"))));
         }
 
         public long DeltaForSecondsNumber(object timeInSeconds)
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                         .AddParam(typeof(long), "fromTime")
                         .AddParam(typeof(DateTimeEx), "dtx")
                         .Block
-                        .Expression(SetProperty(Ref("dtx"), "TimeInMillis", @Ref("fromTime")))
+                        .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", @Ref("fromTime")))
                         .MethodReturn(Constant(0)))
                 .Pass(startLong)
                 .Pass(dateTime)
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             DateTimeEx dateTime,
             long remainder)
         {
-            return dateTime.TimeInMillis;
+            return dateTime.UtcMillis;
         }
 
         public long OneSecond {
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpression startRemainder,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotName(dateTime, "TimeInMillis");
+            return ExprDotName(dateTime, "UtcMillis");
         }
     }
 } // end of namespace

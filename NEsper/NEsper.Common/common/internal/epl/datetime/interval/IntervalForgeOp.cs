@@ -11,6 +11,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -60,18 +62,23 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             var evaluationType = forge.ForgeTimestamp.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    evaluationType,
+                    evaluationType.GetBoxedType(),
                     "parameter",
                     forge.ForgeTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
             if (!forge.ForgeTimestamp.EvaluationType.IsPrimitive) {
                 block.IfRefNullReturnNull("parameter");
             }
 
+            CodegenExpression derefParameter = Ref("parameter");
+            if (evaluationType.IsNullable()) {
+                derefParameter = ExprDotName(derefParameter, "Value");
+            }
+
             block.MethodReturn(
                 forge.IntervalOpForge.Codegen(
-                    Ref("startTs"),
-                    Ref("endTs"),
-                    Ref("parameter"),
+                    ExprDotName(Ref("startTs"), "Value"),
+                    ExprDotName(Ref("endTs"), "Value"),
+                    derefParameter,
                     forge.ForgeTimestamp.EvaluationType,
                     methodNode,
                     exprSymbol,

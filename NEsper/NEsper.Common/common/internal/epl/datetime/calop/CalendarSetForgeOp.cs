@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarSetForgeOp : CalendarOp
     {
-        private readonly DateTimeFieldEnum fieldName;
-        private readonly ExprEvaluator valueExpr;
+        private readonly DateTimeFieldEnum _field;
+        private readonly ExprEvaluator _valueExpr;
 
         public CalendarSetForgeOp(
-            DateTimeFieldEnum fieldName,
+            DateTimeFieldEnum field,
             ExprEvaluator valueExpr)
         {
-            this.fieldName = fieldName;
-            this.valueExpr = valueExpr;
+            _field = field;
+            _valueExpr = valueExpr;
         }
 
         public DateTimeEx Evaluate(
@@ -40,12 +40,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            var value = CalendarOpUtil.GetInt(_valueExpr, eventsPerStream, isNewData, context);
             if (value == null) {
                 return dateTimeEx;
             }
 
-            return dateTimeEx.SetFieldValue(fieldName, value.Value);
+            return dateTimeEx.SetFieldValue(_field, value.Value);
         }
 
         public DateTimeOffset Evaluate(
@@ -54,12 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            var value = CalendarOpUtil.GetInt(_valueExpr, eventsPerStream, isNewData, context);
             if (value == null) {
                 return dateTimeOffset;
             }
 
-            return DateTimeFieldMath.SetFieldValue(dateTimeOffset, fieldName, value.Value);
+            return DateTimeFieldMath.SetFieldValue(dateTimeOffset, _field, value.Value);
         }
 
         public DateTime Evaluate(
@@ -68,12 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = CalendarOpUtil.GetInt(valueExpr, eventsPerStream, isNewData, context);
+            var value = CalendarOpUtil.GetInt(_valueExpr, eventsPerStream, isNewData, context);
             if (value == null) {
                 return dateTime;
             }
 
-            return DateTimeFieldMath.SetFieldValue(dateTime, fieldName, value.Value);
+            return DateTimeFieldMath.SetFieldValue(dateTime, _field, value.Value);
         }
 
         public static CodegenExpression CodegenCalendar(
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     .EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar<int>(
+                    .DeclareVar<int?>(
                         "value",
                         SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                             valueExpr,
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                             dateTimeEx,
                             "SetFieldValue",
                             field,
-                            Ref("value")))
+                            ExprDotName(Ref("value"), "Value")))
                     .MethodEnd();
                 return LocalMethod(methodNode, dateTimeEx);
             }
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var evaluationType = forge.valueExpr.EvaluationType;
 
             methodNode.Block
-                .DeclareVar<int>(
+                .DeclareVar<int?>(
                     "value",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
@@ -144,8 +144,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     ExprDotMethod(
                         Ref("dto"),
                         "SetFieldValue",
-                        EnumValue(typeof(ChronoField), field.GetName()),
-                        Ref("value")));
+                        EnumValue(field),
+                        ExprDotName(Ref("value"), "Value")));
             return LocalMethod(methodNode, dto);
         }
 
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var evaluationType = forge.valueExpr.EvaluationType;
 
             methodNode.Block
-                .DeclareVar<int>(
+                .DeclareVar<int?>(
                     "value",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
@@ -176,8 +176,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     ExprDotMethod(
                         Ref("dateTime"),
                         "SetFieldValue",
-                        EnumValue(typeof(ChronoField), field.GetName()),
-                        Ref("value")));
+                        EnumValue(field),
+                        ExprDotName(Ref("value"), "Value")));
             return LocalMethod(methodNode, dateTime);
         }
     }

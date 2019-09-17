@@ -198,6 +198,10 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(IEnumerable))) {
+                if (descriptor.AccessorProp != null) {
+                    return TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
+                }
+
                 if (descriptor.ReadMethod != null) {
                     return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
                 }

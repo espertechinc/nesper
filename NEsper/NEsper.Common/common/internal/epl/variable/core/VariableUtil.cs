@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -38,9 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             return "Variable '" +
                    variableName +
                    "' of declared type " +
-                   variableType.GetCleanName() +
+                   variableType.CleanName() +
                    " cannot be assigned a value of type " +
-                   initValueClass.GetCleanName();
+                   initValueClass.CleanName();
         }
 
         public static void ConfigureVariables(
@@ -173,9 +174,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            // Determime the variable type
+            // Determine the variable type
             var primitiveType = TypeHelper.GetPrimitiveTypeForName(variableTypeWArray.ClassIdentifier);
-            var type = TypeHelper.GetTypeForSimpleName(variableTypeWArray.ClassIdentifier);
+            var type = TypeHelper.GetTypeForSimpleName(variableTypeWArray.ClassIdentifier).GetBoxedType();
             Type arrayType = null;
             EventType eventType = null;
             if (type == null) {
@@ -321,7 +322,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                             "Variable '" +
                             variableName +
                             "' of declared type " +
-                            variableType.GetCleanName() +
+                            variableType.CleanName() +
                             " cannot be initialized by value '" +
                             coercedValue +
                             "': " +
@@ -357,9 +358,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 "Variable '" +
                 variableName +
                 "' of declared type " +
-                variableType.GetCleanName() +
+                variableType.CleanName() +
                 " cannot be initialized by a value of type " +
-                initValueClass.GetCleanName());
+                initValueClass.CleanName());
         }
     }
 } // end of namespace

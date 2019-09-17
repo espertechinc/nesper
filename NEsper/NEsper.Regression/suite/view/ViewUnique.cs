@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean#unique(Math.abs(IntPrimitive))";
+                var epl = "@Name('s0') select * from SupportBean#unique(Math.Abs(IntPrimitive))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendSupportBean(env, "E1", 10);

@@ -6,15 +6,3 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-namespace com.espertech.esper.common.magic
-{
-    public class MagicString
-    {
-        public static Func<string, string> GetStringConformer(bool isCaseSensitive)
-        {
-            return isCaseSensitive ? (Func<string, string>) (s => s) : (s => s.ToUpper());
-        }
-    }
-}

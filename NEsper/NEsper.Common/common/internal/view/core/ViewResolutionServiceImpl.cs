@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.view.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting view factory instance to " +
-                              typeof(ViewFactoryForge).GetCleanName() +
+                              typeof(ViewFactoryForge).CleanName() +
                               " interface for view '" +
                               name +
                               "'";

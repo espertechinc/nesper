@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;

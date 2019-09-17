@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "Variable '" +
                         entry.Value.VariableName +
                         "' of declared type " +
-                        entry.Key.UnderlyingType.GetCleanName() +
+                        entry.Key.UnderlyingType.CleanName() +
                         "' cannot be assigned to");
                 }
 

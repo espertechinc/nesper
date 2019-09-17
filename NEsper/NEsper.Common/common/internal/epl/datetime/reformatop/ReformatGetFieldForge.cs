@@ -177,6 +177,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
                 case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
+
+                case DateTimeFieldEnum.WEEK:
+                    return dateTime.WeekOfYear;
             }
 
             throw new ArgumentException("unknown field", nameof(fieldEnum));
@@ -207,9 +210,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
                 case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
+
+                case DateTimeFieldEnum.WEEK:
+                    return DateTimeMath.GetWeekOfYear(dateTime);
             }
 
-            throw new ArgumentException("unknown field", nameof(fieldEnum));
+            throw new ArgumentOutOfRangeException(nameof(fieldEnum), fieldEnum, "unknown field");
         }
     }
 } // end of namespace

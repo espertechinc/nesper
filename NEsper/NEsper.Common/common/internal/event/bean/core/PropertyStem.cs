@@ -12,6 +12,7 @@ using System.Reflection;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem(
             string propertyName,
             MethodInfo readMethod,
-            EventPropertyType? propertyType)
+            PropertyType? propertyType)
         {
             PropertyName = propertyName;
             ReadMethod = readMethod;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem(
             string propertyName,
             FieldInfo accessorField,
-            EventPropertyType propertyType)
+            PropertyType propertyType)
         {
             PropertyName = propertyName;
             AccessorField = accessorField;
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem(
             string propertyName,
             PropertyInfo accessorProp,
-            EventPropertyType propertyType)
+            PropertyType propertyType)
         {
             PropertyName = propertyName;
             AccessorProp = accessorProp;
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns an enum indicating the type of property: simple, mapped, indexed.
         /// </summary>
         /// <returns>enum with property type info</returns>
-        public EventPropertyType? PropertyType { get; }
+        public PropertyType? PropertyType { get; }
 
         /// <summary>
         ///     Returns the read method. Can return null if the property is backed by a field..

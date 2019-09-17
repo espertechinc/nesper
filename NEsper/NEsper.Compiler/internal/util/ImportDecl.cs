@@ -16,29 +16,30 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class ImportDecl : IComparable<ImportDecl>
     {
-        public bool IsStatic { get; set; }
         public string Namespace { get; set; }
+        public string TypeName { get; set; }
+
+        public bool IsNamespaceImport => TypeName == null;
 
         // Converts the import into a using directive syntax expression
         public UsingDirectiveSyntax UsingDirective {
             get {
                 UsingDirectiveSyntax usingDirectiveSyntax = SyntaxFactory.UsingDirective(
                     SyntaxFactory.ParseName(Namespace));
-                if (IsStatic) {
-                    usingDirectiveSyntax = usingDirectiveSyntax.WithStaticKeyword(
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-                }
+                //if (IsStatic) {
+                //    usingDirectiveSyntax = usingDirectiveSyntax.WithStaticKeyword(
+                //        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                //}
 
                 return usingDirectiveSyntax;
             }
         }
 
         public ImportDecl(
-            bool isStatic,
-            string ns)
+            string @namespace,
+            string typeName = null)
         {
-            IsStatic = isStatic;
-            Namespace = ns
+            Namespace = @namespace
                 .Replace(".internal.", ".@internal.")
                 .Replace(".internal", ".@internal")
                 .Replace(".base.", ".@base.")
@@ -47,15 +48,13 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Replace(".lock", ".@lock")
                 .Replace(".event.", ".@event.")
                 .Replace(".event", ".@event");
-        }
-
-        public ImportDecl()
-        {
+            TypeName = typeName;
         }
 
         protected bool Equals(ImportDecl other)
         {
-            return IsStatic == other.IsStatic && string.Equals(Namespace, other.Namespace);
+            return string.Equals(Namespace, other.Namespace)
+                   && string.Equals(TypeName, other.TypeName);
         }
 
         public override bool Equals(object obj)
@@ -78,58 +77,64 @@ namespace com.espertech.esper.compiler.@internal.util
         public override int GetHashCode()
         {
             unchecked {
-                return (IsStatic.GetHashCode() * 397) ^ (Namespace != null ? Namespace.GetHashCode() : 0);
+                return ((Namespace != null ? Namespace.GetHashCode() : 0) * 397) 
+                       ^ (TypeName != null ? TypeName.GetHashCode() : 0);
             }
         }
 
         public int CompareTo(ImportDecl that)
         {
-            if (this.Namespace == that.Namespace) {
-                if (this.IsStatic == that.IsStatic) {
-                    return 0;
-                }
-                else if (this.IsStatic) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }
-
             // Compare the namespaces - this forms the baseline for the order of items in
             // the set.  However, anything beginning with "System" holds a special place
             // at the front of the set.
 
-            var nameComparison = Namespace.CompareTo(that.Namespace);
+            var nameComparison = String.Compare(
+                Namespace, that.Namespace, StringComparison.Ordinal);
 
             if (this.Namespace == "System") {
-                nameComparison = -1;
+                if (that.Namespace == "System") {
+                    nameComparison = 0;
+                }
+                else {
+                    nameComparison = -1;
+                }
             }
             else if (that.Namespace == "System") {
                 nameComparison = 1;
             }
             else if (this.Namespace.StartsWith("System.")) {
-                if (!that.Namespace.StartsWith("System.")) {
-                    nameComparison = -1;
+                if (this.Namespace == that.Namespace) {
+                    nameComparison = 0;
+                } else if (!that.Namespace.StartsWith("System.")) {
+                    // do nothing with the name comparison
                 }
             }
             else if (that.Namespace.StartsWith("System.")) {
                 nameComparison = 1;
             }
 
-            // Static imports are placed after non-static imports.  This simply assist with
+            // Type specific imports are placed after namespace imports.  This simply assist with
             // rendering order.
 
-            if (this.IsStatic) {
-                if (!that.IsStatic) {
+            if (this.TypeName != null) {
+                if (that.TypeName == null) {
                     return 1;
                 }
+                if (nameComparison != 0) {
+                    nameComparison = String.Compare(
+                        TypeName, that.TypeName, StringComparison.Ordinal);
+                }
             }
-            else if (that.IsStatic) {
+            else if (that.TypeName != null) {
                 return -1;
             }
 
             return nameComparison;
+        }
+
+        public override string ToString()
+        {
+            return $"ImportDecl: {nameof(Namespace)}: {Namespace}, {nameof(TypeName)}: {TypeName}";
         }
     }
 }

@@ -109,6 +109,7 @@ namespace com.espertech.esper.common.@internal.type
             bool isDivisionByZeroReturnsNull,
             MathContext optionalMathContext)
         {
+            coercedType = coercedType.GetBoxedType();
             if (coercedType != typeof(double?) &&
                 coercedType != typeof(float?) &&
                 coercedType != typeof(long?) &&

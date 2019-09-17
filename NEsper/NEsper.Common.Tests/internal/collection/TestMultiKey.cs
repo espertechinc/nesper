@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(keys11.GetHashCode() != keys12.GetHashCode());
             Assert.IsTrue(keys12.GetHashCode() != keys13.GetHashCode());
 
-            Assert.IsTrue(keys1.GetHashCode() == ("a".GetHashCode() * 31 ^ "b".GetHashCode()));
+            Assert.IsTrue(keys1.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
             Assert.IsTrue(keys3.GetHashCode() == "a".GetHashCode());
             Assert.IsTrue(keys4.GetHashCode() == "b".GetHashCode());
             Assert.IsTrue(keys5.GetHashCode() == 0);

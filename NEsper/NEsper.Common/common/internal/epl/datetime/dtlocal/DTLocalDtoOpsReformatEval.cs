@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dto = (DateTimeOffset) target;
-            dto = DTLocalUtil.EvaluateCalOpsLDT(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
+            dto = DTLocalUtil.EvaluateCalOpsDto(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dto, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeOffset), "dto");
 
             var block = methodNode.Block;
-            DTLocalUtil.EvaluateCalOpsLDTCodegen(
+            DTLocalUtil.EvaluateCalOpsDtoCodegen(
                 block,
                 "dto",
                 forge.calendarForges,

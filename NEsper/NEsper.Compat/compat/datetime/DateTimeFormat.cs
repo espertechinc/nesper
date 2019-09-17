@@ -105,7 +105,8 @@ namespace com.espertech.esper.compat.datetime
         {
             DateTimeOffset dateTime;
 
-            var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            //var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+            var timeZone = TimeZoneInfo.Utc;
 
             if (DateTimeOffset.TryParseExact(dateTimeString, dateTimeFormat, null, DateTimeStyles.None, out dateTime))
             {

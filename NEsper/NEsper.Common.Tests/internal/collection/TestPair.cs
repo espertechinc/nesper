@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 
@@ -24,9 +25,9 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestHashCode()
         {
-            Assert.IsTrue(pair1.GetHashCode() == ("a".GetHashCode() ^ "b".GetHashCode()));
-            Assert.IsTrue(pair3.GetHashCode() == "a".GetHashCode());
-            Assert.IsTrue(pair4.GetHashCode() == "b".GetHashCode());
+            Assert.IsTrue(pair1.GetHashCode() == CompatExtensions.HashAll<object>("a", "b"));
+            Assert.IsTrue(pair3.GetHashCode() == CompatExtensions.HashAll("a"));
+            Assert.IsTrue(pair4.GetHashCode() == CompatExtensions.HashAll("b"));
             Assert.IsTrue(pair5.GetHashCode() == 0);
 
             Assert.IsTrue(pair1.GetHashCode() == pair2.GetHashCode());

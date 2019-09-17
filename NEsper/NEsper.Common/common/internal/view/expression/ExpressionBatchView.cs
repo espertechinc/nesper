@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.view.expression
         public void Expire(int numEventsInBatch)
         {
             if (numEventsInBatch == window.Count || numEventsInBatch == -1) {
-                EventBean[] batchNewData = window.ToArray();
+                var batchNewData = window.ToArrayOrNull();
                 if (viewUpdatedCollection != null) {
                     viewUpdatedCollection.Update(batchNewData, lastBatch);
                 }
@@ -147,26 +147,18 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
             else {
                 var batchNewData = new EventBean[numEventsInBatch];
-                var enumerator = window.GetEnumerator();
-                var itemsToDelete = new LinkedList<EventBean>();
-                for (var i = 0; i < batchNewData.Length; i++) {
-                    var current = enumerator.Current;
-                    batchNewData[i] = current;
-                    itemsToDelete.AddLast(current);
-                }
-
-                foreach (var eventBean in itemsToDelete) {
-                    window.Remove(eventBean);
+                var itemsInBatch = window.Take(batchNewData.Length).ToList();
+                for (var ii = 0; ii < itemsInBatch.Count; ii++) {
+                    batchNewData[ii] = itemsInBatch[ii];
+                    window.Remove(itemsInBatch[ii]);
                 }
 
                 viewUpdatedCollection?.Update(batchNewData, lastBatch);
 
                 // post
-                if (batchNewData != null || lastBatch != null) {
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                    child.Update(batchNewData, lastBatch);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
-                }
+                agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
+                child.Update(batchNewData, lastBatch);
+                agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 // clear
                 lastBatch = batchNewData;

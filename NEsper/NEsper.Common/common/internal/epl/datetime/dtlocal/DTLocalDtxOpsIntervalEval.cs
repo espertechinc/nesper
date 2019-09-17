@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var dtx = ((DateTimeEx) target).Clone();
             EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
-            var time = dtx.TimeInMillis;
+            var time = dtx.UtcMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.DeclareVar<long>("time", ExprDotName(Ref("dtx"), "TimeInMillis"))
+            block.DeclareVar<long>("time", ExprDotName(Ref("dtx"), "UtcMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -82,12 +82,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var startLong = ((DateTimeEx) startTimestamp).TimeInMillis;
-            var endLong = ((DateTimeEx) endTimestamp).TimeInMillis;
+            var startLong = ((DateTimeEx) startTimestamp).UtcMillis;
+            var endLong = ((DateTimeEx) endTimestamp).UtcMillis;
             var dtx = DateTimeEx.GetInstance(timeZone);
             dtx.SetUtcMillis(startLong);
             EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
-            var startTime = dtx.TimeInMillis;
+            var startTime = dtx.UtcMillis;
             var endTime = startTime + (endLong - startLong);
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -108,10 +108,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "endTimestamp");
 
             var block = methodNode.Block
-                .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "TimeInMillis"))
-                .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "TimeInMillis"))
+                .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "UtcMillis"))
+                .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "UtcMillis"))
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("startLong")));
+                .Expression(SetProperty(Ref("dtx"), "UtcMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
                 block,
                 forge.calendarForges,
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.DeclareVar<long>("startTime", ExprDotName(Ref("dtx"), "TimeInMillis"))
+            block.DeclareVar<long>("startTime", ExprDotName(Ref("dtx"), "UtcMillis"))
                 .DeclareVar<long>(
                     "endTime",
                     Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))

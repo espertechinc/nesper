@@ -79,9 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                     }
 
                     var list = new List<EventBean>();
-                    while (it.MoveNext()) {
+                    do {
                         list.Add(it.Current);
-                    }
+                    } while (it.MoveNext());
 
                     return list.GetEnumerator();
                 }

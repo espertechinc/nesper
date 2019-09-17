@@ -43,12 +43,14 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public const string VIEWNAME = "Group-By";
 
-        internal readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
+        private readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
 
         private readonly Dictionary<View, Pair<object, object>> groupedEvents =
             new Dictionary<View, Pair<object, object>>();
 
-        internal readonly IDictionary<object, View> subViewPerKey = new Dictionary<object, View>();
+        private readonly IDictionary<object, View> subViewPerKey = new Dictionary<object, View>()
+            .WithNullKeySupport();
+
         private readonly EventBean[] eventsPerStream = new EventBean[1];
 
         /// <summary>

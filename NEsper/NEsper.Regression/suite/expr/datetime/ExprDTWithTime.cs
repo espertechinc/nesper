@@ -33,12 +33,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startTime = "2002-05-30T09:00:00.000";
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-            var fields = new [] { "val0","val1","val2","val3" };
+            var fields = new [] { "val0","val1","val2","val3", "val4" };
             epl = "@Name('s0') select " +
                   "current_timestamp.withTime(varhour, varmin, varsec, varmsec) as val0," +
-                  "DtoDate.withTime(varhour, varmin, varsec, varmsec) as val1," +
-                  "LongDate.withTime(varhour, varmin, varsec, varmsec) as val2," +
-                  "DtxDate.withTime(varhour, varmin, varsec, varmsec) as val3" +
+                  "LongDate.withTime(varhour, varmin, varsec, varmsec) as val1," +
+                  "DateTime.withTime(varhour, varmin, varsec, varmsec) as val2," +
+                  "DateTimeOffset.withTime(varhour, varmin, varsec, varmsec) as val3," +
+                  "DateTimeEx.withTime(varhour, varmin, varsec, varmsec) as val4" +
                   " from SupportDateTime";
             env.CompileDeploy(epl, path).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(
@@ -46,8 +47,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 fields,
                 new[] {
                     typeof(long?),
-                    typeof(DateTimeOffset),
                     typeof(long?),
+                    typeof(DateTime?),
+                    typeof(DateTimeOffset?),
                     typeof(DateTimeEx)
                 });
 
@@ -56,7 +58,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new[] {SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null});
+                new[] {
+                    SupportDateTime.GetValueCoerced(startTime, "long"),
+                    null,
+                    null,
+                    null,
+                    null
+                });
 
             var expectedTime = "2002-05-30T09:00:00.000";
             env.Runtime.VariableService.SetVariableValue(variablesDepId, "varhour", null); // variable is null
@@ -64,7 +72,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util"));
+                new[] {
+                    SupportDateTime.GetValueCoerced(expectedTime, "long"),
+                    null,
+                    null,
+                    null,
+                    null
+                });
 
             expectedTime = "2002-05-30T01:02:03.004";
             env.Runtime.VariableService.SetVariableValue(variablesDepId, "varhour", 1);
@@ -75,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "long", "date", "dto", "dtx"));
 
             expectedTime = "2002-05-30T00:00:00.006";
             env.Runtime.VariableService.SetVariableValue(variablesDepId, "varhour", 0);
@@ -86,15 +100,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "long", "date", "dto", "dtx"));
 
             env.UndeployAll();
         }
 
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            return executions;
+            return new List<RegressionExecution>();
         }
     }
 } // end of namespace

@@ -24,16 +24,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startTime = "2002-05-30T09:00:00.000";
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-            var fields = new [] { "val0","val1","val2","val3" };
+            var fields = new [] { "val0","val1","val2","val3", "val4" };
             var epl = "" +
                       "create variable int varyear;\n" +
                       "create variable int varmonth;\n" +
                       "create variable int varday;\n" +
                       "@Name('s0') select " +
                       "current_timestamp.withDate(varyear, varmonth, varday) as val0," +
-                      "DtoDate.withDate(varyear, varmonth, varday) as val1," +
-                      "LongDate.withDate(varyear, varmonth, varday) as val2," +
-                      "DtxDate.withDate(varyear, varmonth, varday) as val3" +
+                      "LongDate.withDate(varyear, varmonth, varday) as val1," +
+                      "DateTimeEx.withDate(varyear, varmonth, varday) as val2," + 
+                      "DateTimeOffset.withDate(varyear, varmonth, varday) as val3," +
+                      "DateTime.withDate(varyear, varmonth, varday) as val4" +
                       " from SupportDateTime";
             env.CompileDeploy(epl).AddListener("s0");
             var deployId = env.DeploymentId("s0");
@@ -42,9 +43,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 fields,
                 new[] {
                     typeof(long?),
-                    typeof(DateTimeOffset?),
                     typeof(long?),
-                    typeof(DateTimeEx)
+                    typeof(DateTimeEx),
+                    typeof(DateTimeOffset?),
+                    typeof(DateTime?),
                 });
 
             env.SendEventBean(SupportDateTime.Make(null));
@@ -52,7 +54,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new[] {SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null});
+                new[] {
+                    SupportDateTime.GetValueCoerced(startTime, "long"),
+                    null,
+                    null,
+                    null,
+                    null
+                });
 
             var expectedTime = "2004-09-03T09:00:00.000";
             env.Runtime.VariableService.SetVariableValue(deployId, "varyear", 2004);
@@ -62,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "long", "dtx", "dto", "date"));
 
             expectedTime = "2002-09-30T09:00:00.000";
             env.Runtime.VariableService.SetVariableValue(deployId, "varyear", null);
@@ -72,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                SupportDateTime.GetArrayCoerced(expectedTime, "long", "util", "long", "dtx"));
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "long", "dtx", "dto", "date"));
 
             env.UndeployAll();
         }

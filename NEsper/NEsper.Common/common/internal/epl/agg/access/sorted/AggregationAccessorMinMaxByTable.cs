@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
-                        "convertToUnd",
+                        "ConvertToUnd",
                         Ref("@event"),
                         REF_EPS,
                         REF_ISNEWDATA,

@@ -13,6 +13,7 @@ using System.Numerics;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.type
@@ -189,13 +190,14 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
+            coercedType = coercedType.GetBoxedType();
             if (coercedType != typeof(double?) &&
                 coercedType != typeof(float?) &&
                 coercedType != typeof(int?) &&
                 coercedType != typeof(long?) &&
                 coercedType != typeof(string) &&
                 coercedType != typeof(decimal?) &&
-                coercedType != typeof(BigInteger)) {
+                coercedType != typeof(BigInteger?)) {
                 throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
             }
 

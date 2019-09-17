@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(long),
+                typeof(long?),
                 typeof(ExprEvaluatorStreamDTPropFragment),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);

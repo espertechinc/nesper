@@ -24,14 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             return CoerceToMillis((DateTimeOffset) date);
         }
 
-        /// <summary>NOTE: Code-generation-invoked method, method name and parameter order matters</summary>
-        /// <param name="dateTime">The date time.</param>
-        /// <returns>millis</returns>
-        public static long CoerceToMillis(DateTimeOffset dateTime)
-        {
-            return DateTimeOffsetHelper.InMillis(dateTime);
-        }
-
         public CodegenExpression Codegen(
             CodegenExpression value,
             Type valueType,
@@ -41,12 +33,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 throw new IllegalStateException("Expected a DateTimeOffset type");
             }
 
-            CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            return ExprDotMethodChain(value)
-                .Add("atZone", ExprDotMethod(timeZoneField, "ToZoneId"))
-                .Add("toInstant")
-                .Add("toEpochMilli");
+            return StaticMethod(typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", value);
+
+            //CodegenExpression timeZoneField =
+            //    codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            //return ExprDotMethodChain(value)
+            //    .Add("atZone", ExprDotMethod(timeZoneField, "ToZoneId"))
+            //    .Add("toInstant")
+            //    .Add("toEpochMilli");
+        }
+        
+        /// <summary>NOTE: Code-generation-invoked method, method name and parameter order matters</summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns>millis</returns>
+        public static long CoerceToMillis(DateTimeOffset dateTime)
+        {
+            return dateTime.InMillis();
         }
     }
 } // end of namespace

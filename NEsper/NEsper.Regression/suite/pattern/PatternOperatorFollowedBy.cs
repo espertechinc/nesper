@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             var date = format.Parse(dateText);
             log.Debug(".dateToLong out=" + date);
-            return date.TimeInMillis;
+            return date.UtcMillis;
         }
 
         private static SupportCallEvent SendEvent(
@@ -281,8 +281,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@Name('s0') select * from pattern " +
-                                 "[every A=SupportCallEvent -> every B=SupportCallEvent(dest=A.dest, startTime in [A.startTime:A.endTime]) where timer:within (7200000)]" +
-                                 "where B.source != A.source";
+                                 "[every A=SupportCallEvent -> every B=SupportCallEvent(Dest=A.Dest, StartTime in [A.StartTime:A.EndTime]) where timer:within (7200000)]" +
+                                 "where B.Source != A.Source";
                 env.CompileDeploy(expression);
 
                 env.AddListener("s0");
@@ -331,10 +331,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@Name('s0') select 'Tag May Be Broken' as alert, " +
-                                 "tagMayBeBroken.mac, " +
-                                 "tagMayBeBroken.zoneID " +
+                                 "tagMayBeBroken.Mac, " +
+                                 "tagMayBeBroken.ZoneID " +
                                  "from pattern [" +
-                                 "every tagMayBeBroken=SupportRFIDEvent -> (timer:interval(10 sec) and not SupportRFIDEvent(mac=tagMayBeBroken.mac))" +
+                                 "every tagMayBeBroken=SupportRFIDEvent -> (timer:interval(10 sec) and not SupportRFIDEvent(Mac=tagMayBeBroken.Mac))" +
                                  "]";
 
                 env.CompileDeploy(expression);
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // sub-expression again.
                 var expression = "@Name('s0') select * " +
                                  "from pattern [" +
-                                 "every a=SupportRFIDEvent(zoneID='1') -> (b=SupportRFIDEvent(mac=a.mac,zoneID!='1') and not SupportRFIDEvent(mac=a.mac,zoneID='1'))" +
+                                 "every a=SupportRFIDEvent(ZoneID='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID!='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID='1'))" +
                                  "]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // sub-expression again.
                 var expression = "@Name('s0') select * " +
                                  "from pattern [" +
-                                 "every a=SupportRFIDEvent(zoneID!='1') -> (b=SupportRFIDEvent(mac=a.mac,zoneID='1') and not SupportRFIDEvent(mac=a.mac,zoneID=a.zoneID))" +
+                                 "every a=SupportRFIDEvent(ZoneID!='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID=a.ZoneID))" +
                                  "]";
 
                 env.CompileDeploy(expression);

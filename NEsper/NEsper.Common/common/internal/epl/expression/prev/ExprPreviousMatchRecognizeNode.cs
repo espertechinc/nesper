@@ -90,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(EvaluationType, GetType(), classScope);
+            var evaluationType = EvaluationType.GetBoxedType();
+            var method = parent.MakeChild(evaluationType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
 
             var strategy = classScope.NamespaceScope.AddOrGetFieldWellKnown(
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("substituteEvent"))
                 .DeclareVar(
-                    EvaluationType,
+                    evaluationType,
                     "evalResult",
                     LocalMethod(innerEval, eps, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("originalEvent"))

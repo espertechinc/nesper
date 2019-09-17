@@ -45,24 +45,6 @@ namespace com.espertech.esper.regressionlib.suite.view
             return execs;
         }
 
-        internal static void SendEvent(
-            RegressionEnvironment env,
-            string symbol,
-            long volume)
-        {
-            var bean = new SupportMarketDataBean(symbol, 0, volume, "f1");
-            env.SendEventBean(bean);
-        }
-
-        internal static void SendEvent(
-            RegressionEnvironment env,
-            string symbol,
-            long? volume)
-        {
-            var bean = new SupportMarketDataBean(symbol, 0, volume, "f1");
-            env.SendEventBean(bean);
-        }
-
         internal static void AssertSize(
             RegressionEnvironment env,
             long newSize,
@@ -163,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             return values.Get(field.GetName()).AsDouble();
         }
 
-        private static void SendEvent(
+        private static void SendEventWithPrice(
             RegressionEnvironment env,
             string symbol,
             double price)
@@ -201,10 +183,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var epl = "@Name('s0') select irstream size from SupportMarketDataBean#size";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                SendEvent(env, "DELL", 1L);
+                SendEventWithPrice(env, "DELL", price: 1L);
                 AssertSize(env, 1, 0);
 
-                SendEvent(env, "DELL", 1L);
+                SendEventWithPrice(env, "DELL", price: 1L);
                 AssertSize(env, 2, 1);
 
                 env.UndeployAll();
@@ -213,13 +195,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
                 var fields = new [] { "size","Symbol","Feed" };
 
-                SendEvent(env, "DELL", 1L);
+                SendEventWithPrice(env, "DELL", price: 1L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {1L, "DELL", "feed1"});
 
-                SendEvent(env, "DELL", 1L);
+                SendEventWithPrice(env, "DELL", price: 1L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -371,27 +353,27 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("stddev"));
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("stddevpa"));
 
-                SendEvent(env, SYMBOL, 100);
+                SendEventWithPrice(env, SYMBOL, 100);
                 CheckOld(env, true, 0, 0, double.NaN, double.NaN, double.NaN, double.NaN);
                 CheckNew(env, 1, 100, 100, 0, double.NaN, double.NaN);
 
-                SendEvent(env, SYMBOL, 100.5);
+                SendEventWithPrice(env, SYMBOL, 100.5);
                 CheckOld(env, false, 1, 100, 100, 0, double.NaN, double.NaN);
                 CheckNew(env, 2, 200.5, 100.25, 0.25, 0.353553391, 0.125);
 
-                SendEvent(env, "DUMMY", 100.5);
+                SendEventWithPrice(env, "DUMMY", 100.5);
                 Assert.IsTrue(env.Listener("s0").LastNewData == null);
                 Assert.IsTrue(env.Listener("s0").LastOldData == null);
 
-                SendEvent(env, SYMBOL, 100.7);
+                SendEventWithPrice(env, SYMBOL, 100.7);
                 CheckOld(env, false, 2, 200.5, 100.25, 0.25, 0.353553391, 0.125);
                 CheckNew(env, 3, 301.2, 100.4, 0.294392029, 0.360555128, 0.13);
 
-                SendEvent(env, SYMBOL, 100.6);
+                SendEventWithPrice(env, SYMBOL, 100.6);
                 CheckOld(env, false, 3, 301.2, 100.4, 0.294392029, 0.360555128, 0.13);
                 CheckNew(env, 3, 301.8, 100.6, 0.081649658, 0.1, 0.01);
 
-                SendEvent(env, SYMBOL, 100.9);
+                SendEventWithPrice(env, SYMBOL, 100.9);
                 CheckOld(env, false, 3, 301.8, 100.6, 0.081649658, 0.1, 0.01);
                 CheckNew(env, 3, 302.2, 100.733333333, 0.124721913, 0.152752523, 0.023333333);
                 env.UndeployAll();

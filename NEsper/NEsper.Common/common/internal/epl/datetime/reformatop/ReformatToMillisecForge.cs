@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotName(inner, "TimeInMillis");
+            return ExprDotName(inner, "UtcMillis");
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -53,9 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            return StaticMethod(typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", inner, timeZoneField);
+            return StaticMethod(typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", inner);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -64,7 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", inner);
+            CodegenExpression timeZoneField = codegenClassScope.AddOrGetFieldSharable(
+                RuntimeSettingsTimeZoneField.INSTANCE);
+            return StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", inner, timeZoneField);
         }
 
         public Type ReturnType => typeof(long?);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return dateTimeEx.TimeInMillis;
+            return dateTimeEx.UtcMillis;
         }
 
         public object Evaluate(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotName(inner, "Time");
+            return ExprDotMethod(inner, "UtcMillis");
         }
     }
 } // end of namespace

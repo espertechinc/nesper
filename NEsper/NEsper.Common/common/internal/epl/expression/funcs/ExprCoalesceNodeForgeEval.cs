@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var num = 0;
             var doneWithReturn = false;
             foreach (var node in forge.ForgeRenderable.ChildNodes) {
-                var reftype = node.Forge.EvaluationType;
+                var reftype = node.Forge.EvaluationType.GetBoxedType();
                 if (reftype != null) {
                     var refname = "r" + num;
                     block.DeclareVar(

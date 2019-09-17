@@ -98,8 +98,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             DateTimeFieldEnum field)
         {
             var fieldExpr = EnumValue(field);
-            var valueRange = ExprDotMethod(val, "range", fieldExpr);
-            return ExprDotMethod(val, "with", fieldExpr, ExprDotMethod(valueRange, max ? "GetMaximum" : "GetMinimum"));
+            var valueRange = ExprDotMethod(val, "Range", fieldExpr);
+            return ExprDotMethod(val, "With", fieldExpr, GetProperty(valueRange, max ? "Maximum" : "Minimum"));
         }
     }
 } // end of namespace

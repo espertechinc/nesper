@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
         public static DateTime MakeDateTime()
         {
-            return new DateTime();
+            return DateTimeHelper.GetCurrentTimeUniversal();
         }
 
         public static SupportBean MakeSupportBean()
@@ -66,9 +67,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                     env,
                     "insert into MyEvent(isodate) select dto from SupportEventWithDateTime",
                     "Invalid assignment of column 'isodate' of type '" +
-                    TypeHelper.GetCleanName<DateTimeOffset>() +
+                    TypeHelper.CleanName<DateTimeOffset>() +
                     "' to event property 'isodate' typed as '" +
-                    TypeHelper.GetCleanName<char[]>() +
+                    TypeHelper.CleanName<char[]>() +
                     "', column and parameter types mismatch");
 
                 // with hook
@@ -76,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                         "@Name('s0') insert into MyEvent(isodate) select ldt from SupportEventWithDateTimeOffset")
                     .AddListener("s0");
 
-                var now = new DateTime();
+                var now = DateTimeHelper.GetCurrentTimeUniversal();
                 env.SendEventBean(new SupportEventWithDateTimeOffset(now));
                 Assert.AreEqual(
                     DateTimeFormat.ISO_DATE_TIME.Format(now),

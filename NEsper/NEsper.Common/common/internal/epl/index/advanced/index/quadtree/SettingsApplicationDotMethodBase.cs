@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {

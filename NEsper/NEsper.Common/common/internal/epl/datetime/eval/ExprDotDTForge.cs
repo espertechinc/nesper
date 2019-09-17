@@ -89,18 +89,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(
-                    ((ClassEPType) TypeInfo).Clazz,
-                    typeof(ExprDotDTForge),
-                    codegenClassScope)
+            var returnType = ((ClassEPType) TypeInfo).Clazz.GetBoxedType();
+            var methodNode = codegenMethodScope
+                .MakeChild(returnType, typeof(ExprDotDTForge), codegenClassScope)
                 .AddParam(innerType, "target");
+
+            CodegenExpression targetValue = Ref("target");
 
             var block = methodNode.Block;
             if (!innerType.IsPrimitive) {
                 block.IfRefNullReturnNull("target");
             }
 
-            block.MethodReturn(forge.Codegen(Ref("target"), innerType, methodNode, exprSymbol, codegenClassScope));
+            if (innerType.IsNullable()) {
+                targetValue = ExprDotName(targetValue, "Value");
+            }
+
+            block.MethodReturn(forge.Codegen(
+                targetValue, innerType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
 
@@ -151,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             return new DTLocalDateTimeReformatForge(reformatForge);
                         }
 
-                        return new DTLocalDateTimeOpsReformatForge(calendarForges, reformatForge);
+                        return new DTLocalCalOpsReformatForge(calendarForges, reformatForge);
                     }
                 }
                 else if (intervalForge != null) {
@@ -184,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             return new DTLocalDateTimeIntervalForge(intervalForge);
                         }
 
-                        return new DTLocalDateTimeOpsIntervalForge(calendarForges, intervalForge);
+                        return new DTLocalCalOpsIntervalForge(calendarForges, intervalForge);
                     }
                 }
                 else { // only calendar op, nothing else

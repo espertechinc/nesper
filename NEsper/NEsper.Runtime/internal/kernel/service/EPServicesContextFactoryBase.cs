@@ -100,7 +100,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var runtimeSettingsService = MakeRuntimeSettingsService(configs);
 
             var timeAbacus = TimeAbacusFactory.Make(configs.Common.TimeSource.TimeUnit);
-            var timeZone = configs.Runtime.Expression.TimeZone == null ? TimeZoneInfo.Local : configs.Runtime.Expression.TimeZone;
+            var timeZone = configs.Runtime.Expression.TimeZone ?? TimeZoneInfo.Utc;
             var importServiceRuntime = new ImportServiceRuntime(
                 container,
                 configs.Common.TransientConfiguration, timeAbacus,
