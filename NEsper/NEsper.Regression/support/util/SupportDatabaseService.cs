@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.support.util
             get {
                 var properties = new Properties();
                 properties["Server"] = DBHOST;
-                properties["UId"] = DBUSER;
+                properties["Uid"] = DBUSER;
                 properties["Pwd"] = DBPWD;
                 properties["Database"] = DBNAME;
 

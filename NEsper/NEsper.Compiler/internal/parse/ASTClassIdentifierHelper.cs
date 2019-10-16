@@ -31,8 +31,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return new ClassIdentifierWArray(name);
             }
 
-            EsperEPL2GrammarParser.DimensionsContext first = dimensions[0];
-            string keyword = first.IDENT() != null ? first.IDENT().ToString().Trim().ToLowerInvariant() : null;
+            var first = dimensions[0].IDENT();
+            var keyword = first?.ToString().Trim().ToLowerInvariant();
             if (keyword != null && !keyword.Equals(ClassIdentifierWArray.PRIMITIVE_KEYWORD))
             {
                 throw ASTWalkException.From("Invalid array keyword '" + keyword + "', expected '" + ClassIdentifierWArray.PRIMITIVE_KEYWORD + "'");

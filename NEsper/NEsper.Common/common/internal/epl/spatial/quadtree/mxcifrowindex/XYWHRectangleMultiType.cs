@@ -79,9 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             if (Multityped is Collection collection) {
                 result.AddAll(collection);
             }
-
-            result.Add(Multityped);
-            return;
+            else {
+                result.Add(Multityped);
+            }
         }
 
         public bool Remove(object value)
@@ -106,18 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
         public override string ToString()
         {
-            return "XYWHRectangleMultiType{" +
-                   "x=" +
-                   X +
-                   ", y=" +
-                   Y +
-                   ", w=" +
-                   W +
-                   ", h=" +
-                   H +
-                   ", multityped=" +
-                   Multityped +
-                   '}';
+            return $"XYWHRectangleMultiType{{X={X}, Y={Y}, W={W}, H={H}, Multityped={Multityped}}}";
         }
     }
 } // end of namespace

@@ -15,14 +15,10 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AnnotationEventRepresentation : EventRepresentationAttribute
     {
-        private readonly EventUnderlyingType _value;
-
         public AnnotationEventRepresentation(EventUnderlyingType value)
         {
-            _value = value;
+            base.Value = value;
         }
-
-        public override EventUnderlyingType Value => _value;
 
         public Type AnnotationType()
         {

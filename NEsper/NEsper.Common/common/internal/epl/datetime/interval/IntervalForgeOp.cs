@@ -69,15 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 block.IfRefNullReturnNull("parameter");
             }
 
-            CodegenExpression derefParameter = Ref("parameter");
-            if (evaluationType.IsNullable()) {
-                derefParameter = ExprDotName(derefParameter, "Value");
-            }
+            CodegenExpression derefParameter = Unbox(Ref("parameter"), evaluationType);
 
             block.MethodReturn(
                 forge.IntervalOpForge.Codegen(
-                    ExprDotName(Ref("startTs"), "Value"),
-                    ExprDotName(Ref("endTs"), "Value"),
+                    Unbox<long?>(Ref("startTs")),
+                    Unbox<long?>(Ref("endTs")),
                     derefParameter,
                     forge.ForgeTimestamp.EvaluationType,
                     methodNode,

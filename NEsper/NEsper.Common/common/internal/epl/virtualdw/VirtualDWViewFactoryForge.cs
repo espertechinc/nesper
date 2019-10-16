@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
             var managed = (VirtualDataWindowFactoryModeManaged) mode;
             var injectionStrategy = (InjectionStrategyClassNewInstance) managed.InjectionStrategyFactoryFactory;
-            var factoryField = classScope.AddFieldUnshared(
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VirtualDataWindowFactoryFactory),
                 injectionStrategy.GetInitializationExpression(classScope));

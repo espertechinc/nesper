@@ -9,6 +9,7 @@
 using System;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.runtime.client.util
 {
@@ -31,10 +32,10 @@ namespace com.espertech.esper.runtime.client.util
             _timespan = TimeUnitHelper.ToTimeSpan(timeout, unit);
         }
 
-        public IDisposable Acquire(ManagedReadWriteLock runtimeWideLock)
+        public IDisposable Acquire(IReaderWriterLock runtimeWideLock)
         {
             try {
-                _lockDisposable = runtimeWideLock.Lock.WriteLock.Acquire((long) _timespan.TotalMilliseconds);
+                _lockDisposable = runtimeWideLock.WriteLock.Acquire((long) _timespan.TotalMilliseconds);
                 return _lockDisposable;
             } catch (TimeoutException) { 
                 throw new LockStrategyException("Failed to obtain write lock of runtime-wide processing read-write lock");
@@ -42,7 +43,7 @@ namespace com.espertech.esper.runtime.client.util
         }
 
 #if false
-        public void Release(ManagedReadWriteLock runtimeWideLock)
+        public void Release(IReaderWriterLock runtimeWideLock)
         {
             _lockDisposable?.Dispose();
             //runtimeWideLock.Lock.WriteLock.Release();

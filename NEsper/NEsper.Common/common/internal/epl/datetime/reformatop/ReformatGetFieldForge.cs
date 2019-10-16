@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var methodNode = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatGetFieldForge), codegenClassScope)
                 .AddParam(typeof(long), "ts");
             var timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dateTime", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dateTime"), methodNode, codegenClassScope))

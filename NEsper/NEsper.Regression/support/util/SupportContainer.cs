@@ -9,8 +9,12 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
+using com.espertech.esper.epl.db.drivers;
+
+using Npgsql;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -38,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.util
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-                var container = ContainerExtensions.CreateDefaultContainer(false);
+            var container = ContainerExtensions.CreateDefaultContainer(false);
             container.Register<IResourceManager>(
                 xx => new DefaultResourceManager(
                     true,
@@ -46,6 +50,19 @@ namespace com.espertech.esper.regressionlib.support.util
                     Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "etc")),
                     Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "..", "etc"))),
                 Lifespan.Singleton);
+
+            // --------------------------------------------------------------------------------
+
+            var dbProviderFactoryManager = new DbProviderFactoryManagerCustom();
+            dbProviderFactoryManager.AddProvider("pgsql", NpgsqlFactory.Instance);
+
+            container.Register<DbProviderFactoryManager>(
+                xx => dbProviderFactoryManager,
+                Lifespan.Singleton);
+
+            // --------------------------------------------------------------------------------
+
+            container.Register(new DbDriverPgSQL(dbProviderFactoryManager), Lifespan.Singleton);
 
             //SupportEventTypeFactory.RegisterSingleton(container);
             //SupportExprNodeFactory.RegisterSingleton(container);

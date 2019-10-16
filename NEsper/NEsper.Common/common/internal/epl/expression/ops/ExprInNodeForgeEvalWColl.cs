@@ -196,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                if (TypeHelper.IsImplementsInterface(reftype, typeof(ICollection<object>))) {
+                if (reftype.IsGenericCollection()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         if (!leftTypeUncoerced.IsPrimitive) {
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }
-                else if (TypeHelper.IsImplementsInterface(reftype, typeof(IDictionary<object, object>))) {
+                else if (reftype.IsGenericDictionary()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         if (!leftTypeUncoerced.IsPrimitive) {

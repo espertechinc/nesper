@@ -801,7 +801,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             try {
                 return (VirtualDataWindow) env.Runtime.Context.Lookup(name);
             }
-            catch (NamingException e) {
+            catch (NamingException) {
                 throw new EPException("Name '" + name + "' could not be looked up");
             }
         }

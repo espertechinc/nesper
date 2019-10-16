@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BeanEventPropertyWriter[] writers;
+        private readonly BeanEventPropertyWriter[] _writers;
 
         /// <summary>
         ///     Writes to use.
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="writers">writers</param>
         public BeanEventBeanWriter(BeanEventPropertyWriter[] writers)
         {
-            this.writers = writers;
+            this._writers = writers;
         }
 
         public void Write(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBean theEvent)
         {
             for (var i = 0; i < values.Length; i++) {
-                writers[i].Write(values[i], theEvent);
+                _writers[i].Write(values[i], theEvent);
             }
         }
     }

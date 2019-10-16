@@ -17,6 +17,11 @@ namespace com.espertech.esper.compat.collections
 
     public static class Arrays
     {
+        public static int GetLength(Array array)
+        {
+            return array.Length;
+        }
+
         /// <summary>
         /// Compares two arrays for equality
         /// </summary>
@@ -47,6 +52,11 @@ namespace com.espertech.esper.compat.collections
             }
 
             return true;
+        }
+
+        public static IEnumerator<T> GetEnumerator<T>(T[] array)
+        {
+            return Enumerate(array).GetEnumerator();
         }
 
         public static IEnumerable<T> Enumerate<T>(T[] array)

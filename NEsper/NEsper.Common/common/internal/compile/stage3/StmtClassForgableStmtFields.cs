@@ -44,6 +44,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
 
+            // Add a reference to "self"
+            members.Add(new CodegenTypedParam(_className, null, "statementFields", false, false));
+
             GenerateNamedMembers(members);
 
             // numbered members
@@ -51,16 +54,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 var field = entry.Key;
                 members.Add(
                     new CodegenTypedParam(field.Type, field.Name)
-                        .WithStatic(true)
+                        .WithStatic(false)
                         .WithFinal(false));
             }
 
             // substitution-parameter members
             GenerateSubstitutionParamMembers(members);
 
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
+
             // ctor
             var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
+            ctor.Block.AssignRef(Ref("statementFields"), Ref("this"));
 
             //_namespaceScope
             var initMethod = _namespaceScope.InitMethod;
@@ -72,10 +77,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenMethod assignMethod = CodegenMethod
                 .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
-                .WithStatic(true);
+                .WithStatic(false);
             CodegenMethod unassignMethod = CodegenMethod
                 .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .WithStatic(true);
+                .WithStatic(false);
             GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
 
             // build methods
@@ -85,7 +90,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
-
 
             return new CodegenClass(
                 typeof(StatementFields),
@@ -126,14 +130,16 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             for (var i = 0; i < fields.Count; i++) {
                 string name = fields[i].Field.Name;
-                members.Add(new CodegenTypedParam(fields[i].Type, name).WithStatic(true).WithFinal(true));
+                members.Add(new CodegenTypedParam(fields[i].Type, name).WithStatic(false).WithFinal(true));
             }
         }
 
         private void GenerateNamedMembers(IList<CodegenTypedParam> fields)
         {
             foreach (KeyValuePair<CodegenFieldName, CodegenField> entry in _namespaceScope.FieldsNamed) {
-                fields.Add(new CodegenTypedParam(entry.Value.Type, entry.Key.Name).WithFinal(false).WithStatic(true));
+                fields.Add(new CodegenTypedParam(entry.Value.Type, entry.Key.Name)
+                    .WithFinal(false)
+                    .WithStatic(false));
             }
         }
 
@@ -284,7 +290,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //    .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             //assignerSetterClass.AddMethod("Assign", assignMethod);
 
-            assignMethod.Block.StaticMethod(packageScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
+            assignMethod.Block.ExprDotMethod(Ref("statementFields"), "Assign", @Ref("assignments"));
+            //assignMethod.Block.StaticMethod(packageScope.FieldsClassName, "Assign", Ref("assignments"));
 
             var setValueMethod = new CodegenExpressionLambda(enclosingBlock)
                 .WithParam(typeof(int), "index")
@@ -297,7 +304,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
             enclosingBlock.ReturnMethodOrBlock(assignerSetterClass);
 
-            CodegenSubstitutionParamEntry.CodegenSetterBody(classScope, setValueMethod.Block);
+            CodegenSubstitutionParamEntry.CodegenSetterBody(
+                classScope, setValueMethod.Block, Ref("statementFields"));
         }
 
         private static void Generate(

@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionrun.suite.view
     [TestFixture]
     public class TestSuiteViewWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewGroupMicroseconds()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeMicrosecondsWinFlipTime()
         {
             List<RegressionExecution> execs = new List<RegressionExecution>();
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeBatchWSystemTime()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeWinWSystemTime()
         {
             RegressionSession session = RegressionRunner.Session();

@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
             }
-            catch (EPUndeployException ex) {
+            catch (EPUndeployException) {
                 Assert.Fail();
             }
         }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 catch (EPUndeployNotFoundException ex) {
                     SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment id 'nofound' cannot be found");
                 }
-                catch (EPUndeployException t) {
+                catch (EPUndeployException) {
                     Assert.Fail();
                 }
             }

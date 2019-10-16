@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression mCache = codegenClassScope.AddFieldUnshared<IDictionary<Type, MethodInfo>>(
+            CodegenExpression mCache = codegenClassScope.AddDefaultFieldUnshared<IDictionary<Type, MethodInfo>>(
                 true,
                 NewInstance(typeof(Dictionary<Type, MethodInfo>)));
             var methodNode = codegenMethodScope

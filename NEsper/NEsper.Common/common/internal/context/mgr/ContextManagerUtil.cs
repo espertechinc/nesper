@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             StatementContext statementContext,
             int agentInstanceId)
         {
-            var holder =
-                statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
+            var holder = statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
             return new AgentInstance(holder.AgentInstanceStopCallback, holder.AgentInstanceContext, holder.FinalView);
         }
 

@@ -35,6 +35,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.container;
 
@@ -51,6 +52,8 @@ namespace com.espertech.esper.common.@internal.context.module
         string DeploymentId { get; }
 
         string RuntimeURI { get; }
+
+        IObjectCopier ObjectCopier { get; }
 
         AggregationServiceFactoryService AggregationServiceFactoryService { get; }
 

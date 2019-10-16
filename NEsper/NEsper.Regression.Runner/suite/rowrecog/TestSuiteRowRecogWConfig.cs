@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
     [TestFixture]
     public class TestSuiteRowRecogWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRowRecogIntervalMicrosecondResolution()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWideNoPreventStart()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWide3Instance()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRowRecogMaxStatesEngineWide4Instance()
         {
             RegressionSession session = RegressionRunner.Session();

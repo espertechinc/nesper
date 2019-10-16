@@ -85,10 +85,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     var s0Type = "S0_" + rep.GetUndName();
                     var s1Type = "S1_" + rep.GetUndName();
                     var eplOne = "select S0.Id as S0_Id, S1.Id as S1_Id, S0.P00 as S0_P00, S1.P00 as S1_P00 from " +
-                                 s0Type +
-                                 "#keepall as S0, " +
-                                 s1Type +
-                                 "#keepall as S1 where S0.Id = S1.Id";
+                                 s0Type + "#keepall as S0, " +
+                                 s1Type + "#keepall as S1 " +
+                                 " where S0.Id = S1.Id";
                     TryJoinAssertion(env, eplOne, rep, "S0_Id,S1_Id,S0_P00,S1_P00", milestone);
                 }
 
@@ -96,10 +95,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     var s0Type = "S0_" + rep.GetUndName();
                     var s1Type = "S1_" + rep.GetUndName();
                     var eplTwo = "select * from " +
-                                 s0Type +
-                                 "#keepall as S0, " +
-                                 s1Type +
-                                 "#keepall as S1 where S0.Id = S1.Id";
+                                 s0Type + "#keepall as S0, " +
+                                 s1Type + "#keepall as S1 " +
+                                 " where S0.Id = S1.Id";
                     TryJoinAssertion(env, eplTwo, rep, "S0.Id,S1.Id,S0.P00,S1.P00", milestone);
                 }
             }

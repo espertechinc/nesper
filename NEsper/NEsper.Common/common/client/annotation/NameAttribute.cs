@@ -49,6 +49,11 @@ namespace com.espertech.esper.common.client.annotation
             return Equals((NameAttribute) obj);
         }
 
+        public override string ToString()
+        {
+            return string.Format("@Name(\"{0}\")", Value);
+        }
+
         public override int GetHashCode()
         {
             unchecked {

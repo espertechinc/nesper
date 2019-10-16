@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 Assert.AreEqual("MyObjectArrayEvent", type.Metadata.Name);
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new object[] {
+                    new EventPropertyDescriptor[] {
                         new EventPropertyDescriptor("MyInt", typeof(int?), null, false, false, false, false, false),
                         new EventPropertyDescriptor(
                             "MyString",

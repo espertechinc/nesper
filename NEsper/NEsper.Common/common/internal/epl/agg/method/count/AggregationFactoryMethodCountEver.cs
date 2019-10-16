@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             this.ignoreNulls = ignoreNulls;
         }
 
-        public override Type ResultType => typeof(long);
+        public override Type ResultType => typeof(long?);
 
         public override ExprAggregateNodeBase AggregationExpression => parent;
 

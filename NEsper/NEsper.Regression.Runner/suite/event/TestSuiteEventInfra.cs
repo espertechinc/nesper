@@ -786,43 +786,43 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 new ConfigurationCommonEventTypeAvro(eventInfraEventRenderSchema));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraEventRenderer()
         {
             RegressionRunner.Run(session, new EventInfraEventRenderer());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraEventSender()
         {
             RegressionRunner.Run(session, new EventInfraEventSender());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyAccessPerformance()
         {
             RegressionRunner.Run(session, new EventInfraPropertyAccessPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyDynamicNonSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNonSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyDynamicSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyIndexedKeyExpr()
         {
             RegressionRunner.Run(session, new EventInfraPropertyIndexedKeyExpr());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyMappedIndexed()
         {
             RegressionRunner.Run(session, new EventInfraPropertyMappedIndexed());
@@ -864,13 +864,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyNestedSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyUnderlyingSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyUnderlyingSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraSuperType()
         {
             RegressionRunner.Run(session, new EventInfraSuperType());

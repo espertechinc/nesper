@@ -70,6 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return StaticMethod(
                 GetType(),
                 "DynamicSimplePropertyDetermineMethod",
+                Constant(_propertyName),
                 Constant(_getterMethodName),
                 Constant(_isMethodName),
                 clazz);

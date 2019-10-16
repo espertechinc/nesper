@@ -46,12 +46,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env,
                     path,
                     "create index MyIndex on MyWindow((Id, Py) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for column 0 that is providing X-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Id) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for column 1 that is providing Y-values expecting type System.Object but received type System.String");
 
                 // invalid expressions for column or parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -94,59 +94,59 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree('a', 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 0 that is providing XMin-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 'a', 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 1 that is providing YMin-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 'a', 100))",
-                    "Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 2 that is providing Width-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type System.Object but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 3 that is providing Height-values expecting type System.Object but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type System.Int32 but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 4 that is providing LeafCapacity-values expecting type System.Nullable<System.Int32> but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type System.Int32 but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 5 that is providing MaxTreeHeight-values expecting type System.Nullable<System.Int32> but received type System.String");
 
                 // invalid parameter value
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Px, Py) pointregionquadtree(cast(null, double), 0, 0, 0))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'xMin' received null and expected non-null");
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'XMin' received null and expected non-null");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, -100, 0))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'width' received -100.0 and expected Value>0");
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'Width' received -100.0 and expected Value>0");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, -200))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'height' received -200.0 and expected Value>0");
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'Height' received -200.0 and expected Value>0");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, 1, -1))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'leafCapacity' received -1 and expected Value>=1");
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'LeafCapacity' received -1 and expected Value>=1");
                 SupportMessageAssertUtil.TryInvalidDeploy(
                     env,
                     path,
                     "create index MyIndex on MyWindow((Py, Px) pointregionquadtree(0, 0, 1, 1, 10, -1))",
-                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'maxTreeHeight' received -1 and expected Value>=2");
+                    "Failed to deploy: Invalid value for index 'MyIndex' parameter 'MaxTreeHeight' received -1 and expected Value>=2");
 
                 // same index twice, by-name and by-columns
                 env.CompileDeploy("create window SomeWindow#keepall as SupportSpatialPoint", path);

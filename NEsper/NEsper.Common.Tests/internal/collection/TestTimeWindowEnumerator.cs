@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.collection
         public void TestEmpty()
         {
             var testWindow = new ArrayDeque<TimeWindowPair>();
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
-            EPAssertionUtil.AssertEqualsExactOrder(null, it);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
+            EPAssertionUtil.AssertEqualsExactOrder(null, enumerator);
         }
 
         [Test]
@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.collection
             var list1 = new ArrayDeque<EventBean>();
             AddToWindow(testWindow, 10L, list1);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, it);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
         [Test]
@@ -77,10 +77,10 @@ namespace com.espertech.esper.common.@internal.collection
             list4.Add(events.Get("e"));
             AddToWindow(testWindow, 40L, list4);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("a"), events.Get("c"), events.Get("d"), events.Get("e")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -99,10 +99,10 @@ namespace com.espertech.esper.common.@internal.collection
             var list3 = new ArrayDeque<EventBean>();
             AddToWindow(testWindow, 20L, list3);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("c"), events.Get("d")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -125,10 +125,10 @@ namespace com.espertech.esper.common.@internal.collection
             var list4 = new ArrayDeque<EventBean>();
             AddToWindow(testWindow, 40L, list4);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("a"), events.Get("c"), events.Get("d")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -148,13 +148,13 @@ namespace com.espertech.esper.common.@internal.collection
             list3.Add(events.Get("g"));
             AddToWindow(testWindow, 20L, list3);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(
                 new object[] {
                     events.Get("a"), events.Get("c"), events.Get("d"),
                     events.Get("e"), events.Get("f"), events.Get("g")
                 },
-                it);
+                enumerator);
         }
 
         [Test]
@@ -175,10 +175,10 @@ namespace com.espertech.esper.common.@internal.collection
             list3.Add(events.Get("e"));
             AddToWindow(testWindow, 40L, list3);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("c"), events.Get("d"), events.Get("a"), events.Get("e")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -189,10 +189,10 @@ namespace com.espertech.esper.common.@internal.collection
             list.Add(events.Get("a"));
             AddToWindow(testWindow, 10L, list);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("a")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -207,8 +207,8 @@ namespace com.espertech.esper.common.@internal.collection
             var list3 = new ArrayDeque<EventBean>();
             AddToWindow(testWindow, 30L, list3);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, it);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
         [Test]
@@ -224,10 +224,10 @@ namespace com.espertech.esper.common.@internal.collection
             list2.Add(events.Get("d"));
             AddToWindow(testWindow, 15L, list2);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("a"), events.Get("b"), events.Get("c"), events.Get("d")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -240,8 +240,8 @@ namespace com.espertech.esper.common.@internal.collection
             var list2 = new ArrayDeque<EventBean>();
             AddToWindow(testWindow, 20L, list2);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, it);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
+            EPAssertionUtil.AssertEqualsExactOrder((object[]) null, enumerator);
         }
 
         [Test]
@@ -253,10 +253,10 @@ namespace com.espertech.esper.common.@internal.collection
             list.Add(events.Get("b"));
             AddToWindow(testWindow, 10L, list);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new[] {
                 events.Get("a"), events.Get("b")
-            }, it);
+            }, enumerator);
         }
 
         [Test]
@@ -270,10 +270,10 @@ namespace com.espertech.esper.common.@internal.collection
             list1.Add(events.Get("a"));
             AddToWindow(testWindow, 10L, list1);
 
-            IEnumerator<EventBean> it = new TimeWindowEnumerator(testWindow);
+            IEnumerator<EventBean> enumerator = new TimeWindowEnumerator(testWindow);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {
                 events.Get("b"), events.Get("a")
-            }, it);
+            }, enumerator);
         }
     }
 } // end of namespace

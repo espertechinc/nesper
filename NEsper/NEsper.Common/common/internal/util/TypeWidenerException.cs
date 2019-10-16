@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.util
 {
+    [Serializable]
     public class TypeWidenerException : Exception
     {
         public TypeWidenerException(string message)
@@ -21,6 +23,12 @@ namespace com.espertech.esper.common.@internal.util
             string message,
             Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected TypeWidenerException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

@@ -199,8 +199,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));

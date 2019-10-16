@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 
             var injectionStrategy =
                 (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationFunctionFactory;
-            var factoryField = classScope.AddFieldUnshared<AggregationFunctionFactory>(
+            var factoryField = classScope.AddDefaultFieldUnshared<AggregationFunctionFactory>(
                 true,
                 injectionStrategy.GetInitializationExpression(classScope));
 

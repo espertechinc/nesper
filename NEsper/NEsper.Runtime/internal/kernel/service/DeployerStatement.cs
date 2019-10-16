@@ -64,8 +64,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 };
 
                 // assign
-                StatementAIFactoryAssignments assignments = new StatementAIFactoryAssignmentsImpl(result.OptionalAggegationService, result.PriorStrategies,
-                        result.PreviousGetterStrategies, result.SubselectStrategies, result.TableAccessStrategies, result.RowRecogPreviousStrategy);
+                StatementAIFactoryAssignments assignments = new StatementAIFactoryAssignmentsImpl(
+                    result.OptionalAggegationService,
+                    result.PriorStrategies,
+                    result.PreviousGetterStrategies,
+                    result.SubselectStrategies,
+                    result.TableAccessStrategies,
+                    result.RowRecogPreviousStrategy);
                 lightweight.StatementContext.StatementAIFactoryProvider.Assign(assignments);
             }
             else

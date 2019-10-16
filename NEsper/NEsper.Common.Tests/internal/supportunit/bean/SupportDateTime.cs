@@ -118,10 +118,11 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
                     .DateTime;
             }
 
-            if (format.Equals("sdf", StringComparison.InvariantCultureIgnoreCase))
+            if (format.Equals("str", StringComparison.InvariantCultureIgnoreCase) ||
+                format.Equals("iso", StringComparison.InvariantCultureIgnoreCase))
             {
                 var dtx = DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec);
-                var sdf = new SimpleDateFormat();
+                var sdf = DateTimeFormat.ISO_DATE_TIME;
                 return sdf.Format(dtx);
             }
 

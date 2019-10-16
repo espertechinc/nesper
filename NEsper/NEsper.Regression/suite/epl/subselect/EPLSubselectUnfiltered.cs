@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -225,7 +226,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S3#length(1000)) as IdS3, (select Id from SupportBean_S4#length(1000)) as IdS4 from SupportBean_S0#keepall as S0, SupportBean_S1#keepall as S1 where S0.Id = S1.Id";
+                    "@Name('s0') select" +
+                    " (select Id from SupportBean_S3#length(1000)) as idS3," +
+                    " (select Id from SupportBean_S4#length(1000)) as idS4 from " +
+                    " SupportBean_S0#keepall as S0," +
+                    " SupportBean_S1#keepall as S1 " +
+                    " where S0.Id = S1.Id";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -330,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype '" + typeof(SupportBean_S1).CleanName() + "' to '" + typeof(int?).CleanName() + "' is not allowed [select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
             }
         }
 
@@ -576,8 +582,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select Id+1 as myId from SupportBean_S1#lastevent) as IdS1_0, " +
-                               "(select Id+2 as myId from SupportBean_S1#lastevent) as IdS1_1 from SupportBean_S0";
+                var stmtText = "@Name('s0') select (select Id+1 as myId from SupportBean_S1#lastevent) as idS1_0, " +
+                               "(select Id+2 as myId from SupportBean_S1#lastevent) as idS1_1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

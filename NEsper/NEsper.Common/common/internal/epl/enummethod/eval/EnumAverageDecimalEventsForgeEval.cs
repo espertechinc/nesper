@@ -72,11 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var innerType = forge.innerExpression.EvaluationType;
 
             CodegenExpression math =
-                codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(forge.optionalMathContext));
+                codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(forge.optionalMathContext));
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(decimal),
+                    typeof(decimal?),
                     typeof(EnumAverageDecimalEventsForgeEval),
                     scope,
                     codegenClassScope)
@@ -114,8 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 _optionalMathContext = optionalMathContext;
             }
 
-            public decimal Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum) ??
-                                    throw new IllegalStateException();
+            public decimal? Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum);
 
             public void Enter(object @object)
             {

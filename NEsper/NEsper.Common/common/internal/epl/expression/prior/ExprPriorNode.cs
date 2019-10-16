@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 
@@ -71,9 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             var eps = exprSymbol.GetAddEPS(method);
 
             // see ExprPriorEvalStrategyBase
-            CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
+            CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 priorStrategyFieldName,
                 typeof(PriorEvalStrategy));
+
             method.Block
                 .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                 .DeclareVar<EventBean>(

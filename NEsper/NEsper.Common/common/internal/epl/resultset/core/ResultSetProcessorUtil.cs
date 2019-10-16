@@ -80,12 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 typeof(bool),
                 "EvaluateHavingClause",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    NAME_EPS,
-                    typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA,
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(EventBean[]), NAME_EPS,
+                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1322,24 +1319,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Viewable parent)
         {
             aggregationService.ClearResults(exprEvaluatorContext);
-            var it = parent.GetEnumerator();
-            var eventsPerStream = new EventBean[1];
-            while (it.MoveNext()) {
-                eventsPerStream[0] = it.Current;
-                aggregationService.ApplyEnter(eventsPerStream, null, exprEvaluatorContext);
+            using (var enumerator = parent.GetEnumerator()) {
+                var eventsPerStream = new EventBean[1];
+                while (enumerator.MoveNext()) {
+                    eventsPerStream[0] = enumerator.Current;
+                    aggregationService.ApplyEnter(eventsPerStream, null, exprEvaluatorContext);
+                }
             }
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="it">iterator</param>
+        /// <param name="enumerator">iterator</param>
         /// <returns>deque</returns>
-        public static ArrayDeque<EventBean> IteratorToDeque(IEnumerator<EventBean> it)
+        public static ArrayDeque<EventBean> IteratorToDeque(IEnumerator<EventBean> enumerator)
         {
             var deque = new ArrayDeque<EventBean>();
-            while (it.MoveNext()) {
-                deque.Add(it.Current);
+            while (enumerator.MoveNext()) {
+                deque.Add(enumerator.Current);
             }
 
             return deque;

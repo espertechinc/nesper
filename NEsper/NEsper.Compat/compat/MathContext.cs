@@ -88,9 +88,33 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
+        public decimal? Apply(decimal? value)
+        {
+            if (value == null)
+                return null;
+            return Apply(value.Value);
+        }
+
+        /// <summary>
+        /// Applies the math context.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
         public double Apply(double value)
         {
             return Math.Round(value, RoundingMode);
+        }
+
+        /// <summary>
+        /// Applies the math context.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public double? Apply(double? value)
+        {
+            if (value == null)
+                return null;
+            return Apply(value.Value);
         }
 
         /// <summary>

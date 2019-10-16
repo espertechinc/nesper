@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprDefineWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDefineConfigurations()
         {
             Run(null, new ExprDefineConfigurations(4));

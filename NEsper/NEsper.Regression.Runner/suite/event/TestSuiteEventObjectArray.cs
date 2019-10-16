@@ -45,31 +45,31 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayCore()
         {
             RegressionRunner.Run(session, EventObjectArrayCore.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayNestedMap()
         {
             RegressionRunner.Run(session, new EventObjectArrayNestedMap());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayInheritanceConfigInit()
         {
             RegressionRunner.Run(session, new EventObjectArrayInheritanceConfigInit());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayEventNestedPono()
         {
             RegressionRunner.Run(session, new EventObjectArrayEventNestedPono());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayEventNested()
         {
             RegressionRunner.Run(session, EventObjectArrayEventNested.Executions());

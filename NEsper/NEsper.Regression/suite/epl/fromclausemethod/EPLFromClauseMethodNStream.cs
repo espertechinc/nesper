@@ -128,14 +128,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window AllTrades#keepall as SupportTradeEventWithSIde", path);
-                env.CompileDeploy("insert into AllTrades select * from SupportTradeEventWithSIde", path);
+                env.CompileDeploy("create window AllTrades#keepall as SupportTradeEventWithSide", path);
+                env.CompileDeploy("insert into AllTrades select * from SupportTradeEventWithSide", path);
 
                 var epl = "@Name('s0') select us, them, corr.correlation as crl " +
                           "from AllTrades as us, AllTrades as them," +
                           "method:" +
-                          typeof(EPLFromClauseMethodNStream).Name +
-                          ".computeCorrelation(us, them) as corr\n" +
+                          typeof(EPLFromClauseMethodNStream).FullName +
+                          ".ComputeCorrelation(us, them) as corr\n" +
                           "where us.side != them.side and corr.correlation > 0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "order by h0.val, h1.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 20, 20, 3);
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id","valh0","valh1" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1","valh2" };
+                var fields = new [] { "Id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 1, 1, 1);
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1","valh2" };
+                var fields = new [] { "Id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E1", 2, 2, 2, 1);
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1","valh2" };
+                var fields = new [] { "Id","valh0","valh1","valh2" };
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), fields, null);
 
                 SendBeanInt(env, "E2", 4, 4, 4, 3);

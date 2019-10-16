@@ -28,5 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
   </ItemGroup>
 </Project>

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
     /// <summary>
     /// Thrown to indicate a precondition violation for undeploy.
     /// </summary>
+    [Serializable]
     public class UndeployPreconditionException : Exception
     {
         /// <summary>
@@ -21,6 +23,11 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="message">validation error message</param>
         public UndeployPreconditionException(string message)
             : base(message)
+        {
+        }
+
+        protected UndeployPreconditionException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

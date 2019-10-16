@@ -125,8 +125,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var mComponentType = codegenClassScope.AddFieldUnshared(true, typeof(Type), Constant(componentType));
-            var mParser = codegenClassScope.AddOrGetFieldSharable(
+            var mComponentType = codegenClassScope.AddDefaultFieldUnshared(true, typeof(Type), Constant(componentType));
+            var mParser = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")

@@ -75,13 +75,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapOneL2 = new Dictionary<string, object>();
-            mapOneL2.Put("nestedNestedValue", 101);
+            mapOneL2.Put("NestedNestedValue", 101);
             IDictionary<string, object> mapOneL1 = new Dictionary<string, object>();
-            mapOneL1.Put("nestedNested", mapOneL2);
+            mapOneL1.Put("NestedNested", mapOneL2);
             mapOneL1.Put("NestedValue", 100);
             IDictionary<string, object> mapOneL0 = new Dictionary<string, object>();
-            mapOneL0.Put("nested", mapOneL1);
-            var mapOne = Collections.SingletonDataMap("item", mapOneL0);
+            mapOneL0.Put("Nested", mapOneL1);
+            var mapOne = Collections.SingletonDataMap("Item", mapOneL0);
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(mapOne, AllExist(100, 100, 101, 101, 101, 101)),
                 new Pair<object, object>(Collections.EmptyDataMap, notExists)
@@ -102,12 +102,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // XML
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>(
-                    "<item>\n" +
-                    "\t<nested NestedValue=\"100\">\n" +
-                    "\t\t<nestedNested nestedNestedValue=\"101\">\n" +
-                    "\t\t</nestedNested>\n" +
-                    "\t</nested>\n" +
-                    "</item>\n",
+                    "<Item>\n" +
+                    "\t<Nested NestedValue=\"100\">\n" +
+                    "\t\t<NestedNested nestedNestedValue=\"101\">\n" +
+                    "\t\t</NestedNested>\n" +
+                    "\t</Nested>\n" +
+                    "</Item>\n",
                     AllExist("100", "100", "101", "101", "101", "101")),
                 new Pair<object, object>("<item/>", notExists)
             };
@@ -119,15 +119,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var nestedSchema =
                 AvroSchemaUtil.FindUnionRecordSchemaSingle(
                     schema
-                        .GetField("item")
+                        .GetField("Item")
                         .Schema.AsRecordSchema()
-                        .GetField("nested")
+                        .GetField("Nested")
                         .Schema);
             var nestedNestedSchema =
                 AvroSchemaUtil.FindUnionRecordSchemaSingle(
-                    nestedSchema.GetField("nestedNested").Schema);
+                    nestedSchema.GetField("NestedNested").Schema);
             var nestedNestedDatum = new GenericRecord(nestedNestedSchema.AsRecordSchema());
-            nestedNestedDatum.Put("nestedNestedValue", 101);
+            nestedNestedDatum.Put("NestedNestedValue", 101);
             var nestedDatum = new GenericRecord(nestedSchema.AsRecordSchema());
             nestedDatum.Put("NestedValue", 100);
             nestedDatum.Put("nestedNested", nestedNestedDatum);
@@ -177,18 +177,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           " item.Nested?.NestedValue as n1, " +
-                           " exists(item.Nested?.NestedValue) as exists_n1, " +
-                           " item.Nested?.NestedValue? as n2, " +
-                           " exists(item.Nested?.NestedValue?) as exists_n2, " +
-                           " item.Nested?.NestedNested.NestedNestedValue as n3, " +
-                           " exists(item.Nested?.NestedNested.NestedNestedValue) as exists_n3, " +
-                           " item.Nested?.NestedNested?.NestedNestedValue as n4, " +
-                           " exists(item.Nested?.NestedNested?.NestedNestedValue) as exists_n4, " +
-                           " item.Nested?.NestedNested.NestedNestedValue? as n5, " +
-                           " exists(item.Nested?.NestedNested.NestedNestedValue?) as exists_n5, " +
-                           " item.Nested?.NestedNested?.NestedNestedValue? as n6, " +
-                           " exists(item.Nested?.NestedNested?.NestedNestedValue?) as exists_n6 " +
+                           " Item.Nested?.NestedValue as n1, " +
+                           " exists(Item.Nested?.NestedValue) as exists_n1, " +
+                           " Item.Nested?.NestedValue? as n2, " +
+                           " exists(Item.Nested?.NestedValue?) as exists_n2, " +
+                           " Item.Nested?.NestedNested.NestedNestedValue as n3, " +
+                           " exists(Item.Nested?.NestedNested.NestedNestedValue) as exists_n3, " +
+                           " Item.Nested?.NestedNested?.NestedNestedValue as n4, " +
+                           " exists(Item.Nested?.NestedNested?.NestedNestedValue) as exists_n4, " +
+                           " Item.Nested?.NestedNested.NestedNestedValue? as n5, " +
+                           " exists(Item.Nested?.NestedNested.NestedNestedValue?) as exists_n5, " +
+                           " Item.Nested?.NestedNested?.NestedNestedValue? as n6, " +
+                           " exists(Item.Nested?.NestedNested?.NestedNestedValue?) as exists_n6 " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

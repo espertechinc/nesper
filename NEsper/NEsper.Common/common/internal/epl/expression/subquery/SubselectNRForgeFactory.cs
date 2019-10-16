@@ -68,8 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             // collections, array or map not supported
             if (typeOne.IsArray ||
-                TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>)) ||
-                TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>))) {
+                typeOne.IsGenericCollection() ||
+                typeOne.IsGenericDictionary()) {
                 throw new ExprValidationException(
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
@@ -96,14 +96,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     if (!typeOne.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeOne.GetSimpleName() +
+                            typeOne.CleanName() +
                             "' to numeric is not allowed");
                     }
 
                     if (!typeTwo.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeTwo.GetSimpleName() +
+                            typeTwo.CleanName() +
                             "' to numeric is not allowed");
                     }
                 }
@@ -287,9 +287,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    typeTwo.GetSimpleName() +
+                    typeTwo.CleanName() +
                     "' to '" +
-                    typeOne.GetSimpleName() +
+                    typeOne.CleanName() +
                     "' is not allowed");
             }
 

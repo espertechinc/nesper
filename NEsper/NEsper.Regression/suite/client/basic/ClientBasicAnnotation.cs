@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,8 +22,8 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
 
             var annotations = env.Statement("abc").Annotations;
 
-            Assert.AreEqual(typeof(NameAttribute), annotations[0].GetType());
-            Assert.AreEqual("abc", ((NameAttribute) annotations[0]).Value);
+            Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
+            Assert.AreEqual("abc", ((AnnotationName) annotations[0]).Value);
 
             env.UndeployAll();
         }

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             InjectionStrategyClassNewInstance injectionStrategy =
                 (InjectionStrategyClassNewInstance) mode.InjectionStrategyTableReaderFactory;
-            CodegenExpressionField factoryField = classScope.AddFieldUnshared(
+            CodegenExpressionInstanceField factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionTableReaderFactory),
                 injectionStrategy.GetInitializationExpression(classScope));

@@ -162,11 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public override string ToString()
         {
-            return "ArrayMethodPropertyGetter " +
-                   " method=" +
-                   _method +
-                   " index=" +
-                   _index;
+            return $"ArrayMethodPropertyGetter method={_method} index={_index}";
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(

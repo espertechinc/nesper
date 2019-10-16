@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             var eventType = table.MetaData.InternalEventType;
             var aggregationRow = table.AggregationRowFactory.Make();
-            var data = new object[eventType.PropertyDescriptors.Length];
+            var data = new object[eventType.PropertyDescriptors.Count];
             data[0] = aggregationRow;
             var row = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObjectArray(data, eventType);
             AddEvent(row);

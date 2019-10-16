@@ -46,19 +46,19 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLContainedEventSimple()
         {
             RegressionRunner.Run(session, EPLContainedEventSimple.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLContainedEventArray()
         {
             RegressionRunner.Run(session, EPLContainedEventArray.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLContainedEventExample()
         {
             RegressionRunner.Run(session, EPLContainedEventExample.Executions(session.Container.ResourceManager()));
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLContainedEventNested.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLContainedEventSplitExpr()
         {
             RegressionRunner.Run(session, EPLContainedEventSplitExpr.Executions());

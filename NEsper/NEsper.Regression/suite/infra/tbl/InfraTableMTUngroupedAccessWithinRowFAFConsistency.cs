@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         try {
                             Thread.Sleep(1);
                         }
-                        catch (ThreadInterruptedException e) {
+                        catch (ThreadInterruptedException) {
                             shutdown = true;
                         }
                     }
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 try {
                     Thread.Sleep(100);
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                 }
 
                 try {

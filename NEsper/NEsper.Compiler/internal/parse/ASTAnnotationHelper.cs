@@ -106,7 +106,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 enumValue = ImportCompileTimeUtil.ResolveIdentAsEnumConst(enumValueText, importService, true);
             }
-            catch (ExprValidationException e)
+            catch (ExprValidationException)
             {
                 throw ASTWalkException.From(
                     "Annotation value '" + enumValueText +
@@ -126,7 +126,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     var name = enumValueText.Substring(0, enumValueText.Length - 6);
                     enumValue = importService.ResolveClass(name, true);
                 }
-                catch (ImportException e)
+                catch (ImportException)
                 {
                     // expected
                 }

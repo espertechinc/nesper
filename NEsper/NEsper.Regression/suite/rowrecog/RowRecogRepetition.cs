@@ -52,12 +52,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = new [] { "a0_Id","a1_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, B.Id as b_Id\n" +
                       "  pattern (A{,2} B)\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100,\n" +
-                      "\tB as B.temp >= 102)";
+                      "\tA as A.Temp >= 100,\n" +
+                      "\tB as B.Temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
@@ -83,14 +83,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = new [] { "a0_Id","a1_Id","a2_Id","b_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, A[2].Id as a2_Id, B.Id as b_Id\n" +
                       "  pattern (" +
                       pattern +
                       ")\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100,\n" +
-                      "\tB as B.temp >= 102)";
+                      "\tA as A.Temp >= 100,\n" +
+                      "\tB as B.Temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
@@ -114,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = new [] { "a0_Id","a1_Id" };
             var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id\n" +
                       "  pattern (A{2})\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100)";
+                      "\tA as A.Temp >= 100)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");

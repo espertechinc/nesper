@@ -43,6 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
     public class SelectForge : DataFlowOperatorForge
     {
         private string classNameAIFactoryProvider;
+        private string classNameFieldsFactoryProvider;
 
         private EventType[] eventTypes;
 
@@ -204,6 +205,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables) {
                 if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER) {
                     classNameAIFactoryProvider = forgable.ClassName;
+                } else if (forgable.ForgableType == StmtClassForgableType.FIELDS) {
+                    classNameFieldsFactoryProvider = forgable.ClassName;
                 }
             }
 
@@ -222,15 +225,27 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 parent,
                 symbols,
                 classScope);
-            return builder.EventtypesMayNull("eventTypes", eventTypes)
-                .Constant("IsSubmitEventBean", submitEventBean)
-                .Constant("IsIterate", iterate)
-                .Constant("OriginatingStreamToViewableStream", originatingStreamToViewableStream)
+
+            return builder
+                .EventtypesMayNull(
+                    "EventTypes",
+                    eventTypes)
+                .Constant(
+                    "IsSubmitEventBean",
+                    submitEventBean)
+                .Constant(
+                    "IsIterate",
+                    iterate)
+                .Constant(
+                    "OriginatingStreamToViewableStream",
+                    originatingStreamToViewableStream)
                 .Expression(
-                    "factoryProvider",
+                    "FactoryProvider",
                     NewInstance(
                         classNameAIFactoryProvider,
-                        symbols.GetAddInitSvc(builder.Method())))
+                        symbols.GetAddInitSvc(builder.Method()),
+                        NewInstance(classNameFieldsFactoryProvider)
+                        ))
                 .Build();
         }
 

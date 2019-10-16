@@ -492,7 +492,7 @@ namespace com.espertech.esper.common.@internal.util
                     Log.Info(
                         "Method '{0}' in class '{1}' expects primitive type '{2}' as parameter {3}, but receives a nullable (boxed) type {4}. This may cause null pointer exception at runtime if the actual value is null, please consider using boxed types for method parameters.",
                         methodName,
-                        declaringClass.Name,
+                        declaringClass.CleanName(),
                         parametersMethod[i],
                         i,
                         paramTypeStr);

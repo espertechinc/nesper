@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var type = classScope.AddFieldUnshared(
+            var type = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));

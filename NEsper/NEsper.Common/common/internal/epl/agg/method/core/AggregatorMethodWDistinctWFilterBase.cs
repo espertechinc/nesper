@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
     public abstract class AggregatorMethodWDistinctWFilterBase : AggregatorMethod
     {
         internal readonly CodegenExpressionRef distinct;
-        private readonly CodegenExpressionField distinctSerde;
+        private readonly CodegenExpressionInstanceField distinctSerde;
 
         internal readonly bool
             hasFilter; // this flag can be true and "optionalFilter" can still be null when declaring a table column
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             if (optionalDistinctValueType != null) {
                 distinct = membersColumnized.AddMember(col, typeof(RefCountedSet<object>), "distinctSet");
                 rowCtor.Block.AssignRef(distinct, NewInstance(typeof(RefCountedSet<object>)));
-                distinctSerde = classScope.AddOrGetFieldSharable(
+                distinctSerde = classScope.AddOrGetDefaultFieldSharable(
                     new CodegenSharableSerdeClassTyped(REFCOUNTEDSET, optionalDistinctValueType));
             }
             else {
@@ -86,8 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             if (hasFilter) {
                 method.Block
                     .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
-                    .DeclareVar<bool>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
-                    .IfCondition(Not(Ref("pass")))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .IfCondition(Not(Unbox(Ref("pass"))))
                     .BlockReturnNoValue()
                     .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
                 ApplyTableEnterFiltered(Ref("filtered"), evaluationTypes, method, classScope);
@@ -119,8 +119,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             if (hasFilter) {
                 method.Block
                     .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
-                    .DeclareVar<bool>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
-                    .IfCondition(Not(Ref("pass")))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .IfCondition(Not(Unbox(Ref("pass"))))
                     .BlockReturnNoValue()
                     .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
                 ApplyTableLeaveFiltered(Ref("filtered"), evaluationTypes, method, classScope);

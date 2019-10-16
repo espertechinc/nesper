@@ -24,6 +24,9 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 
 using NEsper.Avro.Core;
+using NEsper.Avro.Extensions;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.SelectExprRep
 {
@@ -112,33 +115,34 @@ namespace NEsper.Avro.SelectExprRep
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
+            var schema = codegenClassScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
-                typeof(Schema),
-                CodegenExpressionBuilder.StaticMethod(
+                typeof(RecordSchema),
+                StaticMethod(
                     typeof(AvroSchemaUtil),
-                    "ResolveAvroSchema",
+                    "ResolveRecordSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar<GenericRecord>(
                     "record",
-                    CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+                    NewInstance(typeof(GenericRecord), schema));
             for (var i = 0; i < _selectExprForgeContext.ColumnNames.Length; i++) {
                 var expression = _forges[i].EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope);
                 block.Expression(
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("record"),
-                        "Put",
-                        CodegenExpressionBuilder.Constant(_selectExprForgeContext.ColumnNames[i]),
+                    StaticMethod(
+                        typeof(GenericRecordExtensions), 
+                        "Put", 
+                        Ref("record"),
+                        Constant(_selectExprForgeContext.ColumnNames[i]),
                         expression));
             }
 
             block.MethodReturn(
-                CodegenExpressionBuilder.ExprDotMethod(
+                ExprDotMethod(
                     eventBeanFactory,
                     "AdapterForTypedAvro",
-                    CodegenExpressionBuilder.Ref("record"),
+                    Ref("record"),
                     resultEventType));
             return methodNode;
         }

@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             IContainer container,
             RowRecogExprNodePermute permute)
         {
-            var copier = new SerializableObjectCopier(container);
+            var copier = container.Resolve<IObjectCopier>();
             var e = PermutationEnumerator.Create(permute.ChildNodes.Count);
             var parent = new RowRecogExprNodeAlteration();
             foreach (var indexes in e) {
@@ -298,7 +298,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
 
-            if (repeat.Forge.EvaluationType.GetBoxedType() != typeof(int)) {
+            if (repeat.Forge.EvaluationType.GetBoxedType() != typeof(int?)) {
                 throw new ExprValidationException(
                     GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }
@@ -336,7 +336,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 RowRecogExprNode nodeToCopy,
                 RowRecogNFATypeEnum newType)
             {
-                var copier = new SerializableObjectCopier(container);
+                var copier = container.Resolve<IObjectCopier>();
                 var nested = (RowRecogExprNodeNested) nodeToCopy;
                 var nestedCopy = new RowRecogExprNodeNested(newType, null);
                 foreach (var inner in nested.ChildNodes) {

@@ -22,91 +22,97 @@ namespace com.espertech.esper.regressionrun.suite.multithread
     [TestFixture]
     public class TestSuiteMultithreadWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadPatternTimer()
         {
             RegressionRunner.RunConfigurable(new MultithreadPatternTimer());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextDBAccess()
         {
             RegressionRunner.RunConfigurable(new MultithreadContextDBAccess());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextMultiStmtStartEnd()
         {
             new MultithreadContextMultiStmtStartEnd().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextNestedNonOverlapAtNow()
         {
             new MultithreadContextNestedNonOverlapAtNow().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextTerminated()
         {
             RegressionRunner.RunConfigurable(new MultithreadContextTerminated());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadDeterminismInsertIntoLockConfig()
         {
             new MultithreadDeterminismInsertIntoLockConfig().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadDeterminismListener()
         {
             new MultithreadDeterminismListener().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadInsertIntoTimerConcurrency()
         {
             new MultithreadInsertIntoTimerConcurrency().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtListenerAddRemove()
         {
             RegressionRunner.RunConfigurable(new MultithreadStmtListenerAddRemove());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowPriority()
         {
             RegressionRunner.RunConfigurable(new MultithreadStmtNamedWindowPriority());
         }
 
         [Test]
-        public void TestMultithreadStmtPatternFollowedBy()
+        public void TestMultithreadStmtPatternFollowedByReadMostly()
         {
-            new MultithreadStmtPatternFollowedBy().Run(SupportConfigFactory.GetConfiguration());
+            new MultithreadStmtPatternFollowedBy().RunReadMostly(SupportConfigFactory.GetConfiguration());
         }
 
         [Test]
+        public void TestMultithreadStmtPatternFollowedByReadWrite()
+        {
+            new MultithreadStmtPatternFollowedBy().RunReadWrite(SupportConfigFactory.GetConfiguration());
+        }
+
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowUniqueTwoWJoinConsumer()
         {
             new MultithreadStmtNamedWindowUniqueTwoWJoinConsumer().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextOverlapDistinct()
         {
             new MultithreadContextOverlapDistinct().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextPartitionedWTerm()
         {
             RegressionRunner.RunConfigurable(new MultithreadContextPartitionedWTerm());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextStartedBySameEvent()
         {
             RegressionRunner.RunConfigurable(new MultithreadContextStartedBySameEvent());

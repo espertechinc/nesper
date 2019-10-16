@@ -65,7 +65,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBWithRetain = new ConfigurationCommonDBRef();
             configDBWithRetain.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithRetain.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
@@ -73,7 +72,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBWithPooledWithLRU100 = new ConfigurationCommonDBRef();
             configDBWithPooledWithLRU100.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithPooledWithLRU100.ConnectionLifecycleEnum = ConnectionLifecycleEnum.POOLED;
@@ -82,7 +80,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBWithTxnIso1WithReadOnly = new ConfigurationCommonDBRef();
             configDBWithTxnIso1WithReadOnly.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
 
@@ -107,7 +104,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBPooled = new ConfigurationCommonDBRef();
             configDBPooled.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBPooled.ConnectionLifecycleEnum = ConnectionLifecycleEnum.POOLED;
@@ -115,7 +111,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBWithLRU100000 = new ConfigurationCommonDBRef();
             configDBWithLRU100000.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithLRU100000.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
@@ -124,7 +119,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var configDBWithExpiryTime = new ConfigurationCommonDBRef();
             configDBWithExpiryTime.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithExpiryTime.ConnectionCatalog = "test";
@@ -139,7 +133,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             var configDB = new ConfigurationCommonDBRef();
             configDB.SetDatabaseDriver(
-                container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
@@ -149,85 +142,85 @@ namespace com.espertech.esper.regressionrun.suite.epl
             return configDB;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabase2StreamOuterJoin()
         {
             RegressionRunner.Run(session, EPLDatabase2StreamOuterJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabase3StreamOuterJoin()
         {
             RegressionRunner.Run(session, EPLDatabase3StreamOuterJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseDataSourceFactory()
         {
             RegressionRunner.Run(session, new EPLDatabaseDataSourceFactory());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseHintHook()
         {
             RegressionRunner.Run(session, EPLDatabaseHintHook.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoin()
         {
             RegressionRunner.Run(session, EPLDatabaseJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinInsertInto()
         {
             RegressionRunner.Run(session, new EPLDatabaseJoinInsertInto());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptionLowercase()
         {
             RegressionRunner.Run(session, new EPLDatabaseJoinOptionLowercase());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptions()
         {
             RegressionRunner.Run(session, EPLDatabaseJoinOptions.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinOptionUppercase()
         {
             RegressionRunner.Run(session, new EPLDatabaseJoinOptionUppercase());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinPerfNoCache()
         {
             RegressionRunner.Run(session, new EPLDatabaseJoinPerfNoCache());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseJoinPerfWithCache()
         {
             RegressionRunner.Run(session, EPLDatabaseJoinPerfWithCache.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseNoJoinIterate()
         {
             RegressionRunner.Run(session, EPLDatabaseNoJoinIterate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseNoJoinIteratePerf()
         {
             RegressionRunner.Run(session, new EPLDatabaseNoJoinIteratePerf());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseOuterJoinWCache()
         {
             RegressionRunner.Run(session, new EPLDatabaseOuterJoinWCache());

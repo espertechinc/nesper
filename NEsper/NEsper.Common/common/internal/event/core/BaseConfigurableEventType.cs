@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return GetGetter(property) != null;
         }
 
-        public EventPropertyDescriptor[] PropertyDescriptors { get; private set; }
+        public IList<EventPropertyDescriptor> PropertyDescriptors { get; private set; }
 
         public EventTypeMetadata Metadata { get; private set; }
 

@@ -46,20 +46,21 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                 return genRowResult;
             }
 
-            var it = (IEnumerator<EventBean>) invocationResult;
-            if (!it.MoveNext()) {
-                return Collections.GetEmptyList<EventBean>();
-            }
-
-            var rowResult = new List<EventBean>();
-            for (; it.MoveNext();) {
-                var value = it.Current;
-                if (value != null) {
-                    rowResult.Add(value);
+            using (var enumerator = (IEnumerator<EventBean>) invocationResult) {
+                if (!enumerator.MoveNext()) {
+                    return Collections.GetEmptyList<EventBean>();
                 }
-            }
 
-            return rowResult;
+                var rowResult = new List<EventBean>();
+                do {
+                    var value = enumerator.Current;
+                    if (value != null) {
+                        rowResult.Add(value);
+                    }
+                } while (enumerator.MoveNext());
+
+                return rowResult;
+            }
         }
     }
 } // end of namespace

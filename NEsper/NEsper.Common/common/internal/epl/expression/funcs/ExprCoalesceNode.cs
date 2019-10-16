@@ -71,9 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     if (!resultType.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            resultType.GetSimpleName() +
+                            resultType.CleanName() +
                             "' to " +
-                            node.Forge.EvaluationType +
+                            node.Forge.EvaluationType.CleanName() +
                             " is not allowed");
                     }
 

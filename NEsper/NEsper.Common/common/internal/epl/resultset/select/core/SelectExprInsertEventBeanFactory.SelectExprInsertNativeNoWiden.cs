@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var manufacturer = codegenClassScope.AddFieldUnshared(
+                var manufacturer = codegenClassScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventBeanManufacturer),
-                    eventManufacturer.Make(codegenMethodScope, codegenClassScope));
+                    eventManufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
                 var block = methodNode.Block
                     .DeclareVar<object[]>(
                         "values",

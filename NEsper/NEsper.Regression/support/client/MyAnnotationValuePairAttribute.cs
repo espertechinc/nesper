@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -31,13 +32,17 @@ namespace com.espertech.esper.regressionlib.support.client
         public char CharVal { get; set; }
         public double DoubleVal { get; set; }
 
+        [DefaultValue("def")]
         public string StringValDef { get; set; }
-        public byte ByteValDef { get; set; }
-        public short ShortValDef { get; set; }
+        [DefaultValue(100)]
         public int IntValDef { get; set; }
+        [DefaultValue(200L)]
         public long LongValDef { get; set; }
+        [DefaultValue(true)]
         public bool BooleanValDef { get; set; }
+        [DefaultValue('D')]
         public char CharValDef { get; set; }
+        [DefaultValue(1.1d)]
         public double DoubleValDef { get; set; }
     }
 } // end of namespace

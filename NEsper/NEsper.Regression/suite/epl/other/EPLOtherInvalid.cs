@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileWCheckedEx(eplInvalidEPL);
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 // Expected exception
             }
         }

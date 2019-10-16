@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.context.util
             this.disableLocking = disableLocking;
         }
 
-        public StatementAgentInstanceLock GetStatementLock(
+        public IReaderWriterLock GetStatementLock(
             string statementName,
             Attribute[] annotations,
             bool stateless,
@@ -43,10 +44,14 @@ namespace com.espertech.esper.common.@internal.context.util
 
             bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLockAttribute)) != null;
             if (disableLocking || foundNoLock || stateless) {
-                return new StatementAgentInstanceLockNoLockImpl(statementName);
+                return new VoidReaderWriterLock();
+                //return new StatementAgentInstanceLockNoLockImpl(statementName);
+            } else if (fairlocks) {
+                return new FairReaderWriterLock();
             }
-
-            return new StatementAgentInstanceLockRW(fairlocks);
+            else {
+                return new SlimReaderWriterLock();
+            }
         }
     }
 } // end of namespace

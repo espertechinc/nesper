@@ -90,12 +90,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprMinMaxAggrNode)) {
-                return false;
+            if (node is ExprMinMaxAggrNode other) {
+                return other.MinMaxTypeEnum == MinMaxTypeEnum && other.IsEver == IsEver;
             }
 
-            var other = (ExprMinMaxAggrNode) node;
-            return other.MinMaxTypeEnum == MinMaxTypeEnum && other.IsEver == IsEver;
+            return false;
         }
     }
 } // end of namespace

@@ -55,11 +55,12 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         public object GetValueAsArray()
         {
             var array = Array.CreateInstance(factory.EvaluationType, values.Count);
-            var it = values.GetEnumerator();
-            var count = 0;
-            for (; it.MoveNext();) {
-                var value = it.Current;
-                array.SetValue(value, count++);
+            using (var enumerator = values.GetEnumerator()) {
+                var count = 0;
+                while (enumerator.MoveNext()) {
+                    var value = enumerator.Current;
+                    array.SetValue(value, count++);
+                }
             }
 
             return array;

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var xmlType = Cast(
                 typeof(BaseXMLEventType),
                 EventTypeUtility.ResolveTypeCodegen(xmlEventType, EPStatementInitServicesConstants.REF));

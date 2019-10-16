@@ -94,15 +94,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 .MakeChild(returnType, typeof(ExprDotDTForge), codegenClassScope)
                 .AddParam(innerType, "target");
 
-            CodegenExpression targetValue = Ref("target");
+            CodegenExpression targetValue = Unbox(Ref("target"), innerType);
 
             var block = methodNode.Block;
             if (!innerType.IsPrimitive) {
                 block.IfRefNullReturnNull("target");
-            }
-
-            if (innerType.IsNullable()) {
-                targetValue = ExprDotName(targetValue, "Value");
             }
 
             block.MethodReturn(forge.Codegen(

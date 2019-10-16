@@ -87,6 +87,26 @@ namespace com.espertech.esper.compat.threading.locks
 #endif
         }
 
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+#if MONO
+            throw new NotSupportedException(ExceptionText);
+#else
+            if (_rwLock.TryEnterWriteLock(lockWaitDuration))
+                return _wDisposable;
+
+            throw new TimeoutException("ReaderWriterLock timeout expired");
+#endif
+        }
+
+        /// <summary>
+        /// Releases the write lock, canceling the lock semantics managed by any current holder.
+        /// </summary>
+        public void ReleaseWriteLock()
+        {
+            ReleaseWriterLock();
+        }
+
         /// <summary>
         /// Indicates if the writer lock is held.
         /// </summary>

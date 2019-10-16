@@ -25,12 +25,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
-            executions.Add(new ExprCoreMathDouble());
-            executions.Add(new ExprCoreMathLong());
-            executions.Add(new ExprCoreMathFloat());
-            executions.Add(new ExprCoreMathIntWNull());
-            executions.Add(new ExprCoreMathBigDec());
-            executions.Add(new ExprCoreMathBigDecConv());
+            //executions.Add(new ExprCoreMathDouble());
+            //executions.Add(new ExprCoreMathLong());
+            //executions.Add(new ExprCoreMathFloat());
+            //executions.Add(new ExprCoreMathIntWNull());
+            executions.Add(new ExprCoreMathDecimal());
+            executions.Add(new ExprCoreMathDecimalConv());
             executions.Add(new ExprCoreMathBigInt());
             executions.Add(new ExprCoreMathBigIntConv());
             executions.Add(new ExprCoreMathShortAndByteArithmetic());
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             }
         }
 
-        internal class ExprCoreMathBigDecConv : RegressionExecution
+        internal class ExprCoreMathDecimalConv : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -216,10 +216,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
-                    typeof(decimal),
-                    typeof(decimal),
-                    typeof(decimal),
-                    typeof(decimal));
+                    typeof(decimal?),
+                    typeof(decimal?),
+                    typeof(decimal?),
+                    typeof(decimal?));
 
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
@@ -238,11 +238,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
+                var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
                 var epl = "@Name('s0') select " +
-                          "10+BigIntegerHelper.ValueOf(5) as c0," +
-                          "10-BigIntegerHelper.ValueOf(5) as c1," +
-                          "10*BigIntegerHelper.ValueOf(5) as c2," +
-                          "10/BigIntegerHelper.ValueOf(5) as c3" +
+                          $"10+{bigIntegerHelper}.ValueOf(5) as c0," +
+                          $"10-{bigIntegerHelper}.ValueOf(5) as c1," +
+                          $"10*{bigIntegerHelper}.ValueOf(5) as c2," +
+                          $"10/{bigIntegerHelper}.ValueOf(5) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -251,9 +252,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
-                    typeof(BigInteger),
-                    typeof(BigInteger),
-                    typeof(BigInteger),
+                    typeof(BigInteger?),
+                    typeof(BigInteger?),
+                    typeof(BigInteger?),
                     typeof(double?));
 
                 env.SendEventBean(new SupportBean());
@@ -270,11 +271,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
+                var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
                 var epl = "@Name('s0') select " +
-                          "BigIntegerHelper.ValueOf(10)+BigIntegerHelper.ValueOf(5) as c0," +
-                          "BigIntegerHelper.ValueOf(10)-BigIntegerHelper.ValueOf(5) as c1," +
-                          "BigIntegerHelper.ValueOf(10)*BigIntegerHelper.ValueOf(5) as c2," +
-                          "BigIntegerHelper.ValueOf(10)/BigIntegerHelper.ValueOf(5) as c3" +
+                          $"{bigIntegerHelper}.ValueOf(10)+{bigIntegerHelper}.ValueOf(5) as c0," +
+                          $"{bigIntegerHelper}.ValueOf(10)-{bigIntegerHelper}.ValueOf(5) as c1," +
+                          $"{bigIntegerHelper}.ValueOf(10)*{bigIntegerHelper}.ValueOf(5) as c2," +
+                          $"{bigIntegerHelper}.ValueOf(10)/{bigIntegerHelper}.ValueOf(5) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -283,9 +285,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
-                    typeof(BigInteger),
-                    typeof(BigInteger),
-                    typeof(BigInteger),
+                    typeof(BigInteger?),
+                    typeof(BigInteger?),
+                    typeof(BigInteger?),
                     typeof(double?));
 
                 env.SendEventBean(new SupportBean());
@@ -298,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             }
         }
 
-        internal class ExprCoreMathBigDec : RegressionExecution
+        internal class ExprCoreMathDecimal : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -315,10 +317,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
-                    typeof(decimal),
-                    typeof(decimal),
-                    typeof(decimal),
-                    typeof(decimal));
+                    typeof(decimal?),
+                    typeof(decimal?),
+                    typeof(decimal?),
+                    typeof(decimal?));
 
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(

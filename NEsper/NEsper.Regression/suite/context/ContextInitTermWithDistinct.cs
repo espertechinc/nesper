@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "terminated SupportBean_S1"; // any S1 ends the contexts
                 env.EplToModelCompileDeploy(epl, path);
 
-                var fields = new [] { "id","P00","P01","cnt" };
+                var fields = new [] { "Id","P00","P01","cnt" };
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
                     "select Id, P00, P01, count(*) as cnt " +

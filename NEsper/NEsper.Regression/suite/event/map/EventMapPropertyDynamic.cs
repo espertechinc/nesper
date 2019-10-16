@@ -36,8 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                 "innermap.innerTwo?.innerThree.NestedTwo as t2, " +
                                 "dynamicOne? as t3, " +
                                 "dynamicTwo? as t4, " +
-                                "Indexed[1]? as t5, " +
-                                "Mapped('keyOne')? as t6, " +
+                                "indexed[1]? as t5, " +
+                                "mapped('keyOne')? as t6, " +
                                 "innermap.IndexedTwo[0]? as t7, " +
                                 "innermap.mappedTwo('keyTwo')? as t8 " +
                                 "from MyLevel2#length(5)";
@@ -56,8 +56,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     MakeMap("keyTwo", "def"),
                     "innerTwo",
                     MakeMap(
-                        "nested",
-                        30d,
+                        "nested", 
+                        30d, 
                         "innerThree",
                         MakeMap("nestedTwo", 99))));
             map.Put("Indexed", new float[] {-1, -2, -3});

@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat
             return ovalue;
         }
 
-        public static TOut Translate<TIn,TOut>(this TIn value) 
+        public static TOut Translate<TIn, TOut>(this TIn value)
             where TIn : struct
             where TOut : struct
         {
@@ -42,9 +42,11 @@ namespace com.espertech.esper.compat
         /// <param name="textValue">The text value.</param>
         /// <param name="ignoreCase">if set to <c>true</c> [ignore case].</param>
         /// <returns></returns>
-        public static T Parse<T>( String textValue, bool ignoreCase = true )
+        public static T Parse<T>(
+            String textValue,
+            bool ignoreCase = true)
         {
-            return (T) Enum.Parse(typeof (T), textValue, ignoreCase);
+            return (T) Enum.Parse(typeof(T), textValue, ignoreCase);
         }
 
         /// <summary>
@@ -55,7 +57,9 @@ namespace com.espertech.esper.compat
         /// <param name="textValue">The text value.</param>
         /// <param name="ignoreCase">if set to <c>true</c> [ignore case].</param>
         /// <returns></returns>
-        public static T? ParseBoxed<T>( String textValue, bool ignoreCase = true ) where T : struct
+        public static T? ParseBoxed<T>(
+            String textValue,
+            bool ignoreCase = true) where T : struct
         {
             T value;
             if (Enum.TryParse(textValue, ignoreCase, out value))
@@ -70,19 +74,19 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static IEnumerable<string> GetNames<T>()
         {
-            return Enum.GetNames(typeof (T));
+            return Enum.GetNames(typeof(T));
         }
 
         /// <summary>
         /// Gets the name associated with the value presented in enumValue.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="EnumValue">The enum value.</param>
+        /// <param name="enumValue">the enumeration value</param>
         /// <returns></returns>
-        public static string GetName<T>( this T enumValue )
+        public static string GetName<T>(this T enumValue)
         {
             if (typeof(T).IsEnum)
-                return Enum.GetName(typeof (T), enumValue);
+                return Enum.GetName(typeof(T), enumValue);
             throw new ArgumentException("type is not an enumeration");
         }
 
@@ -95,10 +99,8 @@ namespace com.espertech.esper.compat
 
         public static T GetValue<T>(int ordinal)
         {
-            foreach(T value in GetValues<T>())
-            {
-                if (Equals(ordinal, value))
-                {
+            foreach (T value in GetValues<T>()) {
+                if (Equals(ordinal, value)) {
                     return value;
                 }
             }
@@ -113,9 +115,8 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static IEnumerable<T> GetValues<T>()
         {
-            Array array = Enum.GetValues(typeof (T));
-            for(int ii = 0 ; ii < array.Length ; ii++)
-            {
+            Array array = Enum.GetValues(typeof(T));
+            for (int ii = 0; ii < array.Length; ii++) {
                 yield return (T) array.GetValue(ii);
             }
         }
@@ -129,9 +130,8 @@ namespace com.espertech.esper.compat
         public static void ForEach<T>(Action<T> valueHandler)
         {
             Array array = Enum.GetValues(typeof(T));
-            for(int ii = 0; ii < array.Length; ii++)
-            {
-                valueHandler((T)array.GetValue(ii));
+            for (int ii = 0; ii < array.Length; ii++) {
+                valueHandler((T) array.GetValue(ii));
             }
         }
     }

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -8,20 +8,10 @@
 
 using System;
 
-using com.espertech.esper.common.client.annotation;
-
-namespace com.espertech.esper.common.@internal.type
+namespace com.espertech.esper.common.client
 {
-    public class AnnotationDropAttribute : DropAttribute
+    [AttributeUsage(AttributeTargets.Module | AttributeTargets.Assembly)]
+    public class EPGeneratedAttribute : Attribute
     {
-        public Type AnnotationType()
-        {
-            return typeof(DropAttribute);
-        }
-
-        public override string ToString()
-        {
-            return "@Drop";
-        }
     }
-} // end of namespace
+}

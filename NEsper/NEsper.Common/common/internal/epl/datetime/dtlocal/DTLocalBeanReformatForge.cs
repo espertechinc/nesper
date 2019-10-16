@@ -62,10 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 block.IfRefNullReturnNull("timestamp");
             }
 
-            CodegenExpression derefTimestamp = Ref("timestamp");
-            if (getterResultType.IsNullable()) {
-                derefTimestamp = ExprDotName(derefTimestamp, "Value");
-            }
+            CodegenExpression derefTimestamp = Unbox(Ref("timestamp"), getterResultType);
 
             block.MethodReturn(
                 inner.Codegen(derefTimestamp, getterResultType, methodNode, exprSymbol, codegenClassScope));

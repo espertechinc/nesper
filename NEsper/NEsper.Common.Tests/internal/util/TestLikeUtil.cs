@@ -73,14 +73,14 @@ namespace com.espertech.esper.common.@internal.util
             {
                 string text = "Expected match for pattern '" + pattern +
                         "' and string '" + stringMatching[i] + "'";
-                Assert.IsTrue(helper.Compare(stringMatching[i]), text);
+                Assert.IsTrue(helper.CompareTo(stringMatching[i]), text);
             }
 
             for (int i = 0; i < stringNotMatching.Length; i++)
             {
                 string text = "Expected mismatch for pattern '" + pattern +
                         "' and string '" + stringNotMatching[i] + "'";
-                Assert.IsFalse(helper.Compare(stringNotMatching[i]), text);
+                Assert.IsFalse(helper.CompareTo(stringNotMatching[i]), text);
             }
         }
     }

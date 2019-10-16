@@ -7,17 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
+
+using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     /// <summary> Thrown to indicate a validation error in a filter expression.</summary>
     [Serializable]
-    public class ExprValidationException : Exception
+    public class ExprValidationException : EPException
     {
         /// <summary> Ctor.</summary>
         /// <param name="message">validation error message
         /// </param>
-        public ExprValidationException(String message)
+        public ExprValidationException(string message)
             : base(message)
         {
         }
@@ -28,9 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="message">The message.</param>
         /// <param name="cause">The cause.</param>
         public ExprValidationException(
-            String message,
+            string message,
             Exception cause)
             : base(message, cause)
+        {
+        }
+
+        protected ExprValidationException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

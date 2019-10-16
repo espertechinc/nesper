@@ -17,34 +17,35 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    ///     Copy method for bean events utilizing serializable.
+    ///     Copy method for bean events utilizing a copy mechanism encapsulated by the copier.
     /// </summary>
-    public class BeanEventBeanSerializableCopyMethodForge : EventBeanCopyMethodForge
+    public class BeanEventBeanObjectCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly BeanEventType beanEventType;
-        private readonly SerializableObjectCopier copier;
+        private readonly BeanEventType _beanEventType;
+        private readonly IObjectCopier _copier;
 
-        public BeanEventBeanSerializableCopyMethodForge(
+        public BeanEventBeanObjectCopyMethodForge(
             BeanEventType beanEventType,
-            SerializableObjectCopier copier)
+            IObjectCopier copier)
         {
-            this.beanEventType = beanEventType;
-            this.copier = copier;
+            this._beanEventType = beanEventType;
+            this._copier = copier;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            return NewInstance<BeanEventBeanSerializableCopyMethod>(
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            return NewInstance<BeanEventBeanObjectCopyMethod>(
                 Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
-                factory);
+                    EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF)),
+                factory,
+                ExprDotName(EPStatementInitServicesConstants.REF, "ObjectCopier"));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new BeanEventBeanSerializableCopyMethod(beanEventType, eventBeanTypedEventFactory, copier);
+            return new BeanEventBeanObjectCopyMethod(_beanEventType, eventBeanTypedEventFactory, _copier);
         }
     }
 } // end of namespace

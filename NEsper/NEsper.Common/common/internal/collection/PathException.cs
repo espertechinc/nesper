@@ -7,14 +7,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.collection
 {
+    [Serializable]
     public class PathException : Exception
     {
         public PathException(string message)
             : base(message)
+        {
+        }
 
+        protected PathException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

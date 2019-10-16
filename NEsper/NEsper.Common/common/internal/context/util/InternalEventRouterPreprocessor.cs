@@ -172,12 +172,9 @@ namespace com.espertech.esper.common.@internal.context.util
             // evaluate
             object[] values;
             if (entry.IsSubselect) {
-                entry.AgentInstanceLock.AcquireWriteLock();
-                try {
+                using (entry.AgentInstanceLock.AcquireWriteLock())
+                {
                     values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext, instrumentation);
-                }
-                finally {
-                    entry.AgentInstanceLock.ReleaseWriteLock();
                 }
             }
             else {

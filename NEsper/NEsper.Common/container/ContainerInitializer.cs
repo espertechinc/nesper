@@ -38,25 +38,33 @@ namespace com.espertech.esper.container
             );
         }
 
-        public static IContainer InitializeDatabaseDrivers(this IContainer container)
+        public static IContainer RegisterDatabaseDriver(this IContainer container, Type driverType)
+        {
+            if (container is ContainerImpl containerImpl) {
+                RegisterDatabaseDriver(containerImpl, driverType);
+            }
+
+            return container;
+        }
+
+        public static IContainer InitializeDatabaseDrivers(this IContainer container, bool scanAssembliesInAppDomain = false)
         {
             if (container.DoesNotHave<DbProviderFactoryManager>())
             {
                 container.Register<DbProviderFactoryManager, DbProviderFactoryManagerDefault>(Lifespan.Singleton);
             }
 
-            var types = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(t => TypeExtensions.IsImplementsInterface<DbDriver>(t));
+            if (scanAssembliesInAppDomain) {
+                if (container is ContainerImpl containerImpl) {
+                    var types = AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .SelectMany(assembly => assembly.GetTypes())
+                        .Where(TypeExtensions.IsImplementsInterface<DbDriver>);
 
-            if (container is ContainerImpl containerImpl)
-            {
-                foreach (var type in types)
-                {
-                    if ((type != typeof(DbDriver)) && (!type.IsAbstract))
-                    {
-                        RegisterDatabaseDriver(containerImpl, type);
+                    foreach (var type in types) {
+                        if ((type != typeof(DbDriver)) && (!type.IsAbstract)) {
+                            RegisterDatabaseDriver(containerImpl, type);
+                        }
                     }
                 }
             }
@@ -97,6 +105,12 @@ namespace com.espertech.esper.container
             if (container.DoesNotHave<INamingContext>())
                 container.Register<INamingContext, SimpleNamingContext>(
                     Lifespan.Singleton);
+            if (container.DoesNotHave<IObjectCopier>()) {
+                container.Register<IObjectCopier>(
+                    ic => new SerializableObjectCopier(ic),
+                    Lifespan.Singleton);
+            }
+
             return container;
         }
 

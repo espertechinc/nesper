@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -313,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
-                          " from SupportMarketDataBean#length(3) " +
+                          " from " + typeof(SupportMarketDataBean).CleanName() + "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());

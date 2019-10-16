@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             this.parent = parent;
             this.collectionEventType = collectionEventType;
-            ResultType = resultType;
+            ResultType = resultType.GetBoxedType();
             this.streamNum = streamNum;
             this.hasFilter = hasFilter;
         }

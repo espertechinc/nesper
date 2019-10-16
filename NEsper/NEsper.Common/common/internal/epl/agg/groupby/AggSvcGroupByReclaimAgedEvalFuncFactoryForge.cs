@@ -17,6 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public interface AggSvcGroupByReclaimAgedEvalFuncFactoryForge
     {
-        CodegenExpressionField Make(CodegenClassScope classScope);
+        CodegenExpressionInstanceField Make(CodegenClassScope classScope);
     }
 } // end of namespace

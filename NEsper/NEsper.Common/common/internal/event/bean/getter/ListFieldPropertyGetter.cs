@@ -163,11 +163,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public override string ToString()
         {
-            return "ListFieldPropertyGetter " +
-                   " field=" +
-                   _field +
-                   " index=" +
-                   _index;
+            return $"ListFieldPropertyGetter field={_field} index={_index}";
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(

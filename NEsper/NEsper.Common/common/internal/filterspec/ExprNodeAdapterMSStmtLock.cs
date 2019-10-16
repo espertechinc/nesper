@@ -40,17 +40,15 @@ namespace com.espertech.esper.common.@internal.filterspec
                 _variableService.SetLocalVersion();
             }
 
-            var obtained = evaluatorContext.AgentInstanceLock.AcquireWriteLock(LOCK_BACKOFF_MSEC);
-            if (!obtained) {
-                throw new FilterLockBackoffException();
-            }
-
-            try {
+            var writeLockTimeout = TimeSpan.FromMilliseconds(LOCK_BACKOFF_MSEC);
+            using (evaluatorContext.AgentInstanceLock.AcquireWriteLock(writeLockTimeout)) {
                 return EvaluatePerStream(eventsPerStream);
             }
-            finally {
-                evaluatorContext.AgentInstanceLock.ReleaseWriteLock();
-            }
+
+            //if (!obtained) {
+            //    throw new FilterLockBackoffException();
+            //}
+
         }
     }
 } // end of namespace

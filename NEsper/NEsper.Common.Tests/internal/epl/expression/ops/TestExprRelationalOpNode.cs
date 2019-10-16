@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

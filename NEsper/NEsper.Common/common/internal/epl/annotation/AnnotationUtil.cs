@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -30,6 +31,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+using DescriptionAttribute = com.espertech.esper.common.client.annotation.DescriptionAttribute;
 
 namespace com.espertech.esper.common.@internal.epl.annotation
 {
@@ -382,6 +385,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return array;
         }
 
+        public static object GetDefaultValue(PropertyInfo propertyInfo)
+        {
+            var defaultValueAttributes = propertyInfo.GetCustomAttributes<DefaultValueAttribute>();
+            foreach (var defaultValueAttribute in defaultValueAttributes) {
+                // We should probably do some type assignment checking.
+                return defaultValueAttribute.Value;
+            }
+            return GetDefaultValue(propertyInfo.PropertyType);
+        }
+
         public static object GetDefaultValue(Type t)
         {
             if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
@@ -408,7 +421,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 var annotationAttribute = new AnnotationAttribute(
                     clazzProperty.Name,
                     clazzProperty.PropertyType,
-                    GetDefaultValue(clazzProperty.PropertyType));
+                    GetDefaultValue(clazzProperty));
 
                 props.Add(annotationAttribute);
             }
@@ -483,7 +496,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
             IList<Attribute> annotationsList = new List<Attribute>();
             foreach (var anno in annotations) {
-                if (TypeHelper.IsImplementsInterface(anno.GetType(), annotationClass)) {
+                if (TypeHelper.IsSubclassOrImplementsInterface(anno.GetType(), annotationClass)) {
                     annotationsList.Add(anno);
                 }
             }
@@ -551,12 +564,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is NameAttribute name) {
-                return NewInstance<NameAttribute>(
+                return NewInstance<AnnotationName>(
                     Constant(name.Value));
             }
 
             if (annotation is PriorityAttribute priority) {
-                return NewInstance<AnnotationPriorityAttribute>(
+                return NewInstance<AnnotationPriority>(
                     Constant(priority.Value));
             }
 
@@ -567,7 +580,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is DropAttribute) {
-                return NewInstance(typeof(AnnotationDropAttribute));
+                return NewInstance<AnnotationDrop>();
             }
 
             if (annotation is DescriptionAttribute description) {
@@ -576,14 +589,14 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is HintAttribute hint) {
-                return NewInstance<AnnotationHintAttribute>(
+                return NewInstance<AnnotationHint>(
                     Constant(hint.Value),
                     Constant(hint.Applies),
                     Constant(hint.Model));
             }
 
             if (annotation is NoLockAttribute) {
-                return NewInstance(typeof(AnnotationNoLock));
+                return NewInstance<AnnotationNoLock>();
             }
 
             if (annotation is AuditAttribute audit) {
@@ -598,11 +611,11 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is IterableUnboundAttribute) {
-                return NewInstance(typeof(AnnotationIterableUnbound));
+                return NewInstance<AnnotationIterableUnbound>();
             }
 
             if (annotation is HookAttribute hook) {
-                return NewInstance<AnnotationHookAttribute>(
+                return NewInstance<AnnotationHook>(
                     EnumValue(typeof(HookType), hook.HookType.GetName()),
                     Constant(hook.Hook));
             }
@@ -614,19 +627,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is PrivateAttribute) {
-                return NewInstance(typeof(AnnotationPrivate));
+                return NewInstance<AnnotationPrivate>();
             }
 
             if (annotation is ProtectedAttribute) {
-                return NewInstance(typeof(AnnotationProtected));
+                return NewInstance<AnnotationProtected>();
             }
 
             if (annotation is PublicAttribute) {
-                return NewInstance(typeof(AnnotationPublic));
+                return NewInstance<AnnotationPublic>();
             }
 
             if (annotation is BusEventTypeAttribute) {
-                return NewInstance(typeof(AnnotationBusEventType));
+                return NewInstance<AnnotationBusEventType>();
             }
 
             if (annotation.GetType().Namespace == RootNamespace) {

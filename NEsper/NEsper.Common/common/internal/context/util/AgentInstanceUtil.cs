@@ -26,6 +26,7 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.context.util
             IList<AgentInstance> agentInstances,
             AgentInstanceContext agentInstanceContextCreate)
         {
-            ContextStatementEventEvaluator evaluator =
+            var evaluator =
                 agentInstanceContextCreate.ContextServiceFactory.ContextStatementEventEvaluator;
             if (theEvent != null) {
                 evaluator.EvaluateEventForStatement(theEvent, agentInstances, agentInstanceContextCreate);
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
             if (optionalTriggeringPattern != null) {
                 // evaluation order definition is up to the originator of the triggering pattern
-                foreach (KeyValuePair<string, object> entry in optionalTriggeringPattern) {
+                foreach (var entry in optionalTriggeringPattern) {
                     if (entry.Value is EventBean) {
                         evaluator.EvaluateEventForStatement(
                             (EventBean) entry.Value,
@@ -55,8 +56,8 @@ namespace com.espertech.esper.common.@internal.context.util
                             agentInstanceContextCreate);
                     }
                     else if (entry.Value is EventBean[]) {
-                        EventBean[] eventsArray = (EventBean[]) entry.Value;
-                        foreach (EventBean eventElement in eventsArray) {
+                        var eventsArray = (EventBean[]) entry.Value;
+                        foreach (var eventElement in eventsArray) {
                             evaluator.EvaluateEventForStatement(
                                 eventElement,
                                 agentInstances,
@@ -74,12 +75,12 @@ namespace com.espertech.esper.common.@internal.context.util
             bool leaveLocksAcquired,
             IList<AgentInstance> agentInstancesLocksHeld)
         {
-            StatementContext statementContext = statementDesc.Lightweight.StatementContext;
-            StatementResourceHolder holder =
+            var statementContext = statementDesc.Lightweight.StatementContext;
+            var holder =
                 statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
 
             if (terminationProperties != null) {
-                MappedEventBean mappedEventBean = (MappedEventBean) holder.AgentInstanceContext.ContextProperties;
+                var mappedEventBean = (MappedEventBean) holder.AgentInstanceContext.ContextProperties;
                 mappedEventBean.Properties.PutAll(terminationProperties);
             }
 
@@ -106,22 +107,18 @@ namespace com.espertech.esper.common.@internal.context.util
             agentInstanceContext.InstrumentationProvider.QContextPartitionDestroy(agentInstanceContext);
 
             // obtain statement lock
-            StatementAgentInstanceLock @lock = agentInstanceContext.EpStatementAgentInstanceHandle
-                .StatementAgentInstanceLock;
+            var @lock = agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
             @lock.AcquireWriteLock();
             try {
-                if (finalView is OutputProcessViewTerminable && !isStatementStop) {
-                    OutputProcessViewTerminable terminable = (OutputProcessViewTerminable) finalView;
+                if (finalView is OutputProcessViewTerminable terminable && !isStatementStop) {
                     terminable.Terminated();
                 }
 
                 StopSafe(stopCallback, agentInstanceContext);
 
                 // release resource
-                if (agentInstanceContext.StatementContext.StatementAIResourceRegistry != null) {
-                    agentInstanceContext.StatementContext.StatementAIResourceRegistry.Deassign(
-                        agentInstanceContext.AgentInstanceId);
-                }
+                agentInstanceContext.StatementContext.StatementAIResourceRegistry?.Deassign(
+                    agentInstanceContext.AgentInstanceId);
 
                 // cause any remaining schedules, that may concide with the caller's schedule, to be ignored
                 agentInstanceContext.EpStatementAgentInstanceHandle.IsDestroyed = true;
@@ -151,10 +148,10 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceStopCallback stopMethod,
             AgentInstanceContext agentInstanceContext)
         {
-            AgentInstanceStopServices stopServices = new AgentInstanceStopServices(agentInstanceContext);
+            var stopServices = new AgentInstanceStopServices(agentInstanceContext);
 
-            ICollection<AgentInstanceStopCallback> additionalTerminations = agentInstanceContext.TerminationCallbackRO;
-            foreach (AgentInstanceStopCallback stop in additionalTerminations) {
+            var additionalTerminations = agentInstanceContext.TerminationCallbackRO;
+            foreach (var stop in additionalTerminations) {
                 try {
                     stop.Stop(stopServices);
                 }
@@ -180,10 +177,10 @@ namespace com.espertech.esper.common.@internal.context.util
         public static AgentInstanceStopCallback FinalizeSafeStopCallbacks(
             IList<AgentInstanceStopCallback> stopCallbacks)
         {
-            AgentInstanceStopCallback[] stopCallbackArray = stopCallbacks.ToArray();
+            var stopCallbackArray = stopCallbacks.ToArray();
             return new ProxyAgentInstanceStopCallback() {
                 ProcStop = (services) => {
-                    foreach (AgentInstanceStopCallback callback in stopCallbackArray) {
+                    foreach (var callback in stopCallbackArray) {
                         try {
                             callback.Stop(services);
                         }
@@ -216,7 +213,7 @@ namespace com.espertech.esper.common.@internal.context.util
             MappedEventBean contextBean,
             AgentInstanceFilterProxy proxy)
         {
-            StatementAgentInstanceFactoryResult result = AgentInstanceUtil.Start(
+            var result = AgentInstanceUtil.Start(
                 services,
                 statementDesc,
                 assignedContextId,
@@ -234,20 +231,20 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceFilterProxy agentInstanceFilterProxy,
             bool isRecoveringResilient)
         {
-            StatementContext statementContext = statement.Lightweight.StatementContext;
+            var statementContext = statement.Lightweight.StatementContext;
 
             // create handle that comtains lock for use in scheduling and filter callbacks
-            StatementAgentInstanceLock @lock =
+            var @lock =
                 statementContext.StatementAIFactoryProvider.Factory.ObtainAgentInstanceLock(
                     statementContext,
                     agentInstanceId);
-            EPStatementAgentInstanceHandle agentInstanceHandle =
+            var agentInstanceHandle =
                 new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
 
-            AuditProvider auditProvider = statementContext.StatementInformationals.AuditProvider;
-            InstrumentationCommon instrumentationProvider =
+            var auditProvider = statementContext.StatementInformationals.AuditProvider;
+            var instrumentationProvider =
                 statementContext.StatementInformationals.InstrumentationProvider;
-            AgentInstanceContext agentInstanceContext = new AgentInstanceContext(
+            var agentInstanceContext = new AgentInstanceContext(
                 statementContext,
                 agentInstanceId,
                 agentInstanceHandle,
@@ -259,58 +256,57 @@ namespace com.espertech.esper.common.@internal.context.util
                 agentInstanceContext.AuditProvider.ContextPartition(true, agentInstanceContext);
             }
 
-            StatementAgentInstanceLock statementAgentInstanceLock =
+            var statementAgentInstanceLock =
                 agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
 
             agentInstanceContext.InstrumentationProvider.QContextPartitionAllocate(agentInstanceContext);
 
-            statementAgentInstanceLock.AcquireWriteLock();
+            using (statementAgentInstanceLock.AcquireWriteLock()) {
+                try {
+                    // start
+                    var startResult =
+                        statement.Lightweight.StatementProvider.StatementAIFactoryProvider.Factory.NewContext(
+                            agentInstanceContext,
+                            isRecoveringResilient);
 
-            try {
-                // start
-                StatementAgentInstanceFactoryResult startResult =
-                    statement.Lightweight.StatementProvider.StatementAIFactoryProvider.Factory.NewContext(
-                        agentInstanceContext,
-                        isRecoveringResilient);
+                    // hook up with listeners+subscribers
+                    startResult.FinalView.Child = statement.ContextMergeView; // hook output to merge view
 
-                // hook up with listeners+subscribers
-                startResult.FinalView.Child = statement.ContextMergeView; // hook output to merge view
+                    // assign agents for expression-node based strategies
+                    var aiResourceRegistry = statementContext.StatementAIResourceRegistry;
+                    AIRegistryUtil.AssignFutures(
+                        aiResourceRegistry,
+                        agentInstanceId,
+                        startResult.OptionalAggegationService,
+                        startResult.PriorStrategies,
+                        startResult.PreviousGetterStrategies,
+                        startResult.SubselectStrategies,
+                        startResult.TableAccessStrategies,
+                        startResult.RowRecogPreviousStrategy);
 
-                // assign agents for expression-node based strategies
-                StatementAIResourceRegistry aiResourceRegistry = statementContext.StatementAIResourceRegistry;
-                AIRegistryUtil.AssignFutures(
-                    aiResourceRegistry,
-                    agentInstanceId,
-                    startResult.OptionalAggegationService,
-                    startResult.PriorStrategies,
-                    startResult.PreviousGetterStrategies,
-                    startResult.SubselectStrategies,
-                    startResult.TableAccessStrategies,
-                    startResult.RowRecogPreviousStrategy);
-
-                // execute preloads, if any
-                if (startResult.PreloadList != null) {
-                    foreach (StatementAgentInstancePreload preload in startResult.PreloadList) {
-                        preload.ExecutePreload();
+                    // execute preloads, if any
+                    if (startResult.PreloadList != null) {
+                        foreach (var preload in startResult.PreloadList) {
+                            preload.ExecutePreload();
+                        }
                     }
+
+                    var holder =
+                        services.StatementResourceHolderBuilder.Build(agentInstanceContext, startResult);
+                    statementContext.StatementCPCacheService.StatementResourceService.SetPartitioned(
+                        agentInstanceId,
+                        holder);
+
+                    // instantiate
+                    return startResult;
                 }
+                finally {
+                    if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
+                        agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    }
 
-                StatementResourceHolder holder =
-                    services.StatementResourceHolderBuilder.Build(agentInstanceContext, startResult);
-                statementContext.StatementCPCacheService.StatementResourceService.SetPartitioned(
-                    agentInstanceId,
-                    holder);
-
-                // instantiate
-                return startResult;
-            }
-            finally {
-                if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
-                    agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    agentInstanceContext.InstrumentationProvider.AContextPartitionAllocate();
                 }
-
-                statementAgentInstanceLock.ReleaseWriteLock();
-                agentInstanceContext.InstrumentationProvider.AContextPartitionAllocate();
             }
         }
 
@@ -320,7 +316,7 @@ namespace com.espertech.esper.common.@internal.context.util
             FilterHandle filterHandle)
         {
             // context was created - reevaluate for the given event
-            ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>();
+            var callbacks = new ArrayDeque<FilterHandle>();
             agentInstanceContext.FilterService.Evaluate(
                 theEvent,
                 callbacks,
@@ -330,7 +326,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 agentInstanceContext.VariableManagementService.SetLocalVersion();
 
                 // sub-selects always go first
-                foreach (FilterHandle handle in callbacks) {
+                foreach (var handle in callbacks) {
                     if (handle.Equals(filterHandle)) {
                         return true;
                     }
@@ -352,7 +348,7 @@ namespace com.espertech.esper.common.@internal.context.util
             return false;
         }
 
-        public static StatementAgentInstanceLock NewLock(StatementContext statementContext)
+        public static IReaderWriterLock NewLock(StatementContext statementContext)
         {
             return statementContext.StatementAgentInstanceLockFactory.GetStatementLock(
                 statementContext.StatementName,

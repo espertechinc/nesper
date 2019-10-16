@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
@@ -15,6 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Nested () regular expression in a regex expression tree.
     /// </summary>
+    [Serializable]
     public class RowRecogExprNodeNested : RowRecogExprNode
     {
         public RowRecogExprNodeNested(

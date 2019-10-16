@@ -263,15 +263,15 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 // b) App thread processes E1 for CTX, no action
                 // c) Timer thread destroys CP1
                 // d) App thread processes E1 for CP1, filter-faulting and ending up processing E1 into CTX because of this handler
-                AgentInstanceContext aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
-                StatementAgentInstanceLock @lock = aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
-                @lock.AcquireWriteLock();
-                try {
+                var aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
+                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
+                {
                     object key = contextControllerInitTerm.GetDistinctKey(theEvent);
                     EventBean trigger = contextControllerInitTerm.DistinctLastTriggerEvents.Get(key);
 
                     // see if we find that context partition
-                    if (trigger != null) {
+                    if (trigger != null)
+                    {
                         // true for we have already handled this event
                         // false for filter fault
                         return trigger.Equals(theEvent);
@@ -285,9 +285,6 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                         aiCreate);
 
                     return true; // we handled the event
-                }
-                finally {
-                    @lock.ReleaseWriteLock();
                 }
             }
         }

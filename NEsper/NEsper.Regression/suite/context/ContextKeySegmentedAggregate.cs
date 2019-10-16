@@ -47,6 +47,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             return bean;
         }
 
+        public static object ToArray(ICollection<object> input)
+        {
+            return input.ToArray();
+        }
+
         internal class ContextKeySegmentedAccessOnly : RegressionExecution
         {
             public void Run(RegressionEnvironment env)

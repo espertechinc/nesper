@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public Func<int> ProcAgentInstanceId { get; set; }
         public Func<EventBeanService> ProcEventBeanService { get; set; }
         public Func<TimeProvider> ProcTimeProvider { get; set; }
-        public Func<StatementAgentInstanceLock> ProcAgentInstanceLock { get; set; }
+        public Func<IReaderWriterLock> ProcAgentInstanceLock { get; set; }
         public Func<ExpressionResultCacheService> ProcExpressionResultCacheService { get; set; }
         public Func<TableExprEvaluatorContext> ProcTableExprEvaluatorContext { get; set; }
         public Func<AgentInstanceScriptContext> ProcAllocateAgentInstanceScriptContext { get; set; }
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public int AgentInstanceId => ProcAgentInstanceId.Invoke();
         public EventBeanService EventBeanService => ProcEventBeanService?.Invoke();
         public TimeProvider TimeProvider => ProcTimeProvider?.Invoke();
-        public StatementAgentInstanceLock AgentInstanceLock => ProcAgentInstanceLock?.Invoke();
+        public IReaderWriterLock AgentInstanceLock => ProcAgentInstanceLock?.Invoke();
         public ExpressionResultCacheService ExpressionResultCacheService => ProcExpressionResultCacheService?.Invoke();
         public TableExprEvaluatorContext TableExprEvaluatorContext => ProcTableExprEvaluatorContext?.Invoke();
 

@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             }
 
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, REF_AGGREGATORTOPGROUP.Ref));
-            ctor.Block.AssignRef(REF_AGGREGATORTOPGROUP, NewInstance(classNames.RowTop))
+            ctor.Block.AssignRef(REF_AGGREGATORTOPGROUP, NewInstance(classNames.RowTop, Ref("o")))
                 .ExprDotMethod(REF_AGGREGATORTOPGROUP, "DecreaseRefcount");
 
             explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRow), REF_CURRENTROW.Ref));
@@ -134,6 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
+            method.Block.DebugStack();
             method.Block.MethodReturn(
                 ExprDotMethod(REF_CURRENTROW, "GetValue", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
@@ -226,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                             "Get",
                             AggregationServiceCodegenNames.REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
-                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
+                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
                 .BlockEnd()
                 .BlockEnd()
                 .AssignRef(REF_CURRENTGROUPKEY, AggregationServiceCodegenNames.REF_GROUPKEY);
@@ -365,7 +366,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                                         "Get",
                                         Ref(groupKeyName))))
                             .IfCondition(EqualsNull(REF_CURRENTROW))
-                            .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
+                            .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
                             .ExprDotMethod(
                                 ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(level.AggregationOffset)),
                                 "Put",
@@ -384,7 +385,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                                         "Get",
                                         Ref(groupKeyName))))
                             .IfCondition(EqualsNull(REF_CURRENTROW))
-                            .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
+                            .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
                             .ExprDotMethod(
                                 ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(level.AggregationOffset)),
                                 "Put",

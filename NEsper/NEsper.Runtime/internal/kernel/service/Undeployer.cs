@@ -111,10 +111,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     services.RowRecogStatePoolEngineSvc.RemoveStatement(new DeploymentIdNamePair(statement.DeploymentId, statement.StatementName));
                 }
 
-                var it = statement.FinalizeCallbacks;
-                while (it.MoveNext())
+                var enumerator = statement.FinalizeCallbacks;
+                while (enumerator.MoveNext())
                 {
-                    it.Current.StatementDestroyed(statement);
+                    enumerator.Current?.StatementDestroyed(statement);
                 }
 
                 if (statement.DestroyCallback != null)

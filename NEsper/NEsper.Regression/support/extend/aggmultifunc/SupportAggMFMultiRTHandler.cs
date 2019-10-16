@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             get {
                 // we share single-event stuff
                 var functionName = validationContext.FunctionName;
-                if (functionName.Equals("se1") || functionName.Equals("se2")) {
+                if (functionName == "se1" || functionName == "se2") {
                     AggregationMultiFunctionStateKey key = new SupportAggregationStateKey("A1");
                     providerKeys.Add(key);
                     return key;
@@ -58,29 +58,35 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             get {
                 InjectionStrategy injectionStrategy;
                 var functionName = validationContext.FunctionName;
-                if (functionName.Equals("ss")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarStateFactory))
-                            .AddExpression("param", validationContext.AllParameterExpressions[0]);
-                }
-                else if (functionName.Equals("sa") || functionName.Equals("sc")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayCollScalarStateFactory))
-                            .AddExpression("evaluator", validationContext.AllParameterExpressions[0])
-                            .AddConstant(
-                                "evaluationType",
-                                validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-                }
-                else if (functionName.Equals("se1")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventStateFactory));
-                }
-                else if (functionName.Equals("ee")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTEnumerableEventsStateFactory));
-                }
-                else {
-                    throw new UnsupportedOperationException("Unknown function '" + functionName + "'");
+                switch (functionName) {
+                    case "ss":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarStateFactory))
+                                .AddExpression("param", validationContext.AllParameterExpressions[0]);
+                        break;
+
+                    case "sa":
+                    case "sc":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayCollScalarStateFactory))
+                                .AddExpression("evaluator", validationContext.AllParameterExpressions[0])
+                                .AddConstant(
+                                    "evaluationType",
+                                    validationContext.AllParameterExpressions[0].Forge.EvaluationType);
+                        break;
+
+                    case "se1":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventStateFactory));
+                        break;
+
+                    case "ee":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTEnumerableEventsStateFactory));
+                        break;
+
+                    default:
+                        throw new UnsupportedOperationException("Unknown function '" + functionName + "'");
                 }
 
                 var mode =
@@ -95,29 +101,36 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             get {
                 var functionName = validationContext.FunctionName;
                 InjectionStrategy injectionStrategy;
-                if (functionName.Equals("ss")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarAccessorFactory));
-                }
-                else if (functionName.Equals("sa")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayScalarAccessorFactory));
-                }
-                else if (functionName.Equals("sc")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTCollScalarAccessorFactory));
-                }
-                else if (functionName.Equals("se1") || functionName.Equals("se2")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventAccessorFactory));
-                }
-                else if (functionName.Equals("ee")) {
-                    injectionStrategy =
-                        new InjectionStrategyClassNewInstance(
-                            typeof(SupportAggMFMultiRTEnumerableEventsAccessorFactory));
-                }
-                else {
-                    throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
+                switch (functionName) {
+                    case "ss":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTPlainScalarAccessorFactory));
+                        break;
+
+                    case "sa":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTArrayScalarAccessorFactory));
+                        break;
+
+                    case "sc":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTCollScalarAccessorFactory));
+                        break;
+
+                    case "se1":
+                    case "se2":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(typeof(SupportAggMFMultiRTSingleEventAccessorFactory));
+                        break;
+
+                    case "ee":
+                        injectionStrategy =
+                            new InjectionStrategyClassNewInstance(
+                                typeof(SupportAggMFMultiRTEnumerableEventsAccessorFactory));
+                        break;
+
+                    default:
+                        throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
                 }
 
                 var mode =
@@ -131,28 +144,27 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         public EPType ReturnType {
             get {
                 var functionName = validationContext.FunctionName;
-                if (functionName.Equals("ss")) {
-                    return EPTypeHelper.SingleValue(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-                }
+                switch (functionName) {
+                    case "ss":
+                        return EPTypeHelper.SingleValue(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
-                if (functionName.Equals("sa")) {
-                    return EPTypeHelper.Array(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-                }
+                    case "sa":
+                        return EPTypeHelper.Array(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
-                if (functionName.Equals("sc")) {
-                    return EPTypeHelper.CollectionOfSingleValue(
-                        validationContext.AllParameterExpressions[0].Forge.EvaluationType);
-                }
+                    case "sc":
+                        return EPTypeHelper.CollectionOfSingleValue(
+                            validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
-                if (functionName.Equals("se1") || functionName.Equals("se2")) {
-                    return EPTypeHelper.SingleEvent(validationContext.EventTypes[0]);
-                }
+                    case "se1":
+                    case "se2":
+                        return EPTypeHelper.SingleEvent(validationContext.EventTypes[0]);
 
-                if (functionName.Equals("ee")) {
-                    return EPTypeHelper.CollectionOfEvents(validationContext.EventTypes[0]);
-                }
+                    case "ee":
+                        return EPTypeHelper.CollectionOfEvents(validationContext.EventTypes[0]);
 
-                throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
+                    default:
+                        throw new IllegalStateException("Unrecognized function name '" + functionName + "'");
+                }
             }
         }
 
@@ -190,7 +202,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 
                 var that = (SupportAggregationStateKey) o;
 
-                if (id != null ? !id.Equals(that.id) : that.id != null) {
+                if (!id?.Equals(that.id) ?? that.id != null) {
                     return false;
                 }
 

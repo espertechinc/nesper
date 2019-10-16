@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return new EventType[] {firstParamType};
             }
 
-            ObjectArrayEventType indexEventType = ExprDotNodeUtility.MakeTransientOAType(
+            var indexEventType = ExprDotNodeUtility.MakeTransientOAType(
                 enumMethodUsedName,
                 goesToNames[1],
                 typeof(int),
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
             if (inputEventType != null) {
                 base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);

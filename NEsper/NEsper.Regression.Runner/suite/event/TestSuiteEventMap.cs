@@ -43,49 +43,49 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapCore()
         {
             RegressionRunner.Run(session, EventMapCore.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapPropertyDynamic()
         {
             RegressionRunner.Run(session, new EventMapPropertyDynamic());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapObjectArrayInterUse()
         {
             RegressionRunner.Run(session, new EventMapObjectArrayInterUse());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapInheritanceInitTime()
         {
             RegressionRunner.Run(session, new EventMapInheritanceInitTime());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapNestedEscapeDot()
         {
             RegressionRunner.Run(session, new EventMapNestedEscapeDot());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapNestedConfigStatic()
         {
             RegressionRunner.Run(session, new EventMapNestedConfigStatic());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapNested()
         {
             RegressionRunner.Run(session, EventMapNested.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapProperties()
         {
             RegressionRunner.Run(session, EventMapProperties.Executions());
@@ -93,8 +93,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
         private static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new Type[] { typeof(SupportBean) })
-            {
+            foreach (Type clazz in new Type[] {typeof(SupportBean)}) {
                 configuration.Common.AddEventType(clazz);
             }
 
@@ -113,17 +112,26 @@ namespace com.espertech.esper.regressionrun.suite.@event
             myMapLev0def.Put("lev0name", myMapLev1def);
             configuration.Common.AddEventType("MyMap", myMapLev0def);
 
-            IDictionary<string, object> root = EventMapCore.MakeMap(new object[][]{
-                new object[] {"base", typeof(string)}});
-            IDictionary<string, object> sub1 = EventMapCore.MakeMap(new object[][]{
-                new object[] {"sub1", typeof(string)}});
-            IDictionary<string, object> sub2 = EventMapCore.MakeMap(new object[][]{
-                new object[] {"sub2", typeof(string)}});
-            Properties suba = EventMapCore.MakeProperties(new object[][]{
-                new object[] {"suba", typeof(string)}});
-            IDictionary<string, object> subb = EventMapCore.MakeMap(new object[][] {
-                new object[] {"subb", typeof(string)}
-            });
+            IDictionary<string, object> root = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"base", typeof(string)}
+                });
+            IDictionary<string, object> sub1 = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"sub1", typeof(string)}
+                });
+            IDictionary<string, object> sub2 = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"sub2", typeof(string)}
+                });
+            Properties suba = EventMapCore.MakeProperties(
+                new object[][] {
+                    new object[] {"suba", typeof(string)}
+                });
+            IDictionary<string, object> subb = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"subb", typeof(string)}
+                });
             configuration.Common.AddEventType("RootEvent", root);
             configuration.Common.AddEventType("Sub1Event", sub1);
             configuration.Common.AddEventType("Sub2Event", sub2);
@@ -136,39 +144,48 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddMapSuperType("SubBEvent", "Sub1Event");
             configuration.Common.AddMapSuperType("SubBEvent", "Sub2Event");
 
-            IDictionary<string, object> nestedMapLevelThree = EventMapCore.MakeMap(new object[][]{
-                new object[] {"simpleThree", typeof(long?)},
-                new object[] {"objectThree", typeof(SupportBean_B)},
-            });
-            IDictionary<string, object> nestedMapLevelTwo = EventMapCore.MakeMap(new object[][]{
-                new object[] {"simpleTwo", typeof(int?)},
-                new object[] {"objectTwo", typeof(SupportBeanCombinedProps)},
-                new object[] {"nodefmapTwo", typeof(IDictionary<string, object>)},
-                new object[] {"mapTwo", nestedMapLevelThree},
-            });
-            IDictionary<string, object> nestedMapLevelOne = EventMapCore.MakeMap(new object[][]{
-                new object[] {"simpleOne", typeof(int?)},
-                new object[] {"objectOne", typeof(SupportBeanComplexProps)},
-                new object[] {"nodefmapOne", typeof(IDictionary<string, object>)},
-                new object[] {"mapOne", nestedMapLevelTwo}
-            });
-            IDictionary<string, object> nestedMapLevelZero = EventMapCore.MakeMap(new object[][]{
-                new object[] {"simple", typeof(string)},
-                new object[] {"object", typeof(SupportBean_A)},
-                new object[] {"nodefmap", typeof(IDictionary<string, object>)},
-                new object[] {"map", nestedMapLevelOne}
-            });
+            IDictionary<string, object> nestedMapLevelThree = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"simpleThree", typeof(long?)},
+                    new object[] {"objectThree", typeof(SupportBean_B)},
+                });
+            IDictionary<string, object> nestedMapLevelTwo = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"simpleTwo", typeof(int?)},
+                    new object[] {"objectTwo", typeof(SupportBeanCombinedProps)},
+                    new object[] {"nodefmapTwo", typeof(IDictionary<string, object>)},
+                    new object[] {"mapTwo", nestedMapLevelThree},
+                });
+            IDictionary<string, object> nestedMapLevelOne = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"simpleOne", typeof(int?)},
+                    new object[] {"objectOne", typeof(SupportBeanComplexProps)},
+                    new object[] {"nodefmapOne", typeof(IDictionary<string, object>)},
+                    new object[] {"mapOne", nestedMapLevelTwo}
+                });
+            IDictionary<string, object> nestedMapLevelZero = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"simple", typeof(string)},
+                    new object[] {"object", typeof(SupportBean_A)},
+                    new object[] {"nodefmap", typeof(IDictionary<string, object>)},
+                    new object[] {"map", nestedMapLevelOne}
+                });
             configuration.Common.AddEventType("NestedMap", nestedMapLevelZero);
 
-            IDictionary<string, object> type = EventMapCore.MakeMap(new object[][]{
-                new object[] {"base1", typeof(string)},
-                new object[] {"base2", EventMapCore.MakeMap(new object[][]{
-                    new object[] {"n1", typeof(int)}})}
-            });
+            IDictionary<string, object> type = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"base1", typeof(string)},
+                    new object[] {
+                        "base2", EventMapCore.MakeMap(
+                            new object[][] {
+                                new object[] {"n1", typeof(int)}
+                            })
+                    }
+                });
             configuration.Common.AddEventType("MyEvent", type);
 
             Properties properties = new Properties();
-            properties.Put("MyInt", typeof(int).FullName);
+            properties.Put("myInt", typeof(int).FullName);
             properties.Put("byteArr", typeof(byte[]).FullName);
             properties.Put("myInt2", "int");
             properties.Put("double", "double");
@@ -182,73 +199,96 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyLevel2", myLevel2);
 
             // create a named map
-            IDictionary<string, object> namedDef = EventMapCore.MakeMap(new object[][]{
-                new object[] {"n0", typeof(int)}});
+            IDictionary<string, object> namedDef = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"n0", typeof(int)}
+                });
             configuration.Common.AddEventType("MyNamedMap", namedDef);
 
             // create a map using the name
-            IDictionary<string, object> eventDef = EventMapCore.MakeMap(new object[][]{
-                new object[] {"P0", "MyNamedMap"},
-                new object[] {"P1", "MyNamedMap[]"}});
+            IDictionary<string, object> eventDef = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"P0", "MyNamedMap"},
+                    new object[] {"P1", "MyNamedMap[]"}
+                });
             configuration.Common.AddEventType("MyMapWithAMap", eventDef);
 
             // test map containing first-level property that is an array of primitive or Class
-            IDictionary<string, object> arrayDef = EventMapCore.MakeMap(new object[][]{
-                new object[] {"P0", typeof(int[])},
-                new object[] {"P1", typeof(SupportBean[])}});
+            IDictionary<string, object> arrayDef = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"P0", typeof(int[])},
+                    new object[] {"P1", typeof(SupportBean[])}
+                });
             configuration.Common.AddEventType("MyArrayMap", arrayDef);
 
             // test map at the second level of a nested map that is an array of primitive or Class
-            IDictionary<string, object> arrayDefOuter = EventMapCore.MakeMap(new object[][]{
-                new object[] {"outer", arrayDef}});
+            IDictionary<string, object> arrayDefOuter = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"outer", arrayDef}
+                });
             configuration.Common.AddEventType("MyArrayMapOuter", arrayDefOuter);
 
             // test map containing first-level property that is an array of primitive or Class
-            IDictionary<string, object> mappedDef = EventMapCore.MakeMap(new object[][] {
-                new object[] {"P0", typeof(IDictionary<string, object>)}
-            });
+            IDictionary<string, object> mappedDef = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"P0", typeof(IDictionary<string, object>)}
+                });
             configuration.Common.AddEventType("MyMappedPropertyMap", mappedDef);
 
             // test map at the second level of a nested map that is an array of primitive or Class
-            IDictionary<string, object> mappedDefOuter = EventMapCore.MakeMap(new object[][] {
-                new object[] {"outer", mappedDef}
-            });
+            IDictionary<string, object> mappedDefOuter = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"outer", mappedDef}
+                });
             configuration.Common.AddEventType("MyMappedPropertyMapOuter", mappedDefOuter);
 
-            IDictionary<string, object> mappedDefOuterTwo = EventMapCore.MakeMap(new object[][] {
-                new object[] {"outerTwo", typeof(SupportBeanComplexProps)}
-            });
+            IDictionary<string, object> mappedDefOuterTwo = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"outerTwo", typeof(SupportBeanComplexProps)}
+                });
             configuration.Common.AddEventType("MyMappedPropertyMapOuterTwo", mappedDefOuterTwo);
 
             // create a named map
-            IDictionary<string, object> myNamedMap = EventMapCore.MakeMap(new object[][] {
-                new object[] {"n0", typeof(int)}
-            });
+            IDictionary<string, object> myNamedMap = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"n0", typeof(int)}
+                });
             configuration.Common.AddEventType("MyNamedMap", myNamedMap);
 
             // create a map using the name
-            IDictionary<string, object> myMapWithAMap = EventMapCore.MakeMap(new object[][]{
-                new object[] {"P0", "MyNamedMap"},
-                new object[] {"P1", "MyNamedMap[]"}});
+            IDictionary<string, object> myMapWithAMap = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"P0", "MyNamedMap"},
+                    new object[] {"P1", "MyNamedMap[]"}
+                });
             configuration.Common.AddEventType("MyMapWithAMap", myMapWithAMap);
 
             // test named-map at the second level of a nested map
-            IDictionary<string, object> myArrayMapTwo = EventMapCore.MakeMap(new object[][] {
-                new object[] {"outer", myMapWithAMap}
-            });
+            IDictionary<string, object> myArrayMapTwo = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"outer", myMapWithAMap}
+                });
             configuration.Common.AddEventType("MyArrayMapTwo", myArrayMapTwo);
 
             configuration.Common.AddEventType("MapType", Collections.SingletonDataMap("im", typeof(string)));
-            configuration.Common.AddEventType("OAType", new [] { "p0","p1","p2","p3" }, new object[] { typeof(string), "MapType", "MapType[]", Collections.SingletonDataMap("om", typeof(string)) });
+            configuration.Common.AddEventType(
+                "OAType",
+                new[] {"p0", "p1", "p2", "p3"},
+                new object[]
+                    {typeof(string), "MapType", "MapType[]", Collections.SingletonDataMap("om", typeof(string))});
 
-            IDictionary<string, object> definition = EventMapCore.MakeMap(new object[][]{
-                new object[]{"a.b", typeof(int)},
-                new object[]{"a.b.c", typeof(int)},
-                new object[]{"nes.", typeof(int)},
-                new object[]{"nes.nes2", EventMapCore.MakeMap(new object[][] {
-                    new object[]{"x.y", typeof(int)}
-                })}
-            });
+            IDictionary<string, object> definition = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"a.b", typeof(int)},
+                    new object[] {"a.b.c", typeof(int)},
+                    new object[] {"nes.", typeof(int)},
+                    new object[] {
+                        "nes.nes2", EventMapCore.MakeMap(
+                            new object[][] {
+                                new object[] {"x.y", typeof(int)}
+                            })
+                    }
+                });
             configuration.Common.AddEventType("DotMap", definition);
 
             IDictionary<string, object> nmwspPropertiesNestedNested = new Dictionary<string, object>();

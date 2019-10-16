@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env.SendEventBean(new SupportBean());
                     Assert.Fail();
                 }
-                catch (EPException ex) {
+                catch (EPException) {
                     /* expected */
                 }
 

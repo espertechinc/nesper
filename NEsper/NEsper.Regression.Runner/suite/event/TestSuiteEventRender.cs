@@ -41,19 +41,19 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventRender()
         {
             RegressionRunner.Run(session, EventRender.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventRenderJSON()
         {
             RegressionRunner.Run(session, EventRenderJSON.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventRenderXML()
         {
             RegressionRunner.Run(session, EventRenderXML.Executions());

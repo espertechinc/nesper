@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 value = 0;
             }
             else {
-                value = code.GetCrc32();
+                value = code.GetCrc32() % granularity;
             }
 
             int result = (int) value;

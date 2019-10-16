@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(
+            var cache = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(
                 typeof(VariantEventPropertyGetterAny),
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(
+            var cache = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(EventBean), "eventBean");

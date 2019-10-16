@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.client.soda
             }
             else if (second.GetType().IsEnum)
             {
-                writer.Write(second.GetType().Name);
+                writer.Write(second.GetType().FullName);
                 writer.Write(".");
                 writer.Write(second.ToString());
             }

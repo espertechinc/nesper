@@ -20,6 +20,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
+        [Serializable]
         public class AddDecimalConvComputer : Computer
         {
             private readonly SimpleNumberCoercer _convOne;
@@ -57,7 +58,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var leftValue = _convOne.CoerceCodegen(left, ltype);
                 var rightValue = _convTwo.CoerceCodegen(right, rtype);
-                return CodegenExpressionBuilder.ExprDotMethod(leftValue, "+", rightValue);
+                return CodegenExpressionBuilder.Op(leftValue, "+", rightValue);
             }
         }
     }

@@ -372,7 +372,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                 var message = new StringWriter();
                 WriteDataflow(message, dataflowName, dataFlowInstanceId);
                 message.Write(" from state ");
-                message.Write(state == null ? "(none)" : state.GetName());
+                message.Write(state == null ? "(none)" : state.Value.GetName());
                 message.Write(" to state ");
                 message.Write(newState.ToString());
                 AuditLog(agentInstanceContext, AuditEnum.DATAFLOW_TRANSITION, message.ToString());

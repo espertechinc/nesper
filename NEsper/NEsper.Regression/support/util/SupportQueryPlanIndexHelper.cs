@@ -67,13 +67,22 @@ namespace com.espertech.esper.regressionlib.support.util
                 "Number of indexes mismatch for stream " + streamNum
             );
 
-            var itActual = actualItems.GetEnumerator();
-            var itExpected = expectedItems.GetEnumerator();
+            var actualEnum = actualItems.GetEnumerator();
+            var expectedEnum = expectedItems.GetEnumerator();
 
             var count = 0;
-            for (; itActual.MoveNext();) {
-                var actualItem = itActual.Advance();
-                var expectedItem = itExpected.Advance();
+
+            while (true) {
+                var actualNext = actualEnum.MoveNext();
+                var expectedNext = expectedEnum.MoveNext();
+                Assert.That(actualNext, Is.EqualTo(expectedNext));
+
+                if (!actualNext) {
+                    break;
+                }
+
+                var actualItem = actualEnum.Current;
+                var expectedItem = expectedEnum.Current;
                 CompareIndexItem(streamNum, count, expectedItem.Value, actualItem.Value);
                 count++;
                 indexNameMapping.Put(actualItem.Key, expectedItem.Key);

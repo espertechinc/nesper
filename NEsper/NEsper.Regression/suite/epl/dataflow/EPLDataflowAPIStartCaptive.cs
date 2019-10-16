@@ -43,29 +43,34 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             emitter.Submit(new object[] {"E1", 10});
             EPAssertionUtil.AssertPropsPerRow(
-                captureOp.Current.UnwrapIntoArray<EventBean>(),
+                env.Container,
+                captureOp.Current,
                 fields,
-                new[] {new object[] {"E1", 10}});
+                new object[][] {new object[] {"E1", 10}});
 
             emitter.Submit(new object[] {"E2", 20});
             EPAssertionUtil.AssertPropsPerRow(
-                captureOp.Current.UnwrapIntoArray<EventBean>(),
+                env.Container,
+                captureOp.Current,
                 fields,
                 new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
 
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             EPAssertionUtil.AssertPropsPerRow(
-                captureOp.Current.UnwrapIntoArray<EventBean>(),
+                env.Container,
+                captureOp.Current,
                 fields,
                 new object[0][]);
             EPAssertionUtil.AssertPropsPerRow(
-                captureOp.GetAndReset()[0].UnwrapIntoArray<EventBean>(),
+                env.Container,
+                captureOp.GetAndReset()[0].UnwrapIntoArray<object>(),
                 fields,
                 new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
 
             emitter.Submit(new object[] {"E3", 30});
             EPAssertionUtil.AssertPropsPerRow(
-                captureOp.Current.UnwrapIntoArray<EventBean>(),
+                env.Container,
+                captureOp.Current,
                 fields,
                 new[] {new object[] {"E3", 30}});
 

@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
             SendEvent(env, "CAT", 160, 6);
 
-            var fields = new [] { "symbol","Volume","mySum" };
+            var fields = new [] { "Symbol","Volume","mySum" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
             SendEvent(env, "CAT", 160, 6);
 
-            var fields = new [] { "symbol","sum(Price)" };
+            var fields = new [] { "Symbol","sum(Price)" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             SendEvent(env, "CAT", 105, 5);
             SendEvent(env, "CAT", 106, 6);
 
-            var fields = new [] { "symbol","Volume","sum(Price)" };
+            var fields = new [] { "Symbol","Volume","sum(Price)" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name(Value='s0') select Symbol, Volume, sum(Price) as mySum from " +
+                var epl = "@Name('s0') select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output every 6 events " +

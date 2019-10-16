@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -61,8 +62,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return ConstantNull();
             }
 
+
+            var forgeEvaluationType = forge.EvaluationType;
+            if (!childType.IsPrimitive) {
+                forgeEvaluationType = forgeEvaluationType.GetBoxedType();
+            }
+
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType,
+                forgeEvaluationType,
                 typeof(ExprCastNodeForgeNonConstEval),
                 codegenClassScope);
 
@@ -76,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var cast = forge.CasterParserComputerForge.CodegenPremade(
-                forge.EvaluationType,
+                forgeEvaluationType,
                 Ref("result"),
                 childType,
                 methodNode,

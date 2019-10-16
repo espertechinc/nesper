@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.compile;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.script.compiletime;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -58,6 +59,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
+            ScriptServiceCompileTime scriptServiceCompileTime,
             TableCompileTimeRegistry tableCompileTimeRegistry,
             TableCompileTimeResolver tableCompileTimeResolver,
             VariableCompileTimeRegistry variableCompileTimeRegistry,
@@ -86,6 +88,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             NamedWindowCompileTimeResolver = namedWindowCompileTimeResolver;
             NamedWindowCompileTimeRegistry = namedWindowCompileTimeRegistry;
             PatternObjectResolutionService = patternObjectResolutionService;
+            ScriptServiceCompileTime = scriptServiceCompileTime;
             ScriptCompileTimeRegistry = scriptCompileTimeRegistry;
             ScriptCompileTimeResolver = scriptCompileTimeResolver;
             TableCompileTimeRegistry = tableCompileTimeRegistry;
@@ -119,6 +122,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             NamedWindowCompileTimeResolver = null;
             NamedWindowCompileTimeRegistry = null;
             PatternObjectResolutionService = null;
+            ScriptServiceCompileTime = null;
             ScriptCompileTimeRegistry = null;
             ScriptCompileTimeResolver = null;
             TableCompileTimeRegistry = null;
@@ -168,6 +172,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public NamedWindowCompileTimeRegistry NamedWindowCompileTimeRegistry { get; }
 
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
+
+        public ScriptServiceCompileTime ScriptServiceCompileTime { get; }
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry { get; }
 

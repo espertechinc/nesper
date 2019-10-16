@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     }
 
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (clazz == typeof(IDictionary<object, object>)) {
+                    if (clazz.IsGenericDictionary()) {
                         return null;
                     }
 
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 if (ii < (propertiesCount - 1)) {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result == typeof(IDictionary<object, object>)) {
+                    if (result.IsGenericDictionary()) {
                         return null;
                     }
 
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 if (ii < (propertiesCount - 1)) {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result.GenericType == typeof(IDictionary<string, object>)) {
+                    if (result.GenericType.IsGenericStringDictionary()) {
                         return null;
                     }
 

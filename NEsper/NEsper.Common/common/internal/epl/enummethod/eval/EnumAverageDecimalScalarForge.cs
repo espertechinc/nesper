@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal(optionalMathContext);
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 var num = next;
                 if (num == null) {
                     continue;
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression math =
-                codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(optionalMathContext));
+                codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(optionalMathContext));
             var method = codegenMethodScope
-                .MakeChild(typeof(decimal), typeof(EnumAverageScalarForge), codegenClassScope)
+                .MakeChild(typeof(decimal?), typeof(EnumAverageScalarForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
                 .DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(

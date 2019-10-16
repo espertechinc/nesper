@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEvaluatorContext context)
         {
             var method = sumMethodFactory.SumAggregator;
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 method.Enter(next);
             }
 

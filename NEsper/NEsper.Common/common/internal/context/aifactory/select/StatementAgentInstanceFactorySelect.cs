@@ -31,6 +31,7 @@ using com.espertech.esper.common.@internal.view.filter;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
@@ -115,7 +116,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         {
         }
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

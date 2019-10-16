@@ -67,10 +67,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 exprMethod.Block
                     .DeclareVar<object>(result.Ref, expressions[i])
                     .IfRefNotNull(result.Ref)
-                    .AssignRef(hashCode, Op(Op(Constant(31), "*", hashCode), "+", ExprDotMethod(result, "HashCode")))
+                    .AssignRef(hashCode, Op(Op(Constant(31), "*", hashCode), "+", ExprDotMethod(result, "GetHashCode")))
                     .BlockEnd();
             }
-
             exprMethod.Block
                 .IfCondition(Relational(hashCode, CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
                 .BlockReturn(Op(hashCode, "%", Constant(granularity)))

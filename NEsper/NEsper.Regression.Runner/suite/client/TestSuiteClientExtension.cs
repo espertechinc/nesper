@@ -36,18 +36,18 @@ namespace com.espertech.esper.regressionrun.suite.client
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        private RegressionSession session;
+        private RegressionSession _session;
 
         private static void Configure(Configuration configuration)
         {
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             configuration.Compiler.AddPlugInSingleRowFunction(entry);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendAdapterLoaderLoad()
         {
             var session = RegressionRunner.Session();
@@ -247,52 +247,52 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationFunction()
         {
-            RegressionRunner.Run(session, new ClientExtendAggregationFunction());
+            RegressionRunner.Run(_session, new ClientExtendAggregationFunction());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationMultiFunction()
         {
-            RegressionRunner.Run(session, new ClientExtendAggregationMultiFunction());
+            RegressionRunner.Run(_session, new ClientExtendAggregationMultiFunction());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendPatternGuard()
         {
-            RegressionRunner.Run(session, new ClientExtendPatternGuard());
+            RegressionRunner.Run(_session, new ClientExtendPatternGuard());
         }
 
         [Test]
         public void TestClientExtendSingleRowFunction()
         {
-            RegressionRunner.Run(session, ClientExtendSingleRowFunction.Executions());
+            RegressionRunner.Run(_session, ClientExtendSingleRowFunction.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendUDFReturnTypeIsEvents()
         {
-            RegressionRunner.Run(session, new ClientExtendUDFReturnTypeIsEvents());
+            RegressionRunner.Run(_session, new ClientExtendUDFReturnTypeIsEvents());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendUDFVarargs()
         {
-            RegressionRunner.Run(session, new ClientExtendUDFVarargs());
+            RegressionRunner.Run(_session, new ClientExtendUDFVarargs());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendView()
         {
-            RegressionRunner.Run(session, new ClientExtendView());
+            RegressionRunner.Run(_session, new ClientExtendView());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendVirtualDataWindow()
         {
-            RegressionRunner.Run(session, new ClientExtendVirtualDataWindow());
+            RegressionRunner.Run(_session, new ClientExtendVirtualDataWindow());
         }
     }
 } // end of namespace

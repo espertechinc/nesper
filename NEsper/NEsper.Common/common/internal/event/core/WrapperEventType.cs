@@ -211,8 +211,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         beanExpression,
                         key) => {
                         var factory =
-                            codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-                        var eventType = codegenClassScope.AddFieldUnshared<EventType>(
+                            codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+                        var eventType = codegenClassScope.AddDefaultFieldUnshared<EventType>(
                             true,
                             EventTypeUtility.ResolveTypeCodegen(
                                 underlyingEventType,
@@ -284,8 +284,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         beanExpression,
                         key) => {
                         var factory =
-                            codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-                        var eventType = codegenClassScope.AddFieldUnshared<EventType>(
+                            codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+                        var eventType = codegenClassScope.AddDefaultFieldUnshared<EventType>(
                             true,
                             EventTypeUtility.ResolveTypeCodegen(
                                 underlyingEventType,
@@ -523,11 +523,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return underlyingEventType.UnderlyingType;
                 }
 
-                return typeof(Pair<EventPropertyDescriptor, EventPropertyWriterSPI>);
+                return typeof(Pair<object, IDictionary<string, object>>);
             }
         }
 
-        public EventPropertyDescriptor[] PropertyDescriptors {
+        public IList<EventPropertyDescriptor> PropertyDescriptors {
             get {
                 CheckInitProperties();
                 return propertyDesc;
@@ -546,7 +546,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         private void CheckInitProperties()
         {
-            if (numPropertiesUnderlyingType != underlyingEventType.PropertyDescriptors.Length) {
+            if (numPropertiesUnderlyingType != underlyingEventType.PropertyDescriptors.Count) {
                 UpdatePropertySet();
             }
         }
@@ -557,7 +557,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             propertyNames = compositeProperties.PropertyNames;
             propertyDescriptorMap = compositeProperties.PropertyDescriptorMap;
             propertyDesc = compositeProperties.Descriptors;
-            numPropertiesUnderlyingType = underlyingEventType.PropertyDescriptors.Length;
+            numPropertiesUnderlyingType = underlyingEventType.PropertyDescriptors.Count;
         }
 
         private static PropertyDescriptorComposite GetCompositeProperties(

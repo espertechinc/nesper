@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
     [TestFixture]
     public class TestSuiteResultSetQueryTypeWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution()
         {
             RegressionSession session = RegressionRunner.Session();

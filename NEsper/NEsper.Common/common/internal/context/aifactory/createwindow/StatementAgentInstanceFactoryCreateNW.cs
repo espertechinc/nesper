@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.directory;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
@@ -237,7 +238,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 viewableActivationResult);
         }
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

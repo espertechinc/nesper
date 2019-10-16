@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     thread.Join();
                 }
             }
-            catch (ThreadInterruptedException ex) {
+            catch (ThreadInterruptedException) {
                 //ex.PrintStackTrace();
             }
 

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     /// </summary>
     public class BeanEventBeanReader : EventBeanReader
     {
-        private readonly BeanEventPropertyGetter[] getterArray;
+        private readonly BeanEventPropertyGetter[] _getterArray;
 
         /// <summary>
         ///     Ctor.
@@ -35,15 +35,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 }
             }
 
-            getterArray = getters.ToArray();
+            _getterArray = getters.ToArray();
         }
 
         public object[] Read(EventBean theEvent)
         {
             var underlying = theEvent.Underlying;
-            var values = new object[getterArray.Length];
-            for (var i = 0; i < getterArray.Length; i++) {
-                values[i] = getterArray[i].GetBeanProp(underlying);
+            var values = new object[_getterArray.Length];
+            for (var i = 0; i < _getterArray.Length; i++) {
+                values[i] = _getterArray[i].GetBeanProp(underlying);
             }
 
             return values;

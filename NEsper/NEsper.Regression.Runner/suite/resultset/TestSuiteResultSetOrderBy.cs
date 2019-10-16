@@ -50,37 +50,37 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderByAggregateGrouped()
         {
             RegressionRunner.Run(session, ResultSetOrderByAggregateGrouped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowForAll()
         {
             RegressionRunner.Run(session, ResultSetOrderByRowForAll.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowPerEvent()
         {
             RegressionRunner.Run(session, ResultSetOrderByRowPerEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderByRowPerGroup()
         {
             RegressionRunner.Run(session, ResultSetOrderByRowPerGroup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderBySelfJoin()
         {
             RegressionRunner.Run(session, ResultSetOrderBySelfJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOrderBySimple()
         {
             RegressionRunner.Run(session, ResultSetOrderBySimple.Executions());

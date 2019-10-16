@@ -200,7 +200,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 ASTExprHelper.ExprCollectAddSubNodesAddParentNode(plugin, ctx, astExprNodeMap);
                 return;
             }
-            catch (ImportUndefinedException e)
+            catch (ImportUndefinedException)
             {
                 // Not an single-row function
             }

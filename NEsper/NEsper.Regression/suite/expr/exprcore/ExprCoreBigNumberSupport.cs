@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test float
                 env.CompileDeployAddListenerMile(
-                    "@Name('s0') select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f",
+                    "@Name('s0') select * from SupportBeanNumeric where FloatOne < 10f and FloatTwo > 10f",
                     "s0",
                     1);
 
@@ -243,11 +243,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     1);
                 env.Listener("s0").Reset();
 
-                Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("v1"));
-                Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("v2"));
-                Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("v3"));
-                Assert.AreEqual(typeof(BigInteger), env.Statement("s0").EventType.GetPropertyType("v4"));
-                Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("v5"));
+                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("v1"));
+                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("v2"));
+                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("v3"));
+                Assert.AreEqual(typeof(BigInteger?), env.Statement("s0").EventType.GetPropertyType("v4"));
+                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("v5"));
 
                 SendBigNumEvent(env, 1, 2);
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.UndeployAll();
 
                 env.CompileDeployAddListenerMile(
-                    "@Name('s0') select (sum(DecimalOneTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric",
+                    "@Name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric",
                     "s0",
                     2);
                 Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("avgRate"));

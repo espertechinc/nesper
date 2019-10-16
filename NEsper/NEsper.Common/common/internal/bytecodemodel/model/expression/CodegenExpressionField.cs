@@ -21,12 +21,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionField(CodegenField field)
         {
-            if (field == null) {
-                throw new ArgumentException("Null field");
-            }
-
-            _field = field;
+            _field = field ?? throw new ArgumentNullException(nameof(field), "Null field");
         }
+
+        public CodegenField Field => _field;
 
         public void Render(
             StringBuilder builder,

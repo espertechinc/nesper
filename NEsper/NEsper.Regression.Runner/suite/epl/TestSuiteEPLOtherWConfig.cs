@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLOtherWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherIStreamRStreamConfigSelectorIRStream()
         {
             var session = RegressionRunner.Session();
@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherIStreamRStreamConfigSelectorRStream()
         {
             var session = RegressionRunner.Session();
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherStaticFunctionsNoUDFCache()
         {
             var session = RegressionRunner.Session();

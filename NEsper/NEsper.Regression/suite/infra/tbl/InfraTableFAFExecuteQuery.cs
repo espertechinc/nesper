@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var fields = new [] { "P0" };
                 env.CompileDeploy(
-                    "@Name('TheTable') create table MyTableSEL as (p0 string primary key, thesum sum(int))",
+                    "@Name('TheTable') create table MyTableSEL as (P0 string primary key, thesum sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableSEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",

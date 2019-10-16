@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            CodegenMethod method = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
+            var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
+            var method = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
                 .AddParam(evaluationType, "result")
                 .Block
-                .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "eventTypeForNativeObject", @Ref("result")))
+                .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "EventTypeForNativeObject", @Ref("result")))
                 .DeclareVar<EventBean>(
                     "wrappedEvent",
                     ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", @Ref("result"), @Ref("beanEventType")))

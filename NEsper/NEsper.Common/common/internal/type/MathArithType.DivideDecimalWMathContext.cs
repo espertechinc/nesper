@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -19,6 +21,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
+        [Serializable]
         public class DivideDecimalWMathContext : Computer
         {
             private readonly bool _divisionByZeroReturnsNull;
@@ -48,8 +51,8 @@ namespace com.espertech.esper.common.@internal.type
                         return null;
                     }
 
-                    var result = b1.AsDouble() / 0; // serves to create the right sign for infinity
-                    return new decimal(result);
+                    var result = b1.AsDecimal() / 0; // serves to create the right sign for infinity
+                    return result;
                 }
 
                 return decimal.Round(
@@ -67,42 +70,28 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 CodegenExpression math =
-                    codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(_mathContext));
+                    codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimalWMathContext), codegenClassScope)
                     .AddParam(typeof(decimal?), "b1")
                     .AddParam(typeof(decimal?), "b2")
                     .Block;
                 var ifZero = block.IfCondition(
-                    CodegenExpressionBuilder.EqualsIdentity(
-                        CodegenExpressionBuilder.Ref("b2"),
-                        CodegenExpressionBuilder.Constant(0.0m)));
+                    EqualsIdentity(
+                        Ref("b2"),
+                        Constant(0.0m)));
                 {
                     if (_divisionByZeroReturnsNull) {
-                        ifZero.BlockReturn(CodegenExpressionBuilder.ConstantNull());
+                        ifZero.BlockReturn(ConstantNull());
                     }
                     else {
-                        ifZero.BlockReturn(
-                            CodegenExpressionBuilder.NewInstance(
-                                typeof(decimal?),
-                                CodegenExpressionBuilder.Op(
-                                    CodegenExpressionBuilder.ExprDotName(
-                                        CodegenExpressionBuilder.Ref("b1"),
-                                        "Value"),
-                                    "/",
-                                    CodegenExpressionBuilder.Constant(0.0m))));
+                        ifZero.BlockReturn(Op(ExprDotName(Ref("b1"), "Value"), "/", Constant(0.0m)));
                     }
                 }
                 var method = block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        math,
-                        "Apply",
-                        CodegenExpressionBuilder.Op(
-                            CodegenExpressionBuilder.Ref("b1"),
-                            "/",
-                            CodegenExpressionBuilder.Ref("b2"))));
+                    ExprDotMethod(math, "Apply", Op(Ref("b1"), "/", Ref("b2"))));
 
-                return CodegenExpressionBuilder.LocalMethod(method, left, right);
+                return LocalMethod(method, left, right);
             }
         }
     }

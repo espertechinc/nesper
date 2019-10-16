@@ -256,7 +256,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="defaultValue">The default value.</param>
         /// <returns></returns>
 
-        public static V Get<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue)
+        public static V Get<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
         {
             if (!dictionary.TryGetValue(key, out V returnValue))
             {
@@ -264,21 +264,6 @@ namespace com.espertech.esper.compat.collections
             }
 
             return returnValue;
-        }
-
-        /// <summary>
-        /// Fetches the value associated with the specified key.
-        /// If no value can be found, then default(V) is returned.
-        /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
-        /// <param name="dictionary">The dictionary.</param>
-        /// <param name="key">The key.</param>
-        /// <returns></returns>
-
-        public static V Get<K, V>(this IDictionary<K, V> dictionary, K key)
-        {
-            return Get(dictionary, key, default(V));
         }
 
         /// <summary>
@@ -291,7 +276,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
 
-        public static void Put<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        public static void Put<K, V>(this IDictionary<K, V> dictionary, K key, V value = default(V))
         {
             dictionary[key] = value;
         }

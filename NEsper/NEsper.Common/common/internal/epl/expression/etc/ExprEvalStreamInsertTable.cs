@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
-            CodegenExpressionField eventToPublic =
+            CodegenExpressionInstanceField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
             return StaticMethod(
                 typeof(ExprEvalStreamInsertTable),

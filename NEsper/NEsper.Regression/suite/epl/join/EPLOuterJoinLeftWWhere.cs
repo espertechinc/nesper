@@ -232,8 +232,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 SetupStatement(env, "");
                 var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportBean_S0), type.GetPropertyType("s0"));
-                Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("s1"));
+                Assert.AreEqual(typeof(SupportBean_S0), type.GetPropertyType("S0"));
+                Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("S1"));
                 env.UndeployAll();
             }
         }

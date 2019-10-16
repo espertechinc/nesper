@@ -291,8 +291,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
             else {
                 eventsInWindow = new List<EventBean>();
-                for (var it = consumerView.GetEnumerator(); it.MoveNext();) {
-                    eventsInWindow.Add(it.Current);
+                using (var enumerator = consumerView.GetEnumerator()) {
+                    while (enumerator.MoveNext()) {
+                        eventsInWindow.Add(enumerator.Current);
+                    }
                 }
             }
 

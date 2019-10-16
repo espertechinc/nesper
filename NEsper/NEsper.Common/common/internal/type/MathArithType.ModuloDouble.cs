@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -19,6 +21,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
+        [Serializable]
         public class ModuloDouble : Computer
         {
             public object Compute(
@@ -36,7 +39,7 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                return CodegenExpressionBuilder.Op(CodegenAsDouble(left, ltype), "%", CodegenAsDouble(right, rtype));
+                return Op(CodegenAsDouble(left, ltype), "%", CodegenAsDouble(right, rtype));
             }
         }
     }

@@ -77,18 +77,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 .SetIndexFullTableScan(2, "i2")
                 .SetLookupPlanInstruction(
                     0,
-                    "s0",
+                    "S0",
                     new[] {
                         new LookupInstructionPlanForge(
                             0,
-                            "s0",
+                            "S0",
                             new[] {1},
                             new TableLookupPlanForge[] {plan},
                             null,
                             new bool[3]),
                         new LookupInstructionPlanForge(
                             0,
-                            "s0",
+                            "S0",
                             new[] {2},
                             new TableLookupPlanForge[]
                                 {new FullTableScanLookupPlanForge(1, 2, false, types, GetIndexKey("i2"))},
@@ -698,18 +698,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         .SetIndexFullTableScan(2, "i2")
                         .SetLookupPlanInstruction(
                             0,
-                            "s0",
+                            "S0",
                             new[] {
                                 new LookupInstructionPlanForge(
                                     0,
-                                    "s0",
+                                    "S0",
                                     new[] {1},
                                     new TableLookupPlanForge[] {planInMidx},
                                     null,
                                     new bool[3]),
                                 new LookupInstructionPlanForge(
                                     0,
-                                    "s0",
+                                    "S0",
                                     new[] {2},
                                     new TableLookupPlanForge[]
                                         {new FullTableScanLookupPlanForge(1, 2, false, types, GetIndexKey("i2"))},
@@ -733,11 +733,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         .SetIndexFullTableScan(2, "i2")
                         .SetLookupPlanInstruction(
                             0,
-                            "s0",
+                            "S0",
                             new[] {
                                 new LookupInstructionPlanForge(
                                     0,
-                                    "s0",
+                                    "S0",
                                     new[] {1},
                                     new TableLookupPlanForge[]
                                         {new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i1"))},
@@ -745,7 +745,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                     new bool[3]),
                                 new LookupInstructionPlanForge(
                                     0,
-                                    "s0",
+                                    "S0",
                                     new[] {2},
                                     new TableLookupPlanForge[]
                                         {new FullTableScanLookupPlanForge(1, 2, false, types, GetIndexKey("i2"))},

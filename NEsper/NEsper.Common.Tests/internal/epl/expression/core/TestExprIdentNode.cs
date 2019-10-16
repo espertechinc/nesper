@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             long endTime = PerformanceObserver.MilliTime;
             long delta = endTime - startTime;
             Log.Info(".testEvaluate delta=" + delta);
-            Assert.IsTrue(delta < 500);
+            Assert.That(delta, Is.LessThan(500));
         }
 
         [Test]

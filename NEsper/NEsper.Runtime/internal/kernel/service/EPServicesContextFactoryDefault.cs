@@ -38,6 +38,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
@@ -67,7 +68,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string runtimeURI,
             Configuration configurationSnapshot,
             RuntimeEnvContext runtimeEnvContext,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             RuntimeSettingsService runtimeSettingsService)
         {
             return new EPServicesHA(
@@ -198,7 +199,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         protected override NamedWindowDispatchService MakeNamedWindowDispatchService(
             SchedulingServiceSPI schedulingService,
             Configuration configurationSnapshot,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
             VariableManagementService variableManagementService,
             TableManagementService tableManagementService,

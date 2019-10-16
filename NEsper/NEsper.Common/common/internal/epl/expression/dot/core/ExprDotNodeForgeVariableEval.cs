@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField variableReader =
-                classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(forge.Variable));
+            var variableReader =
+                classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(forge.Variable));
 
             Type variableType;
             VariableMetaData metaData = forge.Variable;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             CodegenExpression typeInformation = ConstantNull();
             if (classScope.IsInstrumented) {
-                typeInformation = classScope.AddOrGetFieldSharable(
+                typeInformation = classScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(new ClassEPType(variableType), classScope));
             }
 

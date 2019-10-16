@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = new [] { "symbol","Volume","TheString","IntPrimitive" };
+            var fields = new [] { "Symbol","Volume","TheString","IntPrimitive" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = new [] { "symbol","Volume","TheString","IntPrimitive" };
+            var fields = new [] { "Symbol","Volume","TheString","IntPrimitive" };
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "E1", 10);
@@ -161,10 +161,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void TryAssertion2StreamInnerWGroupBy(RegressionEnvironment env)
         {
-            var epl = "create objectarray schema E1 (Id string, grp string, value int);\n" +
-                      "create objectarray schema E2 (Id string, value2 int);\n" +
-                      "@Name('s0') select count(*) as c0, sum(E1.Value) as c1, E1.Id as c2 " +
-                      "from E1 unidirectional inner join E2#keepall on E1.Id = E2.Id group by E1.grp";
+            var epl = "create objectarray schema E1 (id string, grp string, value int);\n" +
+                      "create objectarray schema E2 (id string, value2 int);\n" +
+                      "@Name('s0') select count(*) as c0, sum(E1.value) as c1, E1.id as c2 " +
+                      "from E1 unidirectional inner join E2#keepall on E1.id = E2.id group by E1.grp";
             env.CompileDeployWBusPublicType(epl, new RegressionPath());
             env.AddListener("s0");
             var fields = new [] { "c0", "c1", "c2" };
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = new [] { "symbol","cnt" };
+                var fields = new [] { "Symbol","cnt" };
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E1", 10);

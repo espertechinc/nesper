@@ -534,7 +534,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             Type currentTargetType;
             if (optionalResultWrapLambda != null) {
                 currentTargetType = EPTypeHelper.GetCodegenReturnType(optionalResultWrapLambda.TypeInfo);
-                block.IfRefNullReturnNull("inner")
+                block
+                    .IfRefNullReturnNull("inner")
                     .DeclareVar(
                         currentTargetType,
                         "wrapped",
@@ -560,7 +561,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                 var typeInformation = ConstantNull();
                 if (codegenClassScope.IsInstrumented) {
-                    typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                    typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                         new EPTypeCodegenSharable(forges[i].TypeInfo, codegenClassScope));
                 }
 

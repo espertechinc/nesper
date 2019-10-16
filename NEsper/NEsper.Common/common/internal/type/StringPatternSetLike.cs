@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.type
                 return false;
             }
 
-            return _likeUtil.Compare(stringToMatch);
+            return _likeUtil.CompareTo(stringToMatch);
         }
 
         protected bool Equals(StringPatternSetLike other)

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 var timePeriod = (ExprTimePeriod) parameter;
                 var time = ExprDotName(Ref("context"), "Time");
                 if (timePeriod.IsConstantResult) {
-                    var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
+                    var delta = classScope.AddDefaultFieldUnshared<TimePeriodCompute>(
                         true,
                         timePeriod.TimePeriodComputeForge.MakeEvaluator(
                             classScope.NamespaceScope.InitMethod,
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                                 ExprDotMethod(Ref("context"), "GetAgentInstanceContext")));
                 }
                 else {
-                    var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
+                    var delta = classScope.AddDefaultFieldUnshared<TimePeriodCompute>(
                         true,
                         timePeriod.TimePeriodComputeForge.MakeEvaluator(
                             classScope.NamespaceScope.InitMethod,

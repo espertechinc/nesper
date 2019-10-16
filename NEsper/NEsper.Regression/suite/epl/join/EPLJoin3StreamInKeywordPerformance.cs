@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;
-            Assert.IsTrue(delta < 500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
             log.Info("delta=" + delta);
 
             env.UndeployAll();

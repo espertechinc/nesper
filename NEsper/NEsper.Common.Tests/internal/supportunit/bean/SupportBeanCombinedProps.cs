@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     [Serializable]
     public class SupportBeanCombinedProps
     {
-        public static string[] PROPERTIES = { "Indexed", "array" };
+        public static string[] PROPERTIES = { "Indexed", "Array" };
 
         public SupportBeanCombinedProps(NestedLevOne[] indexed)
         {

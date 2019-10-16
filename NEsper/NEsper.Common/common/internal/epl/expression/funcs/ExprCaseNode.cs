@@ -151,16 +151,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var count = -1;
                 foreach (var pair in analysis.WhenThenNodeList) {
                     count++;
-                    if (pair.Second.Forge.EvaluationType != typeof(IDictionary<object, object>) &&
-                        pair.Second.Forge.EvaluationType != null) {
+                    if (pair.Second.Forge.EvaluationType != null &&
+                        pair.Second.Forge.EvaluationType.IsNotGenericDictionary()) {
                         check = ", check when-condition number " + count;
                         throw new ExprValidationException(message + check);
                     }
                 }
 
                 if (analysis.OptionalElseExprNode != null) {
-                    if (analysis.OptionalElseExprNode.Forge.EvaluationType != typeof(IDictionary<object, object>) &&
-                        analysis.OptionalElseExprNode.Forge.EvaluationType != null) {
+                    if (analysis.OptionalElseExprNode.Forge.EvaluationType != null &&
+                        analysis.OptionalElseExprNode.Forge.EvaluationType.IsNotGenericDictionary()) {
                         check = ", check the else-condition";
                         throw new ExprValidationException(message + check);
                     }

@@ -185,15 +185,30 @@ namespace com.espertech.esper.common.@internal.view.expression
             classScope.AddInnerClass(evalClass);
 
             method.Block
-                .DeclareVar(evalClass.ClassName, "eval", NewInstance(evalClass.ClassName))
+                .DeclareVar(
+                    evalClass.ClassName,
+                    "eval",
+                    NewInstance(evalClass.ClassName, Ref("statementFields")))
                 .SetProperty(
                     factory,
                     "BuiltinMapType",
                     EventTypeUtility.ResolveTypeCodegen(builtinType, EPStatementInitServicesConstants.REF))
-                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(factory, "AggregationServiceFactory", MakeAggregationService(classScope, method, symbols))
-                .SetProperty(factory, "AggregationResultFutureAssignable", Ref("eval"))
-                .SetProperty(factory, "ExpiryEval", Ref("eval"));
+                .SetProperty(
+                    factory,
+                    "ScheduleCallbackId",
+                    Constant(scheduleCallbackId))
+                .SetProperty(
+                    factory,
+                    "AggregationServiceFactory",
+                    MakeAggregationService(classScope, method, symbols))
+                .SetProperty(
+                    factory,
+                    "AggregationResultFutureAssignable",
+                    Ref("eval"))
+                .SetProperty(
+                    factory,
+                    "ExpiryEval",
+                    Ref("eval"));
             if (variableNames != null && !variableNames.IsEmpty()) {
                 method.Block.SetProperty(
                     factory,
@@ -230,7 +245,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         private CodegenInnerClass MakeExpiryEval(CodegenClassScope classScope)
         {
-            var classNameExpressionEval = "exprview_eval_" + streamNumber;
+            var classNameExpressionEval = "ExprViewEval_" + streamNumber;
 
             var evalMethod = CodegenMethod.MakeMethod(
                     typeof(object),
@@ -247,7 +262,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             var assignMethod = CodegenMethod
                 .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(AggregationResultFuture), "future");
-            CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var field = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameViewAgg(streamNumber),
                 typeof(AggregationResultFuture));
             assignMethod.Block.AssignRef(field, Ref("future"));
@@ -257,10 +272,13 @@ namespace com.espertech.esper.common.@internal.view.expression
             CodegenStackGenerator.RecursiveBuildStack(evalMethod, "Evaluate", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", innerMethods, innerProperties);
 
+            var statementFieldsClassName = classScope.NamespaceScope.FieldsClassName;
             var ctor = new CodegenCtor(
                 typeof(StmtClassForgableRSPFactoryProvider),
                 classScope,
-                Collections.GetEmptyList<CodegenTypedParam>());
+                new List<CodegenTypedParam>() {
+                    new CodegenTypedParam(statementFieldsClassName, null, "statementFields")
+                });
 
             return new CodegenInnerClass(
                 classNameExpressionEval,

@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.util
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
             }
-            catch (MethodResolverNoSuchMethodException e)
+            catch (MethodResolverNoSuchMethodException)
             {
                 // Expected
             }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.util
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
             }
-            catch (MethodResolverNoSuchMethodException e)
+            catch (MethodResolverNoSuchMethodException)
             {
                 // Expected
             }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.util
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
             }
-            catch (MethodResolverNoSuchMethodException e)
+            catch (MethodResolverNoSuchMethodException)
             {
                 // Expected
             }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.util
                 MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
             }
-            catch (MethodResolverNoSuchMethodException e)
+            catch (MethodResolverNoSuchMethodException)
             {
                 // Expected
             }

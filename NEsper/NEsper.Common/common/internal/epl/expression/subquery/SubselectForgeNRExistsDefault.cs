@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<bool?>(
                     "pass",
                     LocalMethod(filter, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
-                .IfCondition(And(NotEqualsNull(Ref("pass")), ExprDotName(Ref("pass"), "Value")))
+                .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                 .BlockReturn(ConstantTrue())
                 .BlockEnd()
                 .MethodReturn(ConstantFalse());

@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 try {
                     Thread.Sleep(5000);
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                     Assert.Fail();
                 }
 
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 try {
                     Thread.Sleep(1000);
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                     Assert.Fail();
                 }
 

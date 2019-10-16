@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return new EnumCountOfForge(numStreamsIncoming);
             }
 
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType != null) {
                 return new EnumCountOfSelectorEventsForge(first.BodyForge, first.StreamCountIncoming);
             }

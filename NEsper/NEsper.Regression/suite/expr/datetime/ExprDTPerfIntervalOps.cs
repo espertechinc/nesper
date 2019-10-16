@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
-            Assert.IsTrue(delta < 500, "Delta=" + delta / 1000d);
+            Assert.That(delta, Is.LessThan(500), "Delta=" + delta / 1000d);
 
             env.UndeployModuleContaining("s0");
         }

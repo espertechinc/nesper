@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventMapWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapNestedConfigRuntime()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapInheritanceRuntime()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -42,43 +42,54 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
             // supertype not found
-            TryInvalidConfigure(config => {
-                ConfigurationCommonEventTypeMap map = new ConfigurationCommonEventTypeMap();
-                map.SuperTypes = Collections.SingletonSet("NONE");
-                config.Common.AddEventType("InvalidMap", Collections.EmptyDataMap, map);
-            }, "Supertype by name 'NONE' could not be found");
+            TryInvalidConfigure(
+                config => {
+                    ConfigurationCommonEventTypeMap map = new ConfigurationCommonEventTypeMap();
+                    map.SuperTypes = Collections.SingletonSet("NONE");
+                    config.Common.AddEventType("InvalidMap", Collections.EmptyDataMap, map);
+                },
+                "Supertype by name 'NONE' could not be found");
 
             // invalid property
-            TryInvalidConfigure(config => {
-                config.Common.AddEventType("InvalidMap", Collections.SingletonDataMap("key", "XXX"));
-            }, "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
+            TryInvalidConfigure(
+                config => { config.Common.AddEventType("InvalidMap", Collections.SingletonDataMap("key", "XXX")); },
+                "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
 
             // invalid key
-            IDictionary<string, object> invalid = EventMapCore.MakeMap(new object[][] {
-                new object[] { new int?(5), null }
-            });
-            TryInvalidConfigure(config => {
-                config.Common.AddEventType("InvalidMap", invalid);
-            }, GetCastMessage(typeof(int?), typeof(string)));
+            IDictionary<string, object> invalid = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {new int?(5), null}
+                });
+            TryInvalidConfigure(
+                config => { config.Common.AddEventType("InvalidMap", invalid); },
+                GetCastMessage(typeof(int?), typeof(string)));
 
-            IDictionary<string, object> invalidTwo = EventMapCore.MakeMap(new object[][] {
-                new object[] { "abc", new SupportBean() }
-            });
-            TryInvalidConfigure(config => {
-                config.Common.AddEventType("InvalidMap", invalidTwo);
-            }, "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
+            IDictionary<string, object> invalidTwo = EventMapCore.MakeMap(
+                new object[][] {
+                    new object[] {"abc", new SupportBean()}
+                });
+            TryInvalidConfigure(
+                config => { config.Common.AddEventType("InvalidMap", invalidTwo); },
+                "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
         }
 
-        private void TryInvalidConfigure(Consumer<Configuration> configurer, string expected)
+        private void TryInvalidConfigure(
+            Consumer<Configuration> configurer,
+            string expected)
         {
-            SupportMessageAssertUtil.TryInvalidConfigurationCompileAndRuntime(SupportConfigFactory.GetConfiguration(), configurer, expected);
+            SupportMessageAssertUtil.TryInvalidConfigurationCompileAndRuntime(
+                SupportConfigFactory.GetConfiguration(),
+                configurer,
+                expected);
         }
 
-        public static string GetCastMessage(Type from, Type to)
+        public static string GetCastMessage(
+            Type from,
+            Type to)
         {
             return from.CleanName() + " cannot be cast to " + to.CleanName();
         }

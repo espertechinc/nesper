@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
 
         public ISupportAImplSuperG P1 => new ISupportAImplSuperGImpl("g", "a", "baseAB");
 
-        public List<object> P2 { get; }
+        public LinkedList<object> P2 { get; }
 
         public IList<object> P3 { get; }
 

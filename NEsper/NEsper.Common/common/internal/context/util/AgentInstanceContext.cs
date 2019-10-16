@@ -39,6 +39,7 @@ using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -185,7 +186,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public int AgentInstanceId { get; }
 
-        public StatementAgentInstanceLock AgentInstanceLock =>
+        public IReaderWriterLock AgentInstanceLock =>
             EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
 
         public EventBeanService EventBeanService => StatementContext.EventBeanService;

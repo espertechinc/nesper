@@ -199,7 +199,7 @@
       <time-source-type value="nano" />
     </time-source>
 
-    <metrics-reporting enabled="true" runtime-interval="4000" statement-interval="500" threading="false">
+    <metrics-reporting enabled="true" runtime-interval="4000" statement-interval="500" threading="false" runtime-metrics="true">
       <stmtgroup name="MyStmtGroup" interval="5000" default-include="true" num-stmts="50" report-inactive="true">
         <!-- samples of include/exclude using RegEx and SQL-Like syntax -->
         <include-regex>.*</include-regex>

@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 eventSchemaOne.EventType.GetGetter(prop);
                 Assert.Fail("Invalid collection access: " + prop + " accepted");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Expected
             }

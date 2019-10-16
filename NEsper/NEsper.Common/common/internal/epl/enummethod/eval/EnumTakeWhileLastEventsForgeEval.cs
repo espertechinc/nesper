@@ -47,12 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+            var beans = (ICollection<EventBean>) enumcoll;
             if (enumcoll.Count == 1) {
-                EventBean item = beans.First();
+                var item = beans.First();
                 eventsLambda[forge.streamNumLambda] = item;
 
-                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -60,13 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return Collections.SingletonList(item);
             }
 
-            EventBean[] all = TakeWhileLastEventBeanToArray(beans);
-            ArrayDeque<object> result = new ArrayDeque<object>();
+            var all = TakeWhileLastEventBeanToArray(beans);
+            var result = new ArrayDeque<object>();
 
-            for (int i = all.Length - 1; i >= 0; i--) {
+            for (var i = all.Length - 1; i >= 0; i--) {
                 eventsLambda[forge.streamNumLambda] = all[i];
 
-                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     break;
                 }
@@ -83,24 +83,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumTakeWhileLastEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
-            CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(
+            var innerValue = forge.innerExpression.EvaluateCodegen(
                 typeof(bool?),
                 methodNode,
                 scope,
                 codegenClassScope);
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
 
-            CodegenBlock blockSingle = block
+            var blockSingle = block
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
                 .DeclareVar<EventBean>(
                     "item",
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         "TakeWhileLastEventBeanToArray",
                         EnumForgeCodegenNames.REF_ENUMCOLL));
 
-            CodegenBlock forEach = block.ForLoop(
+            var forEach = block.ForLoop(
                     typeof(int),
                     "i",
                     Op(ArrayLength(@Ref("all")), "-", Constant(1)),
@@ -150,9 +150,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// <returns>array</returns>
         public static T[] TakeWhileLastEventBeanToArray<T>(ICollection<T> enumcoll)
         {
-            int size = enumcoll.Count;
-            T[] all = new T[size];
-            int count = 0;
+            var size = enumcoll.Count;
+            var all = new T[size];
+            var count = 0;
             foreach (var item in enumcoll) {
                 all[count++] = item;
             }

@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     stmtText,
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(S0.P00))=1': Implicit conversion from datatype 'String' to numeric is not allowed for aggregation function 'sum' [");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(S0.P00))=1': Implicit conversion from datatype 'System.String' to numeric is not allowed for aggregation function 'sum' [");
 
                 // having-clause properties must be aggregated
                 stmtText =
@@ -785,19 +785,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@Name('s0') @Name('s0')select (" +
+                var epl = "@Name('s0') @Name('s0') select (" +
                           "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and IntPrimitive between S0.P01Long and S1.P11Long) " +
-                          "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                          "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, true);
 
                 epl = "@Name('s0') select (" +
                       "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and S1.P11Long >= IntPrimitive and S0.P01Long <= IntPrimitive) " +
-                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, false);
 
                 epl = "@Name('s0') select (" +
                       "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and S1.P11Long > IntPrimitive) " +
-                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean("G", 21));
@@ -810,7 +810,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployAll();
                 epl = "@Name('s0') select (" +
                       "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and S1.P11Long < IntPrimitive) " +
-                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                      "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean("G", 21));
@@ -833,18 +833,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // between and 'in' automatically revert the range (20 to 10 is the same as 10 to 20)
                 var epl = "@Name('s0') select (" +
                           "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between S0.P01Long and S1.P11Long) " +
-                          "from SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                          "from SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, true);
 
                 epl = "@Name('s0') select (" +
                       "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between S1.P11Long and S0.P01Long) " +
-                      "from SupportBean_ST1#lastevent s1, SupportBean_ST0#lastevent s0";
+                      "from SupportBean_ST1#lastevent S1, SupportBean_ST0#lastevent S0";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, true);
 
                 // >= and <= should not automatically revert the range
                 epl = "@Name('s0') select (" +
                       "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive >= S0.P01Long and IntPrimitive <= S1.P11Long) " +
-                      "from SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
+                      "from SupportBean_ST0#lastevent S0, SupportBean_ST1#lastevent S1";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, false);
             }
         }

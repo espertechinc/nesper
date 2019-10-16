@@ -76,6 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 "The for-clause with delivery keywords may only occur once in a statement");
                         }
                     }
+                    catch (ExprValidationException) {
+                        throw;
+                    }
                     catch (EPException) {
                         throw;
                     }

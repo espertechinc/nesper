@@ -28,8 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             SendXMLEvent(env, "<a><b></b></a>", "AEventMoreXPath");
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("", theEvent.Get("type"));
-            Assert.AreEqual("", theEvent.Get("element1"));
+            Assert.IsNull(theEvent.Get("type"));
+            Assert.IsNull(theEvent.Get("element1"));
 
             SendXMLEvent(env, "<a><b><c>text</c></b></a>", "AEventMoreXPath");
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();

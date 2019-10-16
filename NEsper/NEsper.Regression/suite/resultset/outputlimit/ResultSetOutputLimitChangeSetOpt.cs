@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     outputProcessView.NumChangesetRows,
                     "enableOutputLimitOpt=" + enableOutputLimitOpt);
             }
-            catch (UnsupportedOperationException ex) {
+            catch (UnsupportedOperationException) {
                 // allowed
             }
         }

@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddImportType(typeof(EventVariantStream));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventVariantStream()
         {
             RegressionRunner.Run(session, EventVariantStream.Executions());

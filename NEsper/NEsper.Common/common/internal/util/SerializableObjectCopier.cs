@@ -34,6 +34,18 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         /// <summary>
+        /// Determines whether the copying the specified type is supported.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        /// <c>true</c> if the specified type is supported; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsSupported(Type type)
+        {
+            return type.IsSerializable;
+        }
+
+        /// <summary>
         /// Deep copies the input object.
         /// </summary>
         /// <param name="orig">is the object to be copied, must be serializable</param>

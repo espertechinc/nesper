@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
 {
@@ -287,7 +288,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         {
             return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(
                 indexName,
-                "(" + other.X + "," + other.Y + "," + other.W + "," + other.H + ")");
+                string.Format("({0},{1},{2},{3})", 
+                    other.X.RenderAny(),
+                    other.Y.RenderAny(), 
+                    other.W.RenderAny(), 
+                    other.H.RenderAny()));
         }
     }
 } // end of namespace

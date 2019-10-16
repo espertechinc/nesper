@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionrun.suite.client
     [TestFixture]
     public class TestSuiteClientInstrument
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentInstrumentation()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingStmtMetrics()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingStmtGroups()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingNW()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingRuntimeMetrics()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingDisableStatement()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentMetricsReportingDisableRuntime()
         {
             RegressionSession session = RegressionRunner.Session();

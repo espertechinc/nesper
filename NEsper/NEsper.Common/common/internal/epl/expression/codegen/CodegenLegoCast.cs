@@ -40,41 +40,62 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             if (targetType == typeof(int)) {
                 return ExprDotMethod(value, "AsInt");
             }
-
-            if (targetType == typeof(long)) {
+            else if (targetType == typeof(int?)) {
+                return ExprDotMethod(value, "AsBoxedInt");
+            }
+            else if (targetType == typeof(long)) {
                 return ExprDotMethod(value, "AsLong");
             }
-
-            if (targetType == typeof(short)) {
+            else if (targetType == typeof(long?)) {
+                return ExprDotMethod(value, "AsBoxedLong");
+            }
+            else if (targetType == typeof(short)) {
                 return ExprDotMethod(value, "AsShort");
             }
-
-            if (targetType == typeof(byte)) {
+            else if (targetType == typeof(short?)) {
+                return ExprDotMethod(value, "AsBoxedShort");
+            }
+            else if (targetType == typeof(byte)) {
                 return ExprDotMethod(value, "AsByte");
             }
-
-            if (targetType == typeof(decimal)) {
+            else if (targetType == typeof(byte?)) {
+                return ExprDotMethod(value, "AsBoxedByte");
+            }
+            else if (targetType == typeof(decimal)) {
                 return ExprDotMethod(value, "AsDecimal");
             }
-
-            if (targetType == typeof(double)) {
+            else if (targetType == typeof(decimal?)) {
+                return ExprDotMethod(value, "AsBoxedDecimal");
+            }
+            else if (targetType == typeof(double)) {
                 return ExprDotMethod(value, "AsDouble");
             }
-
-            if (targetType == typeof(float)) {
+            else if (targetType == typeof(double?)) {
+                return ExprDotMethod(value, "AsBoxedDouble");
+            }
+            else if (targetType == typeof(float)) {
                 return ExprDotMethod(value, "AsFloat");
             }
-
-            if (targetType == typeof(bool)) {
+            else if (targetType == typeof(float?)) {
+                return ExprDotMethod(value, "AsBoxedFloat");
+            }
+            else if (targetType == typeof(bool)) {
                 return ExprDotMethod(value, "AsBoolean");
             }
-
-            if (targetType == typeof(DateTime)) {
+            else if (targetType == typeof(bool?)) {
+                return ExprDotMethod(value, "AsBoxedBoolean");
+            }
+            else if (targetType == typeof(DateTime)) {
                 return ExprDotMethod(value, "AsDateTime");
             }
-
-            if (targetType == typeof(DateTimeOffset)) {
+            else if (targetType == typeof(DateTime?)) {
+                return ExprDotMethod(value, "AsBoxedDateTime");
+            }
+            else if (targetType == typeof(DateTimeOffset)) {
                 return ExprDotMethod(value, "AsDateTimeOffset");
+            }
+            else if (targetType == typeof(DateTimeOffset?)) {
+                return ExprDotMethod(value, "AsBoxedDateTimeOffset");
             }
 
             return Cast(targetType, value);

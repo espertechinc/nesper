@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
@@ -58,7 +59,8 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
         /// <param name="runtimeURI">runtime URI</param>
         public MetricReportingServiceImpl(
             ConfigurationRuntimeMetricsReporting specification,
-            string runtimeURI)
+            string runtimeURI,
+            IReaderWriterLockManager rwLockManager)
         {
             this.specification = specification;
             this.runtimeURI = runtimeURI;
@@ -76,7 +78,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
             schedule = new MetricScheduleService();
 
-            stmtMetricRepository = new StatementMetricRepository(runtimeURI, specification);
+            stmtMetricRepository = new StatementMetricRepository(runtimeURI, specification, rwLockManager);
             statementGroupExecutions = new LinkedHashMap<string, MetricExecStatement>();
             statementMetricHandles = new Dictionary<DeploymentIdNamePair, StatementMetricHandle>();
             StatementOutputHooks = new CopyOnWriteArraySet<MetricsStatementResultListener>();

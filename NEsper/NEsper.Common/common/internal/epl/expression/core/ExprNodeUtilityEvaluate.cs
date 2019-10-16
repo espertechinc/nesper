@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             while (iterator.MoveNext()) {
                 events[0] = iterator.Current;
                 object result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
-                if ((result == null) || (!((Boolean) result))) {
+                if ((result == null) || (!((bool) result))) {
                     continue;
                 }
 

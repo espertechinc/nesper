@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -151,6 +152,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>();
             ctorParams.Add(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(OrderByProcessorCompiler), classScope, ctorParams);
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            members.Add(
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false));
+
+            ctor.Block.AssignRef(
+                Ref("this.statementFields"),
+                Ref("o.statementFields"));
+
+            // --------------------------------------------------------------------------------
+
             forge.CtorCodegen(ctor, members, classScope);
 
             CodegenClassProperties innerProperties = new CodegenClassProperties();

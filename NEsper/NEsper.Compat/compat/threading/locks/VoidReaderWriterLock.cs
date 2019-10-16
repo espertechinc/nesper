@@ -19,18 +19,12 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Gets the read-side lockable
         /// </summary>
-        public ILockable ReadLock
-        {
-            get { return Instance; }
-        }
+        public ILockable ReadLock => Instance;
 
         /// <summary>
         /// Gets the write-side lockable
         /// </summary>
-        public ILockable WriteLock
-        {
-            get { return Instance; }
-        }
+        public ILockable WriteLock => Instance;
 
         public IDisposable AcquireReadLock()
         {
@@ -42,17 +36,24 @@ namespace com.espertech.esper.compat.threading.locks
             return Disposable;
         }
 
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+            return Disposable;
+        }
+
+        public void ReleaseWriteLock()
+        {
+        }
+
         /// <summary>
         /// Indicates if the writer lock is held.
         /// </summary>
         /// <value>
         /// The is writer lock held.
         /// </value>
-        public bool IsWriterLockHeld {
-            get { return false; }
-        }
+        public bool IsWriterLockHeld => false;
 
-        #if DEBUG
+#if DEBUG
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="VoidReaderWriterLock"/> is TRACE.
         /// </summary>

@@ -159,26 +159,27 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
             // fall back to window operator if snapshot doesn't resolve successfully
             var sourceCollection = instance.EventCollection;
-            IEnumerator<EventBean> it = sourceCollection.GetEnumerator();
-            if (!it.MoveNext()) {
-                return new EmptyList<EventBean>();
-            }
-
-            var deque = new ArrayDeque<EventBean>(sourceCollection.Count);
-            if (filterExpr != null) {
-                ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                    sourceCollection.GetEnumerator(),
-                    filterExpr,
-                    agentInstanceContext,
-                    deque);
-            }
-            else {
-                while (it.MoveNext()) {
-                    deque.Add(it.Current);
+            using (IEnumerator<EventBean> enumerator = sourceCollection.GetEnumerator()) {
+                if (!enumerator.MoveNext()) {
+                    return new EmptyList<EventBean>();
                 }
-            }
 
-            return deque;
+                var deque = new ArrayDeque<EventBean>(sourceCollection.Count);
+                if (filterExpr != null) {
+                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
+                        sourceCollection.GetEnumerator(),
+                        filterExpr,
+                        agentInstanceContext,
+                        deque);
+                }
+                else {
+                    do {
+                        deque.Add(enumerator.Current);
+                    } while (enumerator.MoveNext());
+                }
+
+                return deque;
+            }
         }
     }
 } // end of namespace

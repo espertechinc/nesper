@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.runtime.client.util
 {
@@ -26,13 +27,13 @@ namespace com.espertech.esper.runtime.client.util
         {
         }
 
-        public IDisposable Acquire(ManagedReadWriteLock runtimeWideLock)
+        public IDisposable Acquire(IReaderWriterLock runtimeWideLock)
         {
-            return runtimeWideLock.AcquireDisposableWriteLock();
+            return runtimeWideLock.AcquireWriteLock();
         }
 
 #if false
-        public void Release(ManagedReadWriteLock runtimeWideLock)
+        public void Release(IReaderWriterLock runtimeWideLock)
         {
             runtimeWideLock.ReleaseWriteLock();
         }

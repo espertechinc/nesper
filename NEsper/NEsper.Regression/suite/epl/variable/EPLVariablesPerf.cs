@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < 500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
             env.UndeployModuleContaining("s0");
 
             // test subquery
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             }
 
             delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < 500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
             env.UndeployModuleContaining("s0");
             env.UndeployAll();

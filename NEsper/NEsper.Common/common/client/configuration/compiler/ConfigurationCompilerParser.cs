@@ -253,7 +253,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             var codegen = compiler.ByteCode;
             ParseOptionalBoolean(element, "include-debugsymbols", v => codegen.IncludeDebugSymbols = v);
-            ParseOptionalBoolean(element, "include-Comments", v => codegen.IncludeComments = v);
+            ParseOptionalBoolean(element, "include-comments", v => codegen.IncludeComments = v);
             ParseOptionalBoolean(element, "attach-epl", v => codegen.AttachEPL = v);
             ParseOptionalBoolean(element, "attach-module-epl", v => codegen.AttachModuleEPL = v);
             ParseOptionalBoolean(element, "instrumented", v => codegen.Instrumented = v);

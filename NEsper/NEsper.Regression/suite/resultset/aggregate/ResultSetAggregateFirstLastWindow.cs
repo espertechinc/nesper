@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select first().property as val0, first().myMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
+                    "@Name('s0') select first().Property as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportEventPropertyWithMethod("P1"));
@@ -640,7 +640,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select first(x.*, 10d) from SupportBean#lastevent as x",
-                    "Failed to validate select-clause expression 'first(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
+                    "Failed to validate select-clause expression 'first(x.*,10.0d)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
             }
         }
 
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select Id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "id","w" };
+                var fields = new [] { "Id","w" };
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 EPAssertionUtil.AssertProps(
@@ -851,7 +851,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                       "window(sa.*) as w1, " +
                       "last(*) as l1 " +
                       "from SupportBean#length(2) as sa " +
-                      "having SupportStaticMethodLib.alwaysTrue({first(sa.DoublePrimitive + sa.IntPrimitive), " +
+                      "having SupportStaticMethodLib.AlwaysTrue({first(sa.DoublePrimitive + sa.IntPrimitive), " +
                       "first(sa.IntPrimitive), window(sa.*), last(*)})";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1317,7 +1317,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var props = env.Statement("s0").EventType.PropertyDescriptors;
-                for (var i = 0; i < props.Length; i++) {
+                for (var i = 0; i < props.Count; i++) {
                     Assert.AreEqual(
                         i == 4 || i == 5 ? typeof(SupportBean[]) : typeof(SupportBean),
                         props[i].PropertyType);

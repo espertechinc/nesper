@@ -48,16 +48,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
             Deque<object> result = new ArrayDeque<object>(enumcoll.Count);
 
-            ICollection<object> values = (ICollection<object>) enumcoll;
-            foreach (object next in values) {
+            var values = (ICollection<object>) enumcoll;
+            foreach (var next in values) {
                 props[0] = next;
 
-                object item = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var item = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (item != null) {
                     result.Add(item);
                 }
@@ -72,22 +72,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumSelectFromScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<ArrayDeque<object>>(
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
-            CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
                 .DeclareVar<object>(
                     "item",

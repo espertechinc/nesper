@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -62,23 +64,26 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="runtimeURI">runtime URI</param>
+        /// <param name="runtimeUri">runtime URI</param>
         /// <param name="name">name of statement group</param>
         /// <param name="initialSize">initial size of array</param>
         /// <param name="isReportInactive">true to indicate to report on inactive statements</param>
+        /// <param name="lockManager">the lock manager</param>
         public StatementMetricArray(
-            string runtimeURI,
+            string runtimeUri,
             string name,
             int initialSize,
-            bool isReportInactive)
+            bool isReportInactive,
+            IReaderWriterLockManager lockManager)
         {
-            this.runtimeURI = runtimeURI;
+            this.runtimeURI = runtimeUri;
             this.isReportInactive = isReportInactive;
 
             metrics = new StatementMetric[initialSize];
             statementNames = new DeploymentIdNamePair[initialSize];
             currentLastElement = -1;
-            RWLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
+            RWLock = lockManager.CreateLock(GetType());
+            //RWLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
             removedStatementNames = new HashSet<DeploymentIdNamePair>();
         }
 
@@ -86,7 +91,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         ///     Returns the read-write lock, for read-lock when modifications are made.
         /// </summary>
         /// <returns>lock</returns>
-        public ManagedReadWriteLock RWLock { get; }
+        public IReaderWriterLock RWLock { get; }
 
         /// <summary>
         ///     Remove a statement.
@@ -96,7 +101,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            using (RWLock.AcquireDisposableWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 removedStatementNames.Add(statement);
 
                 if (removedStatementNames.Count > 1000) {
@@ -120,7 +125,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(DeploymentIdNamePair statement)
         {
-            using (RWLock.AcquireDisposableWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 // see if there is room
                 if (currentLastElement + 1 < metrics.Length) {
                     currentLastElement++;
@@ -167,7 +172,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metrics</returns>
         public StatementMetric[] FlushMetrics()
         {
-            using (RWLock.AcquireDisposableWriteLock()) {
+            using (RWLock.AcquireWriteLock()) {
                 var isEmpty = currentLastElement == -1;
 
                 // first fill in the blanks if there are no reports and we report inactive statements

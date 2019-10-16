@@ -10,7 +10,14 @@ using System;
 
 namespace com.espertech.esper.common.client.render
 {
-    /// <summary>Renderer for an event into the JSON textual format. <para />A renderer is dedicated to rendering only a certain type of events and subtypes of that type, as the render cache type metadata and prepares structures to enable fast rendering. <para />For rendering events of different types, use a quick-access method in <seealso cref="EventRenderer" />. </summary>
+    /// <summary>
+    /// Renderer for an event into the JSON textual format.
+    /// <para>
+    /// A renderer is dedicated to rendering only a certain type of events and subtypes of that type, as the render
+    /// cache type metadata and prepares structures to enable fast rendering. <para />For rendering events of different
+    /// types, use a quick-access method in <seealso cref="EventRenderer" />.
+    /// </para>
+    /// </summary>
     public interface JSONEventRenderer
     {
         /// <summary>RenderAny a given event in the JSON format. </summary>

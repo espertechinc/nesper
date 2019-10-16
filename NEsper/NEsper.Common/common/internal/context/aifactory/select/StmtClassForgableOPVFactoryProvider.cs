@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         private const string MEMBERNAME_STATEMENTRESULTSVC = "statementResultService";
 
         private readonly int _numStreams;
-        private readonly CodegenNamespaceScope _packageScope;
+        private readonly CodegenNamespaceScope _namespaceScope;
         private readonly StatementRawInfo _raw;
 
         private readonly OutputProcessViewFactoryForge _spec;
@@ -49,13 +49,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public StmtClassForgableOPVFactoryProvider(
             string className,
             OutputProcessViewFactoryForge spec,
-            CodegenNamespaceScope packageScope,
+            CodegenNamespaceScope namespaceScope,
             int numStreams,
             StatementRawInfo raw)
         {
             ClassName = className;
             _spec = spec;
-            _packageScope = packageScope;
+            _namespaceScope = namespaceScope;
             _numStreams = numStreams;
             _raw = raw;
         }
@@ -80,12 +80,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         typeof(EPStatementInitServices),
                         EPStatementInitServicesConstants.REF.Ref,
                         false));
+                ctorParms.Add(
+                    new CodegenTypedParam(
+                        _namespaceScope.FieldsClassName,
+                        null,
+                        "statementFields",
+                        true,
+                        false));
+
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgableOPVFactoryProvider),
                     ClassName,
                     includeDebugSymbols,
                     ctorParms);
-                var classScope = new CodegenClassScope(includeDebugSymbols, _packageScope, ClassName);
+                var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
                 var providerExplicitMembers = new List<CodegenTypedParam>();
                 providerExplicitMembers.Add(
                     new CodegenTypedParam(typeof(StatementResultService), MEMBERNAME_STATEMENTRESULTSVC));
@@ -142,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 // render and compile
                 return new CodegenClass(
                     typeof(OutputProcessViewFactoryProvider),
-                    _packageScope.Namespace,
+                    _namespaceScope.Namespace,
                     ClassName,
                     classScope,
                     providerExplicitMembers,

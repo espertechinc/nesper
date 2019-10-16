@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
 {
@@ -28,8 +25,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             string name)
         {
             string nameTrim = name.ToLowerInvariant().Trim();
-            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>()) {
-                if (val.GetName().ToLowerInvariant().Trim() == nameTrim) {
+            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>())
+            {
+                if (val.GetName().ToLowerInvariant().Trim() == nameTrim)
+                {
                     return val;
                 }
             }
@@ -41,7 +40,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             StringWriter message = new StringWriter();
             string delimiter = "";
-            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>()) {
+            foreach (HashFunctionEnum val in EnumHelper.GetValues<HashFunctionEnum>())
+            {
                 message.Write(delimiter);
                 message.Write(val.GetName().ToLowerInvariant().Trim());
                 delimiter = ", ";

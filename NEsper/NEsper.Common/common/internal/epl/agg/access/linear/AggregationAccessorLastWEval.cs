@@ -40,6 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
@@ -78,6 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",

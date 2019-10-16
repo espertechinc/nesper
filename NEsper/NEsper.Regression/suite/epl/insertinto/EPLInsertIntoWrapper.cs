@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBeanSimple = com.espertech.esper.common.@internal.support.SupportBeanSimple;
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var statementOne = "@Name('s0') insert into StreamA select irstream * from SupportBeanSimple#length(2)";
                 var statementTwo =
-                    "@Name('s1') insert into StreamB select irstream *, myString||'A' as propA from StreamA#length(2)";
+                    "@Name('s1') insert into StreamB select irstream *, MyString||'A' as propA from StreamA#length(2)";
                 var statementThree =
                     "@Name('s2') insert into StreamC select irstream *, propA||'B' as propB from StreamB#length(2)";
 

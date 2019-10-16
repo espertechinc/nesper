@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -24,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.util
         public static string ResetGetClassName()
         {
             Reset();
-            return typeof(SupportStatementCompileHook).Name;
+            return typeof(SupportStatementCompileHook).CleanName();
         }
 
         public static void Reset()

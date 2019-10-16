@@ -62,20 +62,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventSvc =
-                codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            CodegenExpressionField namedWindowType = codegenClassScope.AddFieldUnshared(
+            var eventSvc =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var namedWindowType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(namedWindowAsType, EPStatementInitServicesConstants.REF));
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 typeof(ExprEvalStreamInsertNamedWindow),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
 
-            string method = EventTypeUtility.GetAdapterForMethodName(namedWindowAsType);
+            var method = EventTypeUtility.GetAdapterForMethodName(namedWindowAsType);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")

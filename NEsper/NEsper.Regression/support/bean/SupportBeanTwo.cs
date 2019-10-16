@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public string StringTwo { get; set; }
 
-        public bool IsBoolPrimitiveTwo { get; set; }
+        public bool BoolPrimitiveTwo { get; set; }
 
         public int IntPrimitiveTwo { get; set; }
 

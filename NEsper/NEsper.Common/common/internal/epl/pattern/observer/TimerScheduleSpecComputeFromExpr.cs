@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 }
                 else if (TypeHelper.IsNumber(param)) {
                     long msec = param.AsLong();
-                    optionalDate = DateTimeEx.GetInstance(timeZone, msec);
+                    optionalDate = DateTimeEx.GetInstance(timeZone);
                     optionalRemainder = timeAbacus.DateTimeSet(msec, optionalDate);
                 }
                 else if (param is DateTimeEx dateTimeEx) {

@@ -67,34 +67,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         public CodegenExpression Make(
+            CodegenBlock codegenBlock,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var init = codegenClassScope.NamespaceScope.InitMethod;
-
-            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var eventType = codegenClassScope.AddFieldUnshared(
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
 
-            var makeUndLambda = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
-                "makeUndFunc", makeUndLambda);
-            MakeUnderlyingCodegen(makeUndLambda.Block, codegenClassScope);
+            var makeUndLambda = new CodegenExpressionLambda(codegenBlock)
+                .WithParam<object[]>("properties")
+                .WithBody(block => MakeUnderlyingCodegen(block, codegenClassScope));
 
-            var makeLambda = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
-                "makeFunc", makeLambda);
-            makeLambda.Block
-                .DeclareVar<object[]>("und",
-                    Cast(typeof(object[]), 
-                        ExprDotMethod(Ref("makeUndFunc"), "Invoke", Ref("properties"))))
-                .BlockReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("und"), eventType));
-
-            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(Ref("makeFunc"), Ref("makeUndFunc"));
+            var manufacturer = NewInstance<ProxyObjectArrayEventBeanManufacturer>(
+                eventType, factory, makeUndLambda);
 
             //var makeUndProc = CodegenMethod.MakeMethod(typeof(object[]), GetType(), codegenClassScope)
             //    .AddParam(typeof(object[]), "properties");
@@ -105,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             //    .AddParam(typeof(object[]), "properties");
             //manufacturer.AddMethod("Make", makeProc);
 
-            return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
+            return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         private void MakeUnderlyingCodegen(

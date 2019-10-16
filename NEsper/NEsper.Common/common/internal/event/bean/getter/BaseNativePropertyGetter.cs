@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -262,7 +263,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (!(@object is IEnumerable<EventBean> enumerable)) {
+            if (!(@object is IEnumerable enumerable)) {
                 return null;
             }
 
@@ -288,8 +289,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var msvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var mtype = codegenClassScope.AddFieldUnshared<BeanEventType>(
+            var msvc = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var mtype = codegenClassScope.AddDefaultFieldUnshared<BeanEventType>(
                 false,
                 Cast(
                     typeof(BeanEventType),

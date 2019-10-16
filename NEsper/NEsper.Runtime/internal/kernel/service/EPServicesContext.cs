@@ -56,6 +56,7 @@ using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
@@ -105,7 +106,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             ImportServiceRuntime importServiceRuntime,
             EPStatementFactory epStatementFactory,
             PathRegistry<string, ExpressionDeclItem> exprDeclaredPathRegistry,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             EPServicesHA epServicesHA,
             EPRuntimeSPI epRuntime,
             EventBeanService eventBeanService,
@@ -273,7 +274,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public EPStatementFactory EpStatementFactory { get; }
 
-        public ManagedReadWriteLock EventProcessingRWLock { get; }
+        public IReaderWriterLock EventProcessingRWLock { get; }
 
         public EPServicesHA EpServicesHA { get; }
 

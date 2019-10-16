@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
             //log.info("delta=" + delta);
-            Assert.IsTrue(delta < 500, "Delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
             env.UndeployAll();
         }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
                 // log.info("delta=" + delta);
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 // test coercion
                 env.UndeployAll();
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
                 // log.info("delta=" + delta);
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 // test coercion
                 env.UndeployAll();
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
                 // log.info("delta=" + delta);
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
                 // log.info("delta=" + delta);
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 env.UndeployAll();
             }

@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
+using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -202,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             // Compile script
             var parameterTypes = ExprNodeUtilityQuery.GetExprResultTypes(forges);
-            var dialect = Script.OptionalDialect == null ? _defaultDialect : Script.OptionalDialect;
+            var dialect = Script.OptionalDialect ?? _defaultDialect;
             var compiled = CompileScript(
                 dialect,
                 Script.Name,
@@ -211,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 parameterTypes,
                 Script.CompiledBuf,
                 validationContext.ImportService,
-                validationContext.ScriptingService);
+                validationContext.ScriptService);
 
             // Determine declared return type
             var declaredReturnType = GetDeclaredReturnType(Script.OptionalReturnTypeName, validationContext);
@@ -286,7 +287,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             Type[] parameterTypes,
             ExpressionScriptCompiled scriptCompiledBuf,
             ImportServiceCompileTime importService,
-            ScriptingService scriptingService)
+            ScriptServiceCompileTime scriptingService)
         {
             return new ExpressionScriptCompiledImpl(
                 scriptingService.Compile(

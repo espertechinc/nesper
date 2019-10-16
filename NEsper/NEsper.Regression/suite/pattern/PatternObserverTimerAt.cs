@@ -27,9 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if false
             execs.Add(new PatternTimerAtSimple());
             execs.Add(new PatternOp());
             execs.Add(new PatternCronParameter());
+#endif
             execs.Add(new PatternAtWeekdays());
             execs.Add(new PatternAtWeekdaysPrepared());
             execs.Add(new PatternAtWeekdaysVariable());

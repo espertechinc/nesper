@@ -101,7 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .IfCondition(Relational(Ref("index"), GE, ExprDotName(events, "Count")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "Get", Ref("index"))));
+                .MethodReturn(
+                    Cast(typeof(EventBean),
+                    ArrayAtIndex(events, Ref("index"))));
             return LocalMethod(method, index);
         }
 
@@ -210,9 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 Cast(typeof(IList<EventBean>), ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
         }
 
-        private CodegenExpressionField GetSerde(CodegenClassScope classScope)
+        private CodegenExpressionInstanceField GetSerde(CodegenClassScope classScope)
         {
-            return classScope.AddOrGetFieldSharable(new CodegenSharableSerdeEventTyped(LISTEVENTS, forge.EventType));
+            return classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeEventTyped(LISTEVENTS, forge.EventType));
         }
     }
 } // end of namespace

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
-            CodegenExpressionField mType = codegenClassScope.AddFieldUnshared(
+            CodegenExpressionInstanceField mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(resultEventType, EPStatementInitServicesConstants.REF));
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
-                "tuple", NewInstance(typeof(Dictionary<string, object>)));
+                "tuple", NewInstance(typeof(HashMap<string, object>)));
             for (int i = 0; i < streamNames.Length; i++) {
                 methodNode.Block.Expression(
                     ExprDotMethod(@Ref("tuple"), "Put", Constant(streamNames[i]), ArrayAtIndex(refEPS, Constant(i))));

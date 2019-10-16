@@ -529,11 +529,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             return new SupportMarketDataBean(symbol, price, 0L, "");
         }
 
-        private static object[] ToObjectArray(IEnumerator<EventBean> it)
+        private static object[] ToObjectArray(IEnumerator<EventBean> enumerator)
         {
             IList<object> result = new List<object>();
-            while (it.MoveNext()) {
-                var theEvent = it.Advance();
+            while (enumerator.MoveNext()) {
+                var theEvent = enumerator.Advance();
                 result.Add(theEvent.Underlying);
             }
 

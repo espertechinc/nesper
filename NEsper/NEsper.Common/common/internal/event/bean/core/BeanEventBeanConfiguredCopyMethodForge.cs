@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     /// </summary>
     public class BeanEventBeanConfiguredCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly BeanEventType beanEventType;
-        private readonly MethodInfo copyMethod;
+        private readonly BeanEventType _beanEventType;
+        private readonly MethodInfo _copyMethod;
 
         /// <summary>
         ///     Ctor.
@@ -35,24 +35,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventType beanEventType,
             MethodInfo copyMethod)
         {
-            this.beanEventType = beanEventType;
-            this.copyMethod = copyMethod;
+            this._beanEventType = beanEventType;
+            this._copyMethod = copyMethod;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance<BeanEventBeanConfiguredCopyMethod>(
                 Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
+                    EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF)),
                 factory,
-                MethodResolver.ResolveMethodCodegenExactNonStatic(copyMethod));
+                MethodResolver.ResolveMethodCodegenExactNonStatic(_copyMethod));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new BeanEventBeanConfiguredCopyMethod(beanEventType, eventBeanTypedEventFactory, copyMethod);
+            return new BeanEventBeanConfiguredCopyMethod(_beanEventType, eventBeanTypedEventFactory, _copyMethod);
         }
     }
 } // end of namespace

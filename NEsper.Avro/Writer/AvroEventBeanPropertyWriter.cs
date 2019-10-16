@@ -17,6 +17,8 @@ using com.espertech.esper.common.@internal.@event.core;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace NEsper.Avro.Writer
 {
     public class AvroEventBeanPropertyWriter : EventPropertyWriterSPI
@@ -50,10 +52,11 @@ namespace NEsper.Avro.Writer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return CodegenExpressionBuilder.ExprDotMethod(
-                und,
+            return StaticMethod(
+                typeof(GenericRecordExtensions),
                 "Put",
-                CodegenExpressionBuilder.Constant(index),
+                und,
+                Constant(index.Name),
                 assigned);
         }
     }

@@ -17,7 +17,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
     {
         public static string GetIdentifierMayStartNumeric(string str)
         {
-#if false
+            return GetIdentifierMayStartNumericOrig(str);
+        }
+
+        public static string GetIdentifierMayStartNumericNew(string str)
+        {
+            using (var hash = SHA1.Create()) {
+                return hash
+                    .ComputeHash(str.GetUTF8Bytes())
+                    .ToHexString();
+            }
+        }
+
+
+        public static string GetIdentifierMayStartNumericOrig(string str)
+        {
             var sb = new StringBuilder();
             for (int i = 0; i < str.Length; i++) {
                 var charAt = str[i];
@@ -30,13 +44,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             }
 
             return sb.ToString();
-#else
-            using (var hash = SHA1.Create()) {
-                return hash
-                    .ComputeHash(str.GetUTF8Bytes())
-                    .ToHexString();
-            }
-#endif
         }
 
         private static bool IsIdentifierPart(char cc)

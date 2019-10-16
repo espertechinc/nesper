@@ -77,8 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
+            var evaluationType = forges[0].EvaluationType.GetBoxedType();
             ApplyEvalValuePrefix(true, method, symbols, forges, classScope);
-            ApplyEvalEnterNonNull(Ref("val"), forges[0].EvaluationType.GetBoxedType(), method, symbols, forges, classScope);
+            ApplyEvalEnterNonNull(Ref("val"), evaluationType, method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableEnterFiltered(

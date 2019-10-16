@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -62,13 +62,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("A", 10));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("window"),
-                    new[] {"alertId", "this.IntPrimitive"},
+                    new[] {"alertId", "This.IntPrimitive"},
                     new[] {new object[] {"1", 10}});
 
                 env.SendEventBean(new SupportBean("B", 20));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("window"),
-                    new[] {"alertId", "this.IntPrimitive"},
+                    new[] {"alertId", "This.IntPrimitive"},
                     new[] {new object[] {"1", 10}, new object[] {"2", 20}});
 
                 env.CompileDeploy(

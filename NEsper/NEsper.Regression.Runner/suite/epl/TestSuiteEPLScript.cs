@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddImportType(typeof(MyImportedClass));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLScriptExpression()
         {
             RegressionRunner.Run(session, EPLScriptExpression.Executions());

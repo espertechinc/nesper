@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.nth
 {
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             this.size = size;
         }
 
-        public override Type ResultType => childType;
+        public override Type ResultType => childType.GetBoxedType();
 
         public override AggregatorMethod Aggregator => aggregator;
 
@@ -46,8 +47,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
 
         public override AggregationPortableValidation AggregationPortableValidation =>
             new AggregationPortableValidationNth(parent.IsDistinct, parent.OptionalFilter != null, childType, size);
-
-        public Type ChildType => childType;
 
         public int SizeOfBuf => size + 1;
 

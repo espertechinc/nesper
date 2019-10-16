@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type valueType,
             CodegenMethod method)
         {
-            var coercer = GetCoercerNonBigIntDec(valueType);
+            var coercer = GetCoercerNonBigInt(valueType);
             var opcode = enter ? "+" : "-";
             method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, valueType)));
         }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var coercer = GetCoercerNonBigIntDec(sumType);
+            var coercer = GetCoercerNonBigInt(sumType);
             var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
             var opcode = enter ? "+" : "-";
             method.Block.AssignRef(sum, Op(sum, opcode, 

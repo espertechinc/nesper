@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
+    [Serializable]
     public class StatementSpecCompileSyntaxException : StatementSpecCompileException
     {
         public StatementSpecCompileSyntaxException(
@@ -24,6 +26,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             Exception cause,
             string expression)
             : base(message, cause, expression)
+        {
+        }
+
+        protected StatementSpecCompileSyntaxException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

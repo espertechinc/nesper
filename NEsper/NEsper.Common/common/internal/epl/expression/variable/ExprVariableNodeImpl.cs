@@ -79,10 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenExpression readerExpression;
             if (VariableMetadata.OptionalContextName == null) {
                 readerExpression =
-                    classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
+                    classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
             }
             else {
-                var field = classScope.AddOrGetFieldSharable(
+                var field = classScope.AddOrGetDefaultFieldSharable(
                     new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
                 var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
                 readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "Get", cpid));
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
         {
             CodegenExpression readerExpression =
-                classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
+                classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
             if (VariableMetadata.EventType == null) {
                 return Cast(EvaluationType, ExprDotName(readerExpression, "Value"));
             }

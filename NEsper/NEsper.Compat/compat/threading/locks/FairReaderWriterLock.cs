@@ -69,6 +69,19 @@ namespace com.espertech.esper.compat.threading.locks
             return WriteLock.Acquire();
         }
 
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+            return WriteLock.Acquire((long) lockWaitDuration.TotalMilliseconds);
+        }
+
+        /// <summary>
+        /// Releases the write lock, canceling the lock semantics managed by any current holder.
+        /// </summary>
+        public void ReleaseWriteLock()
+        {
+            WriteLock.Release();
+        }
+
         /// <summary>
         /// Indicates if the writer lock is held.
         /// </summary>

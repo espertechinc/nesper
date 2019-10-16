@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -32,18 +33,25 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="runtimeURI">runtime URI</param>
+        /// <param name="runtimeUri">runtime URI</param>
         /// <param name="specification">specifies statement groups</param>
+        /// <param name="rwLockManager">the lock manager</param>
         public StatementMetricRepository(
-            string runtimeURI,
-            ConfigurationRuntimeMetricsReporting specification)
+            string runtimeUri,
+            ConfigurationRuntimeMetricsReporting specification,
+            IReaderWriterLockManager rwLockManager)
         {
             this.specification = specification;
             var numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
             groupMetrics = new StatementMetricArray[numGroups];
 
             // default group
-            groupMetrics[0] = new StatementMetricArray(runtimeURI, "group-default", 100, false);
+            groupMetrics[0] = new StatementMetricArray(
+                runtimeUri,
+                "group-default",
+                100,
+                false,
+                rwLockManager);
 
             // initialize all other groups
             var countGroups = 1;
@@ -56,10 +64,11 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 }
 
                 groupMetrics[countGroups] = new StatementMetricArray(
-                    runtimeURI,
+                    runtimeUri,
                     "group-" + countGroups,
                     initialNumStmts,
-                    config.IsReportInactive);
+                    config.IsReportInactive,
+                    rwLockManager);
                 countGroups++;
             }
 
@@ -123,7 +132,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numInput)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireDisposableReadLock()) {
+            using (array.RWLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddMetrics(performanceMetrics);
                 metric.AddNumInput(numInput);
@@ -142,7 +151,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numRStream)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireDisposableReadLock()) {
+            using (array.RWLock.AcquireReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);
                 metric.AddNumOutputRStream(numRStream);

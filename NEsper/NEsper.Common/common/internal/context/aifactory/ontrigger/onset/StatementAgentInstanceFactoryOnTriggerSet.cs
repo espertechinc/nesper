@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             return @out;
         }
 
-        public override StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public override IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

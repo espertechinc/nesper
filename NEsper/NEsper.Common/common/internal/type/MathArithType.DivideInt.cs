@@ -19,6 +19,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
+        [Serializable]
         public class DivideInt : Computer
         {
             public object Compute(

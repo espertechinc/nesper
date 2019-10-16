@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 1000, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
             env.UndeployModuleContaining("s0");
             Assert.AreEqual(0, GetIndexCount(env));
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 // assert they are deleted
                 Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(env.GetEnumerator("create")));
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 // assert they are deleted
                 Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(env.GetEnumerator("create")));
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-                Assert.IsTrue(delta < 1500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(1500), "Delta=" + delta);
 
                 // assert they are all deleted
                 Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(env.GetEnumerator("create")));
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-                Assert.IsTrue(delta < 1000, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "Delta=" + delta);
                 Assert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(env.GetEnumerator("create")));
 
                 // destroy all

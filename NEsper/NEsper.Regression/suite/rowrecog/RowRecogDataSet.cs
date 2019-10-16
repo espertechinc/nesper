@@ -14,6 +14,7 @@ using System.Text;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
@@ -99,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 buf.Append(delimiter);
                 buf.Append(prop.PropertyName);
                 buf.Append("=");
-                buf.Append(theEvent.Get(prop.PropertyName));
+                buf.Append(theEvent.Get(prop.PropertyName).RenderAny());
                 delimiter = ",";
             }
 
@@ -137,12 +138,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E8", 2},
                     new object[] {
                         "E9", 6, // Z
-                        new[] {"beginA=E3,lastZ=E9", "beginA=E4,lastZ=E9"}
+                        new[] { "beginA=\"E3\",lastZ=\"E9\"", "beginA=\"E4\",lastZ=\"E9\"" }
                     },
                     new object[] {"E10", 2},
                     new object[] {
                         "E11", 9, // 10
-                        new[] {"beginA=E6,lastZ=E11", "beginA=E7,lastZ=E11"}
+                        new[] { "beginA=\"E6\",lastZ=\"E11\"", "beginA=\"E7\",lastZ=\"E11\"" }
                     },
                     new object[] {"E12", 9},
                     new object[] {"E13", 8},
@@ -153,20 +154,20 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E18", 0},
                     new object[] {
                         "E19", 2,
-                        new[] {"beginA=E12,lastZ=E19", "beginA=E13,lastZ=E19", "beginA=E14,lastZ=E19"}
+                        new[] { "beginA=\"E12\",lastZ=\"E19\"", "beginA=\"E13\",lastZ=\"E19\"", "beginA=\"E14\",lastZ=\"E19\"" }
                     },
                     new object[] {
                         "E20", 3,
-                        new[] {"beginA=E12,lastZ=E20", "beginA=E13,lastZ=E20", "beginA=E14,lastZ=E20"}
+                        new[] { "beginA=\"E12\",lastZ=\"E20\"", "beginA=\"E13\",lastZ=\"E20\"", "beginA=\"E14\",lastZ=\"E20\"" }
                     },
                     new object[] {
                         "E21", 8,
-                        new[] {"beginA=E12,lastZ=E21", "beginA=E13,lastZ=E21", "beginA=E14,lastZ=E21"}
+                        new[] { "beginA=\"E12\",lastZ=\"E21\"", "beginA=\"E13\",lastZ=\"E21\"", "beginA=\"E14\",lastZ=\"E21\"" }
                     },
                     new object[] {"E22", 5},
                     new object[] {
                         "E23", 9,
-                        new[] {"beginA=E16,lastZ=E23", "beginA=E17,lastZ=E23"}
+                        new[] { "beginA=\"E16\",lastZ=\"E23\"", "beginA=\"E17\",lastZ=\"E23\"" }
                     },
                     new object[] {"E24", 9},
                     new object[] {"E25", 4},
@@ -174,12 +175,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E27", 2},
                     new object[] {
                         "E28", 8,
-                        new[] {"beginA=E24,lastZ=E28"}
+                        new[] { "beginA=\"E24\",lastZ=\"E28\"" }
                     },
                     new object[] {"E29", 0},
                     new object[] {
                         "E30", 4,
-                        new[] {"beginA=E26,lastZ=E30"}
+                        new[] { "beginA=\"E26\",lastZ=\"E30\"" }
                     },
                     new object[] {"E31", 4},
                     new object[] {"E32", 7},
@@ -190,12 +191,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E37", 1},
                     new object[] {
                         "E38", 7,
-                        new[] {"beginA=E33,lastZ=E38", "beginA=E34,lastZ=E38"}
+                        new[] { "beginA=\"E33\",lastZ=\"E38\"", "beginA=\"E34\",lastZ=\"E38\"" }
                     },
                     new object[] {"E39", 5},
                     new object[] {
                         "E40", 8,
-                        new[] {"beginA=E36,lastZ=E40"}
+                        new[] { "beginA=\"E36\",lastZ=\"E40\"" }
                     },
                     new object[] {"E41", 6},
                     new object[] {"E42", 6},
@@ -206,12 +207,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {"E47", 3},
                     new object[] {
                         "E48", 8,
-                        new[] {"beginA=E42,lastZ=E48"}
+                        new[] { "beginA=\"E42\",lastZ=\"E48\"" }
                     },
                     new object[] {"E49", 2},
                     new object[] {
                         "E50", 5,
-                        new[] {"beginA=E45,lastZ=E50", "beginA=E46,lastZ=E50"}
+                        new[] { "beginA=\"E45\",lastZ=\"E50\"", "beginA=\"E46\",lastZ=\"E50\"" }
                     },
                     new object[] {"E51", 3},
                     new object[] {"E52", 3},
@@ -306,25 +307,25 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {
                         "E7", 64,
                         new[] {
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=E7,f0_value=64,f1_string=null,f1_value=null"
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=null,f1_value=0"
                         }
                     },
                     new object[] {
                         "E8", 78,
                         new[] {
-                            "a_string=E3,a_value=75,b_string=E4,b_value=61,c0_string=E5,c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=null,e1_value=null,f0_string=E8,f0_value=78,f1_string=null,f1_value=null",
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=null,e1_value=null,f0_string=E8,f0_value=78,f1_string=null,f1_value=null",
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=E7,f0_value=64,f1_string=E8,f1_value=78"
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=0",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=0",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
                         }
                     },
                     new object[] {
                         "E9", 84,
                         new[] {
-                            "a_string=E3,a_value=75,b_string=E4,b_value=61,c0_string=E5,c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=null,e1_value=null,f0_string=E8,f0_value=78,f1_string=E9,f1_value=84",
-                            "a_string=E3,a_value=75,b_string=E4,b_value=61,c0_string=E5,c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=E8,e1_value=78,f0_string=E9,f0_value=84,f1_string=null,f1_value=null",
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=E8,e1_value=78,f0_string=E9,f0_value=84,f1_string=null,f1_value=null",
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=E7,e0_value=64,e1_string=null,e1_value=null,f0_string=E8,f0_value=78,f1_string=E9,f1_value=84",
-                            "a_string=E4,a_value=61,b_string=E5,b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=E6,d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=E7,f0_value=64,f1_string=E8,f1_value=78"
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=0",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=0",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
                         }
                     }
                 };

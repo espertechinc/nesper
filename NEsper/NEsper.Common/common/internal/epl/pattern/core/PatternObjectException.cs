@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
     /// <summary>
     /// This exception is thrown to indicate a problem with a view expression.
     /// </summary>
+    [Serializable]
     public sealed class PatternObjectException : Exception
     {
         /// <summary>Constructor.</summary>
@@ -36,6 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// <param name="cause">is the inner exception</param>
         public PatternObjectException(Exception cause)
             : base("", cause)
+        {
+        }
+
+        protected PatternObjectException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

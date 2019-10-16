@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
 
-            Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
+            Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
             env.UndeployAll();
         }
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }

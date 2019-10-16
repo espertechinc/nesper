@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         ArrayAtIndex(refEPS, Constant(i)));
                 }
                 else {
-                    CodegenExpressionField eventToPublic =
+                    CodegenExpressionInstanceField eventToPublic =
                         TableDeployTimeResolver.MakeTableEventToPublicField(
                             tables[i],
                             codegenClassScope,

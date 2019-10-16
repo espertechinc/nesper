@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var member = codegenClassScope.AddFieldUnshared(
+            var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));

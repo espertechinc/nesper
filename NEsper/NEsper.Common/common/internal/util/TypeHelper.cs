@@ -719,7 +719,7 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce.AsByte();
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.Name);
+            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.CleanName());
         }
 
         public static CodegenExpression CoerceNumberBoxedToBoxedCodegen(
@@ -727,52 +727,41 @@ namespace com.espertech.esper.common.@internal.util
             Type fromTypeBoxed,
             Type targetTypeBoxed)
         {
-            if (fromTypeBoxed == targetTypeBoxed)
-            {
+            if (fromTypeBoxed == targetTypeBoxed) {
                 return exprReturningBoxed;
             }
 
-            if (targetTypeBoxed == typeof(double?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsDouble", exprReturningBoxed);
+            if (targetTypeBoxed == typeof(double?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", exprReturningBoxed);
+            }
+            else if (targetTypeBoxed == typeof(long?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedLong", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(long?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsLong", exprReturningBoxed);
-            }
-
-            if (targetTypeBoxed == typeof(BigInteger?))
-            {
+            else if (targetTypeBoxed == typeof(BigInteger?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBigInteger", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(decimal?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsDecimal", exprReturningBoxed);
+            else if (targetTypeBoxed == typeof(decimal?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedDecimal", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(float?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsFloat", exprReturningBoxed);
+            else if (targetTypeBoxed == typeof(float?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedFloat", exprReturningBoxed);
+            }
+            else if (targetTypeBoxed == typeof(int?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(int?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsInt", exprReturningBoxed);
+            else if (targetTypeBoxed == typeof(short?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedShort", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(short?))
-            {
-                return StaticMethod(typeof(TypeExtensions), "AsShort", exprReturningBoxed);
+            else if (targetTypeBoxed == typeof(byte?)) {
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedByte", exprReturningBoxed);
             }
 
-            if (targetTypeBoxed == typeof(byte?))
-            {
-                return ExprDotMethod(exprReturningBoxed, "ByteValue");
-            }
-
-            throw new ArgumentException("Cannot coerce to number subtype " + fromTypeBoxed.Name);
+            throw new ArgumentException("Cannot coerce to number subtype " + fromTypeBoxed.CleanName());
         }
 
         public static CodegenExpression CoerceNumberToBoxedCodegen(
@@ -787,12 +776,12 @@ namespace com.espertech.esper.common.@internal.util
 
             if (targetTypeBoxed == typeof(double?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsDouble", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", expr);
             }
 
             if (targetTypeBoxed == typeof(long?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsLong", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedLong", expr);
             }
 
             if (targetTypeBoxed == typeof(BigInteger?))
@@ -802,30 +791,30 @@ namespace com.espertech.esper.common.@internal.util
 
             if (targetTypeBoxed == typeof(decimal?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsDecimal", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedDecimal", expr);
             }
 
             if (targetTypeBoxed == typeof(float?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsFloat", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedFloat", expr);
             }
 
             if (targetTypeBoxed == typeof(int?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsInt", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt", expr);
             }
 
             if (targetTypeBoxed == typeof(short?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsShort", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedShort", expr);
             }
 
             if (targetTypeBoxed == typeof(byte?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsByte", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedByte", expr);
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + targetTypeBoxed);
+            throw new ArgumentException("Cannot coerce to number subtype " + targetTypeBoxed.CleanName());
         }
 
         public static bool IsLongNumber(this object number)
@@ -1439,13 +1428,13 @@ namespace com.espertech.esper.common.@internal.util
         ///     and so on.
         /// </summary>
         /// <param name="typeName">is the name to recognize</param>
+        /// <param name="classForNameProvider">the class for name provider</param>
         /// <param name="boxed">if set to <c>true</c> [boxed].</param>
         /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
         /// <returns>
         ///     class
         /// </returns>
         /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
-
         public static Type GetTypeForSimpleName(
             string typeName,
             ClassForNameProvider classForNameProvider,
@@ -1565,10 +1554,16 @@ namespace com.espertech.esper.common.@internal.util
 
             if (classForNameProvider != null)
             {
-                var clazz = classForNameProvider.ClassForName(typeName);
-                if (clazz != null)
-                {
-                    return clazz;
+                try {
+                    var clazz = classForNameProvider.ClassForName(typeName);
+                    if (clazz != null) {
+                        return clazz;
+                    }
+                }
+                catch (TypeLoadException) {
+                    if (throwOnError) {
+                        throw;
+                    }
                 }
             }
 
@@ -3189,34 +3184,21 @@ namespace com.espertech.esper.common.@internal.util
             return methods.Where(method => method.Name.StartsWith(methodName)).ToList();
         }
 
-        public static IList<Attribute> GetAnnotations<T>(Attribute[] annotations) where T : Attribute
+        public static IList<T> GetAnnotations<T>(Attribute[] annotations) where T : Attribute
         {
-            return GetAnnotations(typeof(T), annotations);
+            return annotations
+                .Where(a => a.GetType() == typeof(T))
+                .Select(a => (T) a)
+                .ToList();
         }
 
         public static IList<Attribute> GetAnnotations(
             Type annotationClass,
             Attribute[] annotations)
         {
-            //return annotations
-            //    .Where(a => a.GetType() == annotationClass)
-            //    .ToList();
-
-            List<Attribute> result = null;
-            foreach (var annotation in annotations)
-            {
-                if (annotation.GetType() == annotationClass)
-                {
-                    if (result == null)
-                    {
-                        result = new List<Attribute>();
-                    }
-
-                    result.Add(annotation);
-                }
-            }
-
-            return result ?? Collections.GetEmptyList<Attribute>();
+            return annotations
+                .Where(a => a.GetType() == annotationClass)
+                .ToList();
         }
 
         public static bool IsAnnotationListed(

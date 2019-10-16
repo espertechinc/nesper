@@ -11,13 +11,16 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {

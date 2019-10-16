@@ -41,21 +41,21 @@ namespace com.espertech.esper.common.@internal.util
             if (typeBoxed == typeof(char?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseChar(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseChar", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseChar", input)
                 };
             }
 
             if (typeBoxed == typeof(bool?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseBoolean(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseBoolean", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseBoolean", input)
                 };
             }
 
             if (typeBoxed == typeof(Guid?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseGuid(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseGuid", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseGuid", input)
                 };
             }
 
@@ -63,56 +63,56 @@ namespace com.espertech.esper.common.@internal.util
             if (typeBoxed == typeof(byte?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseByte(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseByte", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseByte", input)
                 };
             }
 
             if (typeBoxed == typeof(sbyte?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseSByte(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseSByte", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseSByte", input)
                 };
             }
 
             if (typeBoxed == typeof(short?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseInt16(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseShort", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseInt16", input)
                 };
             }
 
             if (typeBoxed == typeof(ushort?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseUInt16(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseUShort", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseUInt16", input)
                 };
             }
 
             if (typeBoxed == typeof(int?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseInt32(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseInt", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseInt32", input)
                 };
             }
 
             if (typeBoxed == typeof(uint?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseUInt32(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseUInt", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseUInt32", input)
                 };
             }
 
             if (typeBoxed == typeof(long?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseInt64(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseLong", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseInt64", input)
                 };
             }
 
             if (typeBoxed == typeof(ulong?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseUInt64(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseULong", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseUInt64", input)
                 };
             }
 
@@ -120,21 +120,21 @@ namespace com.espertech.esper.common.@internal.util
             if (typeBoxed == typeof(float?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseFloat(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseFloat", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseFloat", input)
                 };
             }
 
             if (typeBoxed == typeof(double?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseDouble(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseDouble", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseDouble", input)
                 };
             }
 
             if (typeBoxed == typeof(decimal?)) {
                 return new ProxySimpleTypeParserSPI {
                     ProcParse = value => SimpleTypeParserFunctions.ParseDecimal(value),
-                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFactory), "ParseDecimal", input)
+                    ProcCodegen = input => StaticMethod(typeof(SimpleTypeParserFunctions), "ParseDecimal", input)
                 };
             }
 

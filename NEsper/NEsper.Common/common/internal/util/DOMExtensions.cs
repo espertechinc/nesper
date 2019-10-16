@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.util
             XmlNode node,
             string key)
         {
-            var valueNode = node.Attributes.GetNamedItem(key);
+            var valueNode = node?.Attributes?.GetNamedItem(key);
             if (valueNode == null) {
                 var name = string.IsNullOrEmpty(node.Name)
                     ? node.LocalName

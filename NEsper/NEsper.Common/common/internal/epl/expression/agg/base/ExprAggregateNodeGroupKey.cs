@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             ExprForgeCodegenSymbol symbol,
             CodegenClassScope classScope)
         {
-            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            CodegenExpression future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);

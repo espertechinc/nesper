@@ -49,15 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            ObjectArrayEventBean evalEvent = new ObjectArrayEventBean(new object[1], forge.type);
+            var evalEvent = new ObjectArrayEventBean(new object[1], forge.type);
             eventsLambda[forge.streamNumLambda] = evalEvent;
-            object[] props = evalEvent.Properties;
+            var props = evalEvent.Properties;
 
             if (enumcoll.Count == 1) {
-                object item = enumcoll.First();
+                var item = enumcoll.First();
                 props[0] = item;
 
-                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -65,12 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return Collections.SingletonList(item);
             }
 
-            ArrayDeque<object> result = new ArrayDeque<object>();
+            var result = new ArrayDeque<object>();
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 props[0] = next;
 
-                object pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     break;
                 }
@@ -87,15 +87,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField typeMember = codegenClassScope.AddFieldUnshared(
+            var typeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.type, EPStatementInitServicesConstants.REF)));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumTakeWhileScalarForgeEval),
@@ -103,12 +103,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(
+            var innerValue = forge.innerExpression.EvaluateCodegen(
                 typeof(bool?),
                 methodNode,
                 scope,
                 codegenClassScope);
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ObjectArrayEventBean>(
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
 
-            CodegenBlock blockSingle = block
+            var blockSingle = block
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
                 .DeclareVar<object>(
                     "item",
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
-            CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 forEach,

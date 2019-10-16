@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -19,6 +21,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
+        [Serializable]
         public class DivideDouble : Computer
         {
             private readonly bool divisionByZeroReturnsNull;
@@ -57,7 +60,7 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 if (!divisionByZeroReturnsNull) {
-                    return CodegenExpressionBuilder.Op(
+                    return Op(
                         CodegenAsDouble(left, ltype),
                         "/",
                         CodegenAsDouble(right, rtype));
@@ -67,18 +70,15 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<double>("d2Double", CodegenAsDouble(CodegenExpressionBuilder.Ref("d2"), rtype))
+                    .DeclareVar<double>("d2Double", CodegenAsDouble(Ref("d2"), rtype))
                     .IfCondition(
-                        CodegenExpressionBuilder.EqualsIdentity(
-                            CodegenExpressionBuilder.Ref("d2Double"),
-                            CodegenExpressionBuilder.Constant(0)))
-                    .BlockReturn(CodegenExpressionBuilder.ConstantNull())
+                        EqualsIdentity(
+                            Ref("d2Double"),
+                            Constant(0)))
+                    .BlockReturn(ConstantNull())
                     .MethodReturn(
-                        CodegenExpressionBuilder.Op(
-                            CodegenAsDouble(CodegenExpressionBuilder.Ref("d1"), ltype),
-                            "/",
-                            CodegenExpressionBuilder.Ref("d2Double")));
-                return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
+                        Op(CodegenAsDouble(Ref("d1"), ltype), "/", Ref("d2Double")));
+                return LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }
     }

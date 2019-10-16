@@ -29,12 +29,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             this.variableMetaData = variableMetaData;
         }
 
-        public CodegenExpressionField Make(CodegenClassScope classScope)
+        public CodegenExpressionInstanceField Make(CodegenClassScope classScope)
         {
             CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(
                 variableMetaData,
                 EPStatementInitServicesConstants.REF);
-            return classScope.AddFieldUnshared(
+            return classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
                 NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryVariable>(resolve));

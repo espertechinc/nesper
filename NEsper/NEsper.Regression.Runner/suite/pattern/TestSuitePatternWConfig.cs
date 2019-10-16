@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
     [TestFixture]
     public class TestSuitePatternWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMax2Noprevent()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMax2Prevent()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMax4Prevent()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternMicrosecondResolution()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerScheduleTimeZoneEST()
         {
             RegressionSession session = RegressionRunner.Session();

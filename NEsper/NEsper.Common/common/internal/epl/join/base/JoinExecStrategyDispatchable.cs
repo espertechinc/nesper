@@ -76,11 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
         private static EventBean[] GetBufferData(FlushedEventBuffer buffer)
         {
-            if (buffer == null) {
-                return null;
-            }
-
-            return buffer.GetAndFlush();
+            return buffer?.GetAndFlush();
         }
 
         public void NewData(

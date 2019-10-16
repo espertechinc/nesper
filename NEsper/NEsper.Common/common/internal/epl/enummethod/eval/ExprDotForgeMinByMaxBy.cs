@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
-            bool max = this.EnumMethodEnum == EnumMethodEnum.MAXBY;
+            var max = this.EnumMethodEnum == EnumMethodEnum.MAXBY;
             if (inputEventType == null) {
                 base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
                 return new EnumMinMaxByScalarLambdaForge(

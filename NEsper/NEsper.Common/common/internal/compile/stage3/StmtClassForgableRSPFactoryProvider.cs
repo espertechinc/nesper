@@ -41,12 +41,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StmtClassForgableRSPFactoryProvider : StmtClassForgable
     {
-        private const string CLASSNAME_RESULTSETPROCESSORFACTORY = "RSPFactory";
-        private const string CLASSNAME_RESULTSETPROCESSOR = "RSP";
-        private const string MEMBERNAME_RESULTSETPROCESSORFACTORY = "rspFactory";
-        private const string MEMBERNAME_AGGREGATIONSVCFACTORY = "aggFactory";
-        private const string MEMBERNAME_ORDERBYFACTORY = "orderByFactory";
-        private const string MEMBERNAME_RESULTEVENTTYPE = "resultEventType";
+        public const string CLASSNAME_RESULTSETPROCESSORFACTORY = "RSPFactory";
+        public const string CLASSNAME_RESULTSETPROCESSOR = "RSP";
+        public const string MEMBERNAME_RESULTSETPROCESSORFACTORY = "rspFactory";
+        public const string MEMBERNAME_AGGREGATIONSVCFACTORY = "aggFactory";
+        public const string MEMBERNAME_ORDERBYFACTORY = "orderByFactory";
+        public const string MEMBERNAME_RESULTEVENTTYPE = "resultEventType";
+        public const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
 
         private readonly CodegenNamespaceScope _namespaceScope;
         private readonly ResultSetProcessorDesc _spec;
@@ -84,6 +85,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                         typeof(EPStatementInitServices),
                         EPStatementInitServicesConstants.REF.Ref,
                         false));
+                ctorParms.Add(
+                    new CodegenTypedParam(
+                        _namespaceScope.FieldsClassName,
+                        null,
+                        MEMBERNAME_STATEMENT_FIELDS,
+                        true,
+                        false));
+
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgableRSPFactoryProvider),
                     ClassName,
@@ -94,6 +103,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
                 // add event type
                 providerExplicitMembers.Add(new CodegenTypedParam(typeof(EventType), MEMBERNAME_RESULTEVENTTYPE));
+
                 providerCtor.Block.AssignRef(
                     MEMBERNAME_RESULTEVENTTYPE,
                     EventTypeUtility.ResolveTypeCodegen(_spec.ResultEventType, EPStatementInitServicesConstants.REF));
@@ -327,6 +337,25 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Instance members and methods
             var instance = new CodegenInstanceAux(serviceCtor);
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            instance.Members.Add(
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false));
+
+            serviceCtor.Block.AssignRef(
+                Ref("this.statementFields"),
+                Ref("o.statementFields"));
+
+            // --------------------------------------------------------------------------------
+
             forge.InstanceCodegen(instance, classScope, factoryCtor, factoryExplicitMembers);
 
             // Process-View-Result Method
@@ -765,6 +794,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             };
 
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>(2);
+            members.Add(new CodegenTypedParam(classScope.NamespaceScope.FieldsClassName, NAME_STATEMENT_FIELDS));
             members.Add(new CodegenTypedParam(typeof(EventBeanTypedEventFactory), "factory"));
 
             IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>(2);
@@ -776,6 +806,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     false));
 
             var ctor = new CodegenCtor(typeof(StmtClassForgableRSPFactoryProvider), classScope, ctorParams);
+            ctor.Block.AssignRef(
+                NAME_STATEMENT_FIELDS,
+                ExprDotName(Ref("o"), NAME_STATEMENT_FIELDS));
             ctor.Block.AssignRef(
                 "factory",
                 ExprDotName(EPStatementInitServicesConstants.REF, "EventBeanTypedEventFactory"));
@@ -789,10 +822,6 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
                 .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-
-            processMethod.Block.Debug(
-                "eventsPerStream: {0}",
-                ExprDotMethod(Ref("eventsPerStream"), "RenderAny"));
 
             processMethod.Block.Apply(
                 InstrumentationCode.Instblock(

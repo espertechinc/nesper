@@ -140,8 +140,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 return ConstantNull();
             }
 
-            var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var mType = codegenClassScope.AddFieldUnshared(
+            var mSvc = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(BeanEventType),
                 Cast(

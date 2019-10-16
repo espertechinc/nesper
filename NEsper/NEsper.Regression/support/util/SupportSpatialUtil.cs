@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.support.util
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < deltaMSec, "Delta: " + delta);
+            Assert.That(delta, Is.LessThan(deltaMSec), "Delta: " + delta);
         }
 
         public static string SortGetExpectedRectangles(

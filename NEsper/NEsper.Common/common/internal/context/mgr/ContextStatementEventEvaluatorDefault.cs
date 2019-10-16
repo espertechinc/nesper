@@ -145,38 +145,37 @@ namespace com.espertech.esper.common.@internal.context.mgr
             EventBean theEvent)
         {
             AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-            agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock();
-            try {
-                agentInstance.AgentInstanceContext.VariableManagementService.SetLocalVersion();
+            using (agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock()) {
+                try {
+                    agentInstance.AgentInstanceContext.VariableManagementService.SetLocalVersion();
 
-                // sub-selects always go first
-                foreach (FilterHandle handle in callbacks) {
-                    EPStatementHandleCallbackFilter callback = (EPStatementHandleCallbackFilter) handle;
-                    if (callback.AgentInstanceHandle != agentInstanceContext.EpStatementAgentInstanceHandle) {
-                        continue;
+                    // sub-selects always go first
+                    foreach (FilterHandle handle in callbacks) {
+                        EPStatementHandleCallbackFilter callback = (EPStatementHandleCallbackFilter) handle;
+                        if (callback.AgentInstanceHandle != agentInstanceContext.EpStatementAgentInstanceHandle) {
+                            continue;
+                        }
+
+                        callback.FilterCallback.MatchFound(theEvent, null);
                     }
 
-                    callback.FilterCallback.MatchFound(theEvent, null);
+                    agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
                 }
-
-                agentInstanceContext.EpStatementAgentInstanceHandle.InternalDispatch();
-            }
-            catch (EPException) {
-                throw;
-            }
-            catch (Exception ex) {
-                agentInstanceContext.ExceptionHandlingService.HandleException(
-                    ex,
-                    agentInstanceContext.EpStatementAgentInstanceHandle,
-                    ExceptionHandlerExceptionType.PROCESS,
-                    theEvent);
-            }
-            finally {
-                if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
-                    agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                catch (EPException) {
+                    throw;
                 }
-
-                agentInstanceContext.AgentInstanceLock.ReleaseWriteLock();
+                catch (Exception ex) {
+                    agentInstanceContext.ExceptionHandlingService.HandleException(
+                        ex,
+                        agentInstanceContext.EpStatementAgentInstanceHandle,
+                        ExceptionHandlerExceptionType.PROCESS,
+                        theEvent);
+                }
+                finally {
+                    if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
+                        agentInstanceContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    }
+                }
             }
         }
     }

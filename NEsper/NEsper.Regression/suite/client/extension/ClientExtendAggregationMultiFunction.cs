@@ -24,8 +24,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
     {
         public void Run(RegressionEnvironment env)
         {
-            RunAssertionManagedSimpleState(env);
-            RunAssertionManagedScalarOnly(env);
+            //RunAssertionManagedSimpleState(env);
+            //RunAssertionManagedScalarOnly(env);
             RunAssertionManagedScalarArray(env);
             RunAssertionManagedScalarColl(env);
             RunAssertionManagedSingleEvent(env);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(eplEnumEvent).AddListener("s0");
 
             object[][] expectedEnumEvent = {
-                new object[] {"c0", typeof(SupportBean[]), typeof(SupportBean).FullName, true},
+                new object[] {"c0", typeof(SupportBean[]), typeof(SupportBean).Name, true},
                 new object[] {"c1", typeof(bool?), null, null}, new object[] {"c2", typeof(bool?), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(eplSingleEvent).AddListener("s0");
 
             object[][] expectedSingleEvent = {
-                new object[] {"c0", typeof(SupportBean), typeof(SupportBean).FullName, false},
+                new object[] {"c0", typeof(SupportBean), typeof(SupportBean).Name, false},
                 new object[] {"c1", typeof(bool?), null, null}, new object[] {"c2", typeof(bool?), null, null},
                 new object[] {"c3", typeof(string), null, null}, new object[] {"c4", typeof(int?), null, null}
             };
@@ -198,6 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 new object[] {"c2", typeof(bool?), null, null},
                 new object[] {"c3", typeof(bool?), null, null}
             };
+
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedScalarArray,
                 env.Statement("s0").EventType,
@@ -208,15 +209,20 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsScalarArray,
                 new object[] {
-                    new[] {"E1"}, new[] {1}, true, true
+                    new[] {"E1"},
+                    new[] {1},
+                    true,
+                    true
                 });
-
             env.SendEventBean(new SupportBean("E2", 2));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fieldsScalarArray,
                 new object[] {
-                    new[] {"E1", "E2"}, new[] {1, 2}, false, false
+                    new[] {"E1", "E2"},
+                    new[] {1, 2},
+                    false,
+                    false
                 });
 
             env.UndeployAll();

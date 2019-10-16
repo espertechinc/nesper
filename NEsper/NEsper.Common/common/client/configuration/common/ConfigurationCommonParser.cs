@@ -229,13 +229,11 @@ namespace com.espertech.esper.common.client.configuration.common
                         break;
                     }
 
-                    case "drivermanager-connection": {
-                        var className = GetRequiredAttribute(subElement, "class-name");
-                        var url = GetRequiredAttribute(subElement, "url");
-                        var userName = GetRequiredAttribute(subElement, "user");
-                        var password = GetRequiredAttribute(subElement, "password");
-                        var properties = DOMUtil.GetProperties(subElement, "connection-arg");
-                        configDBRef.SetDriverManagerConnection(className, url, userName, password, properties);
+                    case "driver": {
+                        var driverType = GetRequiredAttribute(subElement, "type");
+                        var connectionString = GetRequiredAttribute(subElement, "connection-string");
+                        var properties = DOMUtil.GetProperties(subElement, "env-property");
+                        configDBRef.SetDatabaseDriver(driverType, connectionString, properties);
                         break;
                     }
 
@@ -376,7 +374,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         HandleXMLDOM(name, configuration, eventTypeElement);
                         break;
 
-                    case "util-map":
+                    case "map":
                         HandleMap(name, configuration, eventTypeElement);
                         break;
 
@@ -391,6 +389,9 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "avro":
                         HandleAvro(name, configuration, eventTypeElement);
                         break;
+
+                    default:
+                        throw new ConfigurationException($"unknown eventType \"{nodeName}\"");
                 }
             }
         }

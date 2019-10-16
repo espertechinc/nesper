@@ -282,7 +282,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public int AgentInstanceId =>
             throw new IllegalStateException("Agent instance id not available at statement-level");
 
-        public StatementAgentInstanceLock AgentInstanceLock =>
+        public IReaderWriterLock AgentInstanceLock =>
             throw new IllegalStateException("Agent instance lock not available at statement-level");
 
         public ExpressionResultCacheService ExpressionResultCacheService => ExpressionResultCacheServiceSharable;

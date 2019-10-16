@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-            Type returnType = first.BodyForge.EvaluationType;
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var returnType = first.BodyForge.EvaluationType;
             base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(returnType);
             if (inputEventType == null) {
                 return new EnumSelectFromScalarLambdaForge(

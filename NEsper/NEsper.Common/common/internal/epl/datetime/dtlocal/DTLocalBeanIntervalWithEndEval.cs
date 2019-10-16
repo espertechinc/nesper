@@ -84,15 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 block.IfRefNullReturnNull("end");
             }
 
-            CodegenExpression startValue = Ref("start");
-            if (forge.getterStartReturnType.IsNullable()) {
-                startValue = ExprDotName(startValue, "Value");
-            }
-
-            CodegenExpression endValue = Ref("end");
-            if (forge.getterEndReturnType.IsNullable()) {
-                endValue = ExprDotName(endValue, "Value");
-            }
+            CodegenExpression startValue = Unbox(Ref("start"), forge.getterStartReturnType);
+            CodegenExpression endValue = Unbox(Ref("end"), forge.getterEndReturnType);
 
             block.MethodReturn(
                 forge.inner.Codegen(

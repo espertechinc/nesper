@@ -8,6 +8,7 @@
 
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.compat
 {
@@ -15,23 +16,39 @@ namespace com.espertech.esper.compat
     /// An exception that occurs when some illegal state occurs.
     /// </summary>
 
-	[Serializable]
-	public class IllegalStateException : Exception
-	{
+    [Serializable]
+    public class IllegalStateException : Exception
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="IllegalStateException"/> class.
         /// </summary>
-		public IllegalStateException() : base() { }
+        public IllegalStateException() : base()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IllegalStateException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
-		public IllegalStateException( string message ) : base( message ) { }
+        public IllegalStateException(string message) : base(message)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="IllegalStateException"/> class.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="e">The underlying exception.</param>
-        public IllegalStateException(string message, Exception e) : base(message, e) { }
+        public IllegalStateException(
+            string message,
+            Exception e) : base(message, e)
+        {
+        }
+
+        protected IllegalStateException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 }

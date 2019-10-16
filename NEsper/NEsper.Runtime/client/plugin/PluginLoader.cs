@@ -18,17 +18,18 @@ namespace com.espertech.esper.runtime.client.plugin
     {
         /// <summary>
         /// Initializes the adapter loader.
-        /// <para/>
+        /// <para>
         /// Invoked before the engine instance is fully initialized. Thereby this is not the place
-        /// to look up an engine instance from <seealso cref="com.espertech.esper.client.EPServiceProviderManager"/>
-        /// and use it. Use the {@link #postInitialize} method instead.
+        /// to look up an engine instance from <seealso cref="EPRuntimeProvider"/>
+        /// and use it. Use the <<see cref="PostInitialize" /> method instead.
+        /// </para>
         /// </summary>
         /// <param name="context">the plug in context</param>
         void Init(PluginLoaderInitContext context);
 
         /// <summary>
         /// Called after an engine instances has fully initialized and is already registered
-        /// with <seealso cref="EPServiceProviderManager"/>.
+        /// with <seealso cref="EPRuntimeProvider"/>.
         /// </summary>
         void PostInitialize();
     }

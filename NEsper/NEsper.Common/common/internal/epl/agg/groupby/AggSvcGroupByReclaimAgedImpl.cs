@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            var timeAbacus = classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE);
+            var timeAbacus = classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE);
             method.Block.DeclareVar<long>(
                     "currentTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"))
@@ -154,9 +154,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     Op(
                         Ref("currentTime"),
                         "-",
-                        ExprDotName(
-                            Cast(classNames.RowTop, ExprDotMethod(Ref("entry"), "GetValue")),
-                            "LastUpdateTime")))
+                        ExprDotMethod(
+                            Cast(classNames.RowTop, ExprDotName(Ref("entry"), "Value")),
+                            "GetLastUpdateTime")))
                 .IfCondition(Relational(Ref("age"), GT, REF_CURRENTMAXAGE))
                 .ExprDotMethod(Ref("removed"), "Add", ExprDotName(Ref("entry"), "Key"))
                 .BlockEnd()

@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("delta=" + (endTime - startTime));
 
                 env.UndeployAll();
-                Assert.IsTrue(endTime - startTime < 500);
+                Assert.That(endTime - startTime, Is.LessThan(500));
             }
         }
 

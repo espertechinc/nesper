@@ -74,8 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // collections, array or map not supported
             if ((typeOne.IsArray) ||
-                (TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>))) ||
-                (TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>)))) {
+                (typeOne.IsGenericCollection()) ||
+                (typeOne.IsGenericDictionary())) {
                 throw new ExprValidationException(
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
@@ -95,10 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         comparedTypes.Add(propType.GetElementType());
                     }
                 }
-                else if (TypeHelper.IsImplementsInterface(propType, typeof(ICollection<object>))) {
+                else if (propType.IsGenericCollection()) {
                     hasCollectionOrArray = true;
                 }
-                else if (TypeHelper.IsImplementsInterface(propType, typeof(IDictionary<object, object>))) {
+                else if (propType.IsGenericDictionary()) {
                     hasCollectionOrArray = true;
                 }
                 else {

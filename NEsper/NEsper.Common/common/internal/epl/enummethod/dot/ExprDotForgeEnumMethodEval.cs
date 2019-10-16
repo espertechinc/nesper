@@ -87,17 +87,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
-            var forgeMember = codegenClassScope.AddFieldUnshared(true, typeof(object), NewInstance(typeof(object)));
+            var forgeMember = codegenClassScope.AddDefaultFieldUnshared(
+                true, typeof(object), NewInstance(typeof(object)));
             var block = methodNode.Block;
+
+            //block.Debug("param: {0}", ExprDotMethod(Ref("param"), "RenderAny"));
+
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar<ICollection<EventBean>>(
+                block.DeclareVar<ICollection<object>>(
                     "coll",
-                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(EventBean) }, Ref("param")));
+                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(object) }, Ref("param")));
+            }
+            else if (innerType.IsGenericEnumerable()) {
+                block.DeclareVar<ICollection<object>>(
+                    "coll",
+                    StaticMethod(typeof(CompatExtensions), "Unwrap", new Type[] {typeof(object)}, Ref("param")));
             }
             else {
-                block.DeclareVar<ICollection<EventBean>>(
-                    "coll",
-                    StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(EventBean)}, Ref("param")));
+                throw new IllegalStateException("invalid type presented for unwrapping");
             }
 
             block.DeclareVar<ExpressionResultCacheForEnumerationMethod>(
@@ -129,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     .MethodReturn(Ref("result"));
             }
             else {
-                var contextNumberMember = codegenClassScope.AddFieldUnshared(
+                var contextNumberMember = codegenClassScope.AddDefaultFieldUnshared(
                     true,
                     typeof(AtomicLong),
                     NewInstance(typeof(AtomicLong)));

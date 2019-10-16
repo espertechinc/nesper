@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -34,6 +35,12 @@ namespace com.espertech.esper.common.@internal.settings
             string msg,
             Exception ex)
             : base(msg, ex)
+        {
+        }
+
+        protected ImportException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.util
                 return input;
             }
 
-            var cache = codegenClassScope.AddFieldUnshared(
+            var cache = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(CopyOnWriteArraySet<Pair<Type, bool>>),
                 NewInstance(typeof(CopyOnWriteArraySet<Pair<Type, bool>>)));

@@ -16,15 +16,22 @@ namespace com.espertech.esper.common.@internal.util
     [Serializable]
     public class LikeUtil
     {
-        internal bool EquivalentToFalsePredicate {
-            get { return _isNull; }
-        }
+        private const int UNDERSCORE_CHAR = 1;
+        private const int PERCENT_CHAR = 2;
 
-        internal bool EquivalentToEqualsPredicate {
-            get { return _iFirstWildCard == -1; }
-        }
+        private char[] _cLike;
+        private int[] _wildCardType;
+        private int _iLen;
+        private readonly bool _isIgnoreCase;
+        private int _iFirstWildCard;
+        private bool _isNull;
+        private char? _escapeChar;
+        
+        public bool EquivalentToFalsePredicate => _isNull;
 
-        internal bool EquivalentToNotNullPredicate {
+        public bool EquivalentToEqualsPredicate => _iFirstWildCard == -1;
+
+        public bool EquivalentToNotNullPredicate {
             get {
                 if (_isNull || !HasWildcards) {
                     return false;
@@ -40,28 +47,19 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        internal bool EquivalentToBetweenPredicate {
+        public bool EquivalentToBetweenPredicate {
             get {
                 return _iFirstWildCard > 0 &&
-                       _iFirstWildCard == _wildCardType.Length - 1 &&
-                       _cLike[_iFirstWildCard] == '%';
+                    _iFirstWildCard == _wildCardType.Length - 1 &&
+                    _cLike[_iFirstWildCard] == '%';
             }
         }
 
-        internal bool EquivalentToBetweenPredicateAugmentedWithLike {
-            get { return _iFirstWildCard > 0 && _cLike[_iFirstWildCard] == '%'; }
+        public bool EquivalentToBetweenPredicateAugmentedWithLike {
+            get {
+                return _iFirstWildCard > 0 && _cLike[_iFirstWildCard] == '%';
+            }
         }
-
-        private const int UNDERSCORE_CHAR = 1;
-        private const int PERCENT_CHAR = 2;
-
-        private char[] _cLike;
-        private int[] _wildCardType;
-        private int _iLen;
-        private readonly bool _isIgnoreCase;
-        private int _iFirstWildCard;
-        private bool _isNull;
-        private char? _escapeChar;
 
         /// <summary> Ctor.</summary>
         /// <param name="pattern">is the SQL-like pattern to</param>
@@ -82,7 +80,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         /// <returns> true if pattern matches, or false if not
         /// </returns>
-        public virtual bool Compare(string compareString)
+        public virtual bool CompareTo(string compareString)
         {
             if (_isIgnoreCase) {
                 compareString = compareString.ToUpper();

@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.eventType = targetType;
             this.streamNumber = streamNumber;
 
-            EventType sourceType = typesPerStream[streamNumber];
-            Type sourceClass = sourceType.UnderlyingType;
-            Type targetClass = targetType.UnderlyingEventType.UnderlyingType;
+            var sourceType = typesPerStream[streamNumber];
+            var sourceClass = sourceType.UnderlyingType;
+            var targetClass = targetType.UnderlyingEventType.UnderlyingType;
             if (!TypeHelper.IsSubclassOrImplementsInterface(sourceClass, targetClass)) {
                 throw SelectEvalInsertUtil.MakeEventTypeCastException(sourceType, targetType);
             }
@@ -58,17 +58,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(
+            var memberUndType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
                     eventType.UnderlyingEventType,
                     EPStatementInitServicesConstants.REF));
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 this.GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamNumber)))
                 .DeclareVar<EventBean>(

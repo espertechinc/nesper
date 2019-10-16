@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             try {
                 Thread.Sleep(msec);
             }
-            catch (ThreadInterruptedException e) {
+            catch (ThreadInterruptedException) {
             }
         }
     }

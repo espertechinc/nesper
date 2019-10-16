@@ -30,6 +30,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenSymbolProvider symbolProvider,
             CodegenScope codegenClassScope);
 
-        CodegenMethodScope AddSymbol(CodegenExpressionRef symbol);
+        CodegenMethodScope AddSymbol(
+            CodegenExpressionRef symbol);
     }
 } // end of namespace

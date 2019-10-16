@@ -61,20 +61,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             }
 
             var array = Array.CreateInstance(componentType, linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
-            var count = 0;
-            if (optionalEvaluator == null) {
-                for (; it.MoveNext();) {
-                    EventBean bean = it.Current;
-                    array.SetValue(bean.Underlying, count++);
+            using (var enumerator = linear.GetEnumerator()) {
+                var count = 0;
+                if (optionalEvaluator == null) {
+                    while (enumerator.MoveNext()) {
+                        var bean = enumerator.Current;
+                        array.SetValue(bean.Underlying, count++);
+                    }
                 }
-            }
-            else {
-                var events = new EventBean[1];
-                for (; it.MoveNext();) {
-                    EventBean bean = it.Current;
-                    events[0] = bean;
-                    array.SetValue(optionalEvaluator.Evaluate(events, isNewData, exprEvaluatorContext), count++);
+                else {
+                    var events = new EventBean[1];
+                    while (enumerator.MoveNext())
+                    {
+                        events[0] = enumerator.Current;
+                        array.SetValue(optionalEvaluator.Evaluate(events, isNewData, exprEvaluatorContext), count++);
+                    }
                 }
             }
 
@@ -108,16 +109,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             }
 
             IList<object> values = new List<object>(linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
-            var eventsPerStreamBuf = new EventBean[1];
-            for (; it.MoveNext();) {
-                EventBean bean = it.Current;
-                eventsPerStreamBuf[0] = bean;
-                object value = optionalEvaluator.Evaluate(eventsPerStreamBuf, true, null);
-                values.Add(value);
-            }
+            using (var enumerator = linear.GetEnumerator()) {
+                var eventsPerStreamBuf = new EventBean[1];
+                while(enumerator.MoveNext()) {
+                    eventsPerStreamBuf[0] = enumerator.Current;
+                    var value = optionalEvaluator.Evaluate(eventsPerStreamBuf, true, null);
+                    values.Add(value);
+                }
 
-            return values;
+                return values;
+            }
         }
 
         public EventBean GetValueEventBean(

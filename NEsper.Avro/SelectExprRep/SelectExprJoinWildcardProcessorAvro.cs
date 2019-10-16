@@ -43,23 +43,23 @@ namespace NEsper.Avro.SelectExprRep
             CodegenClassScope codegenClassScope)
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
-            var mType = codegenClassScope.AddFieldUnshared(
+            var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF));
-            var schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
+            var schema = codegenClassScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
-                typeof(Schema),
+                typeof(RecordSchema),
                 CodegenExpressionBuilder.StaticMethod(
                     typeof(AvroSchemaUtil),
-                    "ResolveAvroSchema",
+                    "ResolveRecordSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.MethodReturn(
                 CodegenExpressionBuilder.StaticMethod(
                     typeof(SelectExprJoinWildcardProcessorAvro),
-                    "processSelectExprJoinWildcardAvro",
+                    "ProcessSelectExprJoinWildcardAvro",
                     refEPS,
                     schema,
                     eventBeanFactory,

@@ -37,37 +37,37 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialMXCIFQuadTreeEventIndex()
         {
             RegressionRunner.Run(session, EPLSpatialMXCIFQuadTreeEventIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialMXCIFQuadTreeFilterIndex()
         {
             RegressionRunner.Run(session, EPLSpatialMXCIFQuadTreeFilterIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialMXCIFQuadTreeInvalid()
         {
             RegressionRunner.Run(session, EPLSpatialMXCIFQuadTreeInvalid.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialPointRegionQuadTreeEventIndex()
         {
             RegressionRunner.Run(session, EPLSpatialPointRegionQuadTreeEventIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialPointRegionQuadTreeFilterIndex()
         {
             RegressionRunner.Run(session, EPLSpatialPointRegionQuadTreeFilterIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSpatialPointRegionQuadTreeInvalid()
         {
             RegressionRunner.Run(session, EPLSpatialPointRegionQuadTreeInvalid.Executions());

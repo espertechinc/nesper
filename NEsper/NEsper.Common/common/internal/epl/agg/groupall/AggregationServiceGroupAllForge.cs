@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             AggregationClassNames classNames)
         {
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, REF_ROW.Ref));
-            ctor.Block.AssignRef(REF_ROW, NewInstance(classNames.RowTop));
+            ctor.Block.AssignRef(REF_ROW, NewInstance(classNames.RowTop, Ref("o")));
         }
 
         public void GetValueCodegen(
@@ -92,6 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
+            method.Block.DebugStack();
             method.Block.MethodReturn(
                 ExprDotMethod(REF_ROW, "GetValue", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }

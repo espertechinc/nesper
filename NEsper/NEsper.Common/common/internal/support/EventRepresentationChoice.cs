@@ -30,21 +30,7 @@ namespace com.espertech.esper.common.@internal.support
     {
         public static string GetUndName(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue) {
-                case EventRepresentationChoice.ARRAY:
-                    return "ARRAY";
-
-                case EventRepresentationChoice.MAP:
-                    return "MAP";
-
-                case EventRepresentationChoice.AVRO:
-                    return "AVRO";
-
-                case EventRepresentationChoice.DEFAULT:
-                    return "";
-            }
-
-            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
+            return GetUnderlyingType(enumValue).GetName();
         }
 
         public static string GetAnnotationText(this EventRepresentationChoice enumValue)

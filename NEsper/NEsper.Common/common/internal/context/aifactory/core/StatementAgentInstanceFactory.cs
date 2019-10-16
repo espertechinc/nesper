@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
         void StatementDestroyPreconditions(StatementContext statementContext);
         // default void StatementDestroyPreconditions(StatementContext statementContext) { }
 
-        StatementAgentInstanceLock ObtainAgentInstanceLock(
+        IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId);
     }

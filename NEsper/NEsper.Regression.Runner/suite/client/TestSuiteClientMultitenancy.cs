@@ -18,32 +18,32 @@ namespace com.espertech.esper.regressionrun.suite.client
     [TestFixture]
     public class TestSuiteClientMultitenancy
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientMultitenancyProtected()
         {
-            RegressionRunner.Run(session, ClientMultitenancyProtected.Executions());
+            RegressionRunner.Run(_session, ClientMultitenancyProtected.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientMultitenancyInsertInto()
         {
-            RegressionRunner.Run(session, ClientMultitenancyInsertInto.Executions());
+            RegressionRunner.Run(_session, ClientMultitenancyInsertInto.Executions());
         }
 
         private static void Configure(Configuration configuration)

@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // note class not a fragment
             env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from TestXMLSchemaTypeTXG");
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false)
                 },
                 env.Statement("s0").EventType.PropertyDescriptors);

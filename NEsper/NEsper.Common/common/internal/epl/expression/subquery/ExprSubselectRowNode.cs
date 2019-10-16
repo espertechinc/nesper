@@ -330,7 +330,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block.DeclareVar<IDictionary<string, object>>(
                 "map",
-                NewInstance(typeof(Dictionary<string, object>)));
+                NewInstance(typeof(HashMap<string, object>)));
             for (var i = 0; i < selectClause.Length; i++) {
                 method.Block.ExprDotMethod(Ref("map"), "Put", Constant(selectAsNames[i]), expressions[i]);
             }

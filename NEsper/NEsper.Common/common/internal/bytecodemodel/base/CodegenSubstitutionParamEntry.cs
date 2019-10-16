@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -44,7 +45,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public static void CodegenSetterBody(
             CodegenClassScope classScope,
-            CodegenBlock enclosingBlock)
+            CodegenBlock enclosingBlock,
+            CodegenExpression stmtFieldsInstance)
         {
             var numbered = classScope.NamespaceScope.SubstitutionParamsByNumber;
             var named = classScope.NamespaceScope.SubstitutionParamsByName;
@@ -68,7 +70,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var blocks = enclosingBlock.SwitchBlockOfLength("zidx", fields.Count, false);
             for (var i = 0; i < blocks.Length; i++) {
                 CodegenSubstitutionParamEntry param = fields[i];
-                blocks[i].AssignRef(Field(param.Field), Cast(param.Type.GetBoxedType(), Ref("value")));
+                blocks[i].AssignRef(
+                    ExprDotName(stmtFieldsInstance, param.Field.Name), 
+                    Cast(param.Type.GetBoxedType(), Ref("value")));
             }
         }
 

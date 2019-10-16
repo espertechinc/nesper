@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenExpressionRef initSvc,
             CodegenClassScope classScope)
         {
-            var resultType = classScope.AddFieldUnshared(
+            var resultType = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(insertHelper.ResultEventType, initSvc));
-            var eventBeanFactory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventBeanFactory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
             var selectEnv = new SelectExprProcessorCodegenSymbol();
@@ -75,10 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var performMethod = insertHelper.ProcessCodegen(
                 resultType,
                 eventBeanFactory,
-                method, //processMethod,
+                method,
                 selectEnv,
                 exprSymbol,
                 classScope);
+
             exprSymbol.DerivedSymbolsCodegen(method, processMethod.Block, classScope);
             //exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block

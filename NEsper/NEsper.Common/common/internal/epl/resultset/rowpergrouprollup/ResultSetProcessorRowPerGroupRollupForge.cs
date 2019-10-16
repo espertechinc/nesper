@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 classScope,
                 node => node.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
 
-            var rollupDesc = classScope.AddFieldUnshared(
+            var rollupDesc = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationGroupByRollupDesc),
                 GroupByRollupDesc.Codegen());

@@ -76,7 +76,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                             hashedSpec.Granularity);
                     }
                     else {
-                        getter = new ContextControllerHashedGetterCRC32SingleForge(paramExpr, hashedSpec.Granularity);
+                        getter = new ContextControllerHashedGetterCRC32SingleForge(
+                            paramExpr, hashedSpec.Granularity);
                     }
                 }
                 else if (hashFunction == HashFunctionEnum.HASH_CODE) {

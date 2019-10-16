@@ -36,15 +36,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         NativeEventType
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly BeanEventTypeFactory beanEventTypeFactory;
+        private readonly BeanEventTypeFactory _beanEventTypeFactory;
 
-        private readonly IContainer container;
+        private readonly IContainer _container;
 
-        private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache =
+        private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache =
             new Dictionary<string, EventPropertyGetterSPI>(4);
 
-        private EventPropertyDescriptor[] writeablePropertyDescriptors;
-        private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> writerMap;
+        private EventPropertyDescriptor[] _writeablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> _writerMap;
 
         public BeanEventType(
             IContainer container,
@@ -56,10 +56,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
-            this.container = container;
+            _container = container;
             Stem = stem;
             Metadata = metadata;
-            this.beanEventTypeFactory = beanEventTypeFactory;
+            _beanEventTypeFactory = beanEventTypeFactory;
             SuperTypes = superTypes;
             DeepSuperTypesCollection = deepSuperTypes;
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            return prop.GetPropertyType(this, beanEventTypeFactory);
+            return prop.GetPropertyType(this, _beanEventTypeFactory);
         }
 
         public bool IsProperty(string propertyName)
@@ -133,17 +133,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyName)
         {
-            var cachedGetter = propertyGetterCache.Get(propertyName);
-            if (cachedGetter != null) {
+            if (_propertyGetterCache.TryGetValue(propertyName, out var cachedGetter))
+            { 
                 return cachedGetter;
             }
 
             var simpleProp = GetSimplePropertyInfo(propertyName);
             if (simpleProp != null && simpleProp.GetterFactory != null) {
                 var getterX = simpleProp.GetterFactory.Make(
-                    beanEventTypeFactory.EventBeanTypedEventFactory,
-                    beanEventTypeFactory);
-                propertyGetterCache.Put(propertyName, getterX);
+                    _beanEventTypeFactory.EventBeanTypedEventFactory,
+                    _beanEventTypeFactory);
+                _propertyGetterCache.Put(propertyName, getterX);
                 return getterX;
             }
 
@@ -153,8 +153,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            var getter = prop.GetGetter(this, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
-            propertyGetterCache.Put(propertyName, getter);
+            var getter = prop.GetGetter(this, _beanEventTypeFactory.EventBeanTypedEventFactory, _beanEventTypeFactory);
+            _propertyGetterCache[propertyName] = getter;
 
             return getter;
         }
@@ -179,8 +179,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var mappedProperty = new MappedProperty(propertyName);
             return (EventPropertyGetterMappedSPI) mappedProperty.GetGetter(
                 this,
-                beanEventTypeFactory.EventBeanTypedEventFactory,
-                beanEventTypeFactory);
+                _beanEventTypeFactory.EventBeanTypedEventFactory,
+                _beanEventTypeFactory);
         }
 
         public EventPropertyGetterIndexed GetGetterIndexed(string indexedPropertyName)
@@ -198,8 +198,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var indexedProperty = new IndexedProperty(indexedPropertyName);
             return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetter(
                 this,
-                beanEventTypeFactory.EventBeanTypedEventFactory,
-                beanEventTypeFactory);
+                _beanEventTypeFactory.EventBeanTypedEventFactory,
+                _beanEventTypeFactory);
         }
 
         public string[] PropertyNames => Stem.PropertyNames;
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventTypeMetadata Metadata { get; private set; }
 
-        public EventPropertyDescriptor[] PropertyDescriptors => Stem.PropertyDescriptors;
+        public IList<EventPropertyDescriptor> PropertyDescriptors => Stem.PropertyDescriptors;
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return EventBeanUtility.CreateNativeFragmentType(
                     genericPropX.GenericType,
                     genericPropX.Generic,
-                    beanEventTypeFactory);
+                    _beanEventTypeFactory);
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
@@ -229,7 +229,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            var genericProp = prop.GetPropertyTypeGeneric(this, beanEventTypeFactory);
+            var genericProp = prop.GetPropertyTypeGeneric(this, _beanEventTypeFactory);
             if (genericProp == null) {
                 return null;
             }
@@ -237,16 +237,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return EventBeanUtility.CreateNativeFragmentType(
                 genericProp.GenericType,
                 genericProp.Generic,
-                beanEventTypeFactory);
+                _beanEventTypeFactory);
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            if (writeablePropertyDescriptors == null) {
+            if (_writeablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = writerMap.Get(propertyName);
+            var pair = _writerMap.Get(propertyName);
             if (pair != null) {
                 return pair.First;
             }
@@ -297,10 +297,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var copyMethodName = Stem.OptionalLegacyDef?.CopyMethod;
             if (copyMethodName == null) {
-                if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(
-                        this,
-                        container.Resolve<SerializableObjectCopier>());
+                var objectCopier = _container.Resolve<IObjectCopier>();
+                if (objectCopier.IsSupported(Stem.Clazz))
+                {
+                    return new BeanEventBeanObjectCopyMethodForge(
+                        this, objectCopier);
                 }
 
                 return null;
@@ -323,9 +324,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             if (method == null) {
                 if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(
+                    return new BeanEventBeanObjectCopyMethodForge(
                         this,
-                        container.Resolve<SerializableObjectCopier>());
+                        _container.Resolve<SerializableObjectCopier>());
                 }
 
                 throw new EPException(
@@ -341,13 +342,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventBeanWriter GetWriter(string[] properties)
         {
-            if (writeablePropertyDescriptors == null) {
+            if (_writeablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
             var writers = new BeanEventPropertyWriter[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                var pair = writerMap.Get(properties[i]);
+                var pair = _writerMap.Get(properties[i]);
                 if (pair != null) {
                     writers[i] = pair.Second;
                 }
@@ -370,11 +371,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            if (writeablePropertyDescriptors == null) {
+            if (_writeablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = writerMap.Get(propertyName);
+            var pair = _writerMap.Get(propertyName);
             if (pair != null) {
                 return pair.Second;
             }
@@ -445,11 +446,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventPropertyDescriptor[] WriteableProperties {
             get {
-                if (writeablePropertyDescriptors == null) {
+                if (_writeablePropertyDescriptors == null) {
                     InitializeWriters();
                 }
 
-                return writeablePropertyDescriptors;
+                return _writeablePropertyDescriptors;
             }
         }
 
@@ -608,8 +609,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                             writable.WriteMember)));
             }
 
-            writerMap = writers;
-            writeablePropertyDescriptors = desc;
+            _writerMap = writers;
+            _writeablePropertyDescriptors = desc;
         }
     }
 } // end of namespace

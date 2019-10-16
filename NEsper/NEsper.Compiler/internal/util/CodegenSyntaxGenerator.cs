@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.util;
@@ -28,6 +29,26 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         private static readonly CodegenIndent INDENT = new CodegenIndent(true);
 
+        private static List<AssemblyIndex> AssemblyIndices = new List<AssemblyIndex>();
+
+        private class AssemblyIndex
+        {
+            public Assembly Assembly;
+            public ISet<string> Index;
+
+            public bool CheckType(string typeName)
+            {
+                return Index.Contains(typeName);
+            }
+
+            public AssemblyIndex(Assembly assembly)
+            {
+                Assembly = assembly;
+                Index = new HashSet<string>(
+                    assembly.GetTypes().Select(t => t.FullName));
+            }
+        }
+
         public static string Compile(CodegenClass clazz)
         {
             // build members and imports
@@ -41,18 +62,12 @@ namespace com.espertech.esper.compiler.@internal.util
         private static bool DoesImportResolveType(
             Type type,
             ImportDecl import,
-            Assembly[] assemblies)
+            IList<AssemblyIndex> assemblyIndices)
         {
-            if (import.IsNamespaceImport) {
+            if (import.IsNamespaceImport)
+            {
                 var importName = $"{import.Namespace}.{type.Name}".Replace("@", "");
-                foreach (var assembly in assemblies) {
-                    var importType = assembly.GetType(importName, false, false);
-                    if (importType != null) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return assemblyIndices.Any(assemblyIndex => assemblyIndex.CheckType(importName));
             }
 
             return import.TypeName == type.Name;
@@ -61,9 +76,9 @@ namespace com.espertech.esper.compiler.@internal.util
         private static bool IsAmbiguous(
             Type type,
             ISet<ImportDecl> imports,
-            Assembly[] assemblies)
+            IList<AssemblyIndex> assemblyIndices)
         {
-            int resolutionPaths = imports.Count(import => DoesImportResolveType(type, import, assemblies));
+            int resolutionPaths = imports.Count(import => DoesImportResolveType(type, import, assemblyIndices));
             return resolutionPaths > 1;
         }
 
@@ -74,21 +89,33 @@ namespace com.espertech.esper.compiler.@internal.util
                 .ToList();
 
             ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
-            imports.Add(new ImportDecl(typeof(Int32).Namespace));
-            imports.Add(new ImportDecl(typeof(CompatExtensions).Namespace));
-            imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace));
-            imports.Add(new ImportDecl(typeof(Enumerable).Namespace));
+            imports.Add(new ImportDecl(typeof(Int32).Namespace, null));
+            imports.Add(new ImportDecl(typeof(CompatExtensions).Namespace, null));
+            imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace, null));
+            imports.Add(new ImportDecl(typeof(Enumerable).Namespace, null));
 
-            foreach (var type in typeList) {
-                imports.Add(new ImportDecl(type.Namespace));
+            for (var ii = 0; ii < typeList.Count; ii++) {
+                var type = typeList[ii];
+                imports.Add(new ImportDecl(type.Namespace, null));
             }
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            if (AssemblyIndices.Count == 0) {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                AssemblyIndices.AddRange(assemblies.Select(assembly => new AssemblyIndex(assembly)));
+            }
 
             // Ensure that all types can be imported without any ambiguity.
+
             foreach (var type in typeList) {
-                if (IsAmbiguous(type, imports, assemblies)) {
-                    imports.Add(new ImportDecl(type.Namespace, type.Name));
+#if false
+                if (IsAmbiguous(type, imports, assemblies))
+#else
+                if (IsAmbiguous(type, imports, AssemblyIndices))
+#endif
+                {
+                    imports.Add(new ImportDecl(
+                        type.Namespace,
+                        type.CleanName(false)));
                 }
             }
 
@@ -334,7 +361,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 foreach (var param in optionalCtor.CtorParams) {
                     if (param.IsMemberWhenCtorParam) {
                         INDENT.Indent(builder, indent);
-                        builder.Append("private ");
+                        builder.Append("internal ");
                         param.RenderAsMember(builder);
                         builder.Append(";\n");
                     }

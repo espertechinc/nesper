@@ -37,7 +37,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             EventType eventTypeContextProperties,
             StatementAgentInstanceFactoryCreateContextForge forge)
             : base(className, namespaceScope)
-
         {
             this.contextName = contextName;
             this.forges = forges;

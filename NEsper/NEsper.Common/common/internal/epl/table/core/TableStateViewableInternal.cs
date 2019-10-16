@@ -40,9 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            var it = tableInstance.EventCollection.GetEnumerator();
-            if (optionalTableFilter != null) {
-                return FilteredEventEnumerator.For(optionalTableFilter, it, tableInstance.AgentInstanceContext);
+            using (var enumerator = tableInstance.EventCollection.GetEnumerator()) {
+                if (optionalTableFilter != null) {
+                    return FilteredEventEnumerator.For(optionalTableFilter, enumerator, tableInstance.AgentInstanceContext);
+                }
             }
 
             return tableInstance.EventCollection.GetEnumerator();

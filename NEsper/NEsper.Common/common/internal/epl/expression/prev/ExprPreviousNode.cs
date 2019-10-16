@@ -630,7 +630,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
         private CodegenExpression GetterField(CodegenClassScope classScope)
         {
-            return classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            return classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 _previousStrategyFieldName,
                 typeof(PreviousGetterStrategy));
         }

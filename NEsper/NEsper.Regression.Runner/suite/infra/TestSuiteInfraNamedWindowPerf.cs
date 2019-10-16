@@ -40,13 +40,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowPerformance()
         {
             RegressionRunner.Run(session, InfraNamedWindowPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWIndowFAFQueryJoinPerformance()
         {
             RegressionRunner.Run(session, new InfraNamedWIndowFAFQueryJoinPerformance());

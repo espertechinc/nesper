@@ -35,7 +35,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Raises the <see cref="E:ReadLockReleased"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="com.espertech.esper.compat.threading.TelemetryEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="TelemetryEventArgs"/> instance containing the event data.</param>
         protected void OnReadLockReleased(TelemetryEventArgs e)
         {
             if (ReadLockReleased != null)
@@ -47,7 +47,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Raises the <see cref="E:WriteLockReleased"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="com.espertech.esper.compat.threading.TelemetryEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="TelemetryEventArgs"/> instance containing the event data.</param>
         protected void OnWriteLockReleased(TelemetryEventArgs e)
         {
             if (WriteLockReleased != null)
@@ -76,6 +76,16 @@ namespace com.espertech.esper.compat.threading.locks
         public IDisposable AcquireWriteLock()
         {
             return WriteLock.Acquire();
+        }
+
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+            return WriteLock.Acquire((long) lockWaitDuration.TotalMilliseconds);
+        }
+
+        public void ReleaseWriteLock()
+        {
+            WriteLock.Release();
         }
 
         /// <summary>

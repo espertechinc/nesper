@@ -65,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         ///     Returns the set of events that have the same property value as the given event.
         /// </summary>
         /// <param name="keyStart">to compare against</param>
+        /// <param name="includeStart">indicates if we should include the start point</param>
         /// <param name="keyEnd">to compare against</param>
+        /// <param name="includeEnd">indicates if we should include the end point</param>
         /// <param name="allowRangeReversal">
         ///     indicate whether "a between 60 and 50" should return no results (equivalent to a&amp;
         ///     gt;= X and a &amp;lt;=Y) or should return results (equivalent to 'between' and 'in'

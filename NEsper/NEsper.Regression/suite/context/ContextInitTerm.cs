@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated by SupportBean_S1(Id=S0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.Id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -532,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "ctx",
                     "MyCtx",
                     new[] {0, 1},
-                    "startTime,endTime,s0",
+                    "startTime,endTime,S0",
                     new[] {
                         new object[] {1000L, null, initOne},
                         new object[] {2000L, null, initTwo}
@@ -1581,7 +1581,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test late-coming statement without "terminated"
                 env.CompileDeploy(
                     "@Name('s0') context EveryMinute " +
-                    "select context.Id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events",
+                    "select context.id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events",
                     path);
                 env.AddListener("s0");
 
@@ -1913,7 +1913,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
+                object[][] expected;
+
                 env.SendEventBean(new SupportBean("E1", 10));
+
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 0);
@@ -1924,15 +1927,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                     null);
 
                 env.Milestone(0);
-
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
-
                 env.Milestone(1);
 
                 Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
+
                 env.SendEventBean(new SupportBean("E2", 5));
-                object[][] expected = {new object[] {"E2", 5}};
+
+                expected = new [] {new object[] {"E2", 5}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
@@ -1946,7 +1949,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
+
                 env.SendEventBean(new SupportBean("E3", 6));
+
                 expected = new[] {new object[] {"E3", 11}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
 
@@ -1964,7 +1969,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
+
                 env.SendEventBean(new SupportBean("E4", 7));
+
                 expected = new[] {new object[] {"E4", 18}, new object[] {"E4", 7}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -1972,14 +1979,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
                     expected);
-
                 SendTimeEvent(env, "2002-05-1T08:02:59.999");
 
                 env.Milestone(5);
 
                 Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
+
                 env.SendEventBean(new SupportBean("E5", 8));
+
                 expected = new[] {new object[] {"E5", 26}, new object[] {"E5", 15}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -1994,7 +2002,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
+
                 env.SendEventBean(new SupportBean("E6", 9));
+
                 expected = new[] {new object[] {"E6", 35}, new object[] {"E6", 24}, new object[] {"E6", 9}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -2010,9 +2020,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
                 env.SendEventBean(new SupportBean("E7", 10));
-                expected = new[] {new object[] {"E7", 34}, new object[] {"E7", 19}, new object[] {"E7", 10}};
+                expected = new[] {
+                    new object[] {"E7", 34},
+                    new object[] {"E7", 19},
+                    new object[] {"E7", 10}
+                };
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
-                EPAssertionUtil.AssertPropsPerRow(
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,
@@ -2027,7 +2041,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E8", 11));
                 expected = new[] {new object[] {"E8", 30}, new object[] {"E8", 21}, new object[] {"E8", 11}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
-                EPAssertionUtil.AssertPropsPerRow(
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
                     env.Statement("s0").GetSafeEnumerator(),
                     fields,

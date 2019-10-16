@@ -79,6 +79,9 @@ namespace com.espertech.esper.compiler.@internal.util
             var path = arguments.Path;
             var options = arguments.Options;
 
+            // script
+            var scriptServiceCompileTime = MakeScriptService(configuration);
+
             // imports
             var importServiceCompileTime = MakeImportService(configuration);
             var container = importServiceCompileTime.Container;
@@ -432,7 +435,10 @@ namespace com.espertech.esper.compiler.@internal.util
                 new ModuleAccessModifierServiceImpl(options, configuration.Compiler.ByteCode);
 
             DatabaseConfigServiceCompileTime databaseConfigServiceCompileTime =
-                new DatabaseConfigServiceImpl(configuration.Common.DatabaseReferences, importServiceCompileTime);
+                new DatabaseConfigServiceImpl(
+                    container,
+                    configuration.Common.DatabaseReferences,
+                    importServiceCompileTime);
 
             CompilerServices compilerServices = new CompilerServicesImpl();
 
@@ -460,12 +466,21 @@ namespace com.espertech.esper.compiler.@internal.util
                 patternResolutionService,
                 scriptCompileTimeRegistry,
                 scriptCompileTimeResolver,
+                scriptServiceCompileTime,
                 tableCompileTimeRegistry,
                 tableCompileTimeResolver,
                 variableCompileTimeRegistry,
                 variableCompileTimeResolver,
                 viewResolutionService,
                 xmlFragmentEventTypeFactory);
+        }
+
+
+        protected internal static ScriptServiceCompileTime MakeScriptService(Configuration configuration)
+        {
+            var scriptService = new ScriptServiceCompileTimeImpl();
+            scriptService.DiscoverEngines(configuration.Container);
+            return scriptService;
         }
 
         protected internal static ImportServiceCompileTime MakeImportService(Configuration configuration)

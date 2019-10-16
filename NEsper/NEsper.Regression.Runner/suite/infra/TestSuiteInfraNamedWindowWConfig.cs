@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnUpdateWMultiDispatch()
         {
             RunAssertion(true, null, null);

@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         parent,
                         exprSymbol,
                         codegenClassScope) => {
-                        var field = codegenClassScope.AddFieldUnshared(
+                        var field = codegenClassScope.AddDefaultFieldUnshared(
                             true,
                             typeof(TimePeriodCompute),
                             timePeriod.TimePeriodComputeForge.MakeEvaluator(

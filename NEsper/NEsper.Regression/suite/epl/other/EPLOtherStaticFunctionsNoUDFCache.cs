@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             delta = PerformanceObserver.MilliTime - startTime;
 
-            Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
             env.UndeployAll();
         }
     }

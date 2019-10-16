@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.suite.client.basic;
 using com.espertech.esper.regressionrun.Runner;
 
@@ -20,62 +17,62 @@ namespace com.espertech.esper.regressionrun.suite.client
     [TestFixture]
     public class TestSuiteClientBasic
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            session.Configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
+            _session = RegressionRunner.Session();
+            _session.Configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicSelect()
         {
-            RegressionRunner.Run(session, new ClientBasicSelect());
+            RegressionRunner.Run(_session, new ClientBasicSelect());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicFilter()
         {
-            RegressionRunner.Run(session, new ClientBasicFilter());
+            RegressionRunner.Run(_session, new ClientBasicFilter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicSelectClause()
         {
-            RegressionRunner.Run(session, new ClientBasicSelectClause());
+            RegressionRunner.Run(_session, new ClientBasicSelectClause());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicAggregation()
         {
-            RegressionRunner.Run(session, new ClientBasicAggregation());
+            RegressionRunner.Run(_session, new ClientBasicAggregation());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicLengthWindow()
         {
-            RegressionRunner.Run(session, new ClientBasicLengthWindow());
+            RegressionRunner.Run(_session, new ClientBasicLengthWindow());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicPattern()
         {
-            RegressionRunner.Run(session, new ClientBasicPattern());
+            RegressionRunner.Run(_session, new ClientBasicPattern());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientBasicAnnotation()
         {
-            RegressionRunner.Run(session, new ClientBasicAnnotation());
+            RegressionRunner.Run(_session, new ClientBasicAnnotation());
         }
     }
 } // end of namespace

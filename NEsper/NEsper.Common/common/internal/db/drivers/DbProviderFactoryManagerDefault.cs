@@ -32,14 +32,16 @@ namespace com.espertech.esper.common.@internal.db.drivers
         private static void RegisterDataProviders(IContainer container)
         {
 #if NETFRAMEWORK
-            foreach (DataRow dataTableRow in DbProviderFactories.GetFactoryClasses().Rows) {
+            foreach (DataRow dataTableRow in DbProviderFactories.GetFactoryClasses().Rows)
+            {
                 // Name
                 // Description
                 // InvariantName
                 // AssemblyQualifiedName
 
                 var dataProviderTypeName = (string) dataTableRow["InvariantName"];
-                if (!container.Has(dataProviderTypeName)) {
+                if (!container.Has(dataProviderTypeName))
+                {
                     container.Register<DbProviderFactory>(
                         xx => DbProviderFactories.GetFactory(dataTableRow),
                         Lifespan.Singleton,
@@ -51,9 +53,11 @@ namespace com.espertech.esper.common.@internal.db.drivers
             var candidateTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsSubclassOf(typeof(DbProviderFactory)));
-            foreach (var candidate in candidateTypes) {
+            foreach (var candidate in candidateTypes)
+            {
                 var dataProviderTypeName = candidate.FullName;
-                if (!container.Has(dataProviderTypeName)) {
+                if (!container.Has(dataProviderTypeName))
+                {
                     container.Register<DbProviderFactory>(
                         xx => CreateDataProvider(candidate),
                         Lifespan.Singleton,

@@ -261,12 +261,12 @@ namespace NEsper.Avro.Writer
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpressionField schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
+                var schema = codegenClassScope.NamespaceScope.AddDefaultFieldUnshared(
                     true,
-                    typeof(Schema),
+                    typeof(RecordSchema),
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroSchemaUtil),
-                        "ResolveAvroSchema",
+                        "ResolveRecordSchema",
                         EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);

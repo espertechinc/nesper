@@ -9,109 +9,117 @@
 using System;
 
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.client.compile;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
+using SupportBean_S0 = com.espertech.esper.common.@internal.support.SupportBean_S0;
+using SupportBean_S1 = com.espertech.esper.common.@internal.support.SupportBean_S1;
+
 namespace com.espertech.esper.regressionrun.suite.client
 {
     [TestFixture]
     public class TestSuiteClientCompile
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileOutput()
         {
-            RegressionRunner.Run(session, ClientCompileOutput.Executions());
+            RegressionRunner.Run(_session, ClientCompileOutput.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileVisibility()
         {
-            RegressionRunner.Run(session, ClientCompileVisibility.Executions());
+            RegressionRunner.Run(_session, ClientCompileVisibility.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileSPI()
         {
-            RegressionRunner.Run(session, ClientCompileSPI.Executions());
+            RegressionRunner.Run(_session, ClientCompileSPI.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileUserObject()
         {
-            RegressionRunner.Run(session, ClientCompileUserObject.Executions());
+            RegressionRunner.Run(_session, ClientCompileUserObject.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileStatementName()
         {
-            RegressionRunner.Run(session, ClientCompileStatementName.Executions());
+            RegressionRunner.Run(_session, ClientCompileStatementName.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileModule()
         {
-            RegressionRunner.Run(session, ClientCompileModule.Executions());
+            RegressionRunner.Run(_session, ClientCompileModule.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileSyntaxValidate()
         {
-            RegressionRunner.Run(session, ClientCompileSyntaxValidate.Executions());
+            RegressionRunner.Run(_session, ClientCompileSyntaxValidate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileModuleUses()
         {
-            RegressionRunner.Run(session, ClientCompileModuleUses.Executions());
+            RegressionRunner.Run(_session, ClientCompileModuleUses.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileStatementObjectModel()
         {
-            RegressionRunner.Run(session, ClientCompileStatementObjectModel.Executions());
+            RegressionRunner.Run(_session, ClientCompileStatementObjectModel.Executions());
         }
 
         [Test]
         public void TestClientCompileSubstitutionParams()
         {
-            RegressionRunner.Run(session, ClientCompileSubstitutionParams.Executions());
+            RegressionRunner.Run(_session, ClientCompileSubstitutionParams.Executions());
         }
 
         [Test]
         public void TestClientCompileEnginePath()
         {
-            RegressionRunner.Run(session, ClientCompileEnginePath.Executions());
+            RegressionRunner.Run(_session, ClientCompileEnginePath.Executions());
         }
 
         [Test]
         public void TestClientCompileEventTypeAutoName()
         {
-            RegressionRunner.Run(session, ClientCompileEventTypeAutoName.Executions());
+            RegressionRunner.Run(_session, ClientCompileEventTypeAutoName.Executions());
         }
 
         private static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new Type[] { typeof(SupportBean), typeof(SupportMarketDataBean), typeof(SupportBean_S0), typeof(SupportBean_S1) })
+            foreach (Type clazz in new Type[] {
+                typeof(SupportBean),
+                typeof(SupportMarketDataBean),
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1)
+            })
             {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }

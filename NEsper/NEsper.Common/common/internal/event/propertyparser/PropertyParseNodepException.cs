@@ -7,13 +7,21 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.@event.propertyparser
 {
+    [Serializable]
     public class PropertyParseNodepException : Exception
     {
         public PropertyParseNodepException(string message)
             : base(message)
+        {
+        }
+
+        protected PropertyParseNodepException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

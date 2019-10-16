@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 2000, "Delta=" + delta);
+            Assert.That(delta, Is.LessThan(2000), "Delta=" + delta);
             //System.out.println("total=" + count + " delta=" + delta + " per sec:" + 10000.0 / (delta / 1000.0));
 
             env.UndeployAll();

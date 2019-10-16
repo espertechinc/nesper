@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.context.util
             EventBeanWriter writer,
             TypeWidener[] wideners,
             InternalRoutePreprocessView outputView,
-            StatementAgentInstanceLock agentInstanceLock,
+            IReaderWriterLock agentInstanceLock,
             bool hasSubselect)
         {
             Priority = priority;
@@ -93,7 +94,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <returns>output view</returns>
         public InternalRoutePreprocessView OutputView { get; }
 
-        public StatementAgentInstanceLock AgentInstanceLock { get; }
+        public IReaderWriterLock AgentInstanceLock { get; }
 
         public bool IsSubselect { get; }
     }

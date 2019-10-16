@@ -41,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.NamedMethods);
             context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
@@ -87,6 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.NamedMethods);
             context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",

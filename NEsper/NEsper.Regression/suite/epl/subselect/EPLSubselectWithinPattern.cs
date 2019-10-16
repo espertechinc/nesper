@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     env,
                     path,
                     "select * from SupportBean_S0(Id in ((select P00 from MyWindowInvalid)))",
-                    "Failed to validate filter expression 'Id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types System.Int32 and System.String [select * from SupportBean_S0(Id in ((select P00 from MyWindowInvalid)))]");
+                    "Failed to validate filter expression 'Id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types System.Nullable<System.Int32> and System.String [select * from SupportBean_S0(Id in ((select P00 from MyWindowInvalid)))]");
 
                 env.UndeployAll();
             }

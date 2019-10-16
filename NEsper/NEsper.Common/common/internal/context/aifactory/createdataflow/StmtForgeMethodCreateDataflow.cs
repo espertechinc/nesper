@@ -87,23 +87,31 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);
 
-            var statementFieldsClassName =
+             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var codegenEnv = new DataFlowOpForgeCodegenEnv(@namespace, classPostfix);
 
             var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @base, services);
 
-            var packageScope = new CodegenNamespaceScope(
+            var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
+            var fieldsForgable = new StmtClassForgableStmtFields(
+                statementFieldsClassName,
+                namespaceScope,
+                0);
+
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
                 classPostfix);
             var forge =
                 new StatementAgentInstanceFactoryCreateDataflowForge(eventType, dataflowForge);
             var aiFactoryForgable =
-                new StmtClassForgableAIFactoryProviderCreateDataflow(aiFactoryProviderClassName, packageScope, forge);
+                new StmtClassForgableAIFactoryProviderCreateDataflow(
+                    aiFactoryProviderClassName, 
+                    namespaceScope, 
+                    forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
@@ -113,7 +121,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
                 selectSubscriberDescriptor,
-                packageScope,
+                namespaceScope,
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
@@ -121,12 +129,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
-                packageScope);
+                namespaceScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
+            forgables.Add(fieldsForgable);
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
-            forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
 
             // compiled filter spec list
             IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
@@ -901,18 +909,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             IList<LogicalChannelProducingPortDeclared> ports = new List<LogicalChannelProducingPortDeclared>();
 
-            // See if any @OutputTypes annotations exists
-            var annotations = TypeHelper.GetAnnotations(
-                typeof(OutputTypeAttribute),
+            // See if an 'OutputTypes' exists - not sure we want to continue this
+            var outputTypesAttributes = TypeHelper.GetAnnotations<OutputTypesAttribute>(
+                forge.GetType().GetCustomAttributes().UnwrapIntoArray<Attribute>());
+            // singular
+            var outputTypeAttributes = TypeHelper.GetAnnotations<OutputTypeAttribute>(
                 forge.GetType().GetCustomAttributes().UnwrapIntoArray<Attribute>());
 
-            foreach (var annotation in annotations) {
-                OutputTypesAttribute outputTypes = (OutputTypesAttribute) annotation;
+            foreach (var outputTypes in outputTypesAttributes) {
+                // Do we want to add a correlation id between the outputTypes and
+                // the outputType instance values?
 
                 // create local event type for the declared type
                 IDictionary<string, object> propertiesRaw = new LinkedHashMap<string, object>();
-                OutputTypeAttribute[] outputTypeArr = outputTypes.Value;
-                foreach (OutputTypeAttribute outputType in outputTypeArr) {
+
+                foreach (var outputType in outputTypeAttributes) {
                     Type clazz;
                     if ((outputType.Type != null) && (outputType.Type != typeof(OutputTypeAttribute))) {
                         clazz = outputType.Type;
@@ -1161,9 +1172,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     @base,
                     services);
                 initializeResult = forge.InitializeForge(context);
-            }
-            catch (EPException) {
-                throw;
             }
             catch (Exception t) {
                 throw new ExprValidationException(

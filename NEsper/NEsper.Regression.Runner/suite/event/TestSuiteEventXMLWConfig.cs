@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventXMLWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
             ConfigurationCommonEventTypeXMLDOM desc = new ConfigurationCommonEventTypeXMLDOM();
@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             TryInvalidConfigurationCompileAndRuntime(SupportConfigFactory.GetConfiguration(),
                 config => config.Common.AddEventType("TypeXML", desc),
-                "Declared start timestamp property 'mystarttimestamp' is expected to return a Date, Calendar or long-typed value but returns 'System.Double'");
+                "Declared start timestamp property 'mystarttimestamp' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.Nullable<System.Double>'");
         }
     }
 } // end of namespace

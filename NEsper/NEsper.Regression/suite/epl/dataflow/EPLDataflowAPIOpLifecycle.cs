@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowTypeEvent());
+            //execs.Add(new EPLDataflowTypeEvent());
             execs.Add(new EPLDataflowFlowGraphSource());
             execs.Add(new EPLDataflowFlowGraphOperator());
             return execs;
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Compile(
                     "create schema MySchema(key string, value int);\n" +
                     "@Name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
-                Assert.AreEqual("MySchema", MyCaptureOutputPortOpForge.GetPort().OptionalDeclaredType.EventType.Name);
+                Assert.AreEqual("MySchema", MyCaptureOutputPortOpForge.Port.OptionalDeclaredType.EventType.Name);
 
                 env.UndeployAll();
             }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var events = SupportGraphSourceForge.GetAndResetLifecycle();
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
-                Assert.AreEqual("setPropOne=abc", events[1]);
+                Assert.AreEqual("SetPropOne=abc", events[1]);
                 var forgeCtx = (DataFlowOpForgeInitializeContext) events[2];
                 Assert.AreEqual(0, forgeCtx.InputPorts.Count);
                 Assert.AreEqual(1, forgeCtx.OutputPorts.Count);
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 events = SupportGraphSourceFactory.GetAndResetLifecycle();
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
-                Assert.AreEqual("setPropOne=abc", events[1]);
+                Assert.AreEqual("SetPropOne=abc", events[1]);
                 var factoryCtx = (DataFlowOpFactoryInitializeContext) events[2];
                 Assert.AreEqual("MyDataFlow", factoryCtx.DataFlowName);
                 Assert.AreEqual(0, factoryCtx.OperatorNumber);
@@ -156,13 +156,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public class SupportGraphSourceForge : DataFlowOperatorForge
         {
             private static IList<object> lifecycle = new List<object>();
+            private string _propOne;
 
             public SupportGraphSourceForge()
             {
                 lifecycle.Add("instantiated");
             }
 
-            public string PropOne { get; private set; }
+            public string PropOne {
+                get => _propOne;
+                set {
+                    lifecycle.Add("SetPropOne=" + value);
+                    _propOne = value;
+                }
+            }
 
             public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
             {
@@ -192,24 +199,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 lifecycle = new List<object>();
                 return copy;
             }
-
-            public void SetPropOne(string propOne)
-            {
-                lifecycle.Add("setPropOne=" + propOne);
-                PropOne = propOne;
-            }
         }
 
         public class SupportGraphSourceFactory : DataFlowOperatorFactory
         {
             private static IList<object> lifecycle = new List<object>();
+            private string _propOne;
 
             public SupportGraphSourceFactory()
             {
                 lifecycle.Add("instantiated");
             }
 
-            public string PropOne { get; private set; }
+            public string PropOne {
+                get => _propOne;
+                set {
+                    lifecycle.Add("SetPropOne=" + value);
+                    _propOne = value;
+                }
+            }
 
             public void InitializeFactory(DataFlowOpFactoryInitializeContext context)
             {
@@ -227,12 +235,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 IList<object> copy = new List<object>(lifecycle);
                 lifecycle = new List<object>();
                 return copy;
-            }
-
-            public void SetPropOne(string propOne)
-            {
-                lifecycle.Add("setPropOne=" + propOne);
-                PropOne = propOne;
             }
         }
 
@@ -278,10 +280,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return copy;
             }
 
-            public void SetGraphContext(EPDataFlowEmitter graphContext)
-            {
-                lifecycle.Add(graphContext);
-                this.graphContext = graphContext;
+            public EPDataFlowEmitter GraphContext {
+                set {
+                    lifecycle.Add(value);
+                    this.graphContext = value;
+                }
             }
         }
 
@@ -314,10 +317,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return copy;
             }
 
-            public void SetGraphContext(EPDataFlowEmitter graphContext)
-            {
-                lifecycle.Add(graphContext);
-                this.graphContext = graphContext;
+            public EPDataFlowEmitter GraphContext {
+                get { return this.graphContext; }
+                set {
+                    lifecycle.Add(value);
+                    this.graphContext = value;
+                }
             }
 
             public void OnInput(object abc)
@@ -378,9 +383,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 #endif
             }
 
-            public static DataFlowOpOutputPort GetPort()
-            {
-                return port;
+            public static DataFlowOpOutputPort Port {
+                get { return port; }
             }
         }
     }

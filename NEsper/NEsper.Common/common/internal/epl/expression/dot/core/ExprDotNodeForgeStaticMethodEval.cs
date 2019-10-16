@@ -101,8 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenExpression isCachedMember = null;
             CodegenExpression cachedResultMember = null;
             if (forge.IsConstantParameters) {
-                isCachedMember = codegenClassScope.AddFieldUnshared(false, typeof(bool), ConstantFalse());
-                cachedResultMember = codegenClassScope.AddFieldUnshared(false, typeof(object), ConstantNull());
+                isCachedMember = codegenClassScope.AddDefaultFieldUnshared(false, typeof(bool), ConstantFalse());
+                cachedResultMember = codegenClassScope.AddDefaultFieldUnshared(false, typeof(object), ConstantNull());
             }
 
             var returnType = forge.StaticMethod.ReturnType;
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 if (forge.ChainForges.Length == 0) {
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
-                        typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                        typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                             new EPTypeCodegenSharable(new ClassEPType(forge.EvaluationType), codegenClassScope));
                     }
 
@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
-                        typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                        typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                             new EPTypeCodegenSharable(typeInfo, codegenClassScope));
                     }
 

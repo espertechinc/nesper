@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Concatenation of atoms in a regular expression tree.
     /// </summary>
+    [Serializable]
     public class RowRecogExprNodeConcatenation : RowRecogExprNode
     {
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.CONCATENATION;

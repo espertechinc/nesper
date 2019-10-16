@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
@@ -19,6 +21,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
+        [Serializable]
         public class MultiplyBigIntConvComputer : Computer
         {
             private readonly BigIntegerCoercer convOne;
@@ -56,7 +59,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var leftAsBig = convOne.CoerceBoxedBigIntCodegen(left, ltype);
                 var rightAsBig = convTwo.CoerceBoxedBigIntCodegen(right, rtype);
-                return CodegenExpressionBuilder.Op(leftAsBig, "*", rightAsBig);
+                return Op(leftAsBig, "*", rightAsBig);
             }
         }
     }

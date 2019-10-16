@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.util
                 comparator.Compare(firstValues, secondValues);
                 Assert.Fail();
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 // Expected
             }
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.util
                 comparator.Compare(firstValues, secondValues);
                 Assert.Fail();
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 // Expected
             }

@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 eventRepresentationEnum.GetAnnotationText() +
                 " create schema MyEventType as (col3 string, col4 int)");
             Assert.AreEqual(typeof(int?), env.Statement("create").EventType.GetPropertyType("col4").GetBoxedType());
-            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Length);
+            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Count);
             env.UndeployAll();
 
             // destroy and create differently
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("create").EventType.UnderlyingType));
             Assert.AreEqual(typeof(int?), env.Statement("create").EventType.GetPropertyType("col6").GetBoxedType());
-            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Length);
+            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Count);
             env.CompileDeploy(
                     "@Name('select') " + eventRepresentationEnum.GetAnnotationText() + " select * from MyEventType",
                     path)
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("col1"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("col2").GetBoxedType());
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("col3_col4").GetBoxedType());
-            Assert.AreEqual(3, eventType.PropertyDescriptors.Length);
+            Assert.AreEqual(3, eventType.PropertyDescriptors.Count);
         }
 
         internal class EPLOtherCreateSchemaSameCRC : RegressionExecution
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "@Name('s0') select p0, p1 from MySchema;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
-                env.SendEventMap(CollectionUtil.BuildMap("P0", "a", "P1", 20), "MySchema");
+                env.SendEventMap(CollectionUtil.BuildMap("p0", "a", "p1", 20), "MySchema");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     new [] { "p0","p1" },
@@ -588,7 +588,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 else if (eventRepresentationEnum.IsAvroEvent()) {
                     Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("c"));
-                    Assert.AreEqual(typeof(ICollection<object>), stmtThree.EventType.GetPropertyType("d"));
+                    Assert.AreEqual(typeof(GenericRecord[]), stmtThree.EventType.GetPropertyType("d"));
                     Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("f"));
                 }
                 else {
@@ -863,7 +863,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     path);
                 var variantTypePredef = env.Statement("predef").EventType;
                 Assert.AreEqual(typeof(int?), variantTypePredef.GetPropertyType("col1"));
-                Assert.AreEqual(1, variantTypePredef.PropertyDescriptors.Length);
+                Assert.AreEqual(1, variantTypePredef.PropertyDescriptors.Count);
 
                 env.CompileDeploy("insert into MyVariantPredef select * from MyTypeZero", path);
                 env.CompileDeploy("insert into MyVariantPredef select * from MyTypeOne", path);
@@ -880,7 +880,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(createText, model.ToEPL());
                 env.CompileDeploy(model, path);
                 var predefAnyType = env.Statement("predef_any").EventType;
-                Assert.AreEqual(4, predefAnyType.PropertyDescriptors.Length);
+                Assert.AreEqual(4, predefAnyType.PropertyDescriptors.Count);
                 Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col1"));
                 Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col2"));
                 Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col3"));
@@ -889,7 +889,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // try "any"
                 env.CompileDeploy("@Name('any') create variant schema MyVariantAny as *", path);
                 var variantTypeAny = env.Statement("any").EventType;
-                Assert.AreEqual(0, variantTypeAny.PropertyDescriptors.Length);
+                Assert.AreEqual(0, variantTypeAny.PropertyDescriptors.Count);
 
                 env.CompileDeploy("insert into MyVariantAny select * from MyTypeZero", path);
                 env.CompileDeploy("insert into MyVariantAny select * from MyTypeOne", path);

@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileClassForNameProvider()
         {
             var config = SupportConfigFactory.GetConfiguration();
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 ClassForNameProviderDefault.INSTANCE);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileInvalidConfigAggFuncs()
         {
             TryInvalidCompileConfigureAggFunc(
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 "Failed compiler startup: Error configuring compiler: Aggregation function by name 'abc' is already defined");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileInvalidConfigAggMultiFunc()
         {
             Consumer<Configuration> configurer;
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 "Failed compiler startup: Error configuring compiler: Invalid class name for aggregation multi-function factory 'x y z'");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileInvalidSingleRowFunc()
         {
             TryInvalidPlugInSingleRow(

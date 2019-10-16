@@ -7,18 +7,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     /// <summary>
     /// Exception indicating a problem in a variable declaration.
     /// </summary>
+    [Serializable]
     public class VariableDeclarationException : Exception
     {
         /// <summary>Ctor.</summary>
         /// <param name="msg">the exception message.</param>
         public VariableDeclarationException(string msg)
             : base(msg)
+        {
+        }
+
+        protected VariableDeclarationException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

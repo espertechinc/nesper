@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
 {
@@ -23,20 +24,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
     {
         internal readonly bool hasDataWindows;
         internal readonly ExprMinMaxAggrNode parent;
-        internal readonly Type type;
+        private readonly Type resultType;
         private AggregatorMethod _aggregator;
 
         public AggregationFactoryMethodMinMax(
             ExprMinMaxAggrNode parent,
-            Type type,
+            Type resultType,
             bool hasDataWindows)
         {
             this.parent = parent;
-            this.type = type;
+            // need the boxed type - even if the underlying type is a primitive, if no values come in then
+            // we will end up with a null value for the aggregation.
+            this.resultType = resultType.GetBoxedType();
             this.hasDataWindows = hasDataWindows;
         }
 
-        public override Type ResultType => type;
+        public override Type ResultType => resultType;
 
         public override ExprAggregateNodeBase AggregationExpression => parent;
 
@@ -60,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
-            var distinctType = !parent.IsDistinct ? null : type;
+            var distinctType = !parent.IsDistinct ? null : resultType;
             if (!hasDataWindows) {
                 _aggregator = new AggregatorMinMaxEver(
                     this,

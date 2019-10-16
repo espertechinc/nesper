@@ -273,55 +273,55 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddImportType(typeof(EventBeanPropertyResolutionWDefaults.GROUP));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanEventPropertyDynamicPerformance()
         {
             RegressionRunner.Run(session, new EventBeanEventPropertyDynamicPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanFinalClass()
         {
             RegressionRunner.Run(session, new EventBeanFinalClass());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanInheritAndInterface()
         {
             RegressionRunner.Run(session, EventBeanInheritAndInterface.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanNativeAccessor()
         {
             RegressionRunner.Run(session, new EventBeanNativeAccessor());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanMappedIndexedPropertyExpression()
         {
             RegressionRunner.Run(session, new EventBeanMappedIndexedPropertyExpression());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPrivateClass()
         {
             RegressionRunner.Run(session, new EventBeanPrivateClass());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyIterableMapList()
         {
             RegressionRunner.Run(session, new EventBeanPropertyIterableMapList());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionFragment()
         {
             RegressionRunner.Run(session, EventBeanPropertyResolutionFragment.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionWDefaults()
         {
             RegressionRunner.Run(session, EventBeanPropertyResolutionWDefaults.Executions());

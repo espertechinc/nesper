@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             CodegenExpression dateTimeExpr = 
                 StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField, inner);
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ActionCodegen(ExprDotName(inner, "UtcMillis"));
+            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_DATE_TIME"), "Format", inner);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_ZONED_DATE_TIME"), "Format", inner);
+            return ExprDotMethod(EnumValue(typeof(DateTimeFormat), "ISO_DATE_TIME"), "Format", inner);
         }
 
         public Type ReturnType => typeof(string);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return Action(dateTimeEx);
+            return DateTimeFormat.ISO_DATE_TIME.Format(dateTimeEx);
         }
 
         public object Evaluate(

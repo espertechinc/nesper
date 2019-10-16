@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             this.mode = mode;
 
             var injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationStateFactory;
-            var factoryField = classScope.AddFieldUnshared(
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));

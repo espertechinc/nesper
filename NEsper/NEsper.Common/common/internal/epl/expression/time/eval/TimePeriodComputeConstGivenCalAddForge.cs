@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                     NewInstance(typeof(TimePeriodComputeConstGivenCalAddEval)))
                 .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(adders, parent, classScope))
                 .SetProperty(Ref("eval"), "Added", Constant(added))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
                 .SetProperty(
                     Ref("eval"),
                     "TimeZone",
-                    classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
+                    classScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }

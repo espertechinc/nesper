@@ -75,7 +75,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 index.Put("a", testEvaluator);
                 Assert.IsTrue(false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Expected
             }

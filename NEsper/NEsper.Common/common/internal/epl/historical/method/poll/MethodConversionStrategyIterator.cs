@@ -25,19 +25,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            var it = (IEnumerator<EventBean>) invocationResult;
-            if (it == null || !it.MoveNext()) {
+            var enumerator = (IEnumerator<EventBean>) invocationResult;
+            if (enumerator == null || !enumerator.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
-            var rowResult = new List<EventBean>(2);
-            for (; it.MoveNext();) {
-                object value = it.Current;
+            var rowResult = new List<EventBean>();
+            do {
+                object value = enumerator.Current;
                 if (CheckNonNullArrayValue(value, origin)) {
                     var @event = GetEventBean(value, agentInstanceContext);
                     rowResult.Add(@event);
                 }
-            }
+            } while (enumerator.MoveNext());
 
             return rowResult;
         }

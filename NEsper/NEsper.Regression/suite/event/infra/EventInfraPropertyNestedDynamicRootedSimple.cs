@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] beanTests = {
                 new Pair<object, object>(
                     SupportBeanComplexProps.MakeDefaultBean(),
-                    AllExist("simple", "NestedValue", "nestedNestedValue")),
+                    AllExist("Simple", "NestedValue", "NestedNestedValue")),
                 new Pair<object, object>(new SupportMarkerImplA("x"), NOT_EXISTS)
             };
             RunAssertion(env, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object));
@@ -59,14 +59,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             var mapNestedNestedOne = Collections.SingletonDataMap("nestedNestedValue", 101);
             var mapNestedOne = TwoEntryMap<string, object>(
-                "nestedNested",
-                mapNestedNestedOne,
-                "NestedValue",
-                "abc");
-            var mapOne = TwoEntryMap<string, object>("simpleProperty", 5, "nested", mapNestedOne);
+                "NestedNested", mapNestedNestedOne,
+                "NestedValue", "abc");
+            var mapOne = TwoEntryMap<string, object>(
+                "SimpleProperty", 5, 
+                "Nested", mapNestedOne);
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(
-                    Collections.SingletonMap("simpleProperty", "a"),
+                    Collections.SingletonDataMap("SimpleProperty", "a"),
                     new[] {Exists("a"), NotExists(), NotExists()}),
                 new Pair<object, object>(mapOne, AllExist(5, "abc", 101))
             };
@@ -85,13 +85,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // XML
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>(
-                    "<simpleProperty>abc</simpleProperty>" +
-                    "<nested NestedValue=\"100\">\n" +
-                    "\t<nestedNested nestedNestedValue=\"101\">\n" +
-                    "\t</nestedNested>\n" +
-                    "</nested>\n",
+                    "<SimpleProperty>abc</SimpleProperty>" +
+                    "<Nested NestedValue=\"100\">\n" +
+                    "\t<NestedNested NestedNestedValue=\"101\">\n" +
+                    "\t</NestedNested>\n" +
+                    "</Nested>\n",
                     AllExist("abc", "100", "101")),
-                new Pair<object, object>("<nested/>", NOT_EXISTS)
+                new Pair<object, object>("<Nested/>", NOT_EXISTS)
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode));
 
@@ -102,19 +102,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var datumNull = new GenericRecord(avroSchema);
             var schema = avroSchema;
             var nestedSchema = AvroSchemaUtil
-                .FindUnionRecordSchemaSingle(schema.GetField("nested").Schema)
+                .FindUnionRecordSchemaSingle(schema.GetField("Nested").Schema)
                 .AsRecordSchema();
             var nestedNestedSchema = AvroSchemaUtil
-                .FindUnionRecordSchemaSingle(nestedSchema.GetField("nestedNested").Schema)
+                .FindUnionRecordSchemaSingle(nestedSchema.GetField("NestedNested").Schema)
                 .AsRecordSchema();
             var nestedNestedDatum = new GenericRecord(nestedNestedSchema);
-            nestedNestedDatum.Put("nestedNestedValue", 101);
+            nestedNestedDatum.Put("NestedNestedValue", 101);
             var nestedDatum = new GenericRecord(nestedSchema);
             nestedDatum.Put("NestedValue", 100);
-            nestedDatum.Put("nestedNested", nestedNestedDatum);
+            nestedDatum.Put("NestedNested", nestedNestedDatum);
             var datumOne = new GenericRecord(schema);
-            datumOne.Put("simpleProperty", "abc");
-            datumOne.Put("nested", nestedDatum);
+            datumOne.Put("SimpleProperty", "abc");
+            datumOne.Put("Nested", nestedDatum);
             Pair<object, object>[] avroTests = {
                 new Pair<object, object>(
                     new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME)),
@@ -134,17 +134,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           "simpleProperty? as simple, " +
-                           "exists(simpleProperty?) as exists_simple, " +
-                           "nested?.NestedValue as nested, " +
-                           "exists(nested?.NestedValue) as exists_nested, " +
-                           "nested?.NestedNested.NestedNestedValue as nestedNested, " +
-                           "exists(nested?.NestedNested.NestedNestedValue) as exists_nestedNested " +
+                           "SimpleProperty? as simple, " +
+                           "exists(SimpleProperty?) as exists_simple, " +
+                           "Nested?.NestedValue as nested, " +
+                           "exists(Nested?.NestedValue) as exists_nested, " +
+                           "Nested?.NestedNested.NestedNestedValue as nestedNested, " +
+                           "exists(Nested?.NestedNested.NestedNestedValue) as exists_nestedNested " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var propertyNames = new [] { "simple","nested","nestedNested" };
+            var propertyNames = new [] { "Simple","Nested","NestedNested" };
             var eventType = env.Statement("s0").EventType;
             foreach (var propertyName in propertyNames) {
                 Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));

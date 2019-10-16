@@ -266,6 +266,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// <param name="services"></param>
         /// <param name="dbCommand">The database command.</param>
         /// <param name="parameterDesc"></param>
+        /// <param name="contextAttributes">context attributes</param>
         /// <returns></returns>
         private static QueryMetaData GetQueryMetaData(
             DBStatementStreamSpec databaseStreamSpec,

@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "create table WordCountTable2(wordcms countMinSketch({\n" +
                     "  epsOfTotalCount: 0.000002,\n" +
-                    "  confIdence: 0.999,\n" +
+                    "  confidence: 0.999,\n" +
                     "  seed: 38576,\n" +
                     "  topk: 20,\n" +
                     "  agent: '" +
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var eplTable = "create table MyApproxNS(bytefreq countMinSketch({" +
                                "  epsOfTotalCount: 0.02," +
-                               "  confIdence: 0.98," +
+                               "  confidence: 0.98," +
                                "  topk: null," +
                                "  agent: '" +
                                typeof(MyBytesPassthruAgentForge).Name +

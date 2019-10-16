@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
                 env.SendEventBean(bean);
-                var result = env.Listener("s0").AssertOneGetNewAndReset().Get("val").Unwrap<SupportBean_ST0>();
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] {bean.Contained[1]}, result.ToArray());
+                var result = env.Listener("s0").AssertOneGetNewAndReset().Get("val").UnwrapIntoArray<SupportBean_ST0>();
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] {bean.Contained[1]}, result);
 
                 env.UndeployAll();
             }

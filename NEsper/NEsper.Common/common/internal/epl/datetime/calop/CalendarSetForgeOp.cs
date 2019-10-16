@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                             dateTimeEx,
                             "SetFieldValue",
                             field,
-                            ExprDotName(Ref("value"), "Value")))
+                            Unbox<int?>(Ref("value"))))
                     .MethodEnd();
                 return LocalMethod(methodNode, dateTimeEx);
             }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         Ref("dto"),
                         "SetFieldValue",
                         EnumValue(field),
-                        ExprDotName(Ref("value"), "Value")));
+                        Unbox<int?>(Ref("value"))));
             return LocalMethod(methodNode, dto);
         }
 
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         Ref("dateTime"),
                         "SetFieldValue",
                         EnumValue(field),
-                        ExprDotName(Ref("value"), "Value")));
+                        Unbox<int?>(Ref("value"))));
             return LocalMethod(methodNode, dateTime);
         }
     }

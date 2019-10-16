@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.OrderByProcessorForge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.OrderByProcessorForge.IComparer);
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),

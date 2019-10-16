@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[streamNum];
             if (@event == null) {
                 return null;
             }
@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return CodegenGet(requiredType, parent, symbols, classScope);
             }
 
-            Type targetType = GetCodegenReturnType(requiredType);
-            CodegenMethod method = parent.MakeChild(targetType, this.GetType(), classScope);
+            var targetType = GetCodegenReturnType(requiredType).GetBoxedType();
+            var method = parent.MakeChild(targetType, this.GetType(), classScope);
             method.Block
                 .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
                 .Expression(
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                                  !(eventType is WrapperEventType) &&
                                  !(eventType is VariantEventType);
             if (useUnderlying && !optionalEvent) {
-                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(
+                var underlying = exprSymbol.GetAddRequiredUnderlying(
                     codegenMethodScope,
                     streamNum,
                     eventType,
@@ -123,12 +123,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(
+            var method = codegenMethodScope.MakeChild(
                 castTargetType.GetBoxedType(), this.GetType(), codegenClassScope);
-            CodegenBlock block = method.Block;
+            var block = method.Block;
 
             if (useUnderlying) {
-                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(
+                var underlying = exprSymbol.GetAddRequiredUnderlying(
                     method,
                     streamNum,
                     eventType,
@@ -136,11 +136,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 block.IfRefNullReturnNull(underlying)
                     .MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
-                            castTargetType,
+                            castTargetType.GetBoxedType(),
                             propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
             else {
-                CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(method);
+                var refEPS = exprSymbol.GetAddEPS(method);
                 method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)));
                 if (optionalEvent) {
                     block.IfRefNullReturnNull("@event");
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] eventsPerStream,
             bool isNewData)
         {
-            EventBean theEvent = eventsPerStream[streamNum];
+            var theEvent = eventsPerStream[streamNum];
             if (theEvent == null) {
                 return false;
             }

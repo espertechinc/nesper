@@ -99,7 +99,23 @@ namespace com.espertech.esper.regressionlib.framework
                 return; // skip message validation
             }
 
-            StringAssert.StartsWith(message, ex.Message);
+
+            try {
+                StringAssert.StartsWith(message, ex.Message);
+            }
+            catch {
+                Console.WriteLine("Underlying Exception: " + ex.GetType().FullName + " => " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                ex = ex.InnerException;
+
+                while (ex != null) {
+                    Console.WriteLine("--" + ex.GetType().FullName + " => " + ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                    ex = ex.InnerException;
+                }
+
+                throw;
+            }
 
             //Assert.That(ex.Message, Does.StartWith(message));
 

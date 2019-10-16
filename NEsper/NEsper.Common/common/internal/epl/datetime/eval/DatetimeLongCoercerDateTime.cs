@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
             }
 
-            var timeZoneField = codegenClassScope.AddOrGetFieldSharable(
+            var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(
                 RuntimeSettingsTimeZoneField.INSTANCE);
             return StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", value, timeZoneField);
             //return ExprDotMethodChain(value).Add("toInstant").Add("toEpochMilli");

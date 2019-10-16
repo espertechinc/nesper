@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Array expression forms array results, similar to the syntax of "{element 1, element 2, ... element n}".
     /// </summary>
+    [Serializable]
     public class ArrayExpression : ExpressionBase
     {
         /// <summary>

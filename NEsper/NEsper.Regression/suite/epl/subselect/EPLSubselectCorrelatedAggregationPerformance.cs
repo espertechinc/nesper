@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var delta = end - start;
 
             //System.out.println("delta=" + delta);
-            Assert.IsTrue(delta < 500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
             env.UndeployAll();
         }

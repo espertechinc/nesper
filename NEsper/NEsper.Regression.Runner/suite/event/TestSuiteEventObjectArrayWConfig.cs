@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventObjectArrayWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayConfiguredStatic()
         {
             var session = RegressionRunner.Session();
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventObjectArrayInheritanceConfigRuntime()
         {
             var session = RegressionRunner.Session();
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
             // invalid multiple supertypes

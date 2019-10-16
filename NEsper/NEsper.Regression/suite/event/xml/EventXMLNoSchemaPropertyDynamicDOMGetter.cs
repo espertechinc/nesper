@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                                            "\t<nested>\n" +
                                            "\t\t<nes2>3</nes2>\n" +
                                            "\t</nested>\n" +
-                                           "\t<map Id='a'>4</map>\n" +
+                                           "\t<map id='a'>4</map>\n" +
                                            "</simpleEvent>";
 
         public void Run(RegressionEnvironment env)
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy(stmtText).AddListener("s0");
 
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor(
@@ -55,10 +55,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var root = SupportXML.SendXMLEvent(env, NOSCHEMA_XML, "MyEventSimpleEvent");
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(1), theEvent.Get("type?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(5), theEvent.Get("dyn[1]?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(7).ChildNodes.Item(1), theEvent.Get("nested.nes2?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(9), theEvent.Get("map('a')?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
             SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
 
             env.UndeployAll();

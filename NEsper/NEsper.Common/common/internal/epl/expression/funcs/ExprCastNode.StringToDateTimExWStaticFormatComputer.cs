@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 CodegenExpression timeZoneField =
-                    codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                    codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToDateTimExWStaticFormatComputer),
                     "StringToDtxWStaticFormatParse",

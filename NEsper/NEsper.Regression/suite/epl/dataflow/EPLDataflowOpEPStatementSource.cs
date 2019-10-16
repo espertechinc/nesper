@@ -124,7 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E2", 2));
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"E2"});
 
@@ -143,7 +144,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E4", 4));
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"E4"});
 
@@ -163,7 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E6", 6));
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"XE6X"});
 

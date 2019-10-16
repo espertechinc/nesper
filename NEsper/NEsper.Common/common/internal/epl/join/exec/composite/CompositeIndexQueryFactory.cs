@@ -34,9 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
             foreach (CompositeIndexQuery action in queries) {
-                if (last != null) {
-                    last.SetNext(action);
-                }
+                last?.SetNext(action);
 
                 last = action;
             }
@@ -63,9 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
             foreach (CompositeIndexQuery action in queries) {
-                if (last != null) {
-                    last.SetNext(action);
-                }
+                last?.SetNext(action);
 
                 last = action;
             }

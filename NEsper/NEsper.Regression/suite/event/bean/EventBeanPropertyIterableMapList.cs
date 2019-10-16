@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             object @event)
         {
             env.CompileDeploy(
-                "@Name('s0') select otherEventsIterable[0] as c0, otherEventsMap('key') as c1, otherEventsList[0] as c2 from " +
+                "@Name('s0') select OtherEventsIterable[0] as c0, OtherEventsMap('key') as c1, OtherEventsList[0] as c2 from " +
                 typeClass.Name);
             env.AddListener("s0");
 

@@ -483,7 +483,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             var index = 0;
             EventType streamType = null;
 
-            // Stream name resultion examples:
+            // Stream name resolution examples:
             // A)  select A1.price from Event.price as A2  => mismatch stream name, cannot resolve
             // B)  select Event1.price from Event2.price   => mismatch event type name, cannot resolve
             for (var i = 0; i < EventTypes.Length; i++) {

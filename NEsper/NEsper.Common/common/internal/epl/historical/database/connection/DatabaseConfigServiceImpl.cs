@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 using ColumnSettings = com.espertech.esper.common.@internal.epl.historical.database.core.ColumnSettings;
 
@@ -28,42 +29,43 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     public class DatabaseConfigServiceImpl : DatabaseConfigServiceCompileTime,
         DatabaseConfigServiceRuntime
     {
+        private readonly IContainer _container;
         private readonly ImportService _importService;
-        private readonly IDictionary<string, DatabaseConnectionFactory> connectionFactories;
-        private readonly IDictionary<string, ConfigurationCommonDBRef> mapDatabaseRef;
+        private readonly IDictionary<string, DatabaseConnectionFactory> _connectionFactories;
+        private readonly IDictionary<string, ConfigurationCommonDBRef> _mapDatabaseRef;
 
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
+        /// <summary>Ctor.</summary>
+        /// <param name="container">the container</param>
         /// <param name="mapDatabaseRef">is a map of database name and database configuration entries</param>
         /// <param name="importService">imports</param>
         public DatabaseConfigServiceImpl(
+            IContainer container,
             IDictionary<string, ConfigurationCommonDBRef> mapDatabaseRef,
             ImportService importService)
         {
-            this.mapDatabaseRef = mapDatabaseRef;
-            connectionFactories = new Dictionary<string, DatabaseConnectionFactory>();
-            this._importService = importService;
+            _container = container;
+            _mapDatabaseRef = mapDatabaseRef;
+            _connectionFactories = new Dictionary<string, DatabaseConnectionFactory>();
+            _importService = importService;
         }
 
         public DatabaseConnectionFactory GetConnectionFactory(string databaseName)
         {
             // check if we already have a reference
-            var factory = connectionFactories.Get(databaseName);
+            var factory = _connectionFactories.Get(databaseName);
             if (factory != null) {
                 return factory;
             }
 
-            var config = mapDatabaseRef.Get(databaseName);
+            var config = _mapDatabaseRef.Get(databaseName);
             if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
 
             var settings = config.ConnectionSettings;
-            if (config.ConnectionFactoryDesc is DriverConnectionFactoryDesc) {
-                var dbConfig = (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc;
-                factory = new DatabaseDriverConnFactory(dbConfig, settings);
+            if (config.ConnectionFactoryDesc is DriverConnectionFactoryDesc dbConfig) {
+                factory = new DatabaseDriverConnFactory(_container, dbConfig, settings);
             }
             else if (config.ConnectionFactoryDesc == null) {
                 throw new DatabaseConfigException("No connection factory setting provided in configuration");
@@ -72,14 +74,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                 throw new DatabaseConfigException("Unknown connection factory setting provided in configuration");
             }
 
-            connectionFactories.Put(databaseName, factory);
+            _connectionFactories.Put(databaseName, factory);
 
             return factory;
         }
 
         public ColumnSettings GetQuerySetting(string databaseName)
         {
-            var config = mapDatabaseRef.Get(databaseName);
+            var config = _mapDatabaseRef.Get(databaseName);
             if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
@@ -97,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             int streamNumber,
             int scheduleCallbackId)
         {
-            var config = mapDatabaseRef.Get(databaseName);
+            var config = _mapDatabaseRef.Get(databaseName);
             if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
@@ -116,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             string preparedStatementText,
             IEnumerable<Attribute> contextAttributes)
         {
-            var config = mapDatabaseRef.Get(databaseName);
+            var config = _mapDatabaseRef.Get(databaseName);
             if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');

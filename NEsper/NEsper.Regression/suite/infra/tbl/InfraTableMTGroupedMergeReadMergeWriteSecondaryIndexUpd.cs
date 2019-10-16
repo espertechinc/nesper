@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // populate
             var eplInto =
-                "into table vartotal select count(*) as thecnt from SupportTopGroupSubGroupEvent#length(100) group by topgroup, subgroup";
+                "into table vartotal select count(*) as thecnt from SupportTopGroupSubGroupEvent#length(100) group by Topgroup, Subgroup";
             env.CompileDeploy(eplInto, path);
 
             // delete empty groups

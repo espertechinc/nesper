@@ -236,10 +236,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 return null;
             }
 
-            return GetBestCandidate(
-                    (IDictionary<IndexMultiKey, EventTableIndexEntryBase>)
-                    (IDictionary<object, object>) indexCandidates)
-                .First;
+            //IndexMultiKey,EventTableIndexMetadataEntry
+
+            return GetBestCandidate(indexCandidates).First;
         }
 
         public static Pair<IndexMultiKey, EventTableIndexEntryBase> FindIndexBestAvailable<T>(

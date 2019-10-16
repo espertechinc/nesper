@@ -20,6 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_SELECTEXPRPROCESSOR = "selectExprProcessor";
         public const string NAME_AGGREGATIONSVC = "aggregationService";
         public const string NAME_ORDERBYPROCESSOR = "orderByProcessor";
+        public const string NAME_STATEMENT_FIELDS = "statementFields";
         public const string NAME_NEWDATA = "newData";
         public const string NAME_OLDDATA = "oldData";
         public const string NAME_ISSYNTHESIZE = "isSynthesize";
@@ -51,6 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
 
         public static readonly CodegenExpressionRef REF_ORDERBYPROCESSOR =
             new CodegenExpressionRef(NAME_ORDERBYPROCESSOR);
+
+        public static readonly CodegenExpressionRef REF_STATEMENT_FIELDS =
+            new CodegenExpressionRef(NAME_STATEMENT_FIELDS);
+
 
         public static readonly CodegenExpressionRef REF_NEWDATA = @Ref(NAME_NEWDATA);
         public static readonly CodegenExpressionRef REF_OLDDATA = @Ref(NAME_OLDDATA);

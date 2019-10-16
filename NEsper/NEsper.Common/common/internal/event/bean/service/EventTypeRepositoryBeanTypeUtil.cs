@@ -90,6 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             // metadata
             var publicId = CRC32Util.ComputeCRC32(eventTypeName);
+
             var metadata = new EventTypeMetadata(
                 eventTypeName,
                 null,

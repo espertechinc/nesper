@@ -7,16 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
     public class MyAnnotationValueArrayAttribute : Attribute
     {
-        public MyAnnotationValueArrayAttribute(long[] value)
-        {
-            Value = value;
-        }
-
         public long[] Value { get; set; }
 
         public int[] IntArray { get; set; }
@@ -25,6 +21,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public string[] StringArray { get; set; }
 
-        public string[] StringArrayDef { get; set; } = {"XYZ"};
+        [DefaultValue("XYZ")]
+        public string[] StringArrayDef { get; set; }
     }
 } // end of namespace

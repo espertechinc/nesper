@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.support
             var properties = eventBean.EventType.PropertyDescriptors;
 
             // write simple properties
-            for (var i = 0; i < properties.Length; i++) {
+            for (var i = 0; i < properties.Count; i++) {
                 var propertyName = properties[i].PropertyName;
 
                 if (properties[i].IsIndexed || properties[i].IsMapped) {
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.support
             }
 
             // write indexed properties
-            for (var i = 0; i < properties.Length; i++) {
+            for (var i = 0; i < properties.Count; i++) {
                 var propertyName = properties[i].PropertyName;
 
                 if (!properties[i].IsIndexed) {
@@ -232,7 +232,7 @@ namespace com.espertech.esper.common.@internal.support
             }
 
             // write mapped properties
-            for (var i = 0; i < properties.Length; i++) {
+            for (var i = 0; i < properties.Count; i++) {
                 var propertyName = properties[i].PropertyName;
 
                 if (!properties[i].IsMapped) {
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.support
             AssertConsistencyRecursive(eventBean.EventType, alreadySeenTypes);
 
             var properties = eventBean.EventType.PropertyDescriptors;
-            for (var i = 0; i < properties.Length; i++) {
+            for (var i = 0; i < properties.Count; i++) {
                 var failedMessage = "failed assertion for property '" + properties[i].PropertyName + "' ";
                 var propertyName = properties[i].PropertyName;
 
@@ -380,7 +380,7 @@ namespace com.espertech.esper.common.@internal.support
             IList<string> propertyNames = new List<string>();
 
             var properties = eventType.PropertyDescriptors;
-            for (var i = 0; i < properties.Length; i++) {
+            for (var i = 0; i < properties.Count; i++) {
                 var propertyName = properties[i].PropertyName;
                 propertyNames.Add(propertyName);
                 var failedMessage = "failed assertion for property '" + propertyName + "' ";

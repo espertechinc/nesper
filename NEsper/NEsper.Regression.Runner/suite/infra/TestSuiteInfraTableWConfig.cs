@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
     [TestFixture]
     public class TestSuiteInfraTableWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedMergeReadMergeWriteSecondaryIndexUpd()
         {
             RegressionSession session = RegressionRunner.Session();

@@ -12,6 +12,7 @@ using System.Reflection;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
@@ -40,8 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             }
 
             throw new EventBeanManufactureException(
-                "Failed to find no-arg constructor and no factory method has been configured and cannot use Sun-JVM reflection to instantiate object of type " +
-                beanEventType.UnderlyingType.Name,
+                "Failed to find no-arg constructor and no factory method has been configured to instantiate object of type " +
+                beanEventType.UnderlyingType.CleanName(),
                 ctorNotFoundEx);
         }
 

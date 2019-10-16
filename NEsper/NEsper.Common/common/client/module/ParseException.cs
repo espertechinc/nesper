@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client.module
 {
@@ -20,6 +21,11 @@ namespace com.espertech.esper.common.client.module
         /// <param name="message">error message</param>
         public ParseException(string message)
             : base(message)
+        {
+        }
+
+        protected ParseException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

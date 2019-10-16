@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace com.espertech.esper.common.client
@@ -14,7 +15,8 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// This exception is thrown to indicate a problem with a accessing a property of an EventBean />.
     /// </summary>
-    public sealed class PropertyAccessException : Exception
+    [Serializable]
+    public class PropertyAccessException : Exception
     {
         private readonly string _expression;
 
@@ -61,6 +63,11 @@ namespace com.espertech.esper.common.client
         {
         }
 
+        protected PropertyAccessException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+
         /// <summary>
         /// Generates the Not-A-Valid-Property exception
         /// </summary>
@@ -75,22 +82,27 @@ namespace com.espertech.esper.common.client
         /// <summary>
         /// Gets a message that describes the current exception.
         /// </summary>
-        public override string Message {
+        public override string Message
+        {
             get {
                 StringBuilder msg;
 
-                if (!string.IsNullOrEmpty(base.Message)) {
+                if (!string.IsNullOrEmpty(base.Message))
+                {
                     msg = new StringBuilder(base.Message);
                 }
-                else {
+                else
+                {
                     msg = new StringBuilder("Unexpected exception");
-                    if (InnerException != null) {
+                    if (InnerException != null)
+                    {
                         msg.Append(" : ");
                         msg.Append(InnerException.Message);
                     }
                 }
 
-                if (_expression != null) {
+                if (_expression != null)
+                {
                     msg.Append(" [");
                     msg.Append(_expression);
                     msg.Append(']');

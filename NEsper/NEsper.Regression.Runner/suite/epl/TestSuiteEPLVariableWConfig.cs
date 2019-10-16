@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLVariableWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesTimer()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariableEngineConfigXML()
         {
             string xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
             TryInvalidConfigurationCompiler(SupportConfigFactory.GetConfiguration(), config => config.Common.AddVariable("invalidvar1", typeof(int?), "abc"),

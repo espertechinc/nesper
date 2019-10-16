@@ -39,9 +39,9 @@ namespace com.espertech.esper.compiler.@internal.util
                                 "Substitution parameter '" +
                                 name +
                                 "' incompatible type assignment between types '" +
-                                existing.Name +
+                                existing.CleanName() +
                                 "' and '" +
-                                node.ResolvedType.Name +
+                                node.ResolvedType.CleanName() +
                                 "'");
                         }
                     }

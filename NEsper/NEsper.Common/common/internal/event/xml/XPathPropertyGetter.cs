@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var xpathGetter = codegenClassScope.AddOrGetFieldSharable(
+            var xpathGetter = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new XPathPropertyGetterCodegenFieldSharable(_baseXMLEventType, this));
             return ExprDotMethod(xpathGetter, "GetFromUnderlying", Cast(typeof(XmlNode), underlyingExpression));
         }
@@ -209,9 +209,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return ConstantNull();
             }
 
-            var xpathGetter = codegenClassScope.AddOrGetFieldSharable(
+            var xpathGetter = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new XPathPropertyGetterCodegenFieldSharable(_baseXMLEventType, this));
             return ExprDotMethod(xpathGetter, "GetFragmentFromUnderlying", underlyingExpression);
+        }
+
+        public object GetFromUnderlying(XmlNode node)
+        {
+            return GetFromUnderlying(node.CreateNavigator());
         }
 
         public object GetFromUnderlying(XPathNavigator navigator)
@@ -440,6 +445,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 Property,
                 _fragmentFactory,
                 _resultType);
+        }
+
+        public object GetFragmentFromUnderlying(XmlNode node)
+        {
+            return GetFragmentFromUnderlying(node.CreateNavigator());
         }
 
         private static object CastToArray(

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             base.TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
-            ExprForge body = bodiesAndParameters[0].BodyForge;
+            var body = bodiesAndParameters[0].BodyForge;
             return new EnumSequenceEqualForge(body, numStreamsIncoming);
         }
     }

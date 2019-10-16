@@ -119,10 +119,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     adminOne.Deploy(compiled);
                     Assert.Fail();
                 }
-                catch (EPDeployException ex) {
+                catch (EPDeployException) {
                     Assert.Fail();
                 }
-                catch (EPRuntimeDestroyedException ex) {
+                catch (EPRuntimeDestroyedException) {
                     // expected
                 }
 

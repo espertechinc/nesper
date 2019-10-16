@@ -12,24 +12,12 @@ using com.espertech.esper.common.client.annotation;
 
 namespace com.espertech.esper.common.@internal.type
 {
-    [AttributeUsage(AttributeTargets.All)]
-    public class AnnotationHookAttribute : HookAttribute
+    public class AnnotationName : NameAttribute
     {
-        private readonly string hook;
-        private readonly HookType type;
-
-        public AnnotationHookAttribute(
-            HookType type,
-            string hook)
+        public AnnotationName(string value) : base(value)
         {
-            this.type = type;
-            this.hook = hook;
         }
 
-        public override string Hook => hook;
-
-        public override HookType HookType => type;
-
-        public Type AnnotationType => typeof(HookAttribute);
+        public Type AnnotationType => typeof(NameAttribute);
     }
 } // end of namespace

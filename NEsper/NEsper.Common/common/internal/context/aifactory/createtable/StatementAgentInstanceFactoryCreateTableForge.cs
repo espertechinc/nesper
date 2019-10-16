@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataInternalEventToPublic), GetType(), classScope);
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var eventType = classScope.AddFieldUnshared(
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, EPStatementInitServicesConstants.REF));
@@ -129,6 +129,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
                 foreach (TableMetadataColumnPairAggMethod aggMethod in plan.ColsAggMethod) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
+                    convertToUnd.Block.DebugStack();
                     convertToUnd.Block.AssignArrayElement(
                         Ref("data"),
                         Constant(aggMethod.Dest),
@@ -144,6 +145,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
                 foreach (TableMetadataColumnPairAggAccess aggAccess in plan.ColsAccess) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
+                    convertToUnd.Block.DebugStack();
                     convertToUnd.Block.AssignArrayElement(
                         Ref("data"),
                         Constant(aggAccess.Dest),

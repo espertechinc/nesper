@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 2000, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
 
             env.UndeployAll();
         }

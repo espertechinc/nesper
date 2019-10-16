@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.serde;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -71,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 reclaimFreq = ConstantNull();
             }
 
-            var timeAbacus = classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE);
+            var stmtFields = ResultSetProcessorCodegenNames.REF_STATEMENT_FIELDS;
+            var timeAbacus = classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE);
+
             method.Block
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
@@ -171,6 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
+            method.Block.DebugStack();
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_CURRENTROW,
@@ -254,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 REF_CURRENTROW,
                 Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)));
             block.IfCondition(EqualsNull(REF_CURRENTROW))
-                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
+                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
                 .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
 
             if (HasRefCounting) {
@@ -288,7 +292,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     REF_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
-                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
+                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
                 .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
 
             if (HasRefCounting) {
@@ -296,9 +300,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
-                method.Block.SetProperty(
+                method.Block.ExprDotMethod(
                     REF_CURRENTROW,
-                    "LastUpdateTime",
+                    "SetLastUpdateTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"));
             }
 
@@ -336,7 +340,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     REF_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
-                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop));
+                .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")));
         }
 
         public void ClearResultsCodegen(

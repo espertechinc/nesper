@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprForge sizeEval = bodiesAndParameters[0].BodyForge;
+            var sizeEval = bodiesAndParameters[0].BodyForge;
 
             if (inputEventType != null) {
                 base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);

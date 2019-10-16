@@ -139,26 +139,96 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return result;
         }
 
+        public static PropertyStem Merge(
+            PropertyStem baseStem,
+            PropertyStem mergeStem)
+        {
+            if (baseStem == null) {
+                return mergeStem;
+            }
+
+            if (baseStem.DeclaringType != mergeStem.DeclaringType) {
+                throw new ArgumentException("cannot merge property stems from different declaring types");
+            }
+
+            // Below are codified rules for how to merge stems when a class defines two
+            // different ways to retrieve a property.  For example, the class could define
+            // a property and a getter method.  In this case, which should take precedence?
+            // 
+            // These rules need to be captured somewhere.  Currently, there is no good answer
+            // for where these rules are codified.  We will capture them here for now and move
+            // them out so that these rules can be in the development space elsewhere.
+
+            var accessorProp = baseStem.AccessorProp;
+            var accessorField = baseStem.AccessorField;
+            var accessorMethod = baseStem.ReadMethod;
+            var stemPropType = baseStem.PropertyType | mergeStem.PropertyType;
+            var stemPropName = baseStem.PropertyName;
+
+            if (mergeStem.AccessorProp != null) {
+                if (accessorProp != null)
+                    throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorProp)}");
+                accessorProp = mergeStem.AccessorProp;
+            }
+
+            if (mergeStem.AccessorField != null) {
+                if (accessorField != null)
+                    throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorField)}");
+                accessorField = mergeStem.AccessorField;
+            }
+
+
+            if (mergeStem.ReadMethod != null) {
+                if (accessorMethod != null)
+                    throw new ArgumentException($"base stem already defines {nameof(baseStem.ReadMethod)}");
+                accessorMethod = mergeStem.ReadMethod;
+            }
+
+            return new PropertyStem(stemPropName, accessorMethod, accessorField, accessorProp, stemPropType);
+        }
+
         public static void AddIntrospectProperties(
             MagicType magicType,
             IList<PropertyStem> result)
         {
-            foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null)) {
+            var propertyStemTable = new Dictionary<string, PropertyStem>();
+            var properties = magicType.GetAllProperties(true).ToList();
+
+            foreach (var propertyInfo in properties) {
+                propertyStemTable.TryGetValue(
+                    propertyInfo.Name,
+                    out var propertyStem);
+
                 if (propertyInfo.Member is PropertyInfo propertyInfoMember) {
-                    result.Add(
-                        new PropertyStem(
-                            propertyInfo.Name,
-                            propertyInfoMember,
-                            propertyInfo.EventPropertyType));
+                    propertyStemTable[propertyInfo.Name] =
+                        Merge(
+                            propertyStem,
+                            new PropertyStem(
+                                propertyInfo.Name,
+                                propertyInfoMember,
+                                propertyInfo.EventPropertyType));
                 }
                 else if (propertyInfo.Member is MethodInfo) {
-                    result.Add(
-                        new PropertyStem(
-                            propertyInfo.Name,
-                            propertyInfo.GetMethod,
-                            propertyInfo.EventPropertyType));
+                    propertyStemTable[propertyInfo.Name] =
+                        Merge(
+                            propertyStem,
+                            new PropertyStem(
+                                propertyInfo.Name,
+                                propertyInfo.GetMethod,
+                                propertyInfo.EventPropertyType));
+                }
+                else if (propertyInfo.Member is FieldInfo fieldInfoMember) {
+                    propertyStemTable[propertyInfo.Name] =
+                        Merge(
+                            propertyStem,
+                            new PropertyStem(
+                                propertyInfo.Name,
+                                fieldInfoMember,
+                                propertyInfo.EventPropertyType));
                 }
             }
+
+            result.AddAll(propertyStemTable.Values);
         }
 
         /// <summary>
@@ -305,12 +375,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public static string GetSetterMethodName(string propertyName)
         {
-            return GetGetterSetterMethodName(propertyName, "set");
+            return GetGetterSetterMethodName(propertyName, "Set");
         }
 
         public static string GetIsMethodName(string propertyName)
         {
-            return GetGetterSetterMethodName(propertyName, "is");
+            return GetGetterSetterMethodName(propertyName, "Is");
+        }
+
+        public static string GetPropertyName(string fieldName)
+        {
+            var writer = new StringWriter();
+            writer.Write(char.ToUpperInvariant(fieldName[0]));
+            writer.Write(fieldName.Substring(1));
+            return writer.ToString();
         }
 
         private static string GetGetterSetterMethodName(

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -16,6 +17,7 @@ namespace com.espertech.esper.common.client.module
     /// <summary>
     /// Exception indicates a problem when determining delpoyment order and uses-dependency checking.
     /// </summary>
+    [Serializable]
     public class ModuleOrderException : Exception
     {
         /// <summary>
@@ -24,6 +26,11 @@ namespace com.espertech.esper.common.client.module
         /// <param name="message">error message</param>
         public ModuleOrderException(string message)
             : base(message)
+        {
+        }
+
+        protected ModuleOrderException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

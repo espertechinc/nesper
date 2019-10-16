@@ -40,7 +40,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.IsNull(userObject);
             }
             else if (received.GetType() == typeof(int[])) {
-                Assert.IsTrue(Equals((int[]) received, (int[]) userObject));
+                CollectionAssert.AreEquivalent(
+                    (int[]) received,
+                    (int[]) userObject);
             }
             else {
                 Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);

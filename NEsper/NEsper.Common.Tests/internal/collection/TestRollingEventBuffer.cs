@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.collection
                 buffer.Get(index);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                     else if (returnType.IsArray) {
                         _adders[i] = InValueAdderArray.INSTANCE;
                     }
-                    else if (TypeHelper.IsImplementsInterface(returnType, typeof(IDictionary<string, object>))) {
+                    else if (returnType.IsGenericDictionary()) {
                         _adders[i] = InValueAdderMap.INSTANCE;
                     }
-                    else if (TypeHelper.IsImplementsInterface(returnType, typeof(ICollection<object>))) {
+                    else if (returnType.IsGenericCollection()) {
                         _adders[i] = InValueAdderColl.INSTANCE;
                     }
                     else {

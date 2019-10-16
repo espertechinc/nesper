@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -30,6 +31,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     {
         private const string RSPFACTORYPROVIDER = "rspFactoryProvider";
         private const string OPVFACTORYPROVIDER = "opvFactoryProvider";
+
         private readonly JoinSetComposerPrototypeForge _joinSetComposerPrototypeForge;
         private readonly bool _orderByWithoutOutputRateLimit;
         private readonly string _outputProcessViewProviderClassName;
@@ -135,7 +137,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _resultSetProcessorProviderClassName,
                     RSPFACTORYPROVIDER,
-                    NewInstance(_resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
+                    NewInstance(_resultSetProcessorProviderClassName, 
+                        symbols.GetAddInitSvc(method), 
+                        Ref(StmtClassForgableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
                 .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
@@ -162,7 +166,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _outputProcessViewProviderClassName,
                     OPVFACTORYPROVIDER,
-                    NewInstance(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method)))
+                    NewInstance(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
 
             // subselects

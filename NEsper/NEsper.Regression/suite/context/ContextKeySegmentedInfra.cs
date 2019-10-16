@@ -295,13 +295,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             bool namedWindow)
         {
             var epl = "";
-            epl +=
-                "create context SegmentedByString partition by TheString from SupportBean, P00 from SupportBean_S0;\n";
+            epl += "create context SegmentedByString partition by TheString from SupportBean, P00 from SupportBean_S0;\n";
             epl += namedWindow
                 ? "context SegmentedByString create window MyInfra#keepall as SupportBean;\n"
                 : "context SegmentedByString create table MyInfra (TheString string primary key, IntPrimitive int);\n";
-            epl +=
-                "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean;\n";
+            epl += "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean;\n";
             epl += "@Audit @Name('s0') context SegmentedByString " +
                    "select *, (select max(IntPrimitive) from MyInfra) as mymax from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
@@ -659,12 +657,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string group,
                 object[][] expected)
             {
-                var it = env.Statement("table")
+                var enumerator = env.Statement("table")
                     .GetEnumerator(
                         new ProxyContextPartitionSelectorSegmented {
                             ProcPartitionKeys = () => { return Collections.SingletonList(new object[] {group}); }
                         });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(it, new [] { "TheString","IntPrimitive" }, expected);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(enumerator, new [] { "TheString","IntPrimitive" }, expected);
             }
         }
     }

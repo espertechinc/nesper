@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.annotation
@@ -13,6 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
     /// <summary>
     ///     Thrown to indicate a problem processing an EPL statement annotation.
     /// </summary>
+    [Serializable]
     public class AnnotationException : EPException
     {
         /// <summary>
@@ -20,6 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         /// </summary>
         /// <param name="message">error message</param>
         public AnnotationException(string message) : base(message)
+        {
+        }
+
+        protected AnnotationException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

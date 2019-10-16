@@ -33,32 +33,35 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newEvents">is the view new events</param>
+        /// <param name="statementContext">the statement context</param>
         /// <returns>indicator for output condition</returns>
         public bool CheckUpdateAfterCondition(
             EventBean[] newEvents,
             StatementContext statementContext)
         {
             return _isAfterConditionSatisfied ||
-                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Length, statementContext);
+                   CheckAfterCondition(newEvents?.Length ?? 0, statementContext);
         }
 
         /// <summary>
         ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newEvents">is the join new events</param>
+        /// <param name="statementContext">the statement context</param>
         /// <returns>indicator for output condition</returns>
         public bool CheckUpdateAfterCondition(
             ISet<MultiKey<EventBean>> newEvents,
             StatementContext statementContext)
         {
             return _isAfterConditionSatisfied ||
-                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Count, statementContext);
+                   CheckAfterCondition(newEvents?.Count ?? 0, statementContext);
         }
 
         /// <summary>
         ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newOldEvents">is the new and old events pair</param>
+        /// <param name="statementContext">the statement context</param>
         /// <returns>indicator for output condition</returns>
         public bool CheckUpdateAfterCondition(
             UniformPair<EventBean[]> newOldEvents,
@@ -66,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             return _isAfterConditionSatisfied ||
                    CheckAfterCondition(
-                       newOldEvents == null ? 0 : newOldEvents.First == null ? 0 : newOldEvents.First.Length,
+                       newOldEvents == null ? 0 : newOldEvents.First?.Length ?? 0,
                        statementContext);
         }
 

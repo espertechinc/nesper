@@ -55,11 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                     Ref("eval"),
                     "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .SetProperty(
                     Ref("eval"),
                     "TimeZone",
-                    classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
+                    classScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
                 .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);

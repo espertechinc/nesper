@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 Set(10999999, 90, 1, 1, "R2", tree);
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // expected
             }

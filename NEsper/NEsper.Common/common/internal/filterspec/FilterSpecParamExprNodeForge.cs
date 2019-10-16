@@ -172,13 +172,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 if (_arrayEventTypes != null) {
                     foreach (var entry in _arrayEventTypes) {
                         var compositeEventType = entry.Value.First;
-                        var compositeEventTypeMember = classScope.AddFieldUnshared(
+                        var compositeEventTypeMember = classScope.AddDefaultFieldUnshared(
                             true,
                             typeof(EventType),
                             EventTypeUtility.ResolveTypeCodegen(
                                 compositeEventType,
                                 EPStatementInitServicesConstants.REF));
-                        var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+                        var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
                         var matchingAsMap = ExprDotName(REF_MATCHEDEVENTMAP, "MatchingEventsAsMap");
                         var mapBean = ExprDotMethod(
                             factory,

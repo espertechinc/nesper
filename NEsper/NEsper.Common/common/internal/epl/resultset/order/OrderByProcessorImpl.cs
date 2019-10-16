@@ -24,8 +24,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
@@ -110,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenNamedMethods namedMethods)
         {
             var createSortPropertiesWRollup = CreateSortPropertiesWRollupCodegen(forge, classScope, namedMethods);
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             method.Block.DeclareVar<IList<object>>(
                     "sortValuesMultiKeys",
                     LocalMethod(
@@ -155,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenNamedMethods namedMethods)
         {
             var createSortProperties = CreateSortPropertiesCodegen(forge, classScope, namedMethods);
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             Consumer<CodegenMethod> code = method => {
                 method.Block.DeclareVar<IList<object>>(
                         "sortValuesMultiKeys",
@@ -178,18 +177,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(EventBean[]),
                 "SortWGroupKeysInternal",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    REF_OUTGOINGEVENTS.Ref,
-                    typeof(EventBean[][]),
-                    REF_GENERATINGEVENTS.Ref,
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService),
-                    REF_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
+                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
@@ -277,16 +270,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(IList<object>),
                 "CreateSortProperties",
                 CodegenNamedParam.From(
-                    typeof(EventBean[][]),
-                    REF_GENERATINGEVENTS.Ref,
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService),
-                    REF_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
@@ -297,7 +285,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),
@@ -313,7 +301,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             var compare = ExprDotMethod(comparator, "Compare", REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDSORTKEY);
             method.Block.IfCondition(Relational(compare, LE, Constant(0)))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), REF_ORDERFIRSTEVENT, REF_ORDERSECONDEVENT))
@@ -370,14 +358,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(IList<object>),
                 "CreateSortPropertiesWRollup",
                 CodegenNamedParam.From(
-                    typeof(IList<object>),
-                    REF_ORDERCURRENTGENERATORS.Ref,
-                    typeof(bool),
-                    REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService),
-                    REF_AGGREGATIONSVC.Ref),
+                    typeof(IList<GroupByRollupKey>), REF_ORDERCURRENTGENERATORS.Ref,
+                    typeof(bool), REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
@@ -389,7 +373,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenNamedMethods namedMethods)
         {
             var elements = forge.OrderBy;
-            CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.IComparer);
+            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
 
             Consumer<CodegenMethod> code = method => {
                 method.Block.DeclareVar<object>("localMinMax", ConstantNull())
@@ -413,7 +397,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("sortKey")),
+                                    ExprDotMethod(comparator, "CompareTo", Ref("localMinMax"), Ref("sortKey")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("sortKey"))
@@ -457,7 +441,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("valuesMk")),
+                                    ExprDotMethod(comparator, "CompareTo", Ref("localMinMax"), Ref("valuesMk")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("valuesMk"))
@@ -475,16 +459,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(EventBean),
                 "DetermineLocalMinMax",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    REF_OUTGOINGEVENTS.Ref,
-                    typeof(EventBean[][]),
-                    REF_GENERATINGEVENTS.Ref,
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT,
-                    typeof(AggregationService),
-                    REF_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
+                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT,
+                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
@@ -536,12 +515,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(object),
                 methodName,
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    NAME_EPS,
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT),
+                    typeof(EventBean[]), NAME_EPS,
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);

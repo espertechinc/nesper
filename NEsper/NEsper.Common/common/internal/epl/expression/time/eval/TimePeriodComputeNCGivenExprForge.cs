@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                     Ref("eval"),
                     "SecondsEvaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluator(_secondsEvaluator, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }

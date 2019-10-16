@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, !xpath),
                     new EventPropertyDescriptor("prop4", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, !xpath),
@@ -48,11 +48,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var stmt = "@Name('s0') select nested1 as nodeProp," +
                        "prop4 as nested1Prop," +
                        "nested1.prop2 as nested2Prop," +
-                       "nested3.Nested4('a').prop5[1] as complexProp," +
-                       "nested1.Nested2.prop3[2] as indexedProp," +
+                       "nested3.nested4('a').prop5[1] as complexProp," +
+                       "nested1.nested2.prop3[2] as indexedProp," +
                        "customProp," +
                        "prop4.attr2 as attrOneProp," +
-                       "nested3.Nested4[2].Id as attrTwoProp" +
+                       "nested3.nested4[2].id as attrTwoProp" +
                        " from " +
                        typeName +
                        "#length(100)";
@@ -61,12 +61,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nodeProp", typeof(XmlNode), null, false, false, false, false, !xpath),
                     new EventPropertyDescriptor("nested1Prop", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested2Prop", typeof(bool?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("complexProp", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("IndexedProp", typeof(int?), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("indexedProp", typeof(int?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrOneProp", typeof(bool?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrTwoProp", typeof(string), null, false, false, false, false, false)
@@ -78,25 +78,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsNotNull(env.Listener("s0").LastNewData);
             var theEvent = env.Listener("s0").LastNewData[0];
 
-            Assert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(1), theEvent.Get("nodeProp"));
+            Assert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(0), theEvent.Get("nodeProp"));
             Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
             Assert.AreEqual(true, theEvent.Get("nested2Prop"));
             Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
-            Assert.AreEqual(5, theEvent.Get("IndexedProp"));
+            Assert.AreEqual(5, theEvent.Get("indexedProp"));
             Assert.AreEqual(3.0, theEvent.Get("customProp"));
             Assert.AreEqual(true, theEvent.Get("attrOneProp"));
             Assert.AreEqual("c", theEvent.Get("attrTwoProp"));
-
-            /// <summary>
-            /// Comment-in for performance testing
-            /// long start = System.nanoTime();
-            /// {
-            /// sendEvent("test");
-            /// }
-            /// long end = System.nanoTime();
-            /// double delta = (end - start) / 1000d / 1000d / 1000d;
-            /// System.out.println(delta);
-            /// </summary>
 
             env.UndeployAll();
         }

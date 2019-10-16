@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     public class BeanEventTypeStemService
     {
-        private readonly AccessorStyle defaultAccessorStyle;
-        private readonly PropertyResolutionStyle defaultPropertyResolutionStyle;
+        private readonly AccessorStyle _defaultAccessorStyle;
+        private readonly PropertyResolutionStyle _defaultPropertyResolutionStyle;
 
-        private readonly IDictionary<Type, BeanEventTypeStem> stems = new Dictionary<Type, BeanEventTypeStem>();
+        private readonly IDictionary<Type, BeanEventTypeStem> _stems = new Dictionary<Type, BeanEventTypeStem>();
 
         public BeanEventTypeStemService(
             IDictionary<Type, IList<string>> publicClassToTypeNames,
@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             PublicClassToTypeNames = publicClassToTypeNames;
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
-            this.defaultAccessorStyle = defaultAccessorStyle;
+            this._defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
+            this._defaultAccessorStyle = defaultAccessorStyle;
         }
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
@@ -45,18 +45,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Type clazz,
             ConfigurationCommonEventTypeBean optionalConfiguration)
         {
-            var stem = stems.Get(clazz);
+            var stem = _stems.Get(clazz);
             if (stem != null) {
                 return stem;
             }
 
-            if (optionalConfiguration == null && defaultAccessorStyle != AccessorStyle.NATIVE) {
+            if (optionalConfiguration == null && _defaultAccessorStyle != AccessorStyle.NATIVE) {
                 optionalConfiguration = new ConfigurationCommonEventTypeBean();
-                optionalConfiguration.AccessorStyle = defaultAccessorStyle;
+                optionalConfiguration.AccessorStyle = _defaultAccessorStyle;
             }
 
-            stem = new BeanEventTypeStemBuilder(optionalConfiguration, defaultPropertyResolutionStyle).Make(clazz);
-            stems.Put(clazz, stem);
+            stem = new BeanEventTypeStemBuilder(optionalConfiguration, _defaultPropertyResolutionStyle).Make(clazz);
+            _stems.Put(clazz, stem);
             return stem;
         }
     }

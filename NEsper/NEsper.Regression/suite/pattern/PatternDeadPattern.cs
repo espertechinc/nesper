@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var startTime = PerformanceObserver.MilliTime;
             env.SendEventBean(new SupportBean_A("A1"));
             var delta = PerformanceObserver.MilliTime - startTime;
-            Assert.IsTrue(delta < 20, "performance: delta=" + delta);
+            Assert.That(delta, Is.LessThan(20), "performance: delta=" + delta);
 
             env.UndeployAll();
         }

@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 TimeZoneInfo timeZone)
             {
                 CodegenExpression timeZoneField =
-                    codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                    codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 var method = codegenMethodScope.MakeChild(
                         typeof(DateTimeEx),
                         typeof(StringToDateTimeExWExprFormatComputerEval),

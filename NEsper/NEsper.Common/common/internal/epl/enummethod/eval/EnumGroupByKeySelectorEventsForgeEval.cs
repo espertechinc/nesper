@@ -45,13 +45,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             IDictionary<object, ICollection<object>> result = new LinkedHashMap<object, ICollection<object>>();
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            foreach (EventBean next in beans) {
+            var beans = (ICollection<EventBean>) enumcoll;
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
-                object key = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var key = innerExpression.Evaluate(eventsLambda, isNewData, context);
 
-                ICollection<object> value = result.Get(key);
+                var value = result.Get(key);
                 if (value == null) {
                     value = new List<object>();
                     result.Put(key, value);
@@ -69,19 +69,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(IDictionary<object, object>),
                     typeof(EnumGroupByKeySelectorEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }))
                 .DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(LinkedHashMap<object, object>)));
-            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar<object>(
                     "key",

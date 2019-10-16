@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupsubord;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
@@ -59,12 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var schema =
-                    "create schema AEvent as " +
-                    typeof(AEvent).MaskTypeName() +
-                    ";\n" +
-                    "create schema BEvent as " +
-                    typeof(BEvent).MaskTypeName() +
-                    ";\n";
+                    "create schema AEvent as " + typeof(AEvent).MaskTypeName() + ";\n" +
+                    "create schema BEvent as " + typeof(BEvent).MaskTypeName() + ";\n";
                 var path = new RegressionPath();
                 env.CompileDeploy(schema, path);
 
@@ -304,6 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Aprop = aprop;
             }
 
+            [PropertyName("aprop")]
             public string Aprop { get; }
         }
 
@@ -314,6 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Bprop = bprop;
             }
 
+            [PropertyName("bprop")]
             public string Bprop { get; }
         }
     }

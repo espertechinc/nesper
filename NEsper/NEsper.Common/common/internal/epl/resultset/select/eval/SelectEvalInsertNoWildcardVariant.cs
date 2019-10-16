@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField variantType = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            CodegenExpressionField innerType = codegenClassScope.AddFieldUnshared(
+            var variantType = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
+            var innerType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(innerEventType, EPStatementInitServicesConstants.REF));

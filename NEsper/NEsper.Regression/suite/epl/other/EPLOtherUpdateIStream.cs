@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                    "Invalid assignment of column 'LongPrimitive' of type 'System.Long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                    "Invalid assignment of column 'LongPrimitive' of type 'System.Long' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=null",
-                    "Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
+                    "Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'System.Int32', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
                 TryInvalidCompile(
                     env,
                     path,

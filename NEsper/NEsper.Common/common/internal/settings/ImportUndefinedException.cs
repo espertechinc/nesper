@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.settings
 {
     /// <summary>
     ///     Indicates a problem importing classes, aggregation functions and the like.
     /// </summary>
+    [Serializable]
     public class ImportUndefinedException : Exception
     {
         /// <summary>
@@ -33,6 +35,12 @@ namespace com.espertech.esper.common.@internal.settings
             string msg,
             Exception ex)
             : base(msg, ex)
+        {
+        }
+
+        protected ImportUndefinedException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

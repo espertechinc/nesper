@@ -91,9 +91,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var stmtText = "@Name('s0') select * from " +
                                "OrderBean as orderEvent unidirectional, " +
                                "OrderBean[select * from Books] as book, " +
-                               "OrderBean[select * from OrderDetail.items] as item " +
+                               "OrderBean[select * from OrderDetail.Items] as item " +
                                "where book.BookId=item.ProductId " +
-                               "order by book.BookId, item.amount";
+                               "order by book.BookId, item.Amount";
                 var stmtTextFormatted = "@Name('s0')" +
                                         NEWLINE +
                                         "select *" +
@@ -102,11 +102,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                                         NEWLINE +
                                         "OrderBean[select * from Books] as book," +
                                         NEWLINE +
-                                        "OrderBean[select * from OrderDetail.items] as item" +
+                                        "OrderBean[select * from OrderDetail.Items] as item" +
                                         NEWLINE +
-                                        "where book.BookId=item.ProductId" +
+                                        "where book.BookId=Item.ProductId" +
                                         NEWLINE +
-                                        "order by book.BookId, item.amount";
+                                        "order by book.BookId, Item.Amount";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertionUnidirectionalJoin(env);

@@ -14,10 +14,11 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-    public class ScriptingServiceImpl : ScriptingService
+    public class ScriptServiceCompileTimeImpl : ScriptServiceCompileTime
     {
         /// <summary>
         /// Scripting engines indexed by language prefix
@@ -28,73 +29,34 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <summary>
         /// Attempts to discover engine instances in the AppDomain.
         /// </summary>
-        public void DiscoverEngines()
+        public void DiscoverEngines(IContainer container)
         {
-            DiscoverEngines(type => true);
+            //if (IsEngineType(type) && isEngine(type)) {
+            //    AddScriptingEngine((ScriptingEngine) Activator.CreateInstance(type));
+            //}
         }
 
         /// <summary>
-        /// Attempts to discover engine instances in the AppDomain.
+        /// Adds the scripting engine.
         /// </summary>
-        public void DiscoverEngines(Predicate<Type> isEngine)
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-                DiscoverEngines(assembly, isEngine);
-            }
-        }
+        /// <param name="scriptingEngine">The scripting engine.</param>
+        /// <exception cref="ScriptingEngineException">duplicate language prefix \"{scriptingEngine.LanguagePrefix}\" detected</exception>
 
-        /// <summary>
-        /// Discovers the engines.
-        /// </summary>
-        /// <param name="assembly">The assembly.</param>
-        /// <param name="isEngine">The is engine.</param>
-        public void DiscoverEngines(
-            Assembly assembly,
-            Predicate<Type> isEngine)
+        public void AddScriptingEngine(
+            ScriptingEngine scriptingEngine)
         {
-            Type[] types;
-            try {
-                types = assembly.GetTypes();
-            }
-            catch {
-                // ignore assemblies that cannot be loaded
-                return;
-            }
-
-            foreach (var type in types) {
-                if (type.IsInterface || type.IsAbstract) {
-                    continue;
+            var scriptingEngineCurr = _scriptingEngines.Get(scriptingEngine.LanguagePrefix);
+            if (scriptingEngineCurr != null)
+            {
+                if (Equals(scriptingEngineCurr, scriptingEngine)) {
+                    return;
                 }
 
-                if (IsEngineType(type) && isEngine(type)) {
-                    var scriptingEngine = (ScriptingEngine) Activator.CreateInstance(type);
-                    var scriptingEngineCurr = _scriptingEngines.Get(scriptingEngine.LanguagePrefix);
-                    if (scriptingEngineCurr != null) {
-                        if (scriptingEngineCurr.GetType() == type) {
-                            continue;
-                        }
-
-                        throw new ScriptingEngineException(
-                            string.Format(
-                                "duplicate language prefix \"{0}\" detected",
-                                scriptingEngine.LanguagePrefix));
-                    }
-
-                    _scriptingEngines.Add(scriptingEngine.LanguagePrefix, scriptingEngine);
-                }
+                throw new ScriptingEngineException(
+                    $"duplicate language prefix \"{scriptingEngine.LanguagePrefix}\" detected");
             }
-        }
 
-        /// <summary>
-        /// Determines whether the type is a valid scripting engine type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>
-        /// 	<c>true</c> if [is engine type] [the specified type]; otherwise, <c>false</c>.
-        /// </returns>
-        public virtual bool IsEngineType(Type type)
-        {
-            return type.IsSubclassOrImplementsInterface<ScriptingEngine>();
+            _scriptingEngines.Add(scriptingEngine.LanguagePrefix, scriptingEngine);
         }
 
         /// <summary>
@@ -134,6 +96,44 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         public void Dispose()
         {
+        }
+
+        /// <summary>
+        /// Determines whether the type is a valid scripting engine type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        /// 	<c>true</c> if [is engine type] [the specified type]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsEngineType(Type type)
+        {
+            return type.IsImplementsInterface<ScriptingEngine>();
+            //return type.IsSubclassOrImplementsInterface<ScriptingEngine>();
+        }
+
+        public static IEnumerable<Type> FindEngineTypesInAssembly(
+            Assembly assembly,
+            Predicate<Type> typeMatchingPredicate)
+        {
+            Type[] types = null;
+            try {
+                types = assembly.GetTypes();
+            }
+            catch {
+            }
+
+            if (types != null) {
+                foreach (var type in types) {
+                    if (type.IsInterface || type.IsAbstract || type.IsValueType || type.IsEnum) {
+                        continue;
+                    }
+
+                    if (IsEngineType(type) && typeMatchingPredicate(type)) {
+                        yield return type;
+                        //AddScriptingEngine((ScriptingEngine) Activator.CreateInstance(type));
+                    }
+                }
+            }
         }
     }
 }

@@ -61,11 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null) {
-                return null;
-            }
 
-            return @event.Underlying;
+            return @event?.Underlying;
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;

@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 using Castle.DynamicProxy;
 
+using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -22,6 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class ExprForgeProxy : IInterceptor
     {
         private static readonly MethodInfo TARGET_EVALUATECODEGEN;
+        private static readonly ProxyGenerator generator = new ProxyGenerator();
 
         private readonly string expressionToString;
         private readonly ExprForge forge;
@@ -50,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             if (invocation.Method == TARGET_EVALUATECODEGEN) {
                 var args = invocation.Arguments;
-                var evaluationType = forge.EvaluationType;
+                var evaluationType = forge.EvaluationType.GetBoxedType();
                 var requiredType = (Type) args[args.Length - 4];
                 var parent = (CodegenMethodScope) args[args.Length - 3];
                 var symbols = (ExprForgeCodegenSymbol) args[args.Length - 2];
@@ -67,11 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")
-                                .Add(
-                                    "expression",
-                                    Constant(expressionToString),
-                                    Constant("(void)"),
-                                    symbols.GetAddExprEvalCtx(method)))
+                                .Add("Expression", Constant(expressionToString), Constant("(void)"), symbols.GetAddExprEvalCtx(method)))
                         .MethodEnd();
                 }
                 else {
@@ -82,11 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")
-                                .Add(
-                                    "expression",
-                                    Constant(expressionToString),
-                                    Ref("result"),
-                                    symbols.GetAddExprEvalCtx(method)))
+                                .Add("Expression", Constant(expressionToString), Ref("result"), symbols.GetAddExprEvalCtx(method)))
                         .MethodReturn(Ref("result"));
                 }
 
@@ -101,11 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             string expressionToString,
             ExprForge forge)
         {
-            var generator = new ProxyGenerator();
-            return (ExprForge) generator.CreateInterfaceProxyWithoutTarget(
-                forge.GetType(),
-                forge.GetType().GetInterfaces(),
-                new ExprForgeProxy(expressionToString, forge));
+            return generator.CreateInterfaceProxyWithTarget<ExprForge>(
+                forge, new ExprForgeProxy(expressionToString, forge));
         }
     }
 } // end of namespace

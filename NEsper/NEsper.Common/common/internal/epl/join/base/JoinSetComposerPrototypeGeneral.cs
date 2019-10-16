@@ -253,19 +253,19 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         continue;
                     }
 
-                    IEnumerator<EventBean> it = null;
+                    IEnumerator<EventBean> enumerator = null;
                     if (!(streamViews[i] is HistoricalEventViewable) && !(streamViews[i] is DerivedValueView)) {
                         try {
-                            it = streamViews[i].GetEnumerator();
+                            enumerator = streamViews[i].GetEnumerator();
                         }
                         catch (UnsupportedOperationException) {
                             // Joins do not support the iterator
                         }
                     }
 
-                    if (it != null) {
-                        while (it.MoveNext()) {
-                            events.Add(it.Current);
+                    if (enumerator != null) {
+                        while (enumerator.MoveNext()) {
+                            events.Add(enumerator.Current);
                         }
 
                         eventsPerStream[i] = events.ToArray();

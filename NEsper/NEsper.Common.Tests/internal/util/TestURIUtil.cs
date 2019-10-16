@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
             var index = 0;
             foreach (var entry in result)
             {
-                var expectedUri = new Uri(expected[index]);
+                var expectedUri = new Uri(expected[index], UriKind.RelativeOrAbsolute);
                 var message = "mismatch for line " + index;
                 Assert.AreEqual(expectedUri, entry.Key, message);
                 Assert.AreEqual(input.Get(expectedUri), entry.Value, message);
@@ -65,89 +65,95 @@ namespace com.espertech.esper.common.@internal.util
 
             // setup input
             IDictionary<Uri, object> input = new Dictionary<Uri, object>();
-            foreach (var uri1 in uris)
-            {
-                uri = new Uri((string) uri1[0]);
-                input.Put(uri, uri1[1]);
+            foreach (var uri1 in uris) {
+                Assert.DoesNotThrow(() => {
+                    try {
+                        uri = new Uri((string) uri1[0], UriKind.RelativeOrAbsolute);
+                        input.Put(uri, uri1[1]);
+                    }
+                    catch (UriFormatException e) {
+                        Console.WriteLine(e);
+                    }
+                });
             }
 
             ICollection<KeyValuePair<Uri, object>> result;
             string[] expected;
 
-            uri = new Uri("type://x/a/b?qqq");
+            uri = new Uri("type://x/a/b?qqq", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://x/a/b?query#fragment&param", "type://x/a?query#fragment&param", "type://x?query#fragment&param" };
             RunAssertion(uri, input, result, expected);
 
             // unspecific child
-            uri = new Uri("type://a/b2");
+            uri = new Uri("type://a/b2", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://a/b2", "type://a" };
             RunAssertion(uri, input, result, expected);
 
             // very specific child
-            uri = new Uri("type://a/b2/c2/d/e");
+            uri = new Uri("type://a/b2/c2/d/e", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://a/b2/c2", "type://a/b2", "type://a" };
             RunAssertion(uri, input, result, expected);
 
             // less specific child
-            uri = new Uri("type://a/b1/c2");
+            uri = new Uri("type://a/b1/c2", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://a/b1/c2", "type://a" };
             RunAssertion(uri, input, result, expected);
 
             // unspecific child
-            uri = new Uri("type://a/b4");
+            uri = new Uri("type://a/b4", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://a" };
             RunAssertion(uri, input, result, expected);
 
-            uri = new Uri("type://b/b1");
+            uri = new Uri("type://b/b1", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new string[] { };
             RunAssertion(uri, input, result, expected);
 
-            uri = new Uri("type://a/b1/c2/d1/e1/f1");
+            uri = new Uri("type://a/b1/c2/d1/e1/f1", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://a/b1/c2/d1", "type://a/b1/c2", "type://a" };
             RunAssertion(uri, input, result, expected);
 
-            uri = new Uri("other:mailto:test");
+            uri = new Uri("other:mailto:test", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "other:mailto:test" };
             RunAssertion(uri, input, result, expected);
 
-            uri = new Uri("type://x/a?qqq");
+            uri = new Uri("type://x/a?qqq", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "type://x/a?query#fragment&param", "type://x?query#fragment&param" };
             RunAssertion(uri, input, result, expected);
 
-            uri = new Uri("other://x/a?qqq");
+            uri = new Uri("other://x/a?qqq", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new string[] { };
             RunAssertion(uri, input, result, expected);
 
             // this is seen as relative, must be a full hit (no path checking)
-            uri = new Uri("/a/b");
+            uri = new Uri("/a/b", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new string[] { };
             RunAssertion(uri, input, result, expected);
 
             // this is seen as relative
-            uri = new Uri("/a/b/c");
+            uri = new Uri("/a/b/c", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "/a/b/c" };
             RunAssertion(uri, input, result, expected);
 
             // this is seen as relative
-            uri = new Uri("//a/b");
+            uri = new Uri("//a/b", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new string[] { };
             RunAssertion(uri, input, result, expected);
 
             // this is seen as relative
-            uri = new Uri("//a/b/c");
+            uri = new Uri("//a/b/c", UriKind.RelativeOrAbsolute);
             result = URIUtil.FilterSort(uri, input);
             expected = new[] { "//a/b/c" };
             RunAssertion(uri, input, result, expected);

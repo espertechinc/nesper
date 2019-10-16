@@ -101,6 +101,10 @@ namespace NEsper.Avro.Core
             return ((AvroEventType) eventType).SchemaAvro;
         }
 
+        public static RecordSchema ResolveRecordSchema(EventType eventType)
+        {
+            return (RecordSchema) ResolveAvroSchema(eventType);
+        }
 
         internal static JArray Required(
             JArray array,

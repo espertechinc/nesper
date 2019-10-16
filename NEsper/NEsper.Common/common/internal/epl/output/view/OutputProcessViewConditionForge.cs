@@ -91,8 +91,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     spec,
                     "OutputConditionFactory",
                     _outputConditionFactoryForge.Make(method, symbols, classScope))
-                .SetProperty(spec, "StreamCount", Constant(_streamCount))
-                .SetProperty(spec, "IsTerminable", Constant(_terminable))
+                .SetProperty(
+                    spec,
+                    "StreamCount",
+                    Constant(_streamCount))
+                .SetProperty(
+                    spec,
+                    "IsTerminable",
+                    Constant(_terminable))
                 .SetProperty(
                     spec,
                     "SelectClauseStreamSelector",
@@ -103,8 +109,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     _outputStrategyPostProcessForge == null
                         ? ConstantNull()
                         : _outputStrategyPostProcessForge.Make(method, symbols, classScope))
-                .SetProperty(spec, "HasAfter", Constant(_hasAfter))
-                .SetProperty(spec, "IsDistinct", Constant(_isDistinct))
+                .SetProperty(
+                    spec,
+                    "HasAfter",
+                    Constant(_hasAfter))
+                .SetProperty(
+                    spec,
+                    "IsDistinct",
+                    Constant(_isDistinct))
                 .SetProperty(
                     spec,
                     "ResultEventType",
@@ -115,8 +127,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     _afterTimePeriodExpr == null
                         ? ConstantNull()
                         : _afterTimePeriodExpr.TimePeriodComputeForge.MakeEvaluator(method, classScope))
-                .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(_afterNumberOfEvents))
-                .SetProperty(spec, "IsUnaggregatedUngrouped", Constant(_unaggregatedUngrouped))
+                .SetProperty(
+                    spec,
+                    "AfterConditionNumberOfEvents",
+                    Constant(_afterNumberOfEvents))
+                .SetProperty(
+                    spec,
+                    "IsUnaggregatedUngrouped",
+                    Constant(_unaggregatedUngrouped))
                 .SetProperty(
                     spec,
                     "EventTypes",
@@ -144,9 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
         {
-            if (_outputConditionFactoryForge != null) {
-                _outputConditionFactoryForge.CollectSchedules(scheduleHandleCallbackProviders);
-            }
+            _outputConditionFactoryForge?.CollectSchedules(scheduleHandleCallbackProviders);
         }
     }
 } // end of namespace

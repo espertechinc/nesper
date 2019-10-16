@@ -27,7 +27,7 @@ namespace NEsper.Avro.Core
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
         {
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return CodegenExpressionBuilder.NewInstance(
                 typeof(AvroEventBeanCopyMethod),
                 CodegenExpressionBuilder.Cast(

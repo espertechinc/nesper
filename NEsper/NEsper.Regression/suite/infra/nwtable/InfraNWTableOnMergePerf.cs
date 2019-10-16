@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 Assert.AreEqual(totalUpdated, count);
-                Assert.IsTrue(delta < 500, "Delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 env.UndeployAll();
             }

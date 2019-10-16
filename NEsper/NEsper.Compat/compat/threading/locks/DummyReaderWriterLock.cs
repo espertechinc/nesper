@@ -46,6 +46,18 @@ namespace com.espertech.esper.compat.threading.locks
             return Disposable;
         }
 
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+            return Disposable;
+        }
+
+        /// <summary>
+        /// Releases the write lock, canceling the lock semantics managed by any current holder.
+        /// </summary>
+        public void ReleaseWriteLock()
+        {
+        }
+
         /// <summary>
         ///     Indicates if the writer lock is held.
         /// </summary>

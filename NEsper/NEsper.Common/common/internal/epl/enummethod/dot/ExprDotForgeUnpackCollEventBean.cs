@@ -27,11 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackCollEventBean : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType typeInfo;
-
         public ExprDotForgeUnpackCollEventBean(EventType type)
         {
-            typeInfo = EPTypeHelper.CollectionOfSingleValue(type.UnderlyingType);
+            TypeInfo = EPTypeHelper.CollectionOfSingleValue(type.UnderlyingType);
         }
 
         public object Evaluate(
@@ -44,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            ICollection<EventBean> it = (ICollection<EventBean>) target;
-            return new EventUnderlyingCollection(it);
+            return new EventUnderlyingCollection((ICollection<EventBean>) target);
         }
 
         public CodegenExpression Codegen(
@@ -65,9 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo {
-            get => typeInfo;
-        }
+        public EPType TypeInfo { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {

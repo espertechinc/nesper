@@ -23,15 +23,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     public class EventXMLNoSchemaSimpleXMLXPathProperties : RegressionExecution
     {
         protected const string XML_NOSCHEMAEVENT =
-            "<Myevent>\n" +
+            "<myevent>\n" +
             "  <element1>VAL1</element1>\n" +
             "  <element2>\n" +
-            "    <element21 Id=\"e21_1\">VAL21-1</element21>\n" +
-            "    <element21 Id=\"e21_2\">VAL21-2</element21>\n" +
+            "    <element21 id=\"e21_1\">VAL21-1</element21>\n" +
+            "    <element21 id=\"e21_2\">VAL21-2</element21>\n" +
             "  </element2>\n" +
             "  <element3 attrString=\"VAL3\" attrNum=\"5\" attrBool=\"true\"/>\n" +
             "  <element4><element41>VAL4-1</element41></element4>\n" +
-            "</Myevent>";
+            "</myevent>";
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -41,8 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("TestXMLNoSchemaTypeWMoreXPath");
             Assert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+            CollectionAssert.AreEquivalent(
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "xpathElement1",
                         typeof(string),
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         false),
                     new EventPropertyDescriptor(
                         "stringCastLong",
-                        typeof(long?),
+                        typeof(long),
                         null,
                         false,
                         false,
@@ -99,6 +99,38 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         false),
                     new EventPropertyDescriptor(
                         "stringCastDouble",
+                        typeof(double),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "numCastInt",
+                        typeof(int),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false)
+                },
+                type.PropertyDescriptors);
+
+            EPAssertionUtil.AssertEqualsAnyOrder(
+                new EventPropertyDescriptor[] {
+                    new EventPropertyDescriptor(
+                        "xpathElement1",
+                        typeof(string),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "xpathCountE21",
                         typeof(double?),
                         null,
                         false,
@@ -106,7 +138,60 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         false,
                         false,
                         false),
-                    new EventPropertyDescriptor("numCastInt", typeof(int?), null, false, false, false, false, false)
+                    new EventPropertyDescriptor(
+                        "xpathAttrString",
+                        typeof(string),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "xpathAttrNum",
+                        typeof(double?),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "xpathAttrBool",
+                        typeof(bool?),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "stringCastLong",
+                        typeof(long),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "stringCastDouble",
+                        typeof(double),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false),
+                    new EventPropertyDescriptor(
+                        "numCastInt",
+                        typeof(int),
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false)
                 },
                 type.PropertyDescriptors);
 

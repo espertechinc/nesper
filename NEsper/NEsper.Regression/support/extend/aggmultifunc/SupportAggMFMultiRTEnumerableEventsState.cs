@@ -46,16 +46,19 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 
         public object GetEventsAsUnderlyingArray()
         {
-            var array = new SupportBean[Events.Count];
+            if (Events != null) {
+                var array = new SupportBean[Events.Count];
 
-            var it = Events.GetEnumerator();
-            var count = 0;
-            for (; it.MoveNext();) {
-                var bean = it.Advance();
-                array[count++] = (SupportBean) bean.Underlying;
+                using (var enumerator = Events.GetEnumerator()) {
+                    for (var count = 0; enumerator.MoveNext(); count++) {
+                        array[count] = (SupportBean) enumerator.Current?.Underlying;
+                    }
+                }
+
+                return array;
             }
 
-            return array;
+            return new SupportBean[0];
         }
     }
 } // end of namespace

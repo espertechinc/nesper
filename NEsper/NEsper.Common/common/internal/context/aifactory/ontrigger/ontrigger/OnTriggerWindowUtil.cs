@@ -26,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.updatehelper;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
@@ -269,9 +270,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     throw new ExprValidationException(
                         "Cannot create on-trigger expression: " +
                         title +
-                        " was declared with context '" +
-                        desiredContextName +
-                        "', please declare the same context name");
+                        " was declared with context " +
+                        desiredContextName.RenderAny() +
+                        ", please declare the same context name");
                 }
 
                 return;
@@ -281,9 +282,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 throw new ExprValidationException(
                     "Cannot create on-trigger expression: " +
                     title +
-                    " was declared with context '" +
-                    desiredContextName +
-                    "', please use the same context instead");
+                    " was declared with context " +
+                    desiredContextName.RenderAny() +
+                    ", please use the same context instead");
             }
         }
     }

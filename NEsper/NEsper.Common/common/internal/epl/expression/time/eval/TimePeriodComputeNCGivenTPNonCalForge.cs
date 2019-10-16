@@ -45,24 +45,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                 typeof(TimePeriodComputeNCGivenTPNonCalEval),
                 this.GetType(),
                 classScope);
-            method.Block
-                .DeclareVar<TimePeriodComputeNCGivenTPNonCalEval>(
-                    "eval",
-                    NewInstance(typeof(TimePeriodComputeNCGivenTPNonCalEval)))
-                .SetProperty(
-                    Ref("eval"),
-                    "Adders",
-                    TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
-                .SetProperty(
-                    Ref("eval"),
-                    "Evaluators",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(
-                        timePeriodForge.Forges,
-                        method,
-                        this.GetType(),
-                        classScope))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
-                .MethodReturn(@Ref("eval"));
+
+            method.Block.DeclareVar<TimePeriodComputeNCGivenTPNonCalEval>(
+                "eval",
+                NewInstance(typeof(TimePeriodComputeNCGivenTPNonCalEval)));
+            method.Block.SetProperty(
+                Ref("eval"),
+                "Adders",
+                TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope));
+            method.Block.SetProperty(
+                Ref("eval"),
+                "Evaluators",
+                ExprNodeUtilityCodegen.CodegenEvaluators(
+                    timePeriodForge.Forges,
+                    method,
+                    this.GetType(),
+                    classScope));
+            method.Block.SetProperty(
+                Ref("eval"),
+                "TimeAbacus",
+                classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE));
+            method.Block.MethodReturn(@Ref("eval"));
+
             return LocalMethod(method);
         }
     }

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 value = value.ToString();
             }
 
-            var result = form.ForgeRenderable.IsNot ^ likeUtil.Compare((string) value);
+            var result = form.ForgeRenderable.IsNot ^ likeUtil.CompareTo((string) value);
 
             return result;
         }

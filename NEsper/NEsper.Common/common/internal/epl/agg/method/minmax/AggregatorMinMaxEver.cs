@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         private readonly CodegenExpressionRef currentMinMax;
 
         private readonly AggregationFactoryMethodMinMax factory;
-        private readonly CodegenExpressionField serde;
+        private readonly CodegenExpressionInstanceField serde;
 
         public AggregatorMinMaxEver(
             AggregationFactoryMethodMinMax factory,
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         {
             this.factory = factory;
             currentMinMax = membersColumnized.AddMember(col, typeof(IComparable), "currentMinMax");
-            serde = classScope.AddOrGetFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, factory.type));
+            serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, factory.ResultType));
         }
 
         protected override void ApplyEvalEnterNonNull(

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             IDictionary<string, IList<PropertyInfo>> simpleSmartPropertyTable,
             IDictionary<string, IList<PropertyInfo>> indexedSmartPropertyTable,
             IDictionary<string, IList<PropertyInfo>> mappedSmartPropertyTable,
-            EventPropertyDescriptor[] propertyDescriptors,
+            IList<EventPropertyDescriptor> propertyDescriptors,
             IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap)
         {
             Clazz = clazz;
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         public IDictionary<string, IList<PropertyInfo>> MappedSmartPropertyTable { get; }
 
-        public EventPropertyDescriptor[] PropertyDescriptors { get; }
+        public IList<EventPropertyDescriptor> PropertyDescriptors { get; }
 
         public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap { get; }
     }

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -273,7 +274,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             if (!childType.IsNumeric()) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    (childType == null ? "null" : childType.GetSimpleName()) +
+                    (childType == null ? "null" : childType.CleanName()) +
                     "' to numeric is not allowed for aggregation function '" +
                     AggregationFunctionName +
                     "'");
@@ -335,7 +336,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +
                     "' is expected to return a boolean value but returns " +
-                    TypeHelper.CleanName(filterEvaluator.Forge.EvaluationType));
+                    filterEvaluator.Forge.EvaluationType.CleanName());
             }
         }
 
@@ -343,9 +344,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         protected internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var statementFields = Ref(ResultSetProcessorCodegenNames.NAME_STATEMENT_FIELDS);
+            var fieldExpression = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
+            return fieldExpression;
         }
     }
 } // end of namespace

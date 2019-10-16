@@ -54,24 +54,15 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to resolve hook provider of hook type '" +
-                    hookType +
-                    "' import '" +
-                    hookClass +
-                    "' :" +
-                    e.Message);
+                    $"Failed to resolve hook provider of hook type '{hookType}' import '{hookClass}' :{e.Message}",
+                    e);
             }
 
+            var clazzName = clazz.Name;
             if (!clazz.IsImplementsInterface(interfaceExpected)) {
+                var interfaceExpectedName = interfaceExpected.Name;
                 throw new ExprValidationException(
-                    "Hook provider for hook type '" +
-                    hookType +
-                    "' " +
-                    "class '" +
-                    clazz.Name +
-                    "' does not implement the required '" +
-                    interfaceExpected.Name +
-                    "' interface");
+                    $"Hook provider for hook type '{hookType}' class '{clazzName}' does not implement the required '{interfaceExpectedName}' interface");
             }
 
             try {
@@ -83,7 +74,7 @@ namespace com.espertech.esper.common.@internal.settings
                     hookType +
                     "' " +
                     "class '" +
-                    clazz.Name +
+                    clazzName +
                     "' :" +
                     e.Message);
             }

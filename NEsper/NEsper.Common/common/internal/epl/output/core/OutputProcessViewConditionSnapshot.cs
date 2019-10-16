@@ -99,6 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// </summary>
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
+        /// <param name="exprEvaluatorContext">the evaluator context</param>
         public override void Process(
             ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,
@@ -141,16 +142,16 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;
 
-            var it = GetEnumerator();
-            if (it.MoveNext()) {
-                var snapshot = new List<EventBean>();
-                while (it.MoveNext()) {
-                    EventBean @event = it.Current;
-                    snapshot.Add(@event);
-                }
+            using (var enumerator = GetEnumerator()) {
+                if (enumerator.MoveNext()) {
+                    var snapshot = new List<EventBean>();
+                    do {
+                        EventBean @event = enumerator.Current;
+                        snapshot.Add(@event);
+                    } while (enumerator.MoveNext());
 
-                newEvents = snapshot.ToArray();
-                oldEvents = null;
+                    newEvents = snapshot.ToArray();
+                }
             }
 
             var newOldEvents = new UniformPair<EventBean[]>(newEvents, oldEvents);

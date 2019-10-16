@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
@@ -116,8 +115,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by cat" +
-                           "  measures A.cat as cat, A.TheString as a_string, " +
+                           "  partition by Cat" +
+                           "  measures A.Cat as Cat, A.TheString as a_string, " +
                            "       D.TheString as d_string, " +
                            "       sum(C.Value) as sumc, " +
                            "       sum(B.Value) as sumb, " +
@@ -129,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "   B as (B.Value > 1)," +
                            "   C as (C.Value < -1)," +
                            "   D as (D.Value = 999)" +
-                           ") order by cat";
+                           ") order by Cat";
 
                 env.CompileDeploy(text).AddListener("s0");
 

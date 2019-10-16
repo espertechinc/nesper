@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.enummethod.compile;
+using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
@@ -93,7 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsFilterExpression { get; }
 
-        public ScriptingService ScriptingService { get; }
+        public ScriptServiceCompileTime ScriptService =>
+            StatementCompileTimeService.ScriptServiceCompileTime;
 
         public ImportServiceCompileTime ImportService =>
             StatementCompileTimeService.ImportServiceCompileTime;

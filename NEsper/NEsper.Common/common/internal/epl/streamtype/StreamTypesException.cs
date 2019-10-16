@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype
@@ -18,12 +18,17 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
     {
         private readonly StreamTypesExceptionSuggestionGen _optionalSuggestionGenerator;
 
-        public StreamTypesException(
+        protected StreamTypesException(
             string message,
             StreamTypesExceptionSuggestionGen optionalSuggestionGenerator)
             : base(message)
         {
             _optionalSuggestionGenerator = optionalSuggestionGenerator;
+        }
+
+        protected StreamTypesException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
 
         /// <summary>

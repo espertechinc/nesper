@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 rows = new[] {
                     new object[] {"v1", typeof(int?)},
                     new object[] {"v2", typeof(int?)},
-                    new object[] {"v3", typeof(int?[])},
+                    new object[] {"v3", typeof(int[])},
                     new object[] {"v4", typeof(SupportBean[])}
                 };
                 for (var i = 0; i < rows.Length; i++) {
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     row,
                     fields,
                     new object[] {"T1", 10, 11});
-                EPAssertionUtil.AssertEqualsAnyOrder((int?[]) row.Get("subrow.v3"), new int?[] {10});
+                EPAssertionUtil.AssertEqualsAnyOrder((int[]) row.Get("subrow.v3"), new int[] {10});
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     (object[]) row.Get("subrow.v4"),
                     new object[] {sb1});
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     row,
                     fields,
                     new object[] {"T1", 30, 32});
-                EPAssertionUtil.AssertEqualsAnyOrder((int?[]) row.Get("subrow.v3"), new int?[] {10, 20});
+                EPAssertionUtil.AssertEqualsAnyOrder((int[]) row.Get("subrow.v3"), new int[] {10, 20});
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     (object[]) row.Get("subrow.v4"),
                     new object[] {sb1, sb2});

@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
             else {
                 block.DeclareVar<IDictionary<string, object>>(
-                    "props", NewInstance(typeof(Dictionary<string, object>)));
+                    "props", NewInstance(typeof(HashMap<string, object>)));
             }
 
             for (int i = 0; i < this.context.ColumnNames.Length; i++) {

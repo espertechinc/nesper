@@ -13,29 +13,6 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestPlaceholderParser : AbstractCommonTest
     {
-        private void TryParseInvalid(string parseString)
-        {
-            try
-            {
-                PlaceholderParser.ParsePlaceholder(parseString);
-                Assert.Fail();
-            }
-            catch (PlaceholderParseException ex)
-            {
-                // expected
-            }
-        }
-
-        private PlaceholderParser.TextFragment TextF(string text)
-        {
-            return new PlaceholderParser.TextFragment(text);
-        }
-
-        private PlaceholderParser.ParameterFragment ParamF(string text)
-        {
-            return new PlaceholderParser.ParameterFragment(text);
-        }
-
         [Test]
         public void TestParseInvalid()
         {
@@ -74,7 +51,6 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
         public void TestParseValid(object[] inputAndResults)
         {
             var parseString = (string) inputAndResults[0];
@@ -87,6 +63,29 @@ namespace com.espertech.esper.common.@internal.util
             {
                 Assert.AreEqual(expected[i], result[i], "Incorrect value for '" + parseString + "' at " + i);
             }
+        }
+
+        private void TryParseInvalid(string parseString)
+        {
+            try
+            {
+                PlaceholderParser.ParsePlaceholder(parseString);
+                Assert.Fail();
+            }
+            catch (PlaceholderParseException)
+            {
+                // expected
+            }
+        }
+
+        private PlaceholderParser.TextFragment TextF(string text)
+        {
+            return new PlaceholderParser.TextFragment(text);
+        }
+
+        private PlaceholderParser.ParameterFragment ParamF(string text)
+        {
+            return new PlaceholderParser.ParameterFragment(text);
         }
     }
 } // end of namespace

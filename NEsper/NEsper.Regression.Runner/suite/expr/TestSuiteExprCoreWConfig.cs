@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprCoreWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreDotExpressionDuckTyping()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreMathDivisionRules()
         {
             RegressionSession session = RegressionRunner.Session();

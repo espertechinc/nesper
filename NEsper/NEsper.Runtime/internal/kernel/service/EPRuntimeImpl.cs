@@ -237,7 +237,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.EventProcessingRWLock.Lock;
+                return runtimeEnvironment.Services.EventProcessingRWLock;
             }
         }
 
@@ -464,8 +464,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             try {
                 services = epServicesContextFactory.CreateServicesContext(this, configLastProvided);
             }
-            catch (EPException) {
-                throw;
+            catch (EPException ex) {
+                throw new ConfigurationException("Failed runtime startup: " + ex.Message, ex);
+                //throw;
             }
             catch (Exception ex) {
                 throw new ConfigurationException("Failed runtime startup: " + ex.Message, ex);

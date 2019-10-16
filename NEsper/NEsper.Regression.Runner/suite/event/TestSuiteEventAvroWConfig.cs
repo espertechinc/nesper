@@ -13,6 +13,7 @@ using Avro;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.@event.avro;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionrun.Runner;
 
 using NEsper.Avro.Extensions;
@@ -24,14 +25,15 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventAvroWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventAvroHook()
         {
             RegressionSession session = RegressionRunner.Session();
 
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean),
-                typeof(SupportBean_S0)
+                typeof(SupportBean_S0),
+                typeof(SupportEventWithDateTimeOffset)
             })
             {
                 session.Configuration.Common.AddEventType(clazz);

@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            if (TypeHelper.IsImplementsInterface(getterReturnType, typeof(ICollection<object>))) {
+            if (getterReturnType.IsGenericCollection()) {
                 return getter.EventBeanGetCodegen(
                     symbols.GetAddEvent(methodScope),
                     methodScope,
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (TypeHelper.IsImplementsInterface(getterReturnType, typeof(ICollection<object>))) {
+            if (getterReturnType.IsGenericCollection()) {
                 return getter.EventBeanGetCodegen(@event, codegenMethodScope, codegenClassScope);
             }
 

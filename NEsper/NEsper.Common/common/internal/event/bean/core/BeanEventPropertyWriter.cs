@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly Type clazz;
+        private readonly Type _clazz;
         private readonly MemberInfo _writerMember;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Type clazz,
             MemberInfo writerMember)
         {
-            this.clazz = clazz;
+            this._clazz = clazz;
             this._writerMember = writerMember;
         }
 
@@ -58,7 +58,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(und, _writerMember.Name, assigned);
+            var writeMember = _writerMember;
+            if (writeMember is MethodInfo writeMethod) {
+                return ExprDotMethod(und, writeMethod.Name, assigned);
+            }
+            else if (writeMember is PropertyInfo writeProperty) {
+                return SetProperty(und, writeProperty.Name, assigned);
+            }
+            else {
+                throw new IllegalStateException("writeMember of invalid type");
+            }
         }
 
         public void WriteValue(
@@ -74,16 +83,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             try {
                 var writeMember = _writerMember;
-                if (writeMember is MethodInfo writeMethod)
-                {
+                if (writeMember is MethodInfo writeMethod) {
                     writeMethod.Invoke(target, values);
                 }
-                else if (writeMember is PropertyInfo writeProperty)
-                {
+                else if (writeMember is PropertyInfo writeProperty) {
                     writeProperty.SetValue(target, values[0]);
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("writeMember of invalid type");
                 }
             }
@@ -113,7 +119,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             message.Append(" on class '");
-            message.Append(clazz.Name);
+            message.Append(_clazz.Name);
             message.Append("' : ");
             message.Append(e.Message);
 

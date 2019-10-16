@@ -161,6 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// </summary>
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
+        /// <param name="exprEvaluatorContext">the evaluator context</param>
         public override void Process(
             ISet<MultiKey<EventBean>> newEvents,
             ISet<MultiKey<EventBean>> oldEvents,

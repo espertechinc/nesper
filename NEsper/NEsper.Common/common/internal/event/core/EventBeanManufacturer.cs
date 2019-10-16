@@ -27,31 +27,4 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         object MakeUnderlying(object[] properties);
     }
-
-    public class ProxyEventBeanManufacturer : EventBeanManufacturer
-    {
-        public delegate EventBean MakeFunc(object[] properties);
-        public delegate object MakeUnderlyingFunc(object[] properties);
-
-        public MakeFunc ProcMake { get; set; }
-        public MakeUnderlyingFunc ProcMakeUnderlying { get; set; }
-
-        public ProxyEventBeanManufacturer(
-            MakeFunc procMake,
-            MakeUnderlyingFunc procMakeUnderlying)
-        {
-            ProcMake = procMake;
-            ProcMakeUnderlying = procMakeUnderlying;
-        }
-
-        public EventBean Make(object[] properties)
-        {
-            return ProcMake(properties);
-        }
-
-        public object MakeUnderlying(object[] properties)
-        {
-            return ProcMakeUnderlying(properties);
-        }
-    }
 }

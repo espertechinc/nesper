@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.view.util
         {
             var forge = sizeNode.Forge;
             var returnType = sizeNode.Forge.EvaluationType.GetBoxedType();
-            if (!returnType.IsNumeric() || returnType.IsFloatingPointClass() || returnType == typeof(long)) {
+            if (!returnType.IsNumeric() || returnType.IsFloatingPointClass() || returnType == typeof(long?)) {
                 throw new ViewParameterException(GetViewParamMessage(viewName));
             }
 

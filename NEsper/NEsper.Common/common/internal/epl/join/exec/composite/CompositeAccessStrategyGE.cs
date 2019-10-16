@@ -37,9 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
             var comparable = base.EvaluateLookup(theEvent, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparable);
-            }
+            optionalKeyCollector?.Add(comparable);
 
             if (comparable == null) {
                 return null;
@@ -64,10 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
-            object comparable = base.EvaluatePerStream(eventPerStream, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparable);
-            }
+            var comparable = base.EvaluatePerStream(eventPerStream, context);
+            optionalKeyCollector?.Add(comparable);
 
             if (comparable == null) {
                 return null;

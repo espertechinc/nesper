@@ -35,14 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregatorAccessSortedImpl : AggregatorAccessWFilterBase,
         AggregatorAccessSorted
     {
-        internal readonly CodegenExpressionField comparator;
+        internal readonly CodegenExpressionInstanceField comparator;
 
         internal readonly AggregationStateSortedForge forge;
         internal readonly CodegenExpressionRef joinRefs;
-        internal readonly CodegenExpressionField joinRefsSerde;
+        internal readonly CodegenExpressionInstanceField joinRefsSerde;
         internal readonly CodegenExpressionRef size;
         internal readonly CodegenExpressionRef sorted;
-        internal readonly CodegenExpressionField sortedSerde;
+        internal readonly CodegenExpressionInstanceField sortedSerde;
 
         public AggregatorAccessSortedImpl(
             bool join,
@@ -56,10 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         {
             this.forge = forge;
-            sorted = membersColumnized.AddMember(col, typeof(OrderedDictionary<,>), "sorted");
+            sorted = membersColumnized.AddMember(col, typeof(OrderedDictionary<object,object>), "sorted");
             size = membersColumnized.AddMember(col, typeof(int), "size");
             var types = ExprNodeUtilityQuery.GetExprResultTypes(forge.Spec.Criteria);
-            comparator = classScope.AddOrGetFieldSharable(
+            comparator = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenFieldSharableComparator(
                     COMPARATORHASHABLEMULTIKEYS,
                     types,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     forge.Spec.SortDescending));
             ctor.Block.AssignRef(sorted, NewInstance(typeof(OrderedDictionary<object, object>), comparator));
 
-            sortedSerde = classScope.AddOrGetFieldSharable(
+            sortedSerde = classScope.AddOrGetDefaultFieldSharable(
                 new ProxyCodegenFieldSharable {
                     ProcType = () => { return typeof(DIOSerdeTreeMapEventsMayDeque); },
                     ProcInitCtorScoped = () => {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             if (join) {
                 joinRefs = membersColumnized.AddMember(col, typeof(RefCountedSetAtomicInteger<object>), "refs");
                 ctor.Block.AssignRef(joinRefs, NewInstance(typeof(RefCountedSetAtomicInteger<object>)));
-                joinRefsSerde = classScope.AddOrGetFieldSharable(
+                joinRefsSerde = classScope.AddOrGetDefaultFieldSharable(
                     new CodegenSharableSerdeEventTyped(REFCOUNTEDSETATOMICINTEGER, forge.Spec.StreamEventType));
             }
             else {
@@ -324,7 +324,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
                 .DeclareVar<ArrayDeque<EventBean>>("coll", NewInstance<ArrayDeque<EventBean>>(Constant(2)))
-                .ExprDotMethod(Ref("coll"), "Add", Ref("existing"))
+                .ExprDotMethod(Ref("coll"), "Add", Cast<EventBean>(Ref("existing")))
                 .ExprDotMethod(Ref("coll"), "Add", Ref("theEvent"))
                 .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("coll"))
                 .IfElse()

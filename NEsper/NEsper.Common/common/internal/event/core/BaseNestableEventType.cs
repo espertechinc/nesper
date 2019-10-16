@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public ICollection<EventType> DeepSuperTypesCollection => OptionalDeepSuperTypes;
 
-        public EventPropertyDescriptor[] PropertyDescriptors => propertyDescriptors;
+        public IList<EventPropertyDescriptor> PropertyDescriptors => propertyDescriptors;
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
@@ -485,7 +485,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     "Type by name '" +
                     otherType.Name +
                     "' is not a compatible type (target type underlying is '" +
-                    otherType.UnderlyingType.Name +
+                    otherType.UnderlyingType.CleanName() +
                     "')");
             }
 

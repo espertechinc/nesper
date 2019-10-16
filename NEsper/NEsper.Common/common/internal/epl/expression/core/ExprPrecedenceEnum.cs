@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return (1);
 
                 case ExprPrecedenceEnum.MINIMUM:
-                    return (Int32.MinValue);
+                    return (int.MinValue);
             }
 
             throw new ArgumentException();

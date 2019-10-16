@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
             }
-            catch (EPDeployException ex) {
+            catch (EPDeployException) {
                 Assert.Fail();
             }
         }

@@ -76,19 +76,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             if (valueType.IsBigInteger()) {
                 method.Block.AssignRef(
-                    sum,
-                    ExprDotMethod(
-                        sum,
-                        "Add",
-                        NewInstance<decimal>(value)));
+                    sum, Op(sum, "+", NewInstance<decimal>(value)));
             }
             else {
                 method.Block.AssignRef(
-                    sum,
-                    ExprDotMethod(
-                        sum,
-                        "Add",
-                        valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
+                    sum, Op(sum, "+", valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
             }
 
             method.Block.Increment(cnt);
@@ -110,19 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     block => {
                         if (valueType == typeof(BigInteger)) {
                             block.AssignRef(
-                                sum,
-                                ExprDotMethod(
-                                    sum,
-                                    "subtract",
-                                    NewInstance<decimal>(value)));
+                                sum, Op(sum, "-", NewInstance<decimal>(value)));
                         }
                         else {
                             block.AssignRef(
-                                sum,
-                                ExprDotMethod(
-                                    sum,
-                                    "subtract",
-                                    valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
+                                sum, Op(sum, "-", valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
                         }
                     });
         }
@@ -135,20 +119,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             if (evaluationTypes[0] == typeof(BigInteger)) {
                 method.Block.AssignRef(
-                    sum,
-                    ExprDotMethod(
-                        sum,
-                        "Add",
-                        NewInstance<decimal>(
-                            Cast(typeof(BigInteger), value))));
+                    sum, Op(sum, "+", NewInstance<decimal>(Cast(typeof(BigInteger), value))));
             }
             else {
                 method.Block.AssignRef(
-                    sum,
-                    ExprDotMethod(
-                        sum,
-                        "Add",
-                        Cast(typeof(decimal), value)));
+                    sum, Op(sum, "+", Cast(typeof(decimal), value)));
             }
 
             method.Block.Increment(cnt);
@@ -168,20 +143,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     block => {
                         if (evaluationTypes[0] == typeof(BigInteger)) {
                             block.AssignRef(
-                                sum,
-                                ExprDotMethod(
-                                    sum,
-                                    "subtract",
-                                    NewInstance<decimal>(
-                                        Cast(typeof(BigInteger), value))));
+                                sum, Op(sum, "-", NewInstance<decimal>(Cast(typeof(BigInteger), value))));
                         }
                         else {
                             block.AssignRef(
-                                sum,
-                                ExprDotMethod(
-                                    sum,
-                                    "subtract",
-                                    Cast(typeof(decimal), value)));
+                                sum, Op(sum, "-", Cast(typeof(decimal), value)));
                         }
                     });
         }
@@ -199,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             var math = factory.optionalMathContext == null
                 ? ConstantNull()
-                : classScope.AddOrGetFieldSharable(new MathContextCodegenField(factory.optionalMathContext));
+                : classScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(factory.optionalMathContext));
             method.Block.MethodReturn(StaticMethod(GetType(), "GetValueDecimalDivide", cnt, math, sum));
         }
 

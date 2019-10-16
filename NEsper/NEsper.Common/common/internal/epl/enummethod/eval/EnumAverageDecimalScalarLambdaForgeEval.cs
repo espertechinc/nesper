@@ -45,14 +45,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal agg =
+            var agg =
                 new EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal(forge.optionalMathContext);
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
 
-            ICollection<object> values = (ICollection<object>) enumcoll;
-            foreach (object next in values) {
+            var values = (ICollection<object>) enumcoll;
+            foreach (var next in values) {
                 props[0] = next;
 
                 var num = innerExpression.Evaluate(eventsLambda, isNewData, context);
@@ -72,25 +72,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerType = forge.innerExpression.EvaluationType;
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var innerType = forge.innerExpression.EvaluationType;
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             CodegenExpression math =
-                codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(forge.optionalMathContext));
+                codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(forge.optionalMathContext));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(decimal),
                     typeof(EnumAverageDecimalScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
                     "agg",
                     NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), math))
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
-            CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
                 .DeclareVar(
                     innerType,

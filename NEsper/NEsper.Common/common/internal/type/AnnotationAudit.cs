@@ -14,16 +14,8 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AnnotationAudit : AuditAttribute
     {
-        private string value;
-
-        public AnnotationAudit(string value)
+        public AnnotationAudit(string value) : base(value)
         {
-            this.value = value;
-        }
-
-        public override string Value {
-            get => value;
-            set => this.value = value;
         }
 
         public Type AnnotationType()

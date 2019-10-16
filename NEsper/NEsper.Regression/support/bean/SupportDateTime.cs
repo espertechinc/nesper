@@ -106,11 +106,10 @@ namespace com.espertech.esper.regressionlib.support.bean
                 case "dto":
                     return msec.TimeFromMillis(null);
 
-                case "str[utc]":
-                    return msec.TimeFromMillis(TimeZoneInfo.Utc).ToString();
-
+                case "iso":
                 case "str":
-                    return msec.TimeFromMillis(TimeZoneInfo.Utc).ToString();
+                    return DateTimeFormat.ISO_DATE_TIME.Format(
+                        DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec));
 
                 case "null":
                     return null;

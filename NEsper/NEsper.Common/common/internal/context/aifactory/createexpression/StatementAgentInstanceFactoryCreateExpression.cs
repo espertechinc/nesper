@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createexpression
 {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

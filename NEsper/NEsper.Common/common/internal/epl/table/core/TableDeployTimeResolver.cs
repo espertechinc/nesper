@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableDeployTimeResolver
     {
-        public static CodegenExpressionField MakeTableEventToPublicField(
+        public static CodegenExpressionInstanceField MakeTableEventToPublicField(
             TableMetaData table,
             CodegenClassScope classScope,
             Type generator)
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             var tableResolve = MakeResolveTable(table, EPStatementInitServicesConstants.REF);
             tableInit.Block.MethodReturn(ExprDotName(tableResolve, "EventToPublic"));
-            return classScope.NamespaceScope.AddFieldUnshared(
+            return classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
                 typeof(TableMetadataInternalEventToPublic),
                 LocalMethod(tableInit, EPStatementInitServicesConstants.REF));

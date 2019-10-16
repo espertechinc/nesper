@@ -38,14 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var sum = 0d;
             var count = 0;
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 var num = next;
                 if (num == null) {
                     continue;
                 }
 
                 count++;
-                sum += TypeExtensions.AsDouble(num);
+                sum += num.AsDouble();
             }
 
             if (count == 0) {

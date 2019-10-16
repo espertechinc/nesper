@@ -83,10 +83,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                         contextName,
                         typeof(ContextStateEventContextPartitionDeallocated)));
 
-            var it = api.GetContextPartitionStateListeners(depIdCtx, contextName);
-            Assert.AreSame(listeners[1], it.Advance());
-            Assert.AreSame(listeners[2], it.Advance());
-            Assert.IsFalse(it.MoveNext());
+            var enumerator = api.GetContextPartitionStateListeners(depIdCtx, contextName);
+            Assert.AreSame(listeners[1], enumerator.Advance());
+            Assert.AreSame(listeners[2], enumerator.Advance());
+            Assert.IsFalse(enumerator.MoveNext());
 
             api.RemoveContextPartitionStateListeners(depIdCtx, contextName);
             Assert.IsFalse(api.GetContextPartitionStateListeners(depIdCtx, contextName).MoveNext());
@@ -176,10 +176,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 listeners[2]
                     .AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
 
-                var it = api.ContextStateListeners;
-                Assert.AreSame(listeners[1], it.Advance());
-                Assert.AreSame(listeners[2], it.Advance());
-                Assert.IsFalse(it.MoveNext());
+                var enumerator = api.ContextStateListeners;
+                Assert.AreSame(listeners[1], enumerator.Advance());
+                Assert.AreSame(listeners[2], enumerator.Advance());
+                Assert.IsFalse(enumerator.MoveNext());
 
                 api.RemoveContextStateListeners();
                 Assert.IsFalse(api.ContextStateListeners.MoveNext());

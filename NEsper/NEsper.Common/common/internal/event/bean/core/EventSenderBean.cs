@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     /// </summary>
     public class EventSenderBean : EventSender
     {
-        private readonly BeanEventType beanEventType;
-        private readonly ISet<Type> compatibleClasses;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly ThreadingCommon threadingService;
+        private readonly BeanEventType _beanEventType;
+        private readonly ISet<Type> _compatibleClasses;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EPRuntimeEventProcessWrapped _runtime;
+        private readonly ThreadingCommon _threadingService;
 
         /// <summary>
         ///     Ctor.
@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ThreadingCommon threadingService)
         {
-            this.runtime = runtime;
-            this.beanEventType = beanEventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            compatibleClasses = new HashSet<Type>();
-            this.threadingService = threadingService;
+            this._runtime = runtime;
+            this._beanEventType = beanEventType;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _compatibleClasses = new HashSet<Type>();
+            this._threadingService = threadingService;
         }
 
         public void SendEvent(object theEvent)
@@ -60,46 +60,46 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var eventBean = GetEventBean(theEvent);
 
             // Process event
-            if (threadingService.IsInboundThreading) {
-                threadingService.SubmitInbound(eventBean, runtime);
+            if (_threadingService.IsInboundThreading) {
+                _threadingService.SubmitInbound(eventBean, _runtime);
             }
             else {
-                runtime.ProcessWrappedEvent(eventBean);
+                _runtime.ProcessWrappedEvent(eventBean);
             }
         }
 
         public void RouteEvent(object theEvent)
         {
             var eventBean = GetEventBean(theEvent);
-            runtime.RouteEventBean(eventBean);
+            _runtime.RouteEventBean(eventBean);
         }
 
         private EventBean GetEventBean(object theEvent)
         {
             // type check
-            if (theEvent.GetType() != beanEventType.UnderlyingType) {
+            if (theEvent.GetType() != _beanEventType.UnderlyingType) {
                 lock (this) {
-                    if (!compatibleClasses.Contains(theEvent.GetType())) {
+                    if (!_compatibleClasses.Contains(theEvent.GetType())) {
                         if (TypeHelper.IsSubclassOrImplementsInterface(
                             theEvent.GetType(),
-                            beanEventType.UnderlyingType)) {
-                            compatibleClasses.Add(theEvent.GetType());
+                            _beanEventType.UnderlyingType)) {
+                            _compatibleClasses.Add(theEvent.GetType());
                         }
                         else {
                             throw new EPException(
                                 "Event object of type " +
                                 theEvent.GetType().CleanName() +
                                 " does not equal, extend or implement the type " +
-                                beanEventType.UnderlyingType.CleanName() +
+                                _beanEventType.UnderlyingType.CleanName() +
                                 " of event type '" +
-                                beanEventType.Name +
+                                _beanEventType.Name +
                                 "'");
                         }
                     }
                 }
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedBean(theEvent, beanEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedBean(theEvent, _beanEventType);
         }
     }
 } // end of namespace

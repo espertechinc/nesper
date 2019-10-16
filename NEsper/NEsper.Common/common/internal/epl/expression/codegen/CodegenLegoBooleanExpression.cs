@@ -47,8 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 throw new IllegalStateException("Invalid non-boolean expression");
             }
 
+            var unboxPass = Unbox(Ref(PASS_NAME), evaluationType);
+
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = NotOptional(!checkFor, ExprDotName(Ref(PASS_NAME), "Value"));
+            var passCheck = NotOptional(!checkFor, unboxPass);
 
             if (evaluationType.IsPrimitive) {
                 block.IfCondition(passCheck).BlockReturn(Constant(resultIfCheckPasses));
@@ -65,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return;
             }
 
-            block.IfCondition(And(NotEqualsNull(Ref(PASS_NAME)), passCheck)).BlockReturn(Constant(resultIfCheckPasses));
+            block.IfCondition(And(NotEqualsNull(Ref(PASS_NAME)), passCheck));
+            block.BlockReturn(Constant(resultIfCheckPasses));
         }
 
         /// <summary>
@@ -173,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(ExprDotName(Ref(PASS_NAME), "Value"));
+            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
 
             CodegenExpression condition;
             if (evaluationType.IsPrimitive) {
@@ -207,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(ExprDotName(Ref(PASS_NAME), "Value"));
+            var passCheck = Not(Unbox(Ref(PASS_NAME), evaluationType));
 
             CodegenExpression condition;
             if (evaluationType.IsPrimitive) {

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLScriptWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLScriptExpressionConfiguration()
         {
             RegressionSession session = RegressionRunner.Session();

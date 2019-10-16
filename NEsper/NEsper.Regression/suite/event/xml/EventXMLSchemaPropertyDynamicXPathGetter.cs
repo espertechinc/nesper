@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy(stmtText).AddListener("s0");
 
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor(
@@ -50,9 +50,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("dyn[1]?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(6).ChildNodes.Item(1), theEvent.Get("nested.nes2?"));
-            Assert.AreSame(root.DocumentElement.ChildNodes.Item(8), theEvent.Get("map('a')?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
+            Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
             SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
 
             env.UndeployAll();

@@ -93,7 +93,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             }
 
             if (!Names.TryGetValue(parameterName, out var index)) {
-                throw new EPException("Failed to find substitution parameter named '" + parameterName + "', available parameters are " + Names.Keys);
+                throw new EPException(
+                    "Failed to find substitution parameter named '" +
+                    parameterName +
+                    "', available parameters are " +
+                    Names.Keys.RenderAny());
             }
 
             try {

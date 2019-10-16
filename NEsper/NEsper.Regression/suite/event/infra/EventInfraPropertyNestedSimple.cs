@@ -146,12 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public void Run(RegressionEnvironment env)
         {
-            RunAssertion(
-                env,
-                BEAN_TYPENAME,
-                FBEAN,
-                typeof(InfraNestedSimplePropLvl1),
-                typeof(InfraNestedSimplePropLvl1).FullName);
+            RunAssertion(env, BEAN_TYPENAME, FBEAN, typeof(InfraNestedSimplePropLvl1), typeof(InfraNestedSimplePropLvl1).FullName);
             RunAssertion(env, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1");
             RunAssertion(env, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1");
             RunAssertion(env, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".l1");

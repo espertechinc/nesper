@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
+            CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
             var method = parent
                 .MakeChild(typeof(object), typeof(DynamicPropertyGetterBase), codegenClassScope)
                 .AddParam(typeof(object), "@object");
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
+            CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
             var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterBase), codegenClassScope)
                 .AddParam(typeof(object), "@object");
             method.Block

@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BeanEventType beanEventType;
-        private readonly MethodInfo copyMethod;
-        private readonly EventBeanTypedEventFactory eventAdapterService;
+        private readonly BeanEventType _beanEventType;
+        private readonly MethodInfo _copyMethod;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
 
         /// <summary>
         ///     Ctor.
@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             EventBeanTypedEventFactory eventAdapterService,
             MethodInfo copyMethod)
         {
-            this.beanEventType = beanEventType;
-            this.eventAdapterService = eventAdapterService;
-            this.copyMethod = copyMethod;
+            this._beanEventType = beanEventType;
+            this._eventAdapterService = eventAdapterService;
+            this._copyMethod = copyMethod;
         }
 
         public EventBean Copy(EventBean theEvent)
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var underlying = theEvent.Underlying;
             object copied;
             try {
-                copied = copyMethod.Invoke(underlying, null);
+                copied = _copyMethod.Invoke(underlying, null);
             }
             catch (EPException) {
                 throw;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            return eventAdapterService.AdapterForTypedBean(copied, beanEventType);
+            return _eventAdapterService.AdapterForTypedBean(copied, _beanEventType);
         }
     }
 } // end of namespace

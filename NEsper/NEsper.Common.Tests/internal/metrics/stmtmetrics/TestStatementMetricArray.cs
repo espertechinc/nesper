@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -20,7 +21,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         [Test]
         public void TestFlowReportActive()
         {
-            var rep = new StatementMetricArray("uri", "name", 3, false);
+            var rep = new StatementMetricArray("uri", "name", 3, false, container.RWLockManager());
 
             var d001 = new DeploymentIdNamePair("A", "001");
             var d002 = new DeploymentIdNamePair("A", "002");
@@ -93,7 +94,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         [Test]
         public void TestFlowReportInactive()
         {
-            var rep = new StatementMetricArray("uri", "name", 3, true);
+            var rep = new StatementMetricArray("uri", "name", 3, true, container.RWLockManager());
 
             Assert.AreEqual(0, rep.AddStatementGetIndex(new DeploymentIdNamePair("A", "001")));
             Assert.AreEqual(1, rep.AddStatementGetIndex(new DeploymentIdNamePair("A", "002")));

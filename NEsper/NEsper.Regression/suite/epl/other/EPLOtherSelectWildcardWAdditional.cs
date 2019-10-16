@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             Assert.That(
                 env.Listener("s0").LastNewData[0].EventType.UnderlyingType,
-                Is.EqualTo(typeof(Pair<EventPropertyDescriptor, EventPropertyWriterSPI>)));
+                Is.EqualTo(typeof(Pair<object, IDictionary<string, object>>)));
 
             // More type erasure crazyness???  Note that the exposed underlying type uses EventPropertyWriterSPI
             // but the actual implementation comes in as a string dictionary.
@@ -173,17 +173,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 AssertSimple(env);
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new object[] {
-                        new EventPropertyDescriptor(
-                            "MyString",
-                            typeof(string),
-                            null,
-                            false,
-                            false,
-                            false,
-                            false,
-                            false),
+                CollectionAssert.AreEquivalent(
+                    new EventPropertyDescriptor[] {
+                        new EventPropertyDescriptor("MyString", typeof(string), null, false, false, false, false, false),
                         new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
                         new EventPropertyDescriptor("concat", typeof(string), null, false, false, false, false, false)
                     },

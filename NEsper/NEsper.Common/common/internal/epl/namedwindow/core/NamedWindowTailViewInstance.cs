@@ -71,23 +71,19 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock();
-            try {
-                using (var it = parent.GetEnumerator()) {
-                    if (!it.MoveNext()) {
+            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+                using (var enumerator = parent.GetEnumerator()) {
+                    if (!enumerator.MoveNext()) {
                         return CollectionUtil.NULL_EVENT_ITERATOR;
                     }
 
                     var list = new List<EventBean>();
                     do {
-                        list.Add(it.Current);
-                    } while (it.MoveNext());
+                        list.Add(enumerator.Current);
+                    } while (enumerator.MoveNext());
 
                     return list.GetEnumerator();
                 }
-            }
-            finally {
-                AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseReadLock();
             }
         }
 
@@ -232,13 +228,13 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             QueryGraph queryGraph,
             Attribute[] annotations)
         {
-            AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock();
-            try {
-                return SnapshotNoLock(queryGraph, annotations);
-            }
-            finally {
-                ReleaseTableLocks(AgentInstanceContext);
-                AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseReadLock();
+            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+                try {
+                    return SnapshotNoLock(queryGraph, annotations);
+                }
+                finally {
+                    ReleaseTableLocks(AgentInstanceContext);
+                }
             }
         }
 
@@ -248,31 +244,31 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EventBeanUpdateHelperWCopy updateHelper,
             Attribute[] annotations)
         {
-            AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock();
-            try {
-                var events = SnapshotNoLockWithFilter(
-                    filterQueryGraph,
-                    annotations,
-                    optionalWhereClause,
-                    AgentInstanceContext);
-                if (events.IsEmpty()) {
-                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
-                }
+            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+                try {
+                    var events = SnapshotNoLockWithFilter(
+                        filterQueryGraph,
+                        annotations,
+                        optionalWhereClause,
+                        AgentInstanceContext);
+                    if (events.IsEmpty()) {
+                        return CollectionUtil.EVENTBEANARRAY_EMPTY;
+                    }
 
-                var eventsPerStream = new EventBean[3];
-                var updated = new EventBean[events.Count];
-                var count = 0;
-                foreach (var @event in events) {
-                    updated[count++] = updateHelper.Invoke(@event, eventsPerStream, AgentInstanceContext);
-                }
+                    var eventsPerStream = new EventBean[3];
+                    var updated = new EventBean[events.Count];
+                    var count = 0;
+                    foreach (var @event in events) {
+                        updated[count++] = updateHelper.Invoke(@event, eventsPerStream, AgentInstanceContext);
+                    }
 
-                var deleted = events.ToArray();
-                _rootViewInstance.Update(updated, deleted);
-                return updated;
-            }
-            finally {
-                ReleaseTableLocks(AgentInstanceContext);
-                AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseReadLock();
+                    var deleted = events.ToArray();
+                    _rootViewInstance.Update(updated, deleted);
+                    return updated;
+                }
+                finally {
+                    ReleaseTableLocks(AgentInstanceContext);
+                }
             }
         }
 
@@ -281,20 +277,24 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             ExprEvaluator filterExpr,
             Attribute[] annotations)
         {
-            AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock();
-            try {
-                var events = SnapshotNoLockWithFilter(filterQueryGraph, annotations, filterExpr, AgentInstanceContext);
-                if (events.IsEmpty()) {
-                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
-                }
+            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+                try {
+                    var events = SnapshotNoLockWithFilter(
+                        filterQueryGraph,
+                        annotations,
+                        filterExpr,
+                        AgentInstanceContext);
+                    if (events.IsEmpty()) {
+                        return CollectionUtil.EVENTBEANARRAY_EMPTY;
+                    }
 
-                var eventsDeleted = events.ToArray();
-                _rootViewInstance.Update(null, eventsDeleted);
-                return eventsDeleted;
-            }
-            finally {
-                ReleaseTableLocks(AgentInstanceContext);
-                AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseReadLock();
+                    var eventsDeleted = events.ToArray();
+                    _rootViewInstance.Update(null, eventsDeleted);
+                    return eventsDeleted;
+                }
+                finally {
+                    ReleaseTableLocks(AgentInstanceContext);
+                }
             }
         }
 
@@ -309,16 +309,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             return parent.ToList();
 
-#if DEPRECATED
-            var it = parent.GetEnumerator();
-            if (!it.MoveNext()) {
+#if false
+            var enumerator = parent.GetEnumerator();
+            if (!enumerator.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }
 
             var list = new ArrayDeque<EventBean>();
-            while (it.MoveNext()) {
-                list.Add(it.Current);
-            }
+            do {
+                list.Add(enumerator.Current);
+            } while (enumerator.MoveNext());
 
             return list;
 #endif
@@ -350,19 +350,19 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             // fall back to window operator if snapshot doesn't resolve successfully
-            using (var it = parent.GetEnumerator()) {
-                if (!it.MoveNext()) {
+            using (var enumerator = parent.GetEnumerator()) {
+                if (!enumerator.MoveNext()) {
                     return Collections.GetEmptyList<EventBean>();
                 }
 
                 var list = new ArrayDeque<EventBean>();
                 if (filterExpr != null) {
-                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(it, filterExpr, AgentInstanceContext, list);
+                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(enumerator, filterExpr, AgentInstanceContext, list);
                 }
                 else {
-                    while (it.MoveNext()) {
-                        list.Add(it.Current);
-                    }
+                    do {
+                        list.Add(enumerator.Current);
+                    } while (enumerator.MoveNext());
                 }
 
                 return list;

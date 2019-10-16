@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         try {
                             Thread.Sleep((int) (950 - delta));
                         }
-                        catch (ThreadInterruptedException e) {
+                        catch (ThreadInterruptedException) {
                             break;
                         }
                     }

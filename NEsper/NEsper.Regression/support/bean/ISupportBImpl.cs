@@ -27,14 +27,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public override string ToString()
         {
-            return "ISupportBImpl{" +
-                   "valueB='" +
-                   B +
-                   '\'' +
-                   ", valueBaseAB='" +
-                   BaseAB +
-                   '\'' +
-                   '}';
+            return $"ISupportBImpl{{ValueB='{B}', ValueBaseAB='{BaseAB}'}}";
         }
     }
 } // end of namespace

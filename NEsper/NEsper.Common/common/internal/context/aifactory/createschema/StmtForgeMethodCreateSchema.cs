@@ -56,7 +56,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             EPLValidationUtil.ValidateTableExists(services.TableCompileTimeResolver, spec.SchemaName);
             var eventType = HandleCreateSchema(spec, services);
 
-            var packageScope = new CodegenNamespaceScope(@namespace, null, services.IsInstrumented);
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementFields), classPostfix);
+            var namespaceScope = new CodegenNamespaceScope(
+                @namespace, statementFieldsClassName, services.IsInstrumented);
+            var fieldsForgable = new StmtClassForgableStmtFields(statementFieldsClassName, namespaceScope, 0);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
@@ -64,7 +68,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             var forge = new StatementAgentInstanceFactoryCreateSchemaForge(eventType);
             var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateSchema(
                 aiFactoryProviderClassName,
-                packageScope,
+                namespaceScope,
                 forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
@@ -75,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
                 selectSubscriberDescriptor,
-                packageScope,
+                namespaceScope,
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
@@ -83,9 +87,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
-                packageScope);
+                namespaceScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
+            forgables.Add(fieldsForgable);
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
             return new StmtForgeMethodResult(

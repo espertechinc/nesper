@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField innerType = codegenClassScope.AddFieldUnshared(
+            var innerType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
                 this.GetType(),
                 "WildcardNestedWrapper",

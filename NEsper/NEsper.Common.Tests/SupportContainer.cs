@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
+using com.espertech.esper.epl.db.drivers;
 
 namespace com.espertech.esper.common
 {
@@ -57,7 +58,8 @@ namespace com.espertech.esper.common
 
             container
                 .InitializeDefaultServices()
-                .InitializeDatabaseDrivers();
+                .InitializeDatabaseDrivers()
+                .RegisterDatabaseDriver(typeof(DbDriverPgSQL));
 
             return container;
         }

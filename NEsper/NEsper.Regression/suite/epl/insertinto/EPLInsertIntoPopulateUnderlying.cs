@@ -30,8 +30,8 @@ using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
-using SupportBean_N = com.espertech.esper.common.@internal.support.SupportBean_N;
-using SupportBeanComplexProps = com.espertech.esper.common.@internal.support.SupportBeanComplexProps;
+using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -393,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var n1 = new SupportBean_N(1, 10, 100d, 1000d, true, true);
                 // test wildcard
                 var stmtTextOne =
-                    "@Name('s0') insert into SupportBeanObject select * from SupportBean_N#lastevent as one, SupportBean_S0#lastevent as two";
+                    "@Name('s0') insert into SupportBeanObject select * from SupportBean_N#lastevent as One, SupportBean_S0#lastevent as Two";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(n1);
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // test select stream names
                 stmtTextOne =
-                    "@Name('s0') insert into SupportBeanObject select one, two from SupportBean_N#lastevent as one, SupportBean_S0#lastevent as two";
+                    "@Name('s0') insert into SupportBeanObject select One, Two from SupportBean_N#lastevent as One, SupportBean_S0#lastevent as Two";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(n1);
@@ -418,7 +418,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // test fully-qualified class name as target
                 stmtTextOne =
-                    "@Name('s0') insert into SupportBeanObject select one, two from SupportBean_N#lastevent as one, SupportBean_S0#lastevent as two";
+                    "@Name('s0') insert into SupportBeanObject select One, Two from SupportBean_N#lastevent as One, SupportBean_S0#lastevent as Two";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(n1);
@@ -431,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // test local class and auto-import
                 stmtTextOne = "@Name('s0') insert into " +
                               typeof(EPLInsertIntoPopulateUnderlying).Name +
-                              "$MyLocalTarget select 1 as value from SupportBean_N";
+                              "$MyLocalTarget select 1 as Value from SupportBean_N";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 env.SendEventBean(n1);
                 var eventLocal = (MyLocalTarget) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
@@ -458,13 +458,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     text,
-                    "Invalid assignment of column 'IntPrimitive' of type 'long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(IntPrimitive) select 1L from SupportBean]");
+                    "Invalid assignment of column 'IntPrimitive' of type 'long' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [insert into SupportBean(IntPrimitive) select 1L from SupportBean]");
 
                 text = "insert into SupportBean(IntPrimitive) select null from SupportBean";
                 TryInvalidCompile(
                     env,
                     text,
-                    "Invalid assignment of column 'IntPrimitive' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(IntPrimitive) select null from SupportBean]");
+                    "Invalid assignment of column 'IntPrimitive' of null type to event property 'IntPrimitive' typed as 'System.Int32', nullable type mismatch [insert into SupportBean(IntPrimitive) select null from SupportBean]");
 
                 text = "insert into SupportBeanReadOnly select 'a' as geom from SupportBean";
                 TryInvalidCompile(
@@ -493,9 +493,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Invalid assignment of column 'isa' of type '" +
-                    typeof(ISupportBImpl).Name +
+                    typeof(ISupportBImpl).CleanName() +
                     "' to event property 'isa' typed as '" +
-                    typeof(ISupportA).Name +
+                    typeof(ISupportA).CleanName() +
                     "', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isa) select isbImpl from MyMap]");
 
                 text = "insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap";
@@ -503,9 +503,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     text,
                     "Invalid assignment of column 'isg' of type '" +
-                    typeof(ISupportBaseABImpl).Name +
+                    typeof(ISupportBaseABImpl).CleanName() +
                     "' to event property 'isg' typed as '" +
-                    typeof(ISupportAImplSuperG).Name +
+                    typeof(ISupportAImplSuperG).CleanName() +
                     "', column and parameter types mismatch [insert into SupportBeanInterfaceProps(isg) select isabImpl from MyMap]");
 
                 text = "insert into SupportBean(dummy) select 3 from SupportBean";
@@ -557,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env.SendEventMap(new Dictionary<string, object>(), "MyMap");
                     Assert.Fail();
                 }
-                catch (EPException ex) {
+                catch (EPException) {
                     // expected
                 }
 
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env.SendEventBean(map, "MyMap");
                     Assert.AreEqual(0, env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // an exception is possible and up to the implementation.
                 }
 
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env.SendEventBean(new SupportBean("E1", 1));
                     Assert.Fail(); // rethrowing handler registered
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // expected
                 }
 
@@ -826,14 +826,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.UndeployModuleContaining("s0");
 
                 // test factory method fully-qualified
-                stmtTextOne = "@Name('s0') insert into SupportSensorEvent(Id, type, device, measurement, confIdence)" +
+                stmtTextOne = "@Name('s0') insert into SupportSensorEvent(Id, Type, Device, Measurement, Confidence)" +
                               "select 2, 'A01', 'DHC1000', 100, 5 from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "id","type","device","measurement","confIdence" },
+                    new [] { "Id","Type","Device", "Measurement", "Confidence" },
                     new object[] {2, "A01", "DHC1000", 100.0, 5.0});
 
                 Assert.That(
@@ -854,13 +854,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var epl = "create schema FinalEventInvalidNonArray as " +
-                          typeof(FinalEventInvalidNonArray).Name +
+                          typeof(FinalEventInvalidNonArray).FullName +
                           ";\n" +
                           "create schema FinalEventInvalidArray as " +
-                          typeof(FinalEventInvalidArray).Name +
+                          typeof(FinalEventInvalidArray).FullName +
                           ";\n" +
                           "create schema FinalEventValId as " +
-                          typeof(FinalEventValid).Name +
+                          typeof(FinalEventValid).FullName +
                           ";\n";
                 env.CompileDeploy(epl, path);
                 env.AdvanceTime(0);
@@ -892,9 +892,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path,
                     invalidEpl,
                     "Invalid assignment of column 'endEvent' of type '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).CleanName() +
                     "[]' to event property 'endEvent' typed as '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).CleanName() +
                     "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 // Test invalid case of array destination insert from non-array var
@@ -906,9 +906,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path,
                     invalidEplTwo,
                     "Invalid assignment of column 'startEvent' of type '" +
-                    typeof(SupportBean_S0).Name +
+                    typeof(SupportBean_S0).CleanName() +
                     "' to event property 'startEvent' typed as '" +
-                    typeof(SupportBean_S0).Name +
+                    typeof(SupportBean_S0).CleanName() +
                     "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 env.UndeployAll();

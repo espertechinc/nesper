@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -37,38 +38,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         public CodegenExpression Make(
+            CodegenBlock codegenBlock,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var init = codegenClassScope.NamespaceScope.InitMethod;
+            //var init = codegenClassScope.NamespaceScope.InitMethod;
 
-            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var eventType = codegenClassScope.AddFieldUnshared(
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF));
 
-            var makeUndMethod = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
-                "makeUndFunc", makeUndMethod);
-            MakeUnderlyingCodegen(makeUndMethod.Block, codegenClassScope);
+            var makeUndFunc = new CodegenExpressionLambda(codegenBlock)
+                .WithParam<object[]>("properties")
+                .WithBody(block => MakeUnderlyingCodegen(block, codegenClassScope));
 
-            var makeMethod = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
-                "makeFunc", makeMethod);
-            makeMethod.Block
-                .DeclareVar<IDictionary<string, object>>(
-                    "und",
-                    Cast<IDictionary<string, object>>(
-                        ExprDotMethod(
-                            Ref("makeUndFunc"), "Invoke", Ref("properties"))))
-                .BlockReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
-
-            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(
-                Ref("makeFunc"),
-                Ref("makeUndFunc"));
+            var manufacturer = NewInstance<ProxyMapEventBeanManufacturer>(eventType, factory, makeUndFunc);
 
             //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
@@ -85,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             //    .DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
             //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
 
-            return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
+            return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -99,7 +85,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             block.DeclareVar<IDictionary<string, object>>(
                 "values",
-                NewInstance(typeof(Dictionary<string, object>)));
+                NewInstance(typeof(HashMap<string, object>)));
             for (var i = 0; i < writables.Length; i++) {
                 block.ExprDotMethod(
                     Ref("values"),

@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.client
         ///     </para>
         /// </summary>
         /// <value>descriptors for all known properties of the event type.</value>
-        EventPropertyDescriptor[] PropertyDescriptors { get; }
+        IList<EventPropertyDescriptor> PropertyDescriptors { get; }
 
         /// <summary>
         ///     Returns an array of event types that are super to this event type, from which this event type inherited event

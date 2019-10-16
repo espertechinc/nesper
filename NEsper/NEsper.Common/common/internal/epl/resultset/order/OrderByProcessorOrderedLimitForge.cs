@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField rowLimitFactory = classScope.AddFieldUnshared(
+            var rowLimitFactory = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(RowLimitProcessorFactory),
                 rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));

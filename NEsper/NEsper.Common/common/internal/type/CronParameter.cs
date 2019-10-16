@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.type
 
         /// <summary>Ctor. </summary>
         /// <param name="operator">is the operator as text</param>
-        /// <param name="day">is the day text</param>
+        /// <param name="day">is the day</param>
+        /// <param name="month">is the month</param>
         public CronParameter(
             CronOperatorEnum @operator,
             int? day,

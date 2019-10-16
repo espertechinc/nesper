@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.collection
 {
     public class LRUCache<TK, TV> : IDictionary<TK, TV>
+        where TK : class
     {
         private readonly int _cacheSize;
         private readonly IDictionary<TK, LinkedListNode<KeyValuePair<TK, TV>>> _entries;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             _cacheSize = cacheSize;
             _useOrderEntries = new LinkedList<KeyValuePair<TK, TV>>();
-            _entries = new Dictionary<TK, LinkedListNode<KeyValuePair<TK, TV>>>();
+            _entries = new HashMap<TK, LinkedListNode<KeyValuePair<TK, TV>>>();
         }
 
         public int Count => _entries.Count;

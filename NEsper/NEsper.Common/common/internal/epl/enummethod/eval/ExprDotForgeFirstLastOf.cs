@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
             }
 
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType != null) {
                 base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
                 if (this.EnumMethodEnum == EnumMethodEnum.FIRST) {

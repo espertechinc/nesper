@@ -136,6 +136,20 @@ namespace com.espertech.esper.common.@internal.@event.util
             throw new PropertyAccessException(message, e);
         }
 
+        public static PropertyAccessException GetTargetException(
+            MethodInfo method,
+            TargetInvocationException e)
+        {
+            var declaring = method.DeclaringType;
+            var message = "Failed to invoke method " +
+                          method.Name +
+                          " on class " +
+                          declaring.CleanName() +
+                          ": " +
+                          e.InnerException.Message;
+            throw new PropertyAccessException(message, e);
+        }
+
         public static PropertyAccessException GetGeneralException(
             MethodInfo method,
             Exception t)
@@ -149,5 +163,48 @@ namespace com.espertech.esper.common.@internal.@event.util
                           t.Message;
             throw new PropertyAccessException(message, t);
         }
+
+        public static PropertyAccessException GetArgumentException(
+            PropertyInfo property,
+            ArgumentException e)
+        {
+            return GetAccessExceptionProperty(property, e);
+        }
+
+        public static PropertyAccessException GetMemberAccessException(
+            PropertyInfo property,
+            MemberAccessException e)
+        {
+            return GetAccessExceptionProperty(property, e);
+        }
+
+        public static PropertyAccessException GetGeneralException(
+            PropertyInfo property,
+            Exception t)
+        {
+            var declaring = property.DeclaringType;
+            var message = "Failed to obtain value for property " +
+                          property.Name +
+                          " on class " +
+                          declaring.CleanName() +
+                          ": " +
+                          t.Message;
+            throw new PropertyAccessException(message, t);
+        }
+
+        private static PropertyAccessException GetAccessExceptionProperty(
+            PropertyInfo property,
+            Exception e)
+        {
+            var declaring = property.DeclaringType;
+            var message = "Failed to obtain value for property " +
+                          property.Name +
+                          " on class " +
+                          declaring.CleanName() +
+                          ": " +
+                          e.Message;
+            throw new PropertyAccessException(message, e);
+        }
+
     }
 } // end of namespace

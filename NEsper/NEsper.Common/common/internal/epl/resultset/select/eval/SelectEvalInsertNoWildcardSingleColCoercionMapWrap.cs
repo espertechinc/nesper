@@ -57,19 +57,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             string adapterMethod,
             Type castType)
         {
-            CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(
+            var memberUndType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
                     wrapperEventType.UnderlyingEventType,
                     EPStatementInitServicesConstants.REF));
-            CodegenExpressionField memberWrapperType = codegenClassScope.AddFieldUnshared(
+            var memberWrapperType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(WrapperEventType),
                 Cast(
                     typeof(WrapperEventType),
                     EventTypeUtility.ResolveTypeCodegen(wrapperEventType, EPStatementInitServicesConstants.REF)));
-            CodegenExpression wrapped = ExprDotMethod(
+            var wrapped = ExprDotMethod(
                 eventBeanFactory,
                 adapterMethod,
                 castType == typeof(object) ? expression : Cast(castType, expression),

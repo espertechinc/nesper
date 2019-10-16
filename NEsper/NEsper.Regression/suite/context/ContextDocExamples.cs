@@ -192,13 +192,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxNestedTrainEnter\n" +
-                "select context.InitCtx.te.TrainId, context.HashCtx.Id,\n" +
+                "select context.InitCtx.te.TrainId, context.HashCtx.id,\n" +
                 "TagId, count(*) from PassengerScanEvent group by TagId");
             Create(
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
-                "select context.NineToFive.startTime, context.SegmentedByCustomer.Key1 from BankTxn");
+                "select context.NineToFive.startTime, context.SegmentedByCustomer.key1 from BankTxn");
             Create(env, path, "context NineToFiveSegmented select context.name, context.id from BankTxn");
 
             Create(env, path, "create context MyContext start MyStartEvent end MyEndEvent");

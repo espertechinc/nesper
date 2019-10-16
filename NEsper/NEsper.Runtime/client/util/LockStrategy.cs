@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.runtime.client.util
 {
@@ -24,14 +25,14 @@ namespace com.espertech.esper.runtime.client.util
         /// <param name="runtimeWideLock">the runtime-wide event processing read-write lock</param>
         /// <throws>LockStrategyException to indicate lock attempt failed</throws>
         /// <throws>InterruptedException  when lock-taking is interrupted</throws>
-        IDisposable Acquire(ManagedReadWriteLock runtimeWideLock);
+        IDisposable Acquire(IReaderWriterLock runtimeWideLock);
 
 #if false
         /// <summary>
         /// Release should release the write lock of the provided read-write lock and should never fail.
         /// </summary>
         /// <param name="runtimeWideLock">the runtime-wide event processing read-write lock</param>
-        void Release(ManagedReadWriteLock runtimeWideLock);
+        void Release(IReaderWriterLock runtimeWideLock);
 #endif
     }
 } // end of namespace

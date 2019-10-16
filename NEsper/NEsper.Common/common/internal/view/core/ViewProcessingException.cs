@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
     /// <summary>
     /// This exception is thrown to indicate a problem with a view expression.
     /// </summary>
+    [Serializable]
     public sealed class ViewProcessingException : Exception
     {
         /// <summary>
@@ -40,6 +42,12 @@ namespace com.espertech.esper.common.@internal.view.core
             string message,
             Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        public ViewProcessingException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

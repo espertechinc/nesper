@@ -27,7 +27,7 @@ using NUnit.Framework;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -163,8 +163,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +
-                           "item.Id? as myId, " +
-                           "exists(item.Id?) as exists_myId " +
+                           "Item.Id? as myId, " +
+                           "exists(Item.Id?) as exists_myId " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

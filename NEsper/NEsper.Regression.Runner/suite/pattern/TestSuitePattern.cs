@@ -46,169 +46,169 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorAnd()
         {
             RegressionRunner.Run(session, PatternOperatorAnd.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorOr()
         {
             RegressionRunner.Run(session, PatternOperatorOr.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorNot()
         {
             RegressionRunner.Run(session, PatternOperatorNot.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerInterval()
         {
             RegressionRunner.Run(session, PatternObserverTimerInterval.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternGuardTimerWithin()
         {
             RegressionRunner.Run(session, PatternGuardTimerWithin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorFollowedBy()
         {
             RegressionRunner.Run(session, PatternOperatorFollowedBy.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorEvery()
         {
             RegressionRunner.Run(session, PatternOperatorEvery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorMatchUntil()
         {
             RegressionRunner.Run(session, PatternOperatorMatchUntil.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorEveryDistinct()
         {
             RegressionRunner.Run(session, PatternOperatorEveryDistinct.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerAt()
         {
             RegressionRunner.Run(session, PatternObserverTimerAt.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternObserverTimerSchedule()
         {
             RegressionRunner.Run(session, PatternObserverTimerSchedule.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternGuardWhile()
         {
             RegressionRunner.Run(session, PatternGuardWhile.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternGuardTimerWithinOrMax()
         {
             RegressionRunner.Run(session, new PatternGuardTimerWithinOrMax());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternUseResult()
         {
             RegressionRunner.Run(session, PatternUseResult.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorOperatorMix()
         {
             RegressionRunner.Run(session, new PatternOperatorOperatorMix());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternComplexPropertyAccess()
         {
             RegressionRunner.Run(session, PatternComplexPropertyAccess.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternOperatorFollowedByMax()
         {
             RegressionRunner.Run(session, PatternOperatorFollowedByMax.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternCompositeSelect()
         {
             RegressionRunner.Run(session, PatternCompositeSelect.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternConsumingFilter()
         {
             RegressionRunner.Run(session, PatternConsumingFilter.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternConsumingPattern()
         {
             RegressionRunner.Run(session, PatternConsumingPattern.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternDeadPattern()
         {
             RegressionRunner.Run(session, new PatternDeadPattern());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternInvalid()
         {
             RegressionRunner.Run(session, PatternInvalid.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternStartLoop()
         {
             RegressionRunner.Run(session, new PatternStartLoop());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternMicrosecondResolution()
         {
             RegressionRunner.Run(session, new PatternMicrosecondResolution(false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternStartStop()
         {
             RegressionRunner.Run(session, PatternStartStop.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternSuperAndInterfaces()
         {
             RegressionRunner.Run(session, new PatternSuperAndInterfaces());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternRepeatRouteEvent()
         {
             RegressionRunner.Run(session, PatternRepeatRouteEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPatternExpressionText()
         {
             RegressionRunner.Run(session, new PatternExpressionText());

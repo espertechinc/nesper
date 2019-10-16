@@ -312,6 +312,24 @@ namespace com.espertech.esper.compat.collections
         /// <value>The values.</value>
         public ICollection<TV> Values => _itemList.Select(item => item.Value).ToArray();
 
+        public KeyValuePair<TK, TV> FirstEntry()
+        {
+            if (_itemList.Count > 0) {
+                return _itemList[0];
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
+        public KeyValuePair<TK, TV> LastEntry()
+        {
+            if (_itemList.Count > 0) {
+                return _itemList[_itemList.Count - 1];
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
         /// <summary>
         /// Returns a dictionary that includes everything up to the specified value.
         /// Whether the value is included in the range depends on whether the isInclusive

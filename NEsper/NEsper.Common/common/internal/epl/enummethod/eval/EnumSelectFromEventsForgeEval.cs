@@ -45,12 +45,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+            var beans = (ICollection<EventBean>) enumcoll;
             Deque<object> result = new ArrayDeque<object>(enumcoll.Count);
-            foreach (EventBean next in beans) {
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
-                object item = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var item = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (item != null) {
                     result.Add(item);
                 }
@@ -65,8 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumSelectFromEventsForgeEval),
@@ -74,13 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(StaticMethod(typeof(CompatExtensions), "Unwrap", new [] { typeof(object) }, EnumForgeCodegenNames.REF_ENUMCOLL))
                 .DeclareVar<ArrayDeque<object>>(
                     "result",
                     NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
-            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar<object>(
                     "item",

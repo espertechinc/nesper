@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CoercerByte.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(BigInteger)) {
+            if (resultBoxedType == typeof(BigInteger?)) {
                 return CoercerBigInt.INSTANCE;
             }
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CoercerNull.INSTANCE;
             }
 
-            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.Name);
+            throw new ArgumentException("Cannot coerce to number subtype " + resultBoxedType.CleanName());
         }
 
         private static CodegenExpression CodegenCoerceNonNull(

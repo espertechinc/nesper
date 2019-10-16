@@ -47,20 +47,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object value = initialization.Evaluate(eventsLambda, isNewData, context);
+            var value = initialization.Evaluate(eventsLambda, isNewData, context);
 
             if (enumcoll.IsEmpty()) {
                 return value;
             }
 
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            ObjectArrayEventBean evalEvent = new ObjectArrayEventBean(new object[1], forge.EvalEventType);
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var evalEvent = new ObjectArrayEventBean(new object[1], forge.EvalEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
             eventsLambda[forge.streamNumLambda + 1] = evalEvent;
-            object[] resultProps = resultEvent.Properties;
-            object[] evalProps = evalEvent.Properties;
+            var resultProps = resultEvent.Properties;
+            var evalProps = evalEvent.Properties;
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 resultProps[0] = value;
                 evalProps[0] = next;
                 value = innerExpression.Evaluate(eventsLambda, isNewData, context);
@@ -75,30 +75,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            CodegenExpressionField evalTypeMember = codegenClassScope.AddFieldUnshared(
+            var evalTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.evalEventType, EPStatementInitServicesConstants.REF)));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     forge.initialization.EvaluationType,
                     typeof(EnumAggregateScalarForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            Type initializationEvalType = forge.initialization.EvaluationType;
-            Type innerEvalType = forge.innerExpression.EvaluationType;
-            CodegenBlock block = methodNode.Block;
+            var initializationEvalType = forge.initialization.EvaluationType;
+            var innerEvalType = forge.innerExpression.EvaluationType;
+            var block = methodNode.Block;
             block.DeclareVar(
                     initializationEvalType,
                     "value",

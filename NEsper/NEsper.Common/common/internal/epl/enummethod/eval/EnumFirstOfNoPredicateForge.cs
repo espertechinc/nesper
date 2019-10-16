@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type type = EPTypeHelper.GetCodegenReturnType(resultType);
-            CodegenMethod method = codegenMethodScope
+            var type = EPTypeHelper.GetCodegenReturnType(resultType);
+            var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumFirstOfNoPredicateForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block

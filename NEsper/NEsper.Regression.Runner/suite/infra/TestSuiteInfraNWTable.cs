@@ -25,18 +25,18 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        private RegressionSession session;
+        private RegressionSession _session;
 
         private static void Configure(Configuration configuration)
         {
@@ -68,136 +68,136 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Compiler.ByteCode.AllowSubscriber = true;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableFAFSubstitutionParams()
         {
-            RegressionRunner.Run(session, InfraNWTableFAFSubstitutionParams.Executions());
+            RegressionRunner.Run(_session, InfraNWTableFAFSubstitutionParams.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraComparative()
         {
-            RegressionRunner.Run(session, InfraNWTableComparative.Executions());
+            RegressionRunner.Run(_session, InfraNWTableComparative.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraContext()
         {
-            RegressionRunner.Run(session, InfraNWTableContext.Executions());
+            RegressionRunner.Run(_session, InfraNWTableContext.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraCreateIndex()
         {
-            RegressionRunner.Run(session, InfraNWTableCreateIndex.Executions());
+            RegressionRunner.Run(_session, InfraNWTableCreateIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraCreateIndexAdvancedSyntax()
         {
-            RegressionRunner.Run(session, new InfraNWTableCreateIndexAdvancedSyntax());
+            RegressionRunner.Run(_session, new InfraNWTableCreateIndexAdvancedSyntax());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraEventType()
         {
-            RegressionRunner.Run(session, new InfraNWTableEventType());
+            RegressionRunner.Run(_session, new InfraNWTableEventType());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraFAF()
         {
-            RegressionRunner.Run(session, InfraNWTableFAF.Executions());
+            RegressionRunner.Run(_session, InfraNWTableFAF.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraFAFIndex()
         {
-            RegressionRunner.Run(session, InfraNWTableFAFIndex.Executions());
+            RegressionRunner.Run(_session, InfraNWTableFAFIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnDelete()
         {
-            RegressionRunner.Run(session, InfraNWTableOnDelete.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnDelete.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnMerge()
         {
-            RegressionRunner.Run(session, InfraNWTableOnMerge.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnMerge.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnMergePerf()
         {
-            RegressionRunner.Run(session, InfraNWTableOnMergePerf.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnMergePerf.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnSelect()
         {
-            RegressionRunner.Run(session, InfraNWTableOnSelect.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnSelect.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraOnUpdate()
         {
-            RegressionRunner.Run(session, InfraNWTableOnUpdate.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnUpdate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraStartStop()
         {
-            RegressionRunner.Run(session, InfraNWTableStartStop.Executions());
+            RegressionRunner.Run(_session, InfraNWTableStartStop.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqCorrelCoerce()
         {
-            RegressionRunner.Run(session, InfraNWTableSubqCorrelCoerce.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubqCorrelCoerce.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqCorrelIndex()
         {
-            RegressionRunner.Run(session, InfraNWTableSubqCorrelIndex.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubqCorrelIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqCorrelJoin()
         {
-            RegressionRunner.Run(session, InfraNWTableSubqCorrelJoin.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubqCorrelJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubquery()
         {
-            RegressionRunner.Run(session, InfraNWTableSubquery.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubquery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqueryAtEventBean()
         {
-            RegressionRunner.Run(session, InfraNWTableSubqueryAtEventBean.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubqueryAtEventBean.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraSubqUncorrel()
         {
-            RegressionRunner.Run(session, InfraNWTableSubqUncorrel.Executions());
+            RegressionRunner.Run(_session, InfraNWTableSubqUncorrel.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableJoin()
         {
-            RegressionRunner.Run(session, InfraNWTableJoin.Executions());
+            RegressionRunner.Run(_session, InfraNWTableJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNWTableOnSelectWDelete()
         {
-            RegressionRunner.Run(session, InfraNWTableOnSelectWDelete.Executions());
+            RegressionRunner.Run(_session, InfraNWTableOnSelectWDelete.Executions());
         }
     }
 } // end of namespace

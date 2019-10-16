@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     public class AggregatorAccessSortedMinMaxByEver : AggregatorAccessWFilterBase,
         AggregatorAccessSorted
     {
-        private readonly CodegenExpressionField comparator;
+        private readonly CodegenExpressionInstanceField comparator;
         private readonly CodegenExpressionRef currentMinMax;
         private readonly CodegenExpressionRef currentMinMaxBean;
-        private readonly CodegenExpressionField currentMinMaxBeanSerde;
-        private readonly CodegenExpressionField currentMinMaxSerde;
+        private readonly CodegenExpressionInstanceField currentMinMaxBeanSerde;
+        private readonly CodegenExpressionInstanceField currentMinMaxSerde;
         private readonly AggregationStateMinMaxByEverForge forge;
 
         public AggregatorAccessSortedMinMaxByEver(
@@ -56,19 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             this.forge = forge;
             currentMinMaxBean = membersColumnized.AddMember(col, typeof(EventBean), "currentMinMaxBean");
-            currentMinMaxBeanSerde = classScope.AddOrGetFieldSharable(
+            currentMinMaxBeanSerde = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeEventTyped(EVENTNULLABLE, forge.Spec.StreamEventType));
             currentMinMax = membersColumnized.AddMember(col, typeof(object), "currentMinMax");
             if (forge.Spec.Criteria.Length == 1) {
-                currentMinMaxSerde = classScope.AddOrGetFieldSharable(
+                currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
                     new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, forge.Spec.CriteriaTypes[0]));
             }
             else {
-                currentMinMaxSerde = classScope.AddOrGetFieldSharable(
+                currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
                     new CodegenSharableSerdeClassArrayTyped(OBJECTARRAYMAYNULLNULL, forge.Spec.CriteriaTypes));
             }
 
-            comparator = classScope.AddOrGetFieldSharable(
+            comparator = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenFieldSharableComparator(
                     COMPARATOROBJECTARRAYNONHASHABLE,
                     forge.Spec.CriteriaTypes,
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .IfElse()
                 .DeclareVar<int>(
                     "compareResult",
-                    ExprDotMethod(comparator, "Compare", currentMinMax, Ref("comparable")))
+                    ExprDotMethod(comparator, "CompareTo", currentMinMax, Ref("comparable")))
                 .IfCondition(Relational(Ref("compareResult"), forge.Spec.IsMax ? LT : GT, Constant(0)))
                 .AssignRef(currentMinMax, Ref("comparable"))
                 .AssignRef(currentMinMaxBean, Ref("theEvent"));

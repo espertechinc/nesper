@@ -35,8 +35,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public void Run(RegressionEnvironment env)
         {
-            var stmtExampleOneText = "@Name('s0') select ID, Observation.Command, Observation.ID,\n" +
-                                     "Observation.Tag[0].ID, Observation.Tag[1].ID\n" +
+            var stmtExampleOneText = "@Name('s0') select " +
+                                     "ID, " +
+                                     "Observation.Command, " +
+                                     "Observation.ID, " +
+                                     "Observation.Tag[0].ID, " +
+                                     "Observation.Tag[1].ID " +
                                      "from SensorEvent";
             env.CompileDeploy(stmtExampleOneText).AddListener("s0");
 
@@ -77,7 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             TryInvalidCompile(
                 env,
                 "select Observation.Tag.ID from SensorEvent",
-                "Failed to validate select-clause expression 'Observation.Tag.ID': Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]");
+                "Failed to validate select-clause expression 'Observation.Tag.ID': " +
+                "Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]");
 
             env.UndeployAll();
         }

@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             CodegenClassScope classScope)
         {
             var configName = metadata.MethodProviderClass != null
-                ? metadata.MethodProviderClass.Name
+                ? metadata.MethodProviderClass.FullName
                 : methodStreamSpec.MethodName;
             method.Block
                 .SetProperty(@ref, "ConfigurationName", Constant(configName))

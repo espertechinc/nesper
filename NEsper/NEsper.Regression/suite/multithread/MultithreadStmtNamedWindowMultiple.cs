@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     i +
                     "') insert into MyWindow_" +
                     i +
-                    " select * from OrderEvent(userId = 'user" +
+                    " select * from OrderEvent(UserId = 'user" +
                     i +
                     "')",
                     path);
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     i +
                     "') on OrderEvent as s select sum(w.Price) from MyWindow_" +
                     i +
-                    " w where w.side = s.side group by w.side",
+                    " w where w.Side = s.Side group by w.Side",
                     path);
             }
 

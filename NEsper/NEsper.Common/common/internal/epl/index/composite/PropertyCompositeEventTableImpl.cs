@@ -36,47 +36,47 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         /// <summary>
         /// Index table (sorted and/or keyed, always nested).
         /// </summary>
-        internal readonly IDictionary<object, CompositeIndexEntry> index;
+        private readonly IDictionary<object, CompositeIndexEntry> _index;
 
         public PropertyCompositeEventTableImpl(PropertyCompositeEventTableFactory factory)
             : base(factory)
         {
             if (factory.HashGetter != null) {
-                index = new Dictionary<object, CompositeIndexEntry>();
+                _index = new Dictionary<object, CompositeIndexEntry>().WithNullKeySupport();
             }
             else {
-                index = new OrderedDictionary<object, CompositeIndexEntry>();
+                _index = new OrderedDictionary<object, CompositeIndexEntry>();
             }
         }
 
-        public override IDictionary<object, CompositeIndexEntry> Index => index;
+        public override IDictionary<object, CompositeIndexEntry> Index => _index;
 
         public override void Add(
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            factory.Chain.Enter(theEvent, index);
+            factory.Chain.Enter(theEvent, _index);
         }
 
         public override void Remove(
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            factory.Chain.Remove(theEvent, index);
+            factory.Chain.Remove(theEvent, _index);
         }
 
-        public override bool IsEmpty => index.IsEmpty();
+        public override bool IsEmpty => _index.IsEmpty();
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             ISet<EventBean> result = new LinkedHashSet<EventBean>();
-            factory.Chain.GetAll(result, index);
+            factory.Chain.GetAll(result, _index);
             return result.GetEnumerator();
         }
 
         public override void Clear()
         {
-            index.Clear();
+            _index.Clear();
         }
 
         public override void Destroy()
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             Clear();
         }
 
-        public override int NumKeys => index.Count;
+        public override int NumKeys => _index.Count;
 
         public override Type ProviderClass => typeof(PropertyCompositeEventTable);
 

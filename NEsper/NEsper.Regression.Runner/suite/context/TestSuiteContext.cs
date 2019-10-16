@@ -103,7 +103,6 @@ namespace com.espertech.esper.regressionrun.suite.context
 
             var configDB = new ConfigurationCommonDBRef();
             configDB.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configuration.Common.AddDatabaseReference("MyDB", configDB);
@@ -116,103 +115,103 @@ namespace com.espertech.esper.regressionrun.suite.context
                 SupportVirtualDW.ITERATE); // configure with iteration
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextAdminListen()
         {
             RegressionRunner.Run(session, ContextAdminListen.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextCategory()
         {
             RegressionRunner.Run(session, ContextCategory.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextDocExamples()
         {
             RegressionRunner.Run(session, new ContextDocExamples());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextHashSegmented()
         {
             RegressionRunner.Run(session, ContextHashSegmented.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextInitTerm()
         {
             RegressionRunner.Run(session, ContextInitTerm.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextInitTermTemporalFixed()
         {
             RegressionRunner.Run(session, ContextInitTermTemporalFixed.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextInitTermWithDistinct()
         {
             RegressionRunner.Run(session, ContextInitTermWithDistinct.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextInitTermWithNow()
         {
             RegressionRunner.Run(session, ContextInitTermWithNow.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmented()
         {
             RegressionRunner.Run(session, ContextKeySegmented.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedAggregate()
         {
             RegressionRunner.Run(session, ContextKeySegmentedAggregate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedInfra()
         {
             RegressionRunner.Run(session, ContextKeySegmentedInfra.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedNamedWindow()
         {
             RegressionRunner.Run(session, ContextKeySegmentedNamedWindow.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextLifecycle()
         {
             RegressionRunner.Run(session, ContextLifecycle.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextNested()
         {
             RegressionRunner.Run(session, ContextNested.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextSelectionAndFireAndForget()
         {
             RegressionRunner.Run(session, ContextSelectionAndFireAndForget.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextVariables()
         {
             RegressionRunner.Run(session, ContextVariables.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextWDeclaredExpression()
         {
             RegressionRunner.Run(session, ContextWDeclaredExpression.Executions());

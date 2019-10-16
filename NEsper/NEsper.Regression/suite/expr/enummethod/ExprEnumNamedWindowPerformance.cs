@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < 1000, "Delta = " + delta);
+            Assert.That(delta, Is.LessThan(1000), "Delta = " + delta);
 
             env.UndeployModuleContaining("s0");
         }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < 1000, "Delta = " + delta);
+            Assert.That(delta, Is.LessThan(1000), "Delta = " + delta);
 
             // This will create a single dispatch
             // env.SendEventBean(new SupportBean("E1", 1));

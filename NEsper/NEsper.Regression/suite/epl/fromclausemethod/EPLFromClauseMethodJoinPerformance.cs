@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "where h0.index = P00 and h1.index = P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id","valh0","valh1" };
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var end = PerformanceObserver.MilliTime;
                 var delta = end - start;
                 env.UndeployAll();
-                Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
+                Assert.That(delta, Is.LessThan(1000), "Delta to large, at " + delta + " msec");
             }
         }
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  " on h1.index = P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "id","valh0","valh1" };
+                var fields = new [] { "Id","valh0","valh1" };
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var end = PerformanceObserver.MilliTime;
                 var delta = end - start;
                 env.UndeployAll();
-                Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
+                Assert.That(delta, Is.LessThan(1000), "Delta to large, at " + delta + " msec");
             }
         }
 
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "where h0.index = S0.P00 and h0.index = S1.P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "s0Id","s1Id","valh0" };
+                var fields = new [] { "S0Id","S1Id","valh0" };
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 var end = PerformanceObserver.MilliTime;
                 var delta = end - start;
-                Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
+                Assert.That(delta, Is.LessThan(1000), "Delta to large, at " + delta + " msec");
                 env.UndeployAll();
             }
         }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     "where h0.index = S0.P00 and h0.val = S1.Id";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = new [] { "s0Id","s1Id","valh0","indexh0" };
+                var fields = new [] { "S0Id","S1Id","valh0","indexh0" };
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var end = PerformanceObserver.MilliTime;
                 var delta = end - start;
                 env.UndeployAll();
-                Assert.IsTrue(delta < 1000, "Delta to large, at " + delta + " msec");
+                Assert.That(delta, Is.LessThan(1000), "Delta to large, at " + delta + " msec");
             }
         }
     }

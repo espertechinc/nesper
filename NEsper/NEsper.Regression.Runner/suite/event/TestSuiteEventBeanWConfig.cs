@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventBeanWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionAccessorStyleGlobalPublic()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionCaseDistinctInsensitive()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionCaseInsensitive()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionCaseInsensitiveEngineDefault()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPublicAccessors()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionCaseInsensitiveConfigureType()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventBeanExplicitOnly()
         {
             RegressionSession session = RegressionRunner.Session();

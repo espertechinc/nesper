@@ -11,7 +11,6 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -46,10 +45,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             theEvent.Put("col0", col0);
             theEvent.Put("col1", col1);
             theEvent.Put("col2", col2);
-            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent())
+            {
                 env.SendEventObjectArray(theEvent.Values.ToArray(), "WindowSchema");
             }
-            else {
+            else
+            {
                 env.SendEventMap(theEvent, "WindowSchema");
             }
         }
@@ -64,20 +65,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             theEvent.Put("e0", e0);
             theEvent.Put("e1", e1);
             theEvent.Put("e2", e2);
-            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent())
+            {
                 env.SendEventObjectArray(theEvent.Values.ToArray(), "EventSchema");
             }
-            else {
+            else
+            {
                 env.SendEventMap(theEvent, "EventSchema");
             }
         }
 
         internal class InfraNWTableSubqCorrelCoerceSimple : RegressionExecution
         {
-            private readonly bool createExplicitIndex;
-            private readonly bool disableIndexShareConsumer;
-            private readonly bool enableIndexShareCreate;
-            private readonly bool namedWindow;
+            private readonly bool _createExplicitIndex;
+            private readonly bool _disableIndexShareConsumer;
+            private readonly bool _enableIndexShareCreate;
+            private readonly bool _namedWindow;
 
             public InfraNWTableSubqCorrelCoerceSimple(
                 bool namedWindow,
@@ -85,10 +88,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 bool disableIndexShareConsumer,
                 bool createExplicitIndex)
             {
-                this.namedWindow = namedWindow;
-                this.enableIndexShareCreate = enableIndexShareCreate;
-                this.disableIndexShareConsumer = disableIndexShareConsumer;
-                this.createExplicitIndex = createExplicitIndex;
+                _namedWindow = namedWindow;
+                _enableIndexShareCreate = enableIndexShareCreate;
+                _disableIndexShareConsumer = disableIndexShareConsumer;
+                _createExplicitIndex = createExplicitIndex;
             }
 
             public void Run(RegressionEnvironment env)
@@ -101,24 +104,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.Deploy(c1);
                 env.Deploy(c2);
 
-                var createEpl = namedWindow
+                var createEpl = _namedWindow
                     ? "create window MyInfra#keepall as WindowSchema"
                     : "create table MyInfra (col0 string primary key, col1 long, col2 string)";
-                if (enableIndexShareCreate) {
+                if (_enableIndexShareCreate)
+                {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
 
                 env.CompileDeploy(createEpl, path);
                 env.CompileDeploy("insert into MyInfra select * from WindowSchema", path);
 
-                if (createExplicitIndex) {
+                if (_createExplicitIndex)
+                {
                     env.CompileDeploy("@Name('index') create index MyIndex on MyInfra (col2, col1)", path);
                 }
 
-                var fields = new [] { "e0","val" };
+                var fields = new[] { "e0", "val" };
                 var consumeEpl =
                     "@Name('s0') select e0, (select col0 from MyInfra where col2 = es.e2 and col1 = es.e1) as val from EventSchema es";
-                if (disableIndexShareConsumer) {
+                if (_disableIndexShareConsumer)
+                {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }
 
@@ -129,20 +135,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E1", "W1"});
+                    new object[] { "E1", "W1" });
 
                 SendEvent(env, "E2", 11, "c32");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E2", null});
+                    new object[] { "E2", null });
 
                 SendWindow(env, "W2", 11L, "c32");
                 SendEvent(env, "E3", 11, "c32");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E3", "W2"});
+                    new object[] { "E3", "W2" });
 
                 SendWindow(env, "W3", 11L, "c31");
                 SendWindow(env, "W4", 10L, "c32");
@@ -151,19 +157,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E4", "W3"});
+                    new object[] { "E4", "W3" });
 
                 SendEvent(env, "E5", 10, "c31");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E5", "W1"});
+                    new object[] { "E5", "W1" });
 
                 SendEvent(env, "E6", 10, "c32");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E6", "W4"});
+                    new object[] { "E6", "W4" });
 
                 // test late start
                 env.UndeployModuleContaining("s0");
@@ -173,10 +179,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {"E6", "W4"});
+                    new object[] { "E6", "W4" });
 
                 env.UndeployModuleContaining("s0");
-                if (env.Statement("index") != null) {
+                if (env.Statement("index") != null)
+                {
                     env.UndeployModuleContaining("index");
                 }
 

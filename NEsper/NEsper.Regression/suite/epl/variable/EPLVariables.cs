@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 try {
                     latch.Await();
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                     Assert.Fail();
                 }
 
@@ -653,7 +653,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // try ESPER-653
                 env.CompileDeploy(
-                    "@Name('s0') create constant variable java.util.Date START_TIME = java.util.Calendar.getInstance().getTime()");
+                    "@Name('s0') create constant variable com.espertech.esper.compat.DateTimeEx START_TIME = com.espertech.esper.compat.DateTimeEx.NowUtc()");
                 var value = env.GetEnumerator("s0").Advance().Get("START_TIME");
                 Assert.IsNotNull(value);
                 env.UndeployModuleContaining("s0");
@@ -704,7 +704,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test array of primitives
                 env.CompileDeploy("@Name('s0') create variable byte[] myBytesBoxed");
                 object[][] expectedType = {
-                    new object[] {"myBytesBoxed", typeof(byte[])}
+                    new object[] {"myBytesBoxed", typeof(byte?[])}
                 };
                 SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                     expectedType,
@@ -925,7 +925,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env.Runtime.VariableService.SetVariableValue(newValues);
                     Assert.Fail();
                 }
-                catch (VariableValueException ex) {
+                catch (VariableValueException) {
                     // expected
                 }
 

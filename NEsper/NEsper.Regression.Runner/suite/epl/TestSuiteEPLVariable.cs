@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesCreate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesDestroy()
         {
             RegressionRunner.Run(session, EPLVariablesDestroy.Executions());
@@ -62,13 +62,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesPerf()
         {
             RegressionRunner.Run(session, new EPLVariablesPerf());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesOutputRate()
         {
             RegressionRunner.Run(session, EPLVariablesOutputRate.Executions());

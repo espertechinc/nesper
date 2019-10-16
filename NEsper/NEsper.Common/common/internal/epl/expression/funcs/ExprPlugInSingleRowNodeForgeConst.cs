@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var initMethod = codegenClassScope.NamespaceScope.InitMethod;
             var evaluate = CodegenLegoMethodExpression.CodegenExpression(inner, initMethod, codegenClassScope);
-            return codegenClassScope.AddFieldUnshared(
+            return codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 EvaluationType,
                 LocalMethod(evaluate, ConstantNull(), ConstantTrue(), ConstantNull()));

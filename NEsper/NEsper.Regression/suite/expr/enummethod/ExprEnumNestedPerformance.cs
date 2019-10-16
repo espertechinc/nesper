@@ -41,13 +41,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             var start = PerformanceObserver.MilliTime;
             env.SendEventBean(theEvent);
             var delta = PerformanceObserver.MilliTime - start;
-            Assert.IsTrue(delta < 100, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(100), "delta=" + delta);
 
             var result = env.Listener("s0")
                 .AssertOneGetNewAndReset()
                 .Get("val")
-                .Unwrap<SupportBean_ST0>();
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {minEvent}, result.ToArray());
+                .UnwrapIntoArray<SupportBean_ST0>();
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {minEvent}, result);
 
             env.UndeployAll();
         }

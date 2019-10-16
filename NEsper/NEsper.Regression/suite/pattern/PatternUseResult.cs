@@ -30,11 +30,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if false
             execs.Add(new PatternNumeric());
             execs.Add(new PatternObjectId());
             execs.Add(new PatternFollowedByFilter());
             execs.Add(new PatternPatternTypeCacheForRepeat());
             execs.Add(new PatternBooleanExprRemoveConsiderTag());
+#endif
             execs.Add(new PatternBooleanExprRemoveConsiderArrayTag());
             return execs;
         }
@@ -71,7 +73,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select sb[1].IntPrimitive as c0 from pattern[every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
+                    "@Name('s0') select sb[1].IntPrimitive as c0 " +
+                    " from pattern [every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 6; i++) {

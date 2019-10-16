@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>
-    /// Collector for use with the <seealso cref="com.espertech.esper.dataflow.ops.EventBusSource" /> operator.
+    /// Collector for use with the EventBusSourceOp operator.
     /// </summary>
     public interface EPDataFlowEventBeanCollector
     {

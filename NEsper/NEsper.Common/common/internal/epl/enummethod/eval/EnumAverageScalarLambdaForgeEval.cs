@@ -45,14 +45,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            double sum = 0d;
-            int count = 0;
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var sum = 0d;
+            var count = 0;
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
 
-            ICollection<object> values = (ICollection<object>) enumcoll;
-            foreach (object next in values) {
+            var values = (ICollection<object>) enumcoll;
+            foreach (var next in values) {
                 props[0] = next;
 
                 var num = innerExpression.Evaluate(eventsLambda, isNewData, context);
@@ -77,23 +77,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerType = forge.innerExpression.EvaluationType;
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var innerType = forge.innerExpression.EvaluationType;
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(double?),
                     typeof(EnumAverageEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<ObjectArrayEventBean>(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
-            CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
                 .DeclareVar(
                     innerType,

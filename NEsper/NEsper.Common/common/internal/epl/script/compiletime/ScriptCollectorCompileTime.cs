@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 {
     public class ScriptCollectorCompileTime : ScriptCollector
     {
-        private readonly IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts;
+        private readonly IDictionary<NameAndParamNum, ExpressionScriptProvided> _moduleScripts;
 
         public ScriptCollectorCompileTime(IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts)
         {
-            this.moduleScripts = moduleScripts;
+            this._moduleScripts = moduleScripts;
         }
 
         public void RegisterScript(
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             int numParams,
             ExpressionScriptProvided meta)
         {
-            moduleScripts.Put(new NameAndParamNum(scriptName, numParams), meta);
+            _moduleScripts.Put(new NameAndParamNum(scriptName, numParams), meta);
         }
     }
 } // end of namespace

@@ -631,7 +631,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ExprValidationException("Type '" + typeName + "' is not a primitive type");
             }
 
-            var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.ClassForNameProvider);
+            var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.ClassForNameProvider, true);
             if (plain != null) {
                 return TypeHelper.GetArrayType(plain, classIdent.ArrayDimensions);
             }
@@ -742,8 +742,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     throw new ConfigurationException(
                         "Declared start timestamp property '" +
                         startTimestampProperty +
-                        "' is expected to return a Date, Calendar or long-typed value but returns '" +
-                        type.Name +
+                        "' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns '" +
+                        type.CleanName() +
                         "'");
                 }
             }
@@ -764,8 +764,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     throw new ConfigurationException(
                         "Declared end timestamp property '" +
                         endTimestampProperty +
-                        "' is expected to return a Date, Calendar or long-typed value but returns '" +
-                        type.Name +
+                        "' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns '" +
+                        type.CleanName() +
                         "'");
                 }
 
@@ -951,7 +951,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         componentType = classType.GetElementType();
                     }
 
-                    var isMapped = TypeHelper.IsImplementsInterface(classType, typeof(IDictionary<string, object>));
+                    var isMapped = classType.IsGenericStringDictionary();
                     if (isMapped) {
                         componentType = typeof(object); // Cannot determine the type at runtime
                     }
@@ -1219,8 +1219,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         return null;
                     }
 
-                    if (type is Type) {
-                        if (TypeHelper.IsImplementsInterface((Type) type, typeof(IDictionary<string, object>))) {
+                    if (type is Type asType) {
+                        if (asType.IsGenericStringDictionary()) {
                             return typeof(object);
                         }
                     }
@@ -1295,7 +1295,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             // If there is a map value in the map, return the Object value if this is a dynamic property
-            if (nestedType == typeof(IDictionary<object, object>)) {
+            if (ReferenceEquals(nestedType, typeof(IDictionary<object, object>))) {
                 var prop = PropertyParser.ParseAndWalk(propertyNested, isRootedDynamic);
                 return isRootedDynamic
                     ? typeof(object)
@@ -1474,7 +1474,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
 
                     if (type is Type interfaceType) {
-                        if (TypeHelper.IsImplementsInterface(interfaceType, typeof(IDictionary<string, object>))) {
+                        if (interfaceType.IsGenericStringDictionary()) {
                             return factory.GetGetterMappedProperty(mappedProp.PropertyNameAtomic, mappedProp.Key);
                         }
                     }
@@ -1598,7 +1598,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             // The map contains another map, we resolve the property dynamically
-            if (nestedType == typeof(IDictionary<string, object>)) {
+            if (ReferenceEquals(nestedType, typeof(IDictionary<string, object>))) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyNested);
                 var getterNestedMap = prop.GetGetterMap(
                     null,

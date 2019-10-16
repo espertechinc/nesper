@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
                 log.Debug("No nodes in the expression");
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

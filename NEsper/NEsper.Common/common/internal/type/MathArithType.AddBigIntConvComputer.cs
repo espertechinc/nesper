@@ -19,6 +19,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
+        [Serializable]
         public class AddBigIntConvComputer : Computer
         {
             private readonly BigIntegerCoercer _convOne;
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype);
                 var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype);
-                return CodegenExpressionBuilder.ExprDotMethod(leftAsBig, "Add", rightAsBig);
+                return CodegenExpressionBuilder.Op(leftAsBig, "+", rightAsBig);
             }
         }
     }

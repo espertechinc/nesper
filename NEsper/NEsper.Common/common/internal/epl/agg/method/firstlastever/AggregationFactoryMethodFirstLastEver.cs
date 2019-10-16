@@ -16,13 +16,14 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
     public class AggregationFactoryMethodFirstLastEver : AggregationFactoryMethodBase
     {
-        internal readonly Type childType;
-        internal readonly ExprFirstLastEverNode parent;
+        private readonly Type childType;
+        private readonly ExprFirstLastEverNode parent;
         private AggregatorMethod aggregator;
 
         public AggregationFactoryMethodFirstLastEver(
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             Type childType)
         {
             this.parent = parent;
-            this.childType = childType;
+            this.childType = childType.GetBoxedType();
         }
 
         public override Type ResultType => childType;

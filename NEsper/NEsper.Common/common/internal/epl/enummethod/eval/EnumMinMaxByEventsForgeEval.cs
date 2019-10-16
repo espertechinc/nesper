@@ -45,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             IComparable minKey = null;
             EventBean result = null;
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            foreach (EventBean next in beans) {
+            var beans = (ICollection<EventBean>) enumcoll;
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
-                object comparable = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (comparable == null) {
                     continue;
                 }
@@ -83,18 +83,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerTypeBoxed = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerTypeBoxed = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(EventBean), typeof(EnumMinMaxByEventsForgeEval), scope, codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
                 .DeclareVar<EventBean>("result", ConstantNull());
 
-            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(
                     innerTypeBoxed,
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfElse()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(ExprDotName(@Ref("minKey"), "Value"), "CompareTo", @Ref("value")),
+                        ExprDotMethod(Unbox(@Ref("minKey"), innerTypeBoxed), "CompareTo", @Ref("value")),
                         forge.max ? LT : GT,
                         Constant(0)))
                 .AssignRef("minKey", @Ref("value"))

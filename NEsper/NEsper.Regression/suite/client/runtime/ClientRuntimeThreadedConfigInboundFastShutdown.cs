@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             try {
                 Thread.Sleep(time);
             }
-            catch (ThreadInterruptedException e) {
+            catch (ThreadInterruptedException) {
             }
         }
 

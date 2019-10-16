@@ -13,7 +13,9 @@ namespace com.espertech.esper.compat.datetime
 {
     public class DateTimeFormat
     {
-        public static readonly DateTimeFormat ISO_DATE_TIME;
+        public static DateTimeFormat ISO_DATE_TIME {
+            get;
+        }
 
         /// <summary>
         /// Initializes the <see cref="DateTimeFormat"/> class.
@@ -86,7 +88,16 @@ namespace com.espertech.esper.compat.datetime
         /// <returns></returns>
         public string Format(DateTime dateTime)
         {
-            return Formatter.Invoke(dateTime);
+            DateTimeOffset dateTimeOffset;
+
+            if (dateTime.Kind == DateTimeKind.Local) {
+                dateTimeOffset = new DateTimeOffset(dateTime, TimeZoneInfo.Local.BaseUtcOffset);
+            }
+            else {
+                dateTimeOffset = new DateTimeOffset(dateTime, TimeSpan.Zero);
+            }
+
+            return Formatter.Invoke(dateTimeOffset);
         }
 
         /// <summary>
@@ -95,6 +106,13 @@ namespace com.espertech.esper.compat.datetime
         /// <param name="dateTimeFormat">The date time format.</param>
         /// <returns></returns>
         public static DateTimeFormat For(string dateTimeFormat)
+        {
+            return new DateTimeFormat(
+                dateTimeString => ParseDefaultEx(dateTimeString, dateTimeFormat),
+                dateTimeOffset => dateTimeOffset.ToString(dateTimeFormat, CultureInfo.InvariantCulture));
+        }
+
+        public static DateTimeFormat OfPattern(string dateTimeFormat)
         {
             return new DateTimeFormat(
                 dateTimeString => ParseDefaultEx(dateTimeString, dateTimeFormat),

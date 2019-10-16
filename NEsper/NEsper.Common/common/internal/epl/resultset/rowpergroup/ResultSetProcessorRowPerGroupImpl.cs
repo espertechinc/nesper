@@ -1088,8 +1088,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenInstanceAux instance)
         {
             var factory =
-                classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -1360,8 +1360,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GenerateOutputBatchedArrFromIteratorCodegen(forge, classScope, instance);
 
             var helperFactory =
-                classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            var outputFactory = classScope.AddFieldUnshared(
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var outputFactory = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(OutputConditionPolledFactory),
                 forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
@@ -1699,8 +1699,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GenerateOutputBatchedRowAddToListCodegen(forge, classScope, instance);
 
             var helperFactory =
-                classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -2069,8 +2069,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GenerateOutputBatchedArrFromIteratorCodegen(forge, classScope, instance);
 
             var helperFactory =
-                classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            var outputFactory = classScope.AddFieldUnshared(
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var outputFactory = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(OutputConditionPolledFactory),
                 forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
@@ -2397,8 +2397,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GenerateOutputBatchedRowAddToListCodegen(forge, classScope, instance);
 
             var helperFactory =
-                classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -2429,7 +2429,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             }
 
             {
-                var forLoop = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
+                var forLoop = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forLoop.DeclareVar<EventBean[]>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
@@ -2546,7 +2546,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     NewInstance(typeof(Dictionary<object, object>)))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
+                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))

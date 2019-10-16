@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.statement.multimatch;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -17,7 +20,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public EPStatementAgentInstanceHandle(
             EPStatementHandle statementHandle,
             int agentInstanceId,
-            StatementAgentInstanceLock statementAgentInstanceLock)
+            IReaderWriterLock statementAgentInstanceLock)
         {
             StatementHandle = statementHandle;
             AgentInstanceId = agentInstanceId;
@@ -25,7 +28,8 @@ namespace com.espertech.esper.common.@internal.context.util
             hashCode = 31 * statementHandle.GetHashCode() + agentInstanceId;
         }
 
-        public StatementAgentInstanceLock StatementAgentInstanceLock { get; }
+        public IReaderWriterLock StatementAgentInstanceLock { get; }
+        //public StatementAgentInstanceLock StatementAgentInstanceLock { get; }
 
         public int AgentInstanceId { get; }
 

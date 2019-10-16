@@ -55,11 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventToPublic =
+            var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprDotForgeUnpackCollEventBeanTable),
                 "ConvertToTableUnderling",
@@ -90,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            ICollection<EventBean> events = (ICollection<EventBean>) target;
-            ArrayDeque<object[]> underlyings = new ArrayDeque<object[]>(events.Count);
-            foreach (EventBean @event in events) {
+            var events = (ICollection<EventBean>) target;
+            var underlyings = new ArrayDeque<object[]>(events.Count);
+            foreach (var @event in events) {
                 underlyings.Add(eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, exprEvaluatorContext));
             }
 

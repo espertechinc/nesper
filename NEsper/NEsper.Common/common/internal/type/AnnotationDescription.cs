@@ -14,20 +14,10 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AnnotationDescription : DescriptionAttribute
     {
-        private readonly string description;
-
-        public AnnotationDescription(string description)
+        public AnnotationDescription(string description) : base(description)
         {
-            this.description = description;
         }
-
-        public override string Value => description;
 
         public Type AnnotationType => typeof(DescriptionAttribute);
-
-        public override string ToString()
-        {
-            return "@Description(\"" + description + "\")";
-        }
     }
 } // end of namespace

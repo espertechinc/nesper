@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 }
             }
 
-            return sorted.ToString();
+            return sorted.RenderAny();
         }
 
         public static int GetFilterCount(

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq;
 
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -37,7 +36,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public ImportDecl(
             string @namespace,
-            string typeName = null)
+            string typeName)
         {
             Namespace = @namespace
                 .Replace(".internal.", ".@internal.")
@@ -106,7 +105,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (this.Namespace == that.Namespace) {
                     nameComparison = 0;
                 } else if (!that.Namespace.StartsWith("System.")) {
-                    // do nothing with the name comparison
+                    nameComparison = -1;
                 }
             }
             else if (that.Namespace.StartsWith("System.")) {
@@ -120,7 +119,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (that.TypeName == null) {
                     return 1;
                 }
-                if (nameComparison != 0) {
+                if (nameComparison == 0) {
                     nameComparison = String.Compare(
                         TypeName, that.TypeName, StringComparison.Ordinal);
                 }

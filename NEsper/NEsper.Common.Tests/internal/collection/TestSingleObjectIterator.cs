@@ -21,10 +21,10 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestNext()
         {
-            IEnumerator<string> it = EnumerationHelper.Singleton("a");
-            Assert.That(it.MoveNext(), Is.True);
-            Assert.That(it.Current, Is.EqualTo("a"));
-            Assert.That(it.MoveNext(), Is.False);
+            IEnumerator<string> enumerator = EnumerationHelper.Singleton("a");
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current, Is.EqualTo("a"));
+            Assert.That(enumerator.MoveNext(), Is.False);
             //Assert.That(() => it.Current, Throws.InstanceOf<InvalidOperationException>());
         }
     }

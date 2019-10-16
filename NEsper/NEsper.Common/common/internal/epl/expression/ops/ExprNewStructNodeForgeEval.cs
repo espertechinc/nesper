@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var block = methodNode.Block
                 .DeclareVar<IDictionary<string, object>>(
                     "props",
-                    NewInstance(typeof(Dictionary<string, object>)));
+                    NewInstance(typeof(HashMap<string, object>)));
             var nodes = forge.ForgeRenderable.ChildNodes;
             var columnNames = forge.ForgeRenderable.ColumnNames;
             for (var i = 0; i < nodes.Length; i++) {

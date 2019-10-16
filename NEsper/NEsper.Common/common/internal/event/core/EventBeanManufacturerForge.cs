@@ -19,6 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory);
 
         CodegenExpression Make(
+            CodegenBlock codegenBlock,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }

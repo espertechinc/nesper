@@ -506,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
                 else {
                     TryInvalidFAFCompile(

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             internal CodegenExpression CodegenFormatter(CodegenClassScope codegenClassScope)
             {
-                return codegenClassScope.AddFieldUnshared(
+                return codegenClassScope.AddDefaultFieldUnshared(
                     true,
                     typeof(DateTimeFormat),
                     CodegenExpressionBuilder.StaticMethod(

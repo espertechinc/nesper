@@ -622,13 +622,22 @@ namespace com.espertech.esper.common.@internal.@event.core
                 isIndexed = true;
                 propertyType = propertyType.GetElementType();
             }
+            else if (propertyType.IsGenericDictionary()) {
+                // Ignore this - technically enumerable
+            }
             else if (propertyType.IsGenericEnumerable()) {
+                propertyType = GenericExtensions
+                    .FindGenericEnumerationInterface(propertyType)
+                    .GetGenericArguments()[0];
                 isIndexed = true;
+
+#if false
                 if (genericType == null) {
                     return null;
                 }
 
                 propertyType = genericType;
+#endif
             }
 
             if (!propertyType.IsFragmentableType()) {

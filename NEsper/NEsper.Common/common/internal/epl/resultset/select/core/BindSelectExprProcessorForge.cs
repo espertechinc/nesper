@@ -11,9 +11,11 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -65,12 +67,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenExpression isNewData = exprSymbol.GetAddIsNewData(processMethod);
             CodegenExpression exprCtx = exprSymbol.GetAddExprEvalCtx(processMethod);
 
-            CodegenExpressionField stmtResultSvc = codegenClassScope.AddFieldUnshared(
+            var stmtResultSvc = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(StatementResultService),
                 ExprDotName(
                     EPStatementInitServicesConstants.REF,
                     EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
+
             processMethod.Block
                 .DeclareVar<bool>("makeNatural", ExprDotName(stmtResultSvc, "IsMakeNatural"))
                 .DeclareVar<bool>("synthesize", Or(ExprDotName(stmtResultSvc, "IsMakeSynthetic"), isSynthesize))

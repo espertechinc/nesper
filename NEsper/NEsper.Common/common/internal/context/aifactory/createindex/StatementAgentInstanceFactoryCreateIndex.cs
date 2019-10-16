@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.update;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 {
@@ -185,7 +186,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

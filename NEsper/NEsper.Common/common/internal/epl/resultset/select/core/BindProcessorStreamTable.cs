@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventToPublic =
+            CodegenExpressionInstanceField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);

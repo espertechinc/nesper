@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
 
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorRowForAllOutputAllHelper));
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
+                var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
@@ -378,10 +378,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 forge.IsSorting);
 
             method.Block.DeclareVar<EventBean[]>(
-                    "newEventsArr",
+                    "newEventsArrX",
                     LocalMethod(getSelectListEventAsArray, ConstantTrue(), REF_ISSYNTHESIZE, ConstantFalse()))
                 .DeclareVar<EventBean[]>(
-                    "oldEventsArr",
+                    "oldEventsArrX",
                     forge.IsSelectRStream
                         ? LocalMethod(getSelectListEventAsArray, ConstantFalse(), REF_ISSYNTHESIZE, ConstantFalse())
                         : ConstantNull())
@@ -389,8 +389,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     StaticMethod(
                         typeof(ResultSetProcessorUtil),
                         METHOD_TOPAIRNULLIFALLNULL,
-                        Ref("newEventsArr"),
-                        Ref("oldEventsArr")));
+                        Ref("newEventsArrX"),
+                        Ref("oldEventsArrX")));
         }
 
         protected internal static void ProcessOutputLimitedJoinLastCodegen(
@@ -526,11 +526,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 forge.IsSelectRStream,
                 forge.IsSorting);
 
+            method.Block.CommentFullLine("-- debug comment --");
             method.Block.DeclareVar<EventBean[]>(
-                    "newEventsArr",
+                    "newEventsArrX",
                     LocalMethod(getSelectListEventAsArray, ConstantTrue(), REF_ISSYNTHESIZE, ConstantFalse()))
                 .DeclareVar<EventBean[]>(
-                    "oldEventsArr",
+                    "oldEventsArrX",
                     forge.IsSelectRStream
                         ? LocalMethod(getSelectListEventAsArray, ConstantFalse(), REF_ISSYNTHESIZE, ConstantFalse())
                         : ConstantNull())
@@ -538,8 +539,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     StaticMethod(
                         typeof(ResultSetProcessorUtil),
                         METHOD_TOPAIRNULLIFALLNULL,
-                        Ref("newEventsArr"),
-                        Ref("oldEventsArr")));
+                        Ref("newEventsArrX"),
+                        Ref("oldEventsArrX")));
         }
 
         protected internal static void ProcessOutputLimitedViewLastCodegen(
@@ -653,7 +654,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             return instance.Methods.AddMethod(
                 typeof(EventBean),
                 "GetSelectListEventSingle",
-                CodegenNamedParam.From(typeof(bool), NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
+                CodegenNamedParam.From(
+                    typeof(bool), NAME_ISNEWDATA, 
+                    typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowForAllImpl),
                 classScope,
                 code);
@@ -691,12 +694,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 typeof(void),
                 "GetSelectListEventsAddList",
                 CodegenNamedParam.From(
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents"),
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "resultEvents"),
                 typeof(ResultSetProcessorRowForAllImpl),
                 classScope,
                 code);

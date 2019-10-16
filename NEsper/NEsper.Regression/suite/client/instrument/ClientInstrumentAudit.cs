@@ -32,7 +32,9 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if false
             execs.Add(new ClientInstrumentAuditDocSample());
+#endif
             execs.Add(new ClientInstrumentAuditAudit());
             return execs;
         }
@@ -69,6 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // stream, and test audit callback
                 var callback = new SupportAuditCallback();
                 AuditPath.AuditCallback = callback.Audit;
+
+#if false
                 AUDITLOG.Info("*** Stream: ");
                 env.CompileDeploy("@Name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -132,7 +136,6 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 50));
                 env.UndeployAll();
-
                 // expression
                 AUDITLOG.Info("*** Expression: ");
                 env.CompileDeploy(
@@ -188,6 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, env.Listener("ABC").AssertOneGetNewAndReset().Get("DEF()"));
                 env.UndeployAll();
+#endif
 
                 // data flow
                 env.CompileDeploy(

@@ -49,19 +49,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             Assert.AreEqual("base", type.PropertyDescriptors[0].PropertyName);
             Assert.AreEqual("sub1", type.PropertyDescriptors[1].PropertyName);
             Assert.AreEqual("suba", type.PropertyDescriptors[2].PropertyName);
-            Assert.AreEqual(3, type.PropertyDescriptors.Length);
+            Assert.AreEqual(3, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("SubBEvent");
             Assert.AreEqual("[\"base\", \"sub1\", \"suba\", \"subb\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(4, type.PropertyDescriptors.Length);
+            Assert.AreEqual(4, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub1Event");
             Assert.AreEqual("[\"base\", \"sub1\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(2, type.PropertyDescriptors.Length);
+            Assert.AreEqual(2, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub2Event");
             Assert.AreEqual("[\"base\", \"sub2\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(2, type.PropertyDescriptors.Length);
+            Assert.AreEqual(2, type.PropertyDescriptors.Count);
 
             env.SendEventObjectArray(new object[] {"a", "b", "x"}, "SubAEvent"); // base, sub1, suba
             EPAssertionUtil.AssertProps(

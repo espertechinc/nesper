@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 StringValue.ParseString(invalidString);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }

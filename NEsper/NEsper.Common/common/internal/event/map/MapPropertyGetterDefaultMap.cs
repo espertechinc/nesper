@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression factory =
-                codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            CodegenExpression eventType = codegenClassScope.AddFieldUnshared<EventType>(
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpression eventType = codegenClassScope.AddDefaultFieldUnshared<EventType>(
                 true,
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
             return StaticMethod(typeof(BaseNestableEventUtil), "HandleBNCreateFragmentMap", value, eventType, factory);

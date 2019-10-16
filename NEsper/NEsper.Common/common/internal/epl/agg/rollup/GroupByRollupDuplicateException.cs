@@ -7,14 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.agg.rollup
 {
+    [Serializable]
     public class GroupByRollupDuplicateException : Exception
     {
         public GroupByRollupDuplicateException(int[] indexes)
         {
             Indexes = indexes;
+        }
+
+        protected GroupByRollupDuplicateException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
 
         public int[] Indexes { get; private set; }

@@ -1557,10 +1557,10 @@ namespace com.espertech.esper.common.client.scopetest
                 var itemsExpected = expectedList[i].SplitCsv();
                 ScopeTestHelper.AssertEquals(itemsExpected.Length, value.Count);
 
-                var it = value.GetEnumerator();
+                var enumerator = value.GetEnumerator();
                 for (var j = 0; j < itemsExpected.Length; j++) {
-                    ScopeTestHelper.AssertTrue(it.MoveNext());
-                    var received = collectionValue.Invoke(it.Current);
+                    ScopeTestHelper.AssertTrue(enumerator.MoveNext());
+                    var received = collectionValue.Invoke(enumerator.Current);
                     ScopeTestHelper.AssertEquals(itemsExpected[j], received);
                 }
             }

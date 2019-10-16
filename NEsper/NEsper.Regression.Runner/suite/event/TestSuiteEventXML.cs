@@ -9,8 +9,6 @@
 using System.IO;
 using System.Xml.XPath;
 
-using Avro.IO;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
@@ -170,44 +168,44 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("StockQuoteSimpleConfig", stockQuoteSimpleConfig);
 
             var testXMLNoSchemaType = new ConfigurationCommonEventTypeXMLDOM();
-            testXMLNoSchemaType.RootElementName = "Myevent";
+            testXMLNoSchemaType.RootElementName = "myevent";
             testXMLNoSchemaType.IsXPathPropertyExpr = false; // <== DOM getter
             configuration.Common.AddEventType("TestXMLNoSchemaType", testXMLNoSchemaType);
 
             var testXMLNoSchemaTypeWXPathPropTrue = new ConfigurationCommonEventTypeXMLDOM();
-            testXMLNoSchemaTypeWXPathPropTrue.RootElementName = "Myevent";
+            testXMLNoSchemaTypeWXPathPropTrue.RootElementName = "myevent";
             testXMLNoSchemaTypeWXPathPropTrue.IsXPathPropertyExpr = true; // <== XPath getter
             configuration.Common.AddEventType("TestXMLNoSchemaTypeWXPathPropTrue", testXMLNoSchemaTypeWXPathPropTrue);
 
             var xmlDOMEventTypeDesc = new ConfigurationCommonEventTypeXMLDOM();
-            xmlDOMEventTypeDesc.RootElementName = "Myevent";
-            xmlDOMEventTypeDesc.AddXPathProperty("xpathElement1", "/Myevent/element1", XPathResultType.String);
+            xmlDOMEventTypeDesc.RootElementName = "myevent";
+            xmlDOMEventTypeDesc.AddXPathProperty("xpathElement1", "/myevent/element1", XPathResultType.String);
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "xpathCountE21",
-                "count(/Myevent/element2/element21)",
+                "count(/myevent/element2/element21)",
                 XPathResultType.Number);
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "xpathAttrString",
-                "/Myevent/element3/@attrString",
+                "/myevent/element3/@attrString",
                 XPathResultType.String);
-            xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrNum", "/Myevent/element3/@attrNum", XPathResultType.Number);
+            xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathResultType.Number);
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "xpathAttrBool",
-                "/Myevent/element3/@attrBool",
+                "/myevent/element3/@attrBool",
                 XPathResultType.Boolean);
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "stringCastLong",
-                "/Myevent/element3/@attrNum",
+                "/myevent/element3/@attrNum",
                 XPathResultType.String,
                 "long");
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "stringCastDouble",
-                "/Myevent/element3/@attrNum",
+                "/myevent/element3/@attrNum",
                 XPathResultType.String,
                 "double");
             xmlDOMEventTypeDesc.AddXPathProperty(
                 "numCastInt",
-                "/Myevent/element3/@attrNum",
+                "/myevent/element3/@attrNum",
                 XPathResultType.Number,
                 "int");
             xmlDOMEventTypeDesc.XPathFunctionResolver = typeof(SupportXPathFunctionResolver).FullName;
@@ -219,15 +217,15 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("TestXMLWithDots", xmlDOMEventTypeDesc);
 
             var testXMLNoSchemaTypeWNum = new ConfigurationCommonEventTypeXMLDOM();
-            testXMLNoSchemaTypeWNum.RootElementName = "Myevent";
+            testXMLNoSchemaTypeWNum.RootElementName = "myevent";
             testXMLNoSchemaTypeWNum.AddXPathProperty(
                 "xpathAttrNum",
-                "/Myevent/@attrnum",
+                "/myevent/@attrnum",
                 XPathResultType.String,
                 "long");
             testXMLNoSchemaTypeWNum.AddXPathProperty(
                 "xpathAttrNumTwo",
-                "/Myevent/@attrnumtwo",
+                "/myevent/@attrnumtwo",
                 XPathResultType.String,
                 "long");
             configuration.Common.AddEventType("TestXMLNoSchemaTypeWNum", testXMLNoSchemaTypeWNum);

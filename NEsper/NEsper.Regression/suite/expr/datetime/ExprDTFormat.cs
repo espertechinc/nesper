@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     });
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
-                var expected = SupportDateTime.GetArrayCoerced(startTime, "sdf", "sdf", "sdf", "sdf");
+                var expected = SupportDateTime.GetArrayCoerced(startTime, "iso", "iso", "iso", "iso", "iso");
                 EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
 
                 env.SendEventBean(SupportDateTime.Make(null));
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new[] {
-                        SupportDateTime.GetValueCoerced(startTime, "sdf"),
+                        SupportDateTime.GetValueCoerced(startTime, "iso"),
                         null,
                         null,
                         null,

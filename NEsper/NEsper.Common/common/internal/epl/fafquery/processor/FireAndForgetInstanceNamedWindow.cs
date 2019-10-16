@@ -46,16 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 var @event = insert.InsertHelper.Process(new EventBean[0], true, true, ctx);
                 EventBean[] inserted = {@event};
 
-                var ailock = ctx.AgentInstanceLock;
-                ailock.AcquireWriteLock();
-                try {
-                    ProcessorInstance.RootViewInstance.Update(inserted, null);
-                }
-                catch (EPException) {
-                    ProcessorInstance.RootViewInstance.Update(null, inserted);
-                }
-                finally {
-                    ailock.ReleaseWriteLock();
+                using (ctx.AgentInstanceLock.AcquireWriteLock()) {
+                    try {
+                        ProcessorInstance.RootViewInstance.Update(inserted, null);
+                    }
+                    catch (EPException) {
+                        ProcessorInstance.RootViewInstance.Update(null, inserted);
+                    }
                 }
 
                 return inserted;

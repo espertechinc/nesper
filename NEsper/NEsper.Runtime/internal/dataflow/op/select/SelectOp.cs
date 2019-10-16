@@ -124,14 +124,16 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
         public void OnSignal(EPDataFlowSignal signal)
         {
             if (factory.IsIterate && signal is EPDataFlowSignalFinalMarker) {
-                var it = startResult.FinalView.GetEnumerator();
-                while (it.MoveNext()) {
-                    var @event = it.Current;
-                    if (factory.IsSubmitEventBean) {
-                        graphContext.Submit(@event);
-                    }
-                    else {
-                        graphContext.Submit(@event.Underlying);
+                using (var enumerator = startResult.FinalView.GetEnumerator())
+                {
+                    while (enumerator.MoveNext()) {
+                        var @event = enumerator.Current;
+                        if (factory.IsSubmitEventBean) {
+                            graphContext.Submit(@event);
+                        }
+                        else {
+                            graphContext.Submit(@event.Underlying);
+                        }
                     }
                 }
             }

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                 graph.GetOuter(stream);
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // expected
             }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                 graph.GetInner(stream);
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // expected
             }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                 graph.IsInner(inner, outer);
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // expected
             }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                 graph.IsOuter(outer, inner);
                 Assert.Fail();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // expected
             }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                 graph.Add(inner, outer);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

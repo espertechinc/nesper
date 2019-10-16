@@ -57,16 +57,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             TableEvalLockUtil.ObtainLockUnless(_tableLevelLock, context);
 
-            IEnumerator<EventBean> it = _contents.GetEnumerator();
-            if (!it.MoveNext()) {
+            IEnumerator<EventBean> enumerator = _contents.GetEnumerator();
+            if (!enumerator.MoveNext()) {
                 return null;
             }
 
-            var result = new ArrayDeque<EventBean>(2);
-            for (; it.MoveNext();) {
-                EventBean eventBean = it.Current;
+            var result = new ArrayDeque<EventBean>();
+            do {
+                EventBean eventBean = enumerator.Current;
                 result.Add(eventBean);
-            }
+            } while (enumerator.MoveNext());
 
             return result;
         }

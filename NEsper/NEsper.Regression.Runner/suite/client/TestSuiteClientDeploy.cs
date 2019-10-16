@@ -20,63 +20,63 @@ namespace com.espertech.esper.regressionrun.suite.client
     [TestFixture]
     public class TestSuiteClientDeploy
     {
-        private RegressionSession session;
+        private RegressionSession _session;
 
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configuration configuration = session.Configuration;
+            _session = RegressionRunner.Session();
+            Configuration configuration = _session.Configuration;
             Configure(configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
         [Test]
         public void TestClientDeployUndeploy()
         {
-            RegressionRunner.Run(session, ClientDeployUndeploy.Executions());
+            RegressionRunner.Run(_session, ClientDeployUndeploy.Executions());
         }
 
         [Test]
         public void TestClientDeployPreconditionDependency()
         {
-            RegressionRunner.Run(session, ClientDeployPreconditionDependency.Executions());
+            RegressionRunner.Run(_session, ClientDeployPreconditionDependency.Executions());
         }
 
         [Test]
         public void TestClientDeployPreconditionDuplicate()
         {
-            RegressionRunner.Run(session, ClientDeployPreconditionDuplicate.Executions());
+            RegressionRunner.Run(_session, ClientDeployPreconditionDuplicate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployUserObject()
         {
-            RegressionRunner.Run(session, ClientDeployUserObject.Executions());
+            RegressionRunner.Run(_session, ClientDeployUserObject.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployStatementName()
         {
-            RegressionRunner.Run(session, ClientDeployStatementName.Executions());
+            RegressionRunner.Run(_session, ClientDeployStatementName.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientClientDeployResult()
         {
-            RegressionRunner.Run(session, ClientDeployResult.Executions());
+            RegressionRunner.Run(_session, ClientDeployResult.Executions());
         }
 
         [Test]
         public void TestClientDeployRedefinition()
         {
-            RegressionRunner.Run(session, ClientDeployRedefinition.Executions());
+            RegressionRunner.Run(_session, ClientDeployRedefinition.Executions());
         }
 
         private void Configure(Configuration configuration)

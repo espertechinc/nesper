@@ -225,9 +225,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 // b) Timer thread destroys CP1
                 // c) App thread processes E1 for CP1, filter-faulting and ending up reprocessing the event against CTX because of this handler
                 var aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
-                var @lock = aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
-                @lock.AcquireWriteLock();
-                try {
+                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock()) {
                     var trigger = contextControllerInitTerm.LastTriggerEvent;
                     if (theEvent != trigger) {
                         AgentInstanceUtil.EvaluateEventForStatement(
@@ -238,9 +236,6 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     }
 
                     return true; // we handled the event
-                }
-                finally {
-                    @lock.ReleaseWriteLock();
                 }
             }
         }

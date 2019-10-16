@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.compile;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.script.compiletime;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -96,6 +97,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public ScriptCompileTimeResolver ScriptCompileTimeResolver => services.ScriptCompileTimeResolver;
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry => services.ScriptCompileTimeRegistry;
+
+        public ScriptServiceCompileTime ScriptServiceCompileTime => services.ScriptServiceCompileTime;
 
         public ModuleDependenciesCompileTime ModuleDependenciesCompileTime => services.ModuleDependencies;
 

@@ -29,13 +29,13 @@ namespace com.espertech.esper.common.@internal.support
             "ObjectArray"
         };
 
-        private int[] arrayProperty;
-        private int[] indexedProps;
-        private Properties mappedProps;
-        private IDictionary<string, object> mapProperty;
-        private SupportBeanSpecialGetterNested nested;
-        private object[] objectArray;
-        private string simpleProperty;
+        private int[] _arrayProperty;
+        private int[] _indexedProps;
+        private Properties _mappedProps;
+        private IDictionary<string, string> _mapProperty;
+        private SupportBeanSpecialGetterNested _nested;
+        private object[] _objectArray;
+        private string _simpleProperty;
 
         public SupportBeanComplexProps()
         {
@@ -43,59 +43,59 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportBeanComplexProps(int[] indexedProps)
         {
-            this.indexedProps = indexedProps;
+            _indexedProps = indexedProps;
         }
 
         public SupportBeanComplexProps(
             string simpleProperty,
             Properties mappedProps,
             int[] indexedProps,
-            IDictionary<string, object> mapProperty,
+            IDictionary<string, string> mapProperty,
             int[] arrayProperty,
             string nestedValue,
             string nestedNestedValue)
         {
-            this.simpleProperty = simpleProperty;
-            this.mappedProps = mappedProps;
-            this.indexedProps = indexedProps;
-            this.mapProperty = mapProperty;
-            this.arrayProperty = arrayProperty;
-            nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
+            _simpleProperty = simpleProperty;
+            _mappedProps = mappedProps;
+            _indexedProps = indexedProps;
+            _mapProperty = mapProperty;
+            _arrayProperty = arrayProperty;
+            _nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
         }
 
         public string SimpleProperty {
-            get => simpleProperty;
-            set => simpleProperty = value;
+            get => _simpleProperty;
+            set => _simpleProperty = value;
         }
 
         public SupportBeanSpecialGetterNested Nested {
-            get => nested;
-            set => nested = value;
+            get => _nested;
+            set => _nested = value;
         }
 
         public int[] ArrayProperty {
-            get => arrayProperty;
-            set => arrayProperty = value;
+            get => _arrayProperty;
+            set => _arrayProperty = value;
         }
 
         public int[] IndexedProps {
-            get => indexedProps;
-            set => indexedProps = value;
+            get => _indexedProps;
+            set => _indexedProps = value;
         }
 
         public Properties MappedProps {
-            get => mappedProps;
-            set => mappedProps = value;
+            get => _mappedProps;
+            set => _mappedProps = value;
         }
 
-        public IDictionary<string, object> MapProperty {
-            get => mapProperty;
-            set => mapProperty = value;
+        public IDictionary<string, string> MapProperty {
+            get => _mapProperty;
+            set => _mapProperty = value;
         }
 
         public object[] ObjectArray {
-            get => objectArray;
-            set => objectArray = value;
+            get => _objectArray;
+            set => _objectArray = value;
         }
 
         public static SupportBeanComplexProps MakeDefaultBean()
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.support
             properties.Put("keyOne", "valueOne");
             properties.Put("keyTwo", "valueTwo");
 
-            IDictionary<string, object> mapProp = new Dictionary<string, object>();
+            IDictionary<string, string> mapProp = new Dictionary<string, string>();
             mapProp.Put("xOne", "yOne");
             mapProp.Put("xTwo", "yTwo");
 
@@ -122,12 +122,12 @@ namespace com.espertech.esper.common.@internal.support
 
         public string GetMapped(string key)
         {
-            return mappedProps.Get(key);
+            return _mappedProps.Get(key);
         }
 
         public int GetIndexed(int index)
         {
-            return indexedProps[index];
+            return _indexedProps[index];
         }
 
         public string GetSimpleProperty()
@@ -139,25 +139,25 @@ namespace com.espertech.esper.common.@internal.support
             int index,
             int value)
         {
-            indexedProps[index] = value;
+            _indexedProps[index] = value;
         }
 
         [Serializable]
         public class SupportBeanSpecialGetterNested
         {
-            private string nestedValue;
+            private string _nestedValue;
 
             public SupportBeanSpecialGetterNested(
                 string nestedValue,
                 string nestedNestedValue)
             {
-                this.nestedValue = nestedValue;
+                _nestedValue = nestedValue;
                 NestedNested = new SupportBeanSpecialGetterNestedNested(nestedNestedValue);
             }
 
             public string NestedValue {
-                get => nestedValue;
-                set => nestedValue = value;
+                get => _nestedValue;
+                set => _nestedValue = value;
             }
 
             public SupportBeanSpecialGetterNestedNested NestedNested { get; }
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.support
 
                 var that = (SupportBeanSpecialGetterNested) o;
 
-                if (!nestedValue.Equals(that.nestedValue)) {
+                if (!_nestedValue.Equals(that._nestedValue)) {
                     return false;
                 }
 
@@ -183,23 +183,23 @@ namespace com.espertech.esper.common.@internal.support
 
             public override int GetHashCode()
             {
-                return nestedValue.GetHashCode();
+                return _nestedValue.GetHashCode();
             }
         }
 
         [Serializable]
         public class SupportBeanSpecialGetterNestedNested
         {
-            private string nestedNestedValue;
+            private string _nestedNestedValue;
 
             public SupportBeanSpecialGetterNestedNested(string nestedNestedValue)
             {
-                this.nestedNestedValue = nestedNestedValue;
+                _nestedNestedValue = nestedNestedValue;
             }
 
             public string NestedNestedValue {
-                get => nestedNestedValue;
-                set => nestedNestedValue = value;
+                get => _nestedNestedValue;
+                set => _nestedNestedValue = value;
             }
         }
     }

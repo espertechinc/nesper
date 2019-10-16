@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
     /// <summary>
     /// Thrown to indicate a validation error in view parameterization.
     /// </summary>
+    [Serializable]
     public class ViewParameterException : Exception
     {
         /// <summary>
@@ -31,6 +33,12 @@ namespace com.espertech.esper.common.@internal.view.core
         /// <param name="message">validation error message</param>
         public ViewParameterException(string message)
             : base(message)
+        {
+        }
+
+        protected ViewParameterException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

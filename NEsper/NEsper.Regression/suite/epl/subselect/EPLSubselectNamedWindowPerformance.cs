@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
-            Assert.IsTrue(delta < 500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
             env.UndeployAll();
         }
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
                 env.UndeployModuleContaining("s0");
 
                 // two-field compare
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
                 env.UndeployModuleContaining("s1");
 
                 // range compare single
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
                 env.UndeployModuleContaining("s2");
 
                 // range compare composite
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
                 env.UndeployModuleContaining("s3");
 
                 // destroy all
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -392,7 +392,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
                 env.UndeployAll();
             }

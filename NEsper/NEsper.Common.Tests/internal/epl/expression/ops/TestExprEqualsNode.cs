@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenNamespaceScope(
             string @namespace,
-            string fieldsClassNameOptional,
+            string fieldsClassName,
             bool instrumented)
         {
             Namespace = @namespace;
-            FieldsClassNameOptional = fieldsClassNameOptional;
+            FieldsClassName = fieldsClassName;
             IsInstrumented = instrumented;
             InitMethod = CodegenMethod
                 .MakeMethod(
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     typeof(CodegenNamespaceScope),
                     new CodegenClassScope(true, this, null))
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref)
-                .WithStatic(true);
+                .WithStatic(false);
         }
 
         public string Namespace { get; }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public IDictionary<CodegenField, CodegenExpression> FieldsUnshared => _fieldsUnshared;
 
-        public string FieldsClassNameOptional { get; }
+        public string FieldsClassName { get; }
 
         public IList<CodegenSubstitutionParamEntry> SubstitutionParamsByNumber { get; } =
             new List<CodegenSubstitutionParamEntry>();
@@ -76,26 +76,86 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public bool IsInstrumented { get; }
 
+        public CodegenExpressionInstanceField AddInstanceFieldUnshared<T>(
+            CodegenExpression instance,
+            bool isFinal,
+            CodegenExpression initCtorScoped)
+        {
+            return AddInstanceFieldUnshared(instance, isFinal, typeof(T), initCtorScoped);
+        }
+
+        public CodegenExpressionInstanceField AddInstanceFieldUnshared(
+            CodegenExpression instance,
+            bool isFinal,
+            Type type,
+            CodegenExpression initCtorScoped)
+        {
+            if (FieldsClassName == null)
+            {
+                throw new IllegalStateException("No fields class name");
+            }
+
+            CodegenField unshared = AddFieldUnsharedInternal(isFinal, type, initCtorScoped);
+            return InstanceField(instance, unshared);
+        }
+
+#if DEPRECATED
         public CodegenExpressionField AddFieldUnshared<T>(
             bool isFinal,
             CodegenExpression initCtorScoped)
         {
             return AddFieldUnshared(isFinal, typeof(T), initCtorScoped);
         }
+#endif
 
+        public CodegenExpressionInstanceField AddDefaultFieldUnshared(
+            bool isFinal,
+            Type type,
+            CodegenExpression initCtorScoped)
+        {
+            return AddInstanceFieldUnshared(
+                Ref("statementFields"),
+                isFinal,
+                type,
+                initCtorScoped);
+        }
+
+#if DEPRECATED
         public CodegenExpressionField AddFieldUnshared(
             bool isFinal,
             Type type,
             CodegenExpression initCtorScoped)
         {
-            if (FieldsClassNameOptional == null) {
+            if (FieldsClassName == null) {
                 throw new IllegalStateException("No fields class name");
             }
 
             return Field(AddFieldUnsharedInternal(isFinal, type, initCtorScoped));
         }
+#endif
+
+        public CodegenExpressionInstanceField AddOrGetInstanceFieldSharable(
+            CodegenExpression instance,
+            CodegenFieldSharable sharable)
+        {
+            CodegenExpressionField fieldExpression = AddOrGetFieldSharable(sharable);
+            return InstanceField(instance, fieldExpression.Field);
+        }
+
+        public CodegenExpressionInstanceField AddOrGetDefaultFieldSharable(
+            CodegenFieldSharable sharable)
+        {
+            CodegenExpression instance = Ref("statementFields");
+            CodegenExpressionField fieldExpression = AddOrGetFieldSharable(sharable);
+            return InstanceField(instance, fieldExpression.Field);
+        }
 
         public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
+        {
+            return AddOrGetFieldSharableInternal(sharable);
+        }
+
+        private CodegenExpressionField AddOrGetFieldSharableInternal(CodegenFieldSharable sharable)
         {
             var member = _fieldsShared.Get(sharable);
             if (member != null) {
@@ -105,6 +165,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             member = AddFieldUnsharedInternal(true, sharable.Type(), sharable.InitCtorScoped());
             _fieldsShared.Put(sharable, member);
             return Field(member);
+        }
+
+        // --------------------------------------------------------------------------------
+
+        public CodegenExpressionInstanceField AddOrGetDefaultFieldWellKnown(
+            CodegenFieldName fieldName,
+            Type type)
+        {
+            CodegenExpression instance = Ref("statementFields");
+            CodegenExpressionField fieldExpression = AddOrGetFieldWellKnown(fieldName, type);
+            return InstanceField(instance, fieldExpression.Field);
         }
 
         public CodegenExpressionField AddOrGetFieldWellKnown(
@@ -126,10 +197,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 return Field(existing);
             }
 
-            var field = new CodegenField(FieldsClassNameOptional, fieldName.Name, type, null, false);
+            var field = new CodegenField(FieldsClassName, fieldName.Name, type, null, false);
             _fieldsNamed.Put(fieldName, field);
             return Field(field);
         }
+
+        // --------------------------------------------------------------------------------
 
         private CodegenField AddFieldUnsharedInternal(
             bool isFinal,
@@ -138,7 +211,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             var memberNumber = _currentMemberNumber++;
             var name = CodegenNamespaceScopeNames.AnyField(memberNumber);
-            var member = new CodegenField(FieldsClassNameOptional, name, type, null, isFinal);
+            var member = new CodegenField(FieldsClassName, name, type, null, isFinal);
             _fieldsUnshared.Put(member, initCtorScoped);
             return member;
         }
@@ -179,7 +252,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             if (name == null) {
                 var assigned = ++_currentSubstitutionParamNumber;
                 var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
-                member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
+                member = new CodegenField(FieldsClassName, fieldName, type, null, false);
                 SubstitutionParamsByNumber.Add(new CodegenSubstitutionParamEntry(member, name, type));
             }
             else {
@@ -187,7 +260,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 if (existing == null) {
                     var assigned = ++_currentSubstitutionParamNumber;
                     var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
-                    member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
+                    member = new CodegenField(FieldsClassName, fieldName, type, null, false);
                     _substitutionParamsByName.Put(name, new CodegenSubstitutionParamEntry(member, name, type));
                 }
                 else {
@@ -196,6 +269,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             return member;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Namespace)}: {Namespace}";
         }
     }
 } // end of namespace

@@ -46,12 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression mapType = codegenClassScope.AddFieldUnshared(
+            CodegenExpression mapType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(forge.MapType, EPStatementInitServicesConstants.REF));
             CodegenExpression beanFactory =
-                codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),

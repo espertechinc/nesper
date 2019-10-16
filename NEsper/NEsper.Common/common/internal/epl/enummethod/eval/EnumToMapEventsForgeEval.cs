@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(IDictionary<object, object>),
+                    typeof(IDictionary<string, object>),
                     typeof(EnumToMapEventsForgeEval),
                     scope,
                     codegenClassScope)
@@ -75,13 +75,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }));
-            block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)));
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }));
+            block.DeclareVar<IDictionary<string, object>>("map", NewInstance(typeof(HashMap<string, object>)));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
-                .DeclareVar<object>(
+                .DeclareVar<string>(
                     "key",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.innerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
                 .DeclareVar<object>(
                     "value",
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))

@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var reader = classScope.AddOrGetFieldSharable(
+            var reader = classScope.AddOrGetDefaultFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor),
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var reader = classScope.AddOrGetFieldSharable(
+            var reader = classScope.AddOrGetDefaultFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor),
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var reader = classScope.AddOrGetFieldSharable(
+            var reader = classScope.AddOrGetDefaultFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return CodegenLegoCast.CastSafeFromObjectType(
                 requiredType,

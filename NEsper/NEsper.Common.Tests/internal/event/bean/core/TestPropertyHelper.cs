@@ -6,20 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -56,18 +54,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 log.Debug("desc=" + desc.PropertyName);
             }
 
-            Assert.AreEqual(9, result.Count); // for "class" is also in there
-            Assert.AreEqual("Indexed", result[8].PropertyName);
-            Assert.IsNotNull(result[8].ReadMethod);
+            Assert.AreEqual(11, result.Count); // for "class" is also in there
+
+            var indexedProperty = result.FirstOrDefault(p => p.PropertyName == "Indexed");
+            Assert.That(indexedProperty, Is.Not.Null);
+            Assert.That(indexedProperty.AccessorProp, Is.Null);
+            Assert.That(indexedProperty.AccessorField, Is.Null);
+            Assert.That(indexedProperty.ReadMethod, Is.Not.Null);
         }
 
         [Test]
         public void TestRemoveDuplicateProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
-            result.Add(new PropertyStem("x", (MethodInfo) null, null));
-            result.Add(new PropertyStem("x", (MethodInfo) null, null));
-            result.Add(new PropertyStem("y", (MethodInfo) null, null));
+            result.Add(new PropertyStem("x", (MethodInfo) null, PropertyType.UNDEFINED));
+            result.Add(new PropertyStem("x", (MethodInfo) null, PropertyType.UNDEFINED));
+            result.Add(new PropertyStem("y", (MethodInfo) null, PropertyType.UNDEFINED));
 
             PropertyHelper.RemoveDuplicateProperties(result);
 
@@ -80,15 +82,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public void TestRemoveProperties()
         {
             IList<PropertyStem> result = new List<PropertyStem>();
-            result.Add(new PropertyStem("x", (MethodInfo) null, null));
+            result.Add(new PropertyStem("x", (MethodInfo) null, PropertyType.UNDEFINED));
 
             // Add all methods from System.Object that have no parameters, these
             // would be getters like GetType(), GetHashCode(), ToString().
             foreach (var method in typeof(object)
                 .GetMethods()
                 .Where(m => m.ReturnType != typeof(void) &&
-                            m.GetParameters().Length == 0)) {
-                result.Add(new PropertyStem(method.Name, method, null));
+                            m.GetParameters().Length == 0))
+            {
+                result.Add(new PropertyStem(method.Name, method, PropertyType.UNDEFINED));
             }
 
             // Ensure that there are at least two properties.

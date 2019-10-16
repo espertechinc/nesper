@@ -6,12 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -143,7 +146,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevCount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevWindow);
+            EPAssertionUtil.AssertEqualsExactOrder(
+                prevWindow.Unwrap<object>(), 
+                eventBean.Get("prevWindowPrice").Unwrap<object>());
 
             env.Listener("s0").Reset();
         }
@@ -438,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var doubles = doubleList.SplitCsv();
             var result = new object[doubles.Length];
             for (var i = 0; i < result.Length; i++) {
-                result[i] = double.Parse(doubles[i]);
+                result[i] = SimpleTypeParserFunctions.ParseDouble(doubles[i]);
             }
 
             return result;

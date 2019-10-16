@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
     {
         private readonly AggregationFactoryMethodMinMax factory;
         private readonly CodegenExpressionRef refSet;
-        private readonly CodegenExpressionField serde;
+        private readonly CodegenExpressionInstanceField serde;
 
         public AggregatorMinMax(
             AggregationFactoryMethodMinMax factory,
@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         {
             this.factory = factory;
             refSet = membersColumnized.AddMember(col, typeof(SortedRefCountedSet<object>), "refSet");
-            serde = classScope.AddOrGetFieldSharable(
-                new CodegenSharableSerdeClassTyped(SORTEDREFCOUNTEDSET, factory.type));
+            serde = classScope.AddOrGetDefaultFieldSharable(
+                new CodegenSharableSerdeClassTyped(SORTEDREFCOUNTEDSET, factory.ResultType));
             rowCtor.Block.AssignRef(refSet, NewInstance(typeof(SortedRefCountedSet<object>)));
         }
 

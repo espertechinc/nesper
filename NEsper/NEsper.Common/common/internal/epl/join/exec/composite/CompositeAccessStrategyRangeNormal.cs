@@ -44,18 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             object comparableStart = base.EvaluateLookupStart(theEvent, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparableStart);
-            }
+            optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
             object comparableEnd = base.EvaluateLookupEnd(theEvent, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparableEnd);
-            }
+            optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {
                 return null;
@@ -90,18 +86,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             object comparableStart = base.EvaluatePerStreamStart(eventPerStream, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparableStart);
-            }
+            optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
             object comparableEnd = base.EvaluatePerStreamEnd(eventPerStream, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparableEnd);
-            }
+            optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {
                 return null;

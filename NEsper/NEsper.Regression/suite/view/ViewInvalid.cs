@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select * from " + EVENT_ALLTYPES + "#length(1) where TheString > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Error validating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'System.String' to numeric is not allowed");
 
             // where-clause has aggregation function
             exception = GetStatementExceptionView(
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed");
 
             // invalid property in select
             exception = GetStatementExceptionView(env, "select a[2].m('a') from " + EVENT_ALLTYPES + "#length(1)");
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1) group by IntPrimitive having xxx > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed");
 
             // invalid having clause - not a symbol in the group-by (non-aggregate)
             exception = GetStatementExceptionView(
@@ -410,7 +410,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.CompileWCheckedEx(epl);
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 // Expected exception
             }
         }

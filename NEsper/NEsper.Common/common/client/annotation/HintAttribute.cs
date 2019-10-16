@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 namespace com.espertech.esper.common.client.annotation
 {
@@ -21,13 +22,13 @@ namespace com.espertech.esper.common.client.annotation
         /// <summary>
         /// Hint Keyword(s), comma-separated.
         /// </summary>
-        /// <returns>
-        /// keywords
-        /// </returns>
+        [DefaultValue("")]
         public virtual string Value { get; set; }
 
+        [DefaultValue("")]
         public virtual string Model { get; set; }
 
+        [DefaultValue(AppliesTo.UNDEFINED)]
         public virtual AppliesTo Applies { get; set; }
 
         /// <summary>

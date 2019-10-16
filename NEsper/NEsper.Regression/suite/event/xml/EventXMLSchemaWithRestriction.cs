@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "</order>",
                 "OrderEvent");
             var theEvent = env.Listener("s0").LastNewData[0];
-            Assert.AreEqual(typeof(double?), theEvent.Get("order_amount").GetType());
+            Assert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
             Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
             env.Listener("s0").Reset();
 

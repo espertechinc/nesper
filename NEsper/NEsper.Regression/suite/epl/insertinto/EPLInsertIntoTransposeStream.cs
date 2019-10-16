@@ -14,6 +14,7 @@ using Avro.Generic;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
@@ -160,16 +161,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(Pair<,>), type.UnderlyingType);
+                Assert.That(type.UnderlyingType, Is.EqualTo(typeof(Pair<object, IDictionary<string, object>>)));
 
                 env.SendEventBean(new SupportBean("I1", 1));
                 var result = env.Listener("s0").AssertOneGetNewAndReset();
-                var underlying = (Pair<SupportBean, object>) result.Underlying;
+                var underlying = (Pair<object, IDictionary<string, object>>) result.Underlying;
                 EPAssertionUtil.AssertProps(
                     result,
                     new [] { "dummy","TheString","IntPrimitive" },
                     new object[] {1, "OI1", 10});
-                Assert.AreEqual("OI1", underlying.First.TheString);
+                Assert.AreEqual("OI1", ((SupportBean) underlying.First).TheString);
 
                 env.UndeployAll();
             }
@@ -240,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultTwo = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultTwo,
-                    new [] { "IntOne","intTwo" },
+                    new [] { "IntOne","IntTwo" },
                     new object[] {10, 11});
                 Assert.AreEqual(11, (int) ((SupportBeanNumeric) resultTwo.Underlying).IntTwo);
                 env.UndeployModuleContaining("s0");
@@ -250,9 +251,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     "insert into SupportBeanNumeric select transpose(customOne('O', 10)) from SupportBean",
                     "Expression-returned value of type '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).CleanName() +
                     "' cannot be converted to target event type 'SupportBeanNumeric' with underlying type '" +
-                    typeof(SupportBeanNumeric).Name +
+                    typeof(SupportBeanNumeric).CleanName() +
                     "' [insert into SupportBeanNumeric select transpose(customOne('O', 10)) from SupportBean]");
 
                 // invalid additional properties
@@ -260,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     "insert into SupportBean select 1 as dummy, transpose(customOne('O', 10)) from SupportBean",
                     "Cannot transpose additional properties in the select-clause to target event type 'SupportBean' with underlying type '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).CleanName() +
                     "', the transpose function must occur alone in the select clause [insert into SupportBean select 1 as dummy, transpose(customOne('O', 10)) from SupportBean]");
 
                 // invalid occurs twice
@@ -281,8 +282,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 catch (EPCompileException ex) {
                     Assert.AreEqual(
                         "Expression-returned value of type '" +
-                        typeof(SupportBean).Name +
-                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'IDictionary' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
+                        typeof(SupportBean).CleanName() +
+                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" +
+                        typeof(IDictionary<string, object>).CleanName() + 
+                        "' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
                         ex.Message);
                 }
 
@@ -302,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     "insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean",
-                    "Invalid expression return type '[LSystem.Object;' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]");
+                    "Invalid expression return type 'System.Object[]' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]");
 
                 env.UndeployAll();
             }
@@ -362,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtTextOne = "insert into MyStreamComplex select nested as inneritem from SupportBeanComplexProps";
+                var stmtTextOne = "insert into MyStreamComplex select Nested as inneritem from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo = "@Name('s0') select inneritem.NestedValue as result from MyStreamComplex";
@@ -383,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtTextOne = "insert into MyStreamComplexMap select nested as inneritem from ComplexMap";
+                var stmtTextOne = "insert into MyStreamComplexMap select Nested as inneritem from ComplexMap";
                 env.CompileDeploy(stmtTextOne, path);
 
                 TryInvalidCompile(
@@ -396,16 +399,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     "create schema E1 as " +
-                    typeof(E1).FullName +
+                    typeof(E1).MaskTypeName() +
                     ";\n" +
                     "create schema E2 as " +
-                    typeof(E2).FullName +
+                    typeof(E2).MaskTypeName() +
                     ";\n" +
                     "create schema EnrichedE2 as " +
-                    typeof(EnrichedE2).FullName +
+                    typeof(EnrichedE2).MaskTypeName() +
                     ";\n" +
                     "insert into EnrichedE2 " +
-                    "select e2.* as event, e1.otherId as playerId " +
+                    "select e2.* as event, e1.OtherId as playerId " +
                     "from E1#length(20) as e1, E2#length(1) as e2 " +
                     "where e1.Id = e2.Id ",
                     "The 'e2.* as event' syntax is not allowed when inserting into an existing bean event type, use the 'e2 as event' syntax instead");

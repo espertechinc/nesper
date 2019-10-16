@@ -58,16 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField manufacturer = codegenClassScope.AddFieldUnshared(
-                true,
-                typeof(EventBeanManufacturer),
-                factory.Make(codegenMethodScope, codegenClassScope));
-
             if (firstRowOnly) {
-                CodegenMethod firstMethodNode = codegenMethodScope
+                var firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(SelectExprProcessorTypableMultiForge), codegenClassScope);
 
-                CodegenBlock firstBlock = firstMethodNode.Block
+                var firstMethodManufacturer = codegenClassScope.AddDefaultFieldUnshared(
+                    true,
+                    typeof(EventBeanManufacturer),
+                    factory.Make(firstMethodNode.Block, codegenMethodScope, codegenClassScope));
+
+                var firstBlock = firstMethodNode.Block
                     .DeclareVar<object[]>(
                         "row",
                         typable.EvaluateTypableSingleCodegen(firstMethodNode, exprSymbol, codegenClassScope))
@@ -81,40 +81,47 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                             codegenClassScope));
                 }
 
-                firstBlock.MethodReturn(ExprDotMethod(manufacturer, "Make", @Ref("row")));
+                firstBlock.MethodReturn(ExprDotMethod(firstMethodManufacturer, "Make", @Ref("row")));
+
                 return LocalMethod(firstMethodNode);
             }
+            else {
+                var methodNode = codegenMethodScope.MakeChild(
+                    typeof(EventBean[]),
+                    typeof(SelectExprProcessorTypableMultiForge),
+                    codegenClassScope);
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean[]),
-                typeof(SelectExprProcessorTypableMultiForge),
-                codegenClassScope);
+                var methodManufacturer = codegenClassScope.AddDefaultFieldUnshared(
+                    true,
+                    typeof(EventBeanManufacturer),
+                    factory.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
 
-            CodegenBlock block = methodNode.Block
-                .DeclareVar<object[][]>(
-                    "rows",
-                    typable.EvaluateTypableMultiCodegen(methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("rows")
-                .IfCondition(EqualsIdentity(ArrayLength(@Ref("rows")), Constant(0)))
-                .BlockReturn(NewArrayByLength(typeof(EventBean), Constant(0)));
-            if (hasWideners) {
-                block.Expression(
-                    SelectExprProcessorHelper.ApplyWidenersCodegenMultirow(
-                        @Ref("rows"),
-                        wideners,
-                        methodNode,
-                        codegenClassScope));
+                var methodBlock = methodNode.Block
+                    .DeclareVar<object[][]>(
+                        "rows",
+                        typable.EvaluateTypableMultiCodegen(methodNode, exprSymbol, codegenClassScope))
+                    .IfRefNullReturnNull("rows")
+                    .IfCondition(EqualsIdentity(ArrayLength(@Ref("rows")), Constant(0)))
+                    .BlockReturn(NewArrayByLength(typeof(EventBean), Constant(0)));
+                if (hasWideners) {
+                    methodBlock.Expression(
+                        SelectExprProcessorHelper.ApplyWidenersCodegenMultirow(
+                            @Ref("rows"),
+                            wideners,
+                            methodNode,
+                            codegenClassScope));
+                }
+
+                methodBlock.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), ArrayLength(@Ref("rows"))))
+                    .ForLoopIntSimple("i", ArrayLength(@Ref("events")))
+                    .AssignArrayElement(
+                        "events",
+                        @Ref("i"),
+                        ExprDotMethod(methodManufacturer, "Make", ArrayAtIndex(@Ref("rows"), @Ref("i"))))
+                    .BlockEnd()
+                    .MethodReturn(@Ref("events"));
+                return LocalMethod(methodNode);
             }
-
-            block.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), ArrayLength(@Ref("rows"))))
-                .ForLoopIntSimple("i", ArrayLength(@Ref("events")))
-                .AssignArrayElement(
-                    "events",
-                    @Ref("i"),
-                    ExprDotMethod(manufacturer, "Make", ArrayAtIndex(@Ref("rows"), @Ref("i"))))
-                .BlockEnd()
-                .MethodReturn(@Ref("events"));
-            return LocalMethod(methodNode);
         }
 
         public Type UnderlyingEvaluationType {

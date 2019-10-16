@@ -196,35 +196,36 @@ namespace com.espertech.esper.common.@internal.@event.render
                 if (value != null) {
                     var map = (IDictionary<string, object>) value;
                     if (!map.IsEmpty()) {
-                        var it = map.GetEnumerator();
-                        for (; it.MoveNext();) {
-                            var entry = it.Current;
-                            if (entry.Key == null || entry.Value == null) {
-                                continue;
-                            }
+                        using (var enumerator = map.GetEnumerator()) {
+                            while (enumerator.MoveNext()) {
+                                var entry = enumerator.Current;
+                                if (entry.Key == null || entry.Value == null) {
+                                    continue;
+                                }
 
-                            buf.Append(" ");
-                            buf.Append(entry.Key);
-                            buf.Append("=\"");
-                            var outputValueRenderer =
-                                OutputValueRendererFactory.GetOutputValueRenderer(
-                                    entry.Value.GetType(),
-                                    rendererMetaOptions);
+                                buf.Append(" ");
+                                buf.Append(entry.Key);
+                                buf.Append("=\"");
+                                var outputValueRenderer =
+                                    OutputValueRendererFactory.GetOutputValueRenderer(
+                                        entry.Value.GetType(),
+                                        rendererMetaOptions);
 
-                            if (rendererMetaOptions.Renderer == null) {
-                                outputValueRenderer.Render(entry.Value, buf);
-                            }
-                            else {
-                                var context = rendererMetaOptions.RendererContext;
-                                context.SetStringBuilderAndReset(buf);
-                                context.PropertyName = mappedProp.Name;
-                                context.PropertyValue = entry.Value;
-                                context.MappedPropertyKey = entry.Key;
-                                context.DefaultRenderer = outputValueRenderer;
-                                rendererMetaOptions.Renderer.Render(context);
-                            }
+                                if (rendererMetaOptions.Renderer == null) {
+                                    outputValueRenderer.Render(entry.Value, buf);
+                                }
+                                else {
+                                    var context = rendererMetaOptions.RendererContext;
+                                    context.SetStringBuilderAndReset(buf);
+                                    context.PropertyName = mappedProp.Name;
+                                    context.PropertyValue = entry.Value;
+                                    context.MappedPropertyKey = entry.Key;
+                                    context.DefaultRenderer = outputValueRenderer;
+                                    rendererMetaOptions.Renderer.Render(context);
+                                }
 
-                            buf.Append("\"");
+                                buf.Append("\"");
+                            }
                         }
                     }
                 }

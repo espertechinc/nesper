@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select * from SupportMarketDataBean.mynamespace:invalid()",
-                "Failed to validate data window declaration: Error casting view factory instance to " +
-                typeof(ViewFactoryForge).Name +
+                "Failed to validate data window declaration: Error instantiating view factory instance to " +
+                typeof(ViewFactoryForge).FullName +
                 " interface for view 'invalid'");
         }
 

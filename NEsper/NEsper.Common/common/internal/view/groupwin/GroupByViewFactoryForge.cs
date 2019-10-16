@@ -185,10 +185,22 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             method.Block
-                .SetProperty(factory, "IsReclaimAged", Constant(isReclaimAged))
-                .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
-                .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
-                .SetProperty(factory, "PropertyNames", Constant(propertyNames))
+                .SetProperty(
+                    factory,
+                    "IsReclaimAged",
+                    Constant(isReclaimAged))
+                .SetProperty(
+                    factory,
+                    "ReclaimMaxAge",
+                    Constant(reclaimMaxAge))
+                .SetProperty(
+                    factory,
+                    "ReclaimFrequency",
+                    Constant(reclaimFrequency))
+                .SetProperty(
+                    factory,
+                    "PropertyNames",
+                    Constant(propertyNames))
                 .SetProperty(
                     factory,
                     "CriteriaEvals",

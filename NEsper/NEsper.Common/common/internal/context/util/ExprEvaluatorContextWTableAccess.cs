@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.context.util
             get => context.AllocateAgentInstanceScriptContext;
         }
 
-        public StatementAgentInstanceLock AgentInstanceLock {
+        public IReaderWriterLock AgentInstanceLock {
             get => context.AgentInstanceLock;
         }
 

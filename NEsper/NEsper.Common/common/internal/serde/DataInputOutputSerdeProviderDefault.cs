@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.serde
             return null;
         }
 
-        public DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<E>(
+        public DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque(
             Type[] valueTypes,
             EventType eventType)
         {

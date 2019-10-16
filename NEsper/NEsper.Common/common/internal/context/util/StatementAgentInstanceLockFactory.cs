@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="stateless">indicator whether stateless</param>
         /// <param name="statementType">statement type</param>
         /// <returns>lock</returns>
-        StatementAgentInstanceLock GetStatementLock(
+        IReaderWriterLock GetStatementLock(
             string statementName,
             Attribute[] annotations,
             bool stateless,

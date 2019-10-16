@@ -12,19 +12,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     public class SendableEventBean : SendableEvent
     {
-        private readonly string typeName;
+        private readonly string _typeName;
 
         public SendableEventBean(
             object @event,
             string typeName)
         {
             Underlying = @event;
-            this.typeName = typeName;
+            this._typeName = typeName;
         }
 
         public void Send(EventServiceSendEventCommon eventService)
         {
-            eventService.SendEventBean(Underlying, typeName);
+            eventService.SendEventBean(Underlying, _typeName);
         }
 
         public object Underlying { get; }

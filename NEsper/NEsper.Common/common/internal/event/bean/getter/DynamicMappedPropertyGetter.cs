@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -27,6 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public class DynamicMappedPropertyGetter : DynamicPropertyGetterBase
     {
+        private readonly string _propertyName;
         private readonly string _getterMethodName;
         private readonly object[] _parameters;
 
@@ -37,13 +39,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventTypeFactory beanEventTypeFactory)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
+            _propertyName = PropertyHelper.GetPropertyName(fieldName);
             _getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
             _parameters = new object[] {key};
         }
 
         internal override MethodInfo DetermineMethod(Type clazz)
         {
-            return DynamicMapperPropertyDetermineMethod(clazz, _getterMethodName);
+            return DynamicMapperPropertyDetermineMethod(clazz, _propertyName, _getterMethodName);
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
@@ -55,6 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 typeof(DynamicMappedPropertyGetter),
                 "DynamicMapperPropertyDetermineMethod",
                 clazz,
+                Constant(_propertyName),
                 Constant(_getterMethodName));
         }
 
@@ -71,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(_parameters));
+            var @params = codegenClassScope.AddDefaultFieldUnshared<object[]>(true, Constant(_parameters));
             return StaticMethod(
                 typeof(DynamicMappedPropertyGetter),
                 "DynamicMappedPropertyGet",
@@ -84,31 +88,55 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="clazz">class</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="getterMethodName">method</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException for access ex</throws>
         public static MethodInfo DynamicMapperPropertyDetermineMethod(
             Type clazz,
+            string propertyName,
             string getterMethodName)
         {
-            try {
-                return clazz.GetMethod(getterMethodName, new[] {typeof(string)});
-            }
-            catch (AmbiguousMatchException) {
-                MethodInfo method;
-                try {
-                    method = clazz.GetMethod(getterMethodName);
-                }
-                catch (AmbiguousMatchException) {
-                    return null;
-                }
+            MethodInfo method = null;
 
-                if (method.ReturnType != typeof(IDictionary<string, object>)) {
-                    return null;
+            try
+            {
+                method = clazz.GetMethod(getterMethodName, new[] { typeof(string) });
+                if (method != null)
+                {
+                    return method;
                 }
-
-                return method;
             }
+            catch (AmbiguousMatchException)
+            {
+            }
+
+            // Getting here means there is no "indexed" method matching the form GetXXX(int index);
+            // this section attempts to now see if the method can be found in such a way that it
+            // return an array (or presumably a list) that can be indexed.  We've added to this by
+            // augmenting it with the property name.  As we know, c# properties simply mask
+            // properties that have a similar form to the ones outlined herein.
+
+            var property = clazz.GetProperty(propertyName);
+            if (property != null && property.CanRead)
+            {
+                method = property.GetGetMethod();
+            }
+
+            if (method == null)
+            {
+                method = clazz.GetMethod(getterMethodName, new Type[0]);
+            }
+
+            if (method != null)
+            {
+                if (method.ReturnType.IsGenericStringDictionary())
+                {
+                    return method;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -129,7 +157,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 }
 
                 var result = descriptor.Method.Invoke(underlying, null);
-                if (result is IDictionary<object, object> map && result != null) {
+                if (result == null)
+                {
+                    return null;
+                }
+
+                if (result.GetType().IsGenericDictionary())
+                {
+                    var map = result.AsObjectDictionary(MagicMarker.SingletonInstance);
                     return map.Get(parameters[0]);
                 }
 

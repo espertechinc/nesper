@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             CodegenMethodScope scope,
             CodegenClassScope classScope)
         {
-            var copyMethodField = classScope.AddFieldUnshared(
+            var copyMethodField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventBeanCopyMethod),
                 copyMethod.MakeCopyMethodClassScoped(classScope));
@@ -228,6 +228,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 if (updateItem.OptionalWidener != null) {
                     assigned = updateItem.OptionalWidener.WidenCodegen(@ref, method, classScope);
                 }
+
+                // Unbox the reference if applicable
+                assigned = Unbox(assigned, types[i]);
 
                 if (!types[i].IsPrimitive && updateItem.IsNotNullableField) {
                     method.Block

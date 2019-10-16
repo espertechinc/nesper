@@ -44,14 +44,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var groupKey = resultSetProcessor.GenerateGroupKeySingle(eventsPerStream, true);
                 aggregationService.SetCurrentAccess(groupKey, exprEvaluatorContext.AgentInstanceId, null);
 
-                if (resultSetProcessor.HasHavingClause &&
-                    resultSetProcessor.EvaluateHavingClause(eventsPerStream, true, exprEvaluatorContext)) {
-                    yield return resultSetProcessor.SelectExprProcessor.Process(
-                        eventsPerStream,
-                        true,
-                        true,
-                        exprEvaluatorContext);
+                if (resultSetProcessor.HasHavingClause) {
+                    var pass = resultSetProcessor.EvaluateHavingClause(eventsPerStream, true, exprEvaluatorContext);
+                    if (!pass) {
+                        continue;
+                    }
                 }
+
+                yield return resultSetProcessor.SelectExprProcessor.Process(
+                    eventsPerStream,
+                    true,
+                    true,
+                    exprEvaluatorContext);
             }
         }
     }

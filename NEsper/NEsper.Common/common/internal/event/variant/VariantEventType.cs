@@ -56,9 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             propertyDesc = new Dictionary<string, VariantPropertyDesc>();
 
             foreach (var type in Variants) {
-                var properties = type.PropertyNames;
-                properties = CollectionUtil.CopyAndSort(properties);
-                foreach (var property in properties) {
+                foreach (var property in CollectionUtil.CopyAndSort(type.PropertyNames)) {
                     if (!propertyDesc.ContainsKey(property)) {
                         FindProperty(property);
                     }
@@ -167,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public EventTypeMetadata Metadata { get; private set; }
 
-        public EventPropertyDescriptor[] PropertyDescriptors { get; }
+        public IList<EventPropertyDescriptor> PropertyDescriptors { get; }
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {

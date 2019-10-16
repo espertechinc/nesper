@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 OA_TYPENAME,
                 FOA,
-                new object[] {new[] {"v1", "v2"}, Collections.SingletonMap("k1", "v1")});
+                new object[] {new[] {"v1", "v2"}, Collections.SingletonDataMap("k1", "v1")});
 
             // Avro
             var avroSchema =

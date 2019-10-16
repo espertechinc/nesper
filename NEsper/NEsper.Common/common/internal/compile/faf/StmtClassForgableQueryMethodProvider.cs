@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
     {
         private const string MEMBERNAME_QUERYMETHOD = "queryMethod";
 
-        private readonly FAFQueryMethodForge forge;
+        private readonly FAFQueryMethodForge _forge;
         private readonly CodegenNamespaceScope _namespaceScope;
 
         public StmtClassForgableQueryMethodProvider(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
         {
             ClassName = className;
             this._namespaceScope = namespaceScope;
-            this.forge = forge;
+            this._forge = forge;
         }
 
         public CodegenClass Forge(bool includeDebugSymbols)
@@ -60,6 +60,13 @@ namespace com.espertech.esper.common.@internal.compile.faf
                         typeof(EPStatementInitServices),
                         EPStatementInitServicesConstants.REF.Ref,
                         false));
+                ctorParms.Add(
+                    new CodegenTypedParam(
+                        _namespaceScope.FieldsClassName,
+                        null,
+                        "statementFields",
+                        true,
+                        false));
                 var providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, ctorParms);
                 var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
@@ -71,9 +78,9 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 var makeMethod = providerCtor.MakeChildWithScope(typeof(FAFQueryMethod), GetType(), symbols, classScope)
                     .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
                 providerCtor.Block
-                    .StaticMethod(_namespaceScope.FieldsClassNameOptional, "Init", EPStatementInitServicesConstants.REF)
+                    .ExprDotMethod(Ref("statementFields"), "Init", EPStatementInitServicesConstants.REF)
                     .AssignRef(MEMBERNAME_QUERYMETHOD, LocalMethod(makeMethod, EPStatementInitServicesConstants.REF));
-                forge.MakeMethod(makeMethod, symbols, classScope);
+                _forge.MakeMethod(makeMethod, symbols, classScope);
 
                 // make provider methods
                 var propQueryMethod = CodegenProperty.MakePropertyNode(

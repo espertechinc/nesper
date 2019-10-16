@@ -50,16 +50,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             IDictionary<object, int> items = new LinkedHashMap<object, int>();
-            ICollection<object> values = (ICollection<object>) enumcoll;
+            var values = (ICollection<object>) enumcoll;
 
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
 
-            foreach (object next in values) {
+            foreach (var next in values) {
                 props[0] = next;
 
-                object item = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var item = innerExpression.Evaluate(eventsLambda, isNewData, context);
                 int? existing = items.Get(item);
 
                 if (existing == null) {
@@ -81,16 +81,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            Type returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     returnType,
                     typeof(EnumMostLeastFrequentScalarLamdaForgeEval),
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IDictionary<object, object>>("items", NewInstance(typeof(LinkedHashMap<object, object>)))

@@ -231,12 +231,26 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
-            var packageScope = new CodegenNamespaceScope(@namespace, null, compileTimeServices.IsInstrumented());
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementFields), classPostfix);
+            var packageScope = new CodegenNamespaceScope(
+                @namespace, statementFieldsClassName, compileTimeServices.IsInstrumented());
             var fafProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFProvider), classPostfix);
             var classScope = new CodegenClassScope(true, packageScope, fafProviderClassName);
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            var ctor = new CodegenCtor(
+                typeof(CompilerHelperFAFProvider),
+                classScope,
+                new List<CodegenTypedParam>());
+
+            ctor.Block.AssignRef(Ref("statementFields"), NewInstance(statementFieldsClassName));
 
             // initialize-event-types
             var initializeEventTypesMethod = MakeInitEventTypes(classScope, compileTimeServices);
@@ -253,7 +267,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     EPStatementInitServicesConstants.REF.Ref);
             initializeQueryMethod.Block.AssignRef(
                 MEMBERNAME_QUERY_METHOD_PROVIDER,
-                NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF));
+                NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
 
             // get-execute
             var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
@@ -269,6 +283,7 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenStackGenerator.RecursiveBuildStack(queryMethodProviderProperty, "QueryMethodProvider", methods, properties);
 
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
+            members.Add(new CodegenTypedParam(statementFieldsClassName, null, "statementFields"));
             var typedParam = new CodegenTypedParam(typeof(FAFQueryMethodProvider), MEMBERNAME_QUERY_METHOD_PROVIDER);
             typedParam.IsReadonly = false;
             members.Add(typedParam);
@@ -279,7 +294,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 fafProviderClassName,
                 classScope,
                 members,
-                null,
+                ctor,
                 methods,
                 properties,
                 new EmptyList<CodegenInnerClass>());

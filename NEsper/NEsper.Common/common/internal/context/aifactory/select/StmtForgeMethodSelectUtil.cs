@@ -433,6 +433,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            //var statementFieldsClassName = namespaceScope.FieldsClassNameOptional;
 
             var forge = new StatementAgentInstanceFactorySelectForge(
                 typeService.StreamNames,
@@ -452,8 +453,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
 
+            var forgables = new List<StmtClassForgable>();
             forgables.Add(
                 new StmtClassForgableRSPFactoryProvider(
                     resultSetProcessorProviderClassName,
@@ -473,7 +474,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     namespaceScope,
                     forge));
             forgables.Add(
-                new StmtClassForgableStmtFields(namespaceScope.FieldsClassNameOptional, namespaceScope, numStreams));
+                new StmtClassForgableStmtFields(
+                    statementFieldsClassName, 
+                    namespaceScope, 
+                    numStreams));
 
             if (!dataflowOperator) {
                 var informationals = StatementInformationalsUtil.GetInformationals(

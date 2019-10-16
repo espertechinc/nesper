@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
-                    .IfCondition(And(NotEqualsNull(Ref("pass")), ExprDotName(Ref("pass"), "Value")))
+                    .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                     .IfCondition(Ref("haveResult"))
                     .BlockReturn(ConstantNull())
                     .AssignRef("groupKeyMatch", Ref("groupKey"))
@@ -126,11 +126,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
-            var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var subselectMultirowType = classScope.AddFieldUnshared(
+            var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var subselectMultirowType = classScope.AddDefaultFieldUnshared(
                 false,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
-                    .IfCondition(And(NotEqualsNull(Ref("pass")), ExprDotName(Ref("pass"), "Value")))
+                    .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                     .DeclareVar<IDictionary<object, object>>(
                         "row",
                         LocalMethod(

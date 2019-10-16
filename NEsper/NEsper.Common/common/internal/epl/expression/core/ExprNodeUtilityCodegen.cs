@@ -33,14 +33,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope classScope)
         {
             var lambda = new CodegenExpressionLambda(method.Block)
-                .WithParams(PARAMS);
+                .WithParams(LAMBDA_PARAMS);
 
             if (forge.EvaluationType == null) {
                 lambda.Block.BlockReturn(ConstantNull());
+                return NewInstance<ProxyExprEvaluator>(lambda);
             }
             else {
                 var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
-                lambda.Block.BlockReturn(LocalMethod(evalMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                lambda.Block.BlockReturn(
+                    LocalMethod(
+                        evalMethod,
+                        LAMBDA_REF_EPS,
+                        LAMBDA_REF_ISNEWDATA,
+                        LAMBDA_REF_EXPREVALCONTEXT));
             }
 
             return NewInstance<ProxyExprEvaluator>(lambda);
@@ -278,7 +284,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             method.Block.DeclareVar<IDictionary<string, object>>(
                 "map",
-                NewInstance(typeof(Dictionary<string, object>), Constant(selectAsNames.Length + 2)));
+                NewInstance(typeof(HashMap<string, object>), Constant(selectAsNames.Length + 2)));
             var expressions = new CodegenExpression[selectAsNames.Length];
             for (var i = 0; i < selectClause.Count; i++) {
                 expressions[i] = selectClause[i].Forge.EvaluateCodegen(typeof(object), method, exprSymbol, classScope);

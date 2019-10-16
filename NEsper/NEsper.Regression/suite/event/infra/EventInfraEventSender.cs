@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 XML_TYPENAME,
                 SupportXML.GetDocument("<xxxx/>"),
-                "Unexpected root element name 'xxxx' encountered, expected a root element name of 'myevent'");
+                "Unexpected root element name 'xxxx' encountered, expected a root element name of 'Myevent'");
 
             // Avro
             var schema = AvroSchemaUtil

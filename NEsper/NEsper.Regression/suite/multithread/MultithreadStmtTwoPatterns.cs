@@ -25,11 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     ///     2. Thread 1 repeats sending 100 events and tests 5% received
     ///     3. Main thread starts pattern:
     ///     ( every event1=SupportTradeEvent(userID in ('100','101')) -&gt;
-    ///     (SupportTradeEvent(userID in ('100','101'), direction = event1.direction ) -&gt;
-    ///     SupportTradeEvent(userID in ('100','101'), direction = event1.direction )
+    ///     (SupportTradeEvent(userID in ('100','101'), Direction = event1.Direction ) -&gt;
+    ///     SupportTradeEvent(userID in ('100','101'), Direction = event1.Direction )
     ///     ) where timer:within(8 hours)
-    ///     and not eventNC=SupportTradeEvent(userID in ('100','101'), direction!= event1.direction )
-    ///     ) -&gt; eventFinal=SupportTradeEvent(userID in ('100','101'), direction != event1.direction ) where timer:within(1
+    ///     and not eventNC=SupportTradeEvent(userID in ('100','101'), Direction!= event1.Direction )
+    ///     ) -&gt; eventFinal=SupportTradeEvent(userID in ('100','101'), Direction != event1.Direction ) where timer:within(1
     ///     hour)
     ///     4. Main thread waits for 2 seconds and stops all threads
     /// </summary>
@@ -45,12 +45,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public void Run(RegressionEnvironment env)
         {
-            var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(userId in ('100','101')) ->\n" +
-                               "         (SupportTradeEvent(userId in ('100','101'), direction = event1.direction ) ->\n" +
-                               "          SupportTradeEvent(userId in ('100','101'), direction = event1.direction )\n" +
+            var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(UserId in ('100','101')) ->\n" +
+                               "         (SupportTradeEvent(UserId in ('100','101'), Direction = event1.Direction ) ->\n" +
+                               "          SupportTradeEvent(UserId in ('100','101'), Direction = event1.Direction )\n" +
                                "         ) where timer:within(8 hours)\n" +
-                               "         and not eventNC=SupportTradeEvent(userId in ('100','101'), direction!= event1.direction )\n" +
-                               "        ) -> eventFinal=SupportTradeEvent(userId in ('100','101'), direction != event1.direction ) where timer:within(1 hour)]";
+                               "         and not eventNC=SupportTradeEvent(UserId in ('100','101'), Direction!= event1.Direction )\n" +
+                               "        ) -> eventFinal=SupportTradeEvent(UserId in ('100','101'), Direction != event1.Direction ) where timer:within(1 hour)]";
             var compiledTwo = env.Compile(statementTwo);
 
             var runnable = new TwoPatternRunnable(env);

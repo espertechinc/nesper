@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             CodegenExpression typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
-                typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(
                         EPTypeHelper.SingleValue(forge.EventType.UnderlyingType),
                         codegenClassScope));

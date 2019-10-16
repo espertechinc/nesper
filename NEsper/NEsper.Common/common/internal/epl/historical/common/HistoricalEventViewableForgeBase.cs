@@ -50,14 +50,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         {
             var method = parent.MakeChild(TypeOfImplementation(), GetType(), classScope);
             var @ref = Ref("hist");
+            
             method.Block.DeclareVar(TypeOfImplementation(), @ref.Ref, NewInstance(TypeOfImplementation()))
-                .SetProperty(@ref, "StreamNumber", Constant(streamNum))
+                .SetProperty(
+                    @ref, "StreamNumber", Constant(streamNum))
                 .SetProperty(
                     @ref,
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .SetProperty(@ref, "HasRequiredStreams", Constant(!subordinateStreams.IsEmpty()))
-                .SetProperty(@ref, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(
+                    @ref, "HasRequiredStreams", Constant(!subordinateStreams.IsEmpty()))
+                .SetProperty(
+                    @ref, "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(
                     @ref,
                     "Evaluator",
@@ -67,7 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                         method,
                         GetType(),
                         classScope));
+            
             CodegenSetter(@ref, method, symbols, classScope);
+            
             method.Block
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", @ref))
                 .MethodReturn(@ref);

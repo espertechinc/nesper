@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var member = codegenClassScope.AddFieldUnshared(
+            var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         Constant(propertyName),
                         Constant(index)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
+                .MethodReturn(ExprDotMethod(member, "GetEvent", Ref("result")));
             return method;
         }
 
@@ -244,11 +244,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 var elementName = childNode.LocalName;
-                if (elementName == null) {
-                    elementName = childNode.Name;
-                }
-
-                if (!propertyName.Equals(elementName)) {
+                if (elementName != propertyName) {
                     continue;
                 }
 

@@ -49,8 +49,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 TryInvalidCompile(
                     env,
-                    "create schema SupportAmbigousEventType as SupportAmbigousEventType",
-                    "Failed to resolve name 'SupportAmbigousEventType', the class was ambigously found both in package 'com.espertech.esper.regressionlib.support.autoname.one' and in package 'com.espertech.esper.regressionlib.support.autoname.two'");
+                    "create schema SupportAmbigousEventType as SupportAmbiguousEventType",
+                    "Failed to resolve name 'SupportAmbiguousEventType', the class was ambiguously found both in namespace 'com.espertech.esper.regressionlib.support.autoname.one' and in namespace 'com.espertech.esper.regressionlib.support.autoname.two'");
             }
         }
     }

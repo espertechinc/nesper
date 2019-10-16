@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         private static TimePeriod ParsePeriod(string period)
         {
-            var p = new Regex("P((\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?");
+            var p = new Regex("^P((\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$");
             var matcher = p.Match(period);
             if (!matcher.Success) {
                 throw new ScheduleParameterException("Invalid period '" + period + "'");
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 ParsePeriodDatePart(period.Substring(1), timePeriod);
             }
             else {
-                ParsePeriodDatePart(period.Substring(1, indexOfT), timePeriod);
+                ParsePeriodDatePart(period.Substring(1, indexOfT - 1), timePeriod);
                 ParsePeriodTimePart(period.Substring(indexOfT + 1), timePeriod);
             }
 
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             string datePart,
             TimePeriod timePeriod)
         {
-            var pattern = new Regex("(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?");
+            var pattern = new Regex("^(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?$");
             var matcher = pattern.Match(datePart);
             if (!matcher.Success) {
                 throw new IllegalStateException();
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             string timePart,
             TimePeriod timePeriod)
         {
-            var pattern = new Regex("(\\d+H)?(\\d+M)?(\\d+S)?");
+            var pattern = new Regex("^(\\d+H)?(\\d+M)?(\\d+S)?$");
             var matcher = pattern.Match(timePart);
             if (!matcher.Success) {
                 throw new IllegalStateException();

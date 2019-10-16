@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
@@ -84,18 +85,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  theString = 'a'," +
-                    "  theInt: 1," +
-                    "  isTheBool: true," +
-                    "  theLongOne: 1L," +
-                    "  theLongTwo: 2," +
-                    "  theLongThree: null," +
-                    "  theDoubleOne: 1d," +
-                    "  theDoubleTwo: 2," +
-                    "  theFloatOne: 1f," +
-                    "  theFloatTwo: 2," +
-                    "  theStringWithSetter: 'b'," +
-                    "  theSystemProperty: systemProperties('log4j.configuration')" +
+                    "  TheString = 'a'," +
+                    "  TheInt: 1," +
+                    "  TheBool: true," +
+                    "  TheLongOne: 1L," +
+                    "  TheLongTwo: 2," +
+                    "  TheLongThree: null," +
+                    "  TheDoubleOne: 1d," +
+                    "  TheDoubleTwo: 2," +
+                    "  TheFloatOne: 1f," +
+                    "  TheFloatTwo: 2," +
+                    "  TheStringWithSetter: 'b'," +
+                    "  TheSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];
@@ -103,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual("a", instanceOne.TheString);
                 Assert.AreEqual(null, instanceOne.TheNotSetString);
                 Assert.AreEqual(1, instanceOne.TheInt);
-                Assert.AreEqual(true, instanceOne.IsTheBool);
+                Assert.AreEqual(true, instanceOne.TheBool);
                 Assert.AreEqual(1L, (long) instanceOne.TheLongOne);
                 Assert.AreEqual(2, instanceOne.TheLongTwo);
                 Assert.AreEqual(null, instanceOne.TheLongThree);
@@ -118,20 +119,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
-                    "  theStringArray: ['a', \"b\"],\n" +
-                    "  theIntArray: [1, 2, 3],\n" +
-                    "  theObjectArray: ['a', 1],\n" +
-                    "  theMap: {\n" +
+                    "  TheStringArray: ['a', \"b\"],\n" +
+                    "  TheIntArray: [1, 2, 3],\n" +
+                    "  TheObjectArray: ['a', 1],\n" +
+                    "  TheMap: {\n" +
                     "    a : 10,\n" +
                     "    b : 'xyz'\n" +
                     "  },\n" +
-                    "  theInnerOp: {\n" +
+                    "  TheInnerOp: {\n" +
                     "    fieldOne: 'x',\n" +
                     "    fieldTwo: 2\n" +
                     "  },\n" +
-                    "  theInnerOpInterface: {\n" +
+                    "  TheInnerOpInterface: {\n" +
                     "    class: '" +
-                    typeof(MyOperatorTwoInterfaceImplTwo).FullName +
+                    typeof(MyOperatorTwoInterfaceImplTwo).MaskTypeName() +
                     "'\n" +
                     "  },\n" + // NOTE the last comma here, it's acceptable
                     "}");
@@ -154,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
         public class MyOperatorOneForge : DataFlowOperatorForge
         {
-            [DataFlowOpParameter] private readonly bool isTheBool;
+            [DataFlowOpParameter] private readonly bool theBool;
             [DataFlowOpParameter] private readonly double theDoubleOne;
             [DataFlowOpParameter] private readonly double? theDoubleTwo;
             [DataFlowOpParameter] private readonly float theFloatOne;
@@ -178,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             public int TheInt => theInt;
 
-            public bool IsTheBool => isTheBool;
+            public bool TheBool => theBool;
 
             public long? TheLongOne => theLongOne;
 

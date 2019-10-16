@@ -253,12 +253,12 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Stage 3(b) - forge-factory-to-forge
                 var classPostfix = moduleIdentPostfix + "_" + statementIdentPostfix;
-                IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-                IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-                IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders =
+                var forgables = new List<StmtClassForgable>();
+                var filterSpecCompileds = new List<FilterSpecCompiled>();
+                var scheduleHandleCallbackProviders =
                     new List<ScheduleHandleCallbackProvider>();
-                IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-                IList<FilterSpecParamExprNodeForge> filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
+                var namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+                var filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
                 var result = forgeMethod.Make(@namespace, classPostfix, compileTimeServices);
                 forgables.AddAll(result.Forgables);
                 VerifyForgables(forgables);
@@ -391,12 +391,10 @@ namespace com.espertech.esper.compiler.@internal.util
                     compileTimeServices.ImportServiceCompileTime);
             }
             catch (ExprValidationException e) {
-                throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
+                throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN, e);
             }
 
-            if (compileHook != null) {
-                compileHook.Compiled(specCompiled);
-            }
+            compileHook?.Compiled(specCompiled);
         }
 
         protected internal static string GetNameFromAnnotation(Attribute[] annotations)

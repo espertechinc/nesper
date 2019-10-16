@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 using com.espertech.esper.runtime.@internal.metrics.stmtmetrics;
@@ -30,11 +31,11 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
 {
     /// <summary>
     ///     This service hold for each named window a dedicated processor and a lock to the named window.
-    ///     This lock is shrared between the named window and on-delete statements.
+    ///     This lock is shared between the named window and on-delete statements.
     /// </summary>
     public class NamedWindowDispatchServiceImpl : NamedWindowDispatchService
     {
-        private readonly ManagedReadWriteLock eventProcessingRWLock;
+        private readonly IReaderWriterLock eventProcessingRWLock;
         private readonly ExceptionHandlingService exceptionHandlingService;
         private readonly bool isPrioritized;
         private readonly MetricReportingService metricReportingService;
@@ -50,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
             VariableManagementService variableService,
             TableManagementService tableManagementService,
             bool isPrioritized,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
             MetricReportingService metricReportingService)
         {
@@ -90,7 +91,7 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                     InstrumentationHelper.Get().QNamedWindowDispatch(exceptionHandlingService.RuntimeURI);
                 }
 
-                using (eventProcessingRWLock.AcquireDisposableReadLock()) {
+                using (eventProcessingRWLock.AcquireReadLock()) {
                     try {
                         // since dispatches can cause dispatches, copy the contents
                         dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
@@ -187,14 +188,14 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                     },
                     work.Add);
 
-#if FALSE
-                var it = dispatches.GetEnumerator();
-                while (it.MoveNext()) {
-                    var next = it.Current;
+#if false
+                var enumerator = dispatches.GetEnumerator();
+                while (enumerator.MoveNext()) {
+                    var next = enumerator.Current;
                     var earlier = next.Earlier;
                     if (earlier == null || work.Contains(earlier)) {
                         work.Add(next);
-                        it.Remove();
+                        enumerator.Remove();
                     }
                     else {
                         break;

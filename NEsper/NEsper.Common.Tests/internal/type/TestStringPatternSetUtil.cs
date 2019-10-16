@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
@@ -18,7 +17,13 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestStringPatternSetUtil : AbstractCommonTest
     {
-        private readonly IList<Pair<StringPatternSet, bool>> patterns = new List<Pair<StringPatternSet, bool>>();
+        private IList<Pair<StringPatternSet, bool>> patterns;
+
+        [SetUp]
+        public void SetUp()
+        {
+            patterns = new List<Pair<StringPatternSet, bool>>();
+        }
 
         private void RunAssertion()
         {

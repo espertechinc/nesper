@@ -26,11 +26,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if false
             execs.Add(new ResultSetAfterWithOutputLast());
             execs.Add(new ResultSetEveryPolicy());
             execs.Add(new ResultSetMonthScoped());
             execs.Add(new ResultSetDirectNumberOfEvents());
             execs.Add(new ResultSetDirectTimePeriod());
+#endif
             execs.Add(new ResultSetSnapshotVariable());
             execs.Add(new ResultSetOutputWhenThen());
             return execs;
@@ -54,7 +56,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
-                new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}});
+                new[] {
+                    new object[] {"E1"},
+                    new object[] {"E2"},
+                    new object[] {"E3"},
+                    new object[] {"E4"}
+                });
             env.Listener("s0").Reset();
 
             env.Milestone(1);
@@ -65,7 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.Listener("s0").LastNewData,
                 fields,
                 new[] {
-                    new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"},
+                    new object[] {"E1"},
+                    new object[] {"E2"},
+                    new object[] {"E3"},
+                    new object[] {"E4"},
                     new object[] {"E5"}
                 });
             env.Listener("s0").Reset();
@@ -203,8 +213,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var milestone = new AtomicLong();
 
                 SendTimer(env, 0);
-                var stmtText =
-                    "select TheString from SupportBean#keepall output after 0 days 0 hours 0 minutes 20 seconds 0 milliseconds every 0 days 0 hours 0 minutes 5 seconds 0 milliseconds";
+                var stmtText = "select TheString from SupportBean#keepall output after " +
+                               "0.0d days " +
+                               "0.0d hours " +
+                               "0.0d minutes " +
+                               "20.0d seconds " +
+                               "0.0d milliseconds " +
+                               "every " +
+                               "0.0d days " +
+                               "0.0d hours " +
+                               "0.0d minutes " +
+                               "5.0d seconds " +
+                               "0.0d milliseconds";
                 env.CompileDeploy("@Name('s0') " + stmtText).AddListener("s0");
 
                 TryAssertionEveryPolicy(env, milestone);
@@ -365,8 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("create variable int myvar_local = 1", path);
 
                 SendTimer(env, 0);
-                var stmtText =
-                    "@Name('s0') select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
+                var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 TryAssertionSnapshotVar(env);

@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 defValues.Put("XML Message Type", "book");
                 defValues.Put("select", 100);
                 defValues.Put("children's books", new[] {50, 51});
-                defValues.Put("my <> map", Collections.SingletonMap("xx", "abc"));
+                defValues.Put("my <> map", Collections.SingletonDataMap("xx", "abc"));
                 env.SendEventMap(defValues, "MyType");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

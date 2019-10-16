@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private void RunAssertionWrapper(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') select {1, 2} as arr, *, Collections.singletonMap('A', 2) as mapped from SupportBean");
+                "@Name('s0') select {1, 2} as arr, *, Collections.SingletonDataMap('A', 2) as mapped from SupportBean");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean());

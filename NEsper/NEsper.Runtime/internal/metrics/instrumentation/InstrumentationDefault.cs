@@ -47,7 +47,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
         public bool Activated()
         {
-            return true;
+            return false;
         }
 
         public void QNamedWindowDispatch(string runtimeURI)

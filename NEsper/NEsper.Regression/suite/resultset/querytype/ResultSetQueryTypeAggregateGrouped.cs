@@ -26,10 +26,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if false
             execs.Add(new ResultSetQueryTypeCriteriaByDotMethod());
             execs.Add(new ResultSetQueryTypeIterateUnbound());
             execs.Add(new ResultSetQueryTypeUnaggregatedHaving());
             execs.Add(new ResultSetQueryTypeWildcard());
+#endif
             execs.Add(new ResultSetQueryTypeAggregationOverGroupedProps());
             execs.Add(new ResultSetQueryTypeSumOneView());
             execs.Add(new ResultSetQueryTypeSumJoin());

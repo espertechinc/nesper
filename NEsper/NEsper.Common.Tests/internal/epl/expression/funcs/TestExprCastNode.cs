@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 castNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

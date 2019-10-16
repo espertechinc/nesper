@@ -108,7 +108,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 var colname = colctx.classIdentifier();
                 var name = ASTUtil.UnescapeClassIdent(colname);
                 var classIdent = ASTClassIdentifierHelper.Walk(colctx.classIdentifierWithDimensions());
-                result.Add(new ColumnDesc(name, classIdent == null ? null : classIdent.ToEPL()));
+                result.Add(new ColumnDesc(name, classIdent?.ToEPL()));
             }
 
             return result;

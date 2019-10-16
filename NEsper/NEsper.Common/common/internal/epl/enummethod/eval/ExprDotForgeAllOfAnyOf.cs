@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprDotEvalParamLambda first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
             base.TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
             if (inputEventType != null) {

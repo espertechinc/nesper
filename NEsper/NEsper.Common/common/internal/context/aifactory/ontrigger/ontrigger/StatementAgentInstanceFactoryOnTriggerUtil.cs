@@ -9,12 +9,13 @@
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {
     public class StatementAgentInstanceFactoryOnTriggerUtil
     {
-        public static StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public static IReaderWriterLock ObtainAgentInstanceLock(
             StatementAgentInstanceFactoryOnTriggerInfraBase @base,
             StatementContext statementContext,
             int agentInstanceId)

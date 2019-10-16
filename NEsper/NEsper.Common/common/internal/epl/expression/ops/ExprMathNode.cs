@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (!childType.IsNumeric()) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
-                        childType.GetSimpleName() +
+                        childType.CleanName() +
                         "' to numeric is not allowed");
                 }
             }

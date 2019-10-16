@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
-                typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 
@@ -177,14 +177,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var evaluationType = forge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType,
+                evaluationType,
                 typeof(ExprDotNodeForgeRootChildEval),
                 codegenClassScope);
 
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
-                typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 
@@ -203,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(
-                    forge.EvaluationType,
+                    evaluationType,
                     "result",
                     ExprDotNodeUtility.EvaluateChainCodegen(
                         methodNode,
@@ -231,7 +232,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
-                typeInformation = codegenClassScope.AddOrGetFieldSharable(
+                typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 

@@ -96,11 +96,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new EPException("Substitution parameter names have not been provided for this statement");
             }
 
-            if (!SubstitutionParameterNames.TryGetValue(parameterName, out var index))
-            {
+            if (!SubstitutionParameterNames.TryGetValue(parameterName, out var index)) {
                 throw new EPException(
-                    "Failed to find substitution parameter named '" + parameterName + "', available parameters are " +
-                    SubstitutionParameterNames.Keys);
+                    "Failed to find substitution parameter named '" +
+                    parameterName +
+                    "', available parameters are " +
+                    SubstitutionParameterNames.Keys.RenderAny());
             }
 
             try

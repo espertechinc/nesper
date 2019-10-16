@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

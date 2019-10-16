@@ -1372,7 +1372,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             raw.ForClauseSpec = new ForClauseSpec();
             foreach (var item in clause.Items) {
                 var specItem = new ForClauseItemSpec(
-                    item.Keyword.GetName(),
+                    item.Keyword?.GetName(),
                     MapExpressionDeep(item.Expressions, mapContext));
                 raw.ForClauseSpec.Clauses.Add(specItem);
             }

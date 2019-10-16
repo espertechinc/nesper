@@ -8,11 +8,9 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -22,7 +20,8 @@ using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
-using SupportBeanComplexProps = com.espertech.esper.common.@internal.support.SupportBeanComplexProps;
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -141,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var stmtThreeText =
                     "@Name('l3') insert into streamB select a.*, 'abc' as abc from pattern [every a=SupportBean where timer:within(30 sec)]";
                 env.CompileDeploy(stmtThreeText);
-                Assert.AreEqual(typeof(Pair<object, object>), env.Statement("l3").EventType.UnderlyingType);
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), env.Statement("l3").EventType.UnderlyingType);
                 Assert.AreEqual(typeof(string), env.Statement("l3").EventType.GetPropertyType("abc"));
                 Assert.AreEqual(typeof(string), env.Statement("l3").EventType.GetPropertyType("TheString"));
 
@@ -155,12 +154,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
-                    .AddStreamWildcard("s0")
-                    .AddStreamWildcard("s1", "s1stream")
+                    .AddStreamWildcard("S0")
+                    .AddStreamWildcard("S1", "S1stream")
                     .AddWithAsProvidedName("TheString", "sym");
                 model.FromClause = FromClause.Create()
-                    .Add(FilterStream.Create("SupportBean", "s0").AddView("keepall"))
-                    .Add(FilterStream.Create("SupportMarketDataBean", "s1").AddView("keepall"));
+                    .Add(FilterStream.Create("SupportBean", "S0").AddView("keepall"))
+                    .Add(FilterStream.Create("SupportMarketDataBean", "S1").AddView("keepall"));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -172,15 +171,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(epl, modelReverse.ToEPL());
 
                 var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
-                Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
 
                 SendBeanEvent(env, "E1");
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 object theEvent = SendMarketEvent(env, "E1");
                 var outevent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, outevent.Get("s1stream"));
+                Assert.AreSame(theEvent, outevent.Get("S1stream"));
 
                 env.UndeployAll();
             }
@@ -215,15 +214,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(7, type.PropertyNames.Length);
                 Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
-                Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
 
                 object eventOne = SendBeanEvent(env, "E1", 13);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"s0", "s1", "Symbol", "Volume"};
+                string[] fields = {"S0", "S1", "Symbol", "Volume"};
                 var received = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     received,
@@ -243,11 +242,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.IsTrue(type.PropertyNames.Length > 15);
-                Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
 
                 object theEvent = SendBeanEvent(env, "E1", 15);
-                string[] fields = {"TheString", "IntPrimitive", "s0"};
+                string[] fields = {"TheString", "IntPrimitive", "S0"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -268,17 +267,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(4, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0stream"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
 
                 object eventOne = SendBeanEvent(env, "E1", 13);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"s0", "s1", "s0stream", "s1stream"};
+                string[] fields = {"S0", "S1", "S0stream", "S1stream"};
                 var received = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     received,
@@ -300,13 +299,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(4, type.PropertyNames.Length);
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1"));
+                Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
+                Assert.AreEqual(typeof(int), type.GetPropertyType("b"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
 
                 object theEvent = SendBeanEvent(env, "E1", 12);
-                string[] fields = {"s0", "s1", "a", "b"};
+                string[] fields = {"S0", "S1", "a", "b"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -327,9 +326,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(5, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
+                Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0stream"));
                 Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
                 Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
@@ -338,13 +337,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"IntPrimitive", "sym", "TheString", "s0stream", "s1stream"};
+                string[] fields = {"IntPrimitive", "sym", "TheString", "S0stream", "S1stream"};
                 var received = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     received,
                     fields,
                     new[] {13, "E2", "E1", eventOne, eventTwo});
-                var theEvent = (EventBean) ((IDictionary<string, object>) received.Underlying).Get("s0stream");
+                var theEvent = (EventBean) ((IDictionary<string, object>) received.Underlying).Get("S0stream");
                 Assert.AreSame(eventOne, theEvent.Underlying);
 
                 env.UndeployAll();
@@ -361,9 +360,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(23, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+                Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
+                Assert.AreEqual(typeof(int), type.GetPropertyType("b"));
                 Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
 
                 SendBeanEvent(env, "E1", 10);
@@ -387,8 +386,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(7, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
-                Assert.AreEqual(typeof(Pair<object, object>), type.UnderlyingType);
+                Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
+                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
 
                 SendBeanEvent(env, "E1", 11);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -400,7 +399,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     received,
                     fields,
                     new object[] {11, "E1", "E1"});
-                Assert.AreSame(theEvent, ((Pair<object, object>) received.Underlying).First);
+                Assert.AreSame(theEvent, ((Pair<object, IDictionary<string, object>>) received.Underlying).First);
 
                 env.UndeployAll();
             }
@@ -433,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(1, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
 
                 object theEvent = SendBeanEvent(env, "E1");
@@ -454,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Statement("s0").AddListener(testListener);
 
                 var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
+                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
 
                 SendBeanEvent(env, "E1");

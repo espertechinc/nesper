@@ -18,6 +18,7 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     ///     Enum representing relational types of operation.
     /// </summary>
+    [Serializable]
     public class BitWiseOpEnum
     {
         /// <summary>

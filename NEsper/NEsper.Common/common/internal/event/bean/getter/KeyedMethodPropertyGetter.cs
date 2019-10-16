@@ -147,6 +147,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
+            catch (TargetInvocationException e) {
+                throw PropertyUtility.GetTargetException(_method, e);
+            }
             catch (TargetException e) {
                 throw PropertyUtility.GetTargetException(_method, e);
             }

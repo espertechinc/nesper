@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
     [TestFixture]
     public class TestSuiteResultSetAggregateWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFilteredWMathContext()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateExtInvalid()
         {
             RegressionSession session = RegressionRunner.Session();

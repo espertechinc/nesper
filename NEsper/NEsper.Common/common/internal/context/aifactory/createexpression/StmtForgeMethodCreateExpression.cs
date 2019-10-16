@@ -88,15 +88,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
-            var packageScope = new CodegenNamespaceScope(@namespace, null, services.IsInstrumented);
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementFields), classPostfix);
+            var namespaceScope = new CodegenNamespaceScope(
+                @namespace, statementFieldsClassName, services.IsInstrumented);
+            var fieldsForgable = new StmtClassForgableStmtFields(statementFieldsClassName, namespaceScope, 0);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider),
-                classPostfix);
-            var forge =
-                new StatementAgentInstanceFactoryCreateExpressionForge(statementEventType, expressionName);
-            var aiFactoryForgable =
-                new StmtClassForgableAIFactoryProviderCreateExpression(aiFactoryProviderClassName, packageScope, forge);
+                typeof(StatementAIFactoryProvider), classPostfix);
+            var forge = new StatementAgentInstanceFactoryCreateExpressionForge(
+                statementEventType, expressionName);
+            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateExpression(
+                aiFactoryProviderClassName, namespaceScope, forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
@@ -106,7 +109,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
                 selectSubscriberDescriptor,
-                packageScope,
+                namespaceScope,
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
@@ -114,9 +117,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
-                packageScope);
+                namespaceScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
+            forgables.Add(fieldsForgable);
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
             return new StmtForgeMethodResult(

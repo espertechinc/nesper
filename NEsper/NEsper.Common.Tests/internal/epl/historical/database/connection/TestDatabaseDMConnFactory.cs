@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.supportunit.db;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -37,10 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
 
             // driver-manager config 1
             var config = new ConfigurationCommonDBRef();
-            config.SetDriverManagerConnection(
-                SupportDatabaseURL.DRIVER,
-                SupportDatabaseURL.FULLURL,
-                new Properties());
+            config.SetDatabaseDriver(SupportDatabaseService.GetInstance(container).DriverConnectionFactoryNative);
             config.ConnectionAutoCommit = true;
             config.ConnectionCatalog = "test";
             config.ConnectionTransactionIsolation = IsolationLevel.Serializable;
@@ -80,7 +78,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                     config.ConnectionCatalog = "test";
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
-                    return new DatabaseDriverConnFactory((DriverConnectionFactoryDesc) config.ConnectionFactoryDesc, config.ConnectionSettings);
+                    return new DatabaseDriverConnFactory(
+                        base.container,
+                        (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
+                        config.ConnectionSettings);
                 });
 
             TryAndCloseConnection(supportDatabaseService.DriverConnectionFactoryDefault);
@@ -92,21 +93,23 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
 #endif
         }
 
-        private static void TryAndCloseConnectionWithFactory(Func<DatabaseDriverConnFactory> connectionFactory)
+        private void TryAndCloseConnectionWithFactory(Func<DatabaseDriverConnFactory> connectionFactory)
         {
             TryAndCloseConnection(connectionFactory.Invoke().Driver.CreateConnection());
         }
 
-        private static void TryAndCloseConnection(ConnectionFactoryDesc connectionFactoryDesc)
+        private void TryAndCloseConnection(ConnectionFactoryDesc connectionFactoryDesc)
         {
             var config = new ConfigurationCommonDBRef { ConnectionFactoryDesc = connectionFactoryDesc };
             var connectionFactory = new DatabaseDriverConnFactory(
-                (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc, config.ConnectionSettings);
+                container,
+                (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc,
+                config.ConnectionSettings);
             var connection = connectionFactory.Driver.CreateConnection();
             TryAndCloseConnection(connection);
         }
 
-        private static void TryAndCloseConnection(DbConnection connection)
+        private void TryAndCloseConnection(DbConnection connection)
         {
             using (var stmt = connection.CreateCommand())
             {

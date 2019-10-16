@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -63,16 +64,12 @@ namespace com.espertech.esper.compat.magic
         /// <summary>
         /// Gets the type that magic type reflects.
         /// </summary>
-        public Type TargetType {
-            get { return _type; }
-        }
+        public Type TargetType => _type;
 
         /// <summary>
         /// Gets the magic type for the base type.
         /// </summary>
-        public MagicType BaseType {
-            get { return _parent; }
-        }
+        public MagicType BaseType => _parent;
 
         /// <summary>
         /// Creates a new instance of the object.  Assumes a default constructor.
@@ -114,11 +111,38 @@ namespace com.espertech.esper.compat.magic
             return assumedName;
         }
 
-        private void AddProperty(
+        private void AddOrUpdateProperty(
+            string name,
+            IDictionary<string, SimpleMagicPropertyInfo> propertyTable,
+            SimpleMagicPropertyInfo prop)
+        {
+            if (propertyTable.TryGetValue(name, out var propEntry)) {
+                for (var currProp = propEntry; currProp != null; currProp = currProp.Next) {
+                    if (currProp.Member == propEntry.Member) {
+                        currProp.EventPropertyType |= propEntry.EventPropertyType;
+                        return;
+                    }
+                }
+            }
+
+            // An existing entry does not exist, add a new one
+            if (propEntry != null) {
+                propEntry.Next = prop;
+            }
+            else {
+                propertyTable[name] = prop;
+            }
+        }
+
+        private void AddOrUpdateProperty(
             string csName,
             string ciName,
             SimpleMagicPropertyInfo prop)
         {
+            AddOrUpdateProperty(ciName, _ciPropertyTable, prop);
+            AddOrUpdateProperty(csName, _csPropertyTable, prop);
+
+#if false
             var ciProp = _ciPropertyTable.Get(ciName);
             if (ciProp != null) {
                 ciProp.Next = prop;
@@ -137,7 +161,37 @@ namespace com.espertech.esper.compat.magic
             else {
                 _csPropertyTable[csName] = prop;
             }
+#endif
         }
+
+        private bool IsIndexedType(Type type)
+        {
+            if (type == null)
+                return false;
+            if (type == typeof(string))
+                return true;
+            if (type.IsArray)
+                return true;
+            if (type.IsGenericDictionary())
+                return false;
+            if (type.IsGenericList())
+                return true;
+            if (type.IsGenericEnumerable() || type.IsImplementsInterface(typeof(IEnumerable)))
+                return true;
+
+            return false;
+        }
+
+        private bool IsMappedType(Type type)
+        {
+            if (type == null)
+                return false;
+            if (type.IsGenericStringDictionary())
+                return true;
+
+            return false;
+        }
+
 
         /// <summary>
         /// Indexes the simple properties.
@@ -147,28 +201,42 @@ namespace com.espertech.esper.compat.magic
             foreach (PropertyInfo propertyInfo in FetchSimpleProperties()) {
                 var csName = GetPropertyName(propertyInfo.Name, propertyInfo);
                 var ciName = csName.ToUpper();
+                var propertyType = PropertyType.SIMPLE;
+
+                if (IsIndexedType(propertyInfo.PropertyType))
+                    propertyType |= PropertyType.INDEXED;
+                if (IsMappedType(propertyInfo.PropertyType))
+                    propertyType |= PropertyType.MAPPED;
+
                 var prop = new SimpleMagicPropertyInfo(
                     csName,
                     propertyInfo,
                     propertyInfo.GetGetMethod(),
                     propertyInfo.GetSetMethod(),
-                    PropertyType.SIMPLE);
+                    propertyType);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
 
             foreach (MethodInfo methodInfo in FetchSimpleAccessors()) {
                 var csName = GetAccessorPropertyName(methodInfo);
                 var ciName = csName.ToUpper();
                 var setter = GetSimpleMutator(csName, methodInfo.ReturnType);
+                var propertyType = PropertyType.SIMPLE;
+
+                if (IsIndexedType(methodInfo.ReturnType))
+                    propertyType |= PropertyType.INDEXED;
+                if (IsMappedType(methodInfo.ReturnType))
+                    propertyType |= PropertyType.MAPPED;
+
                 var prop = new SimpleMagicPropertyInfo(
                     csName,
                     methodInfo,
                     methodInfo,
                     setter,
-                    PropertyType.SIMPLE);
+                    propertyType);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
         }
 
@@ -178,7 +246,6 @@ namespace com.espertech.esper.compat.magic
         /// </summary>
         private void IndexMappedProperties()
         {
-#if false
             foreach (PropertyInfo propertyInfo in FetchMappedProperties())
             {
                 var csName = GetPropertyName(propertyInfo.Name, propertyInfo);
@@ -188,16 +255,14 @@ namespace com.espertech.esper.compat.magic
                     propertyInfo,
                     propertyInfo.GetGetMethod(),
                     propertyInfo.GetSetMethod(),
-                    EventPropertyType.MAPPED);
+                    PropertyType.MAPPED | PropertyType.SIMPLE);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
-#endif
 
             // Mapped properties exposed through accessors may be exposed with both
             // a GetXXX accessor and a SetXXX mutator.  We need to merge both thought
             // processes.
-
 
             foreach (var accessorInfo in FetchMappedAccessors()) {
                 var csName = GetAccessorPropertyName(accessorInfo);
@@ -209,7 +274,7 @@ namespace com.espertech.esper.compat.magic
                     null,
                     PropertyType.MAPPED);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
         }
 
@@ -226,9 +291,9 @@ namespace com.espertech.esper.compat.magic
                     propertyInfo,
                     propertyInfo.GetGetMethod(),
                     propertyInfo.GetSetMethod(),
-                    PropertyType.INDEXED);
+                    PropertyType.INDEXED | PropertyType.SIMPLE);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
 
             foreach (MethodInfo methodInfo in FetchIndexedAccessors()) {
@@ -241,7 +306,7 @@ namespace com.espertech.esper.compat.magic
                     null,
                     PropertyType.INDEXED);
 
-                AddProperty(csName, ciName, prop);
+                AddOrUpdateProperty(csName, ciName, prop);
             }
         }
 
@@ -284,7 +349,7 @@ namespace com.espertech.esper.compat.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == PropertyType.SIMPLE);
+                magicProperty => magicProperty.EventPropertyType.IsSimple());
         }
 
         /// <summary>
@@ -296,7 +361,7 @@ namespace com.espertech.esper.compat.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == PropertyType.MAPPED);
+                magicProperty => magicProperty.EventPropertyType.IsMapped());
         }
 
         /// <summary>
@@ -308,7 +373,7 @@ namespace com.espertech.esper.compat.magic
         {
             return GetAllProperties(
                 isCaseSensitive,
-                magicProperty => magicProperty.EventPropertyType == PropertyType.INDEXED);
+                magicProperty => magicProperty.EventPropertyType.IsIndexed());
         }
 
         /// <summary>
@@ -509,11 +574,17 @@ namespace com.espertech.esper.compat.magic
                 if (getMethod.IsStatic)
                     continue;
 
-                var parameters = getMethod.GetParameters();
-                if ((parameters.Length != 1) || (parameters[0].ParameterType != typeof(int)))
-                    continue;
+                var propertyType = propInfo.PropertyType;
+                if (propertyType.IsArray) {
+                    yield return propInfo;
+                } else if (propertyType.IsGenericList()) {
+                    yield return propInfo;
+                } else if (propertyType == typeof(string)) {
+                    yield return propInfo;
+                }
 
-                yield return propInfo;
+                // We should catch other types that have indexers with
+                // an integer input to the indexer.
             }
         }
 
@@ -732,7 +803,7 @@ namespace com.espertech.esper.compat.magic
         }
     }
 
-    #region MagicPropertyInfo
+#region MagicPropertyInfo
 
     public abstract class MagicPropertyInfo
     {
@@ -740,19 +811,19 @@ namespace com.espertech.esper.compat.magic
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; protected set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         /// Gets or sets the type of the property.
         /// </summary>
         /// <value>The type of the property.</value>
-        public Type PropertyType { get; protected set; }
+        public Type PropertyType { get; internal set; }
 
         /// <summary>
         /// Gets or sets the event type of the property.
         /// </summary>
         /// <value>The type of the property.</value>
-        public PropertyType EventPropertyType { get; protected set; }
+        public PropertyType EventPropertyType { get; internal set; }
 
         /// <summary>
         /// Returns a function that can be used to obtain the value of the
@@ -781,27 +852,25 @@ namespace com.espertech.esper.compat.magic
         /// Gets or sets the member.
         /// </summary>
         /// <value>The member.</value>
-        public MemberInfo Member { get; protected set; }
+        public MemberInfo Member { get; internal set; }
 
         /// <summary>
         /// Gets or sets the get method.
         /// </summary>
         /// <value>The get method.</value>
-        public MethodInfo GetMethod { get; protected set; }
+        public MethodInfo GetMethod { get; internal set; }
 
         /// <summary>
         /// Gets or sets the set method.
         /// </summary>
         /// <value>The set method.</value>
-        public MethodInfo SetMethod { get; protected set; }
+        public MethodInfo SetMethod { get; internal set; }
 
         /// <summary>
         /// Gets a value indicating whether this property can be set.
         /// </summary>
         /// <value><c>true</c> if this instance can write; otherwise, <c>false</c>.</value>
-        public override bool CanWrite {
-            get { return SetMethod != null; }
-        }
+        public override bool CanWrite => SetMethod != null;
 
         /// <summary>
         /// Gets or sets the next magic property INFO that shares the same
@@ -816,9 +885,7 @@ namespace com.espertech.esper.compat.magic
         /// implementation.
         /// </summary>
         /// <value><c>true</c> if this instance is unique; otherwise, <c>false</c>.</value>
-        public bool IsUnique {
-            get { return Next == null; }
-        }
+        public bool IsUnique => Next == null;
 
         private Func<object, object> _getFunction;
 
@@ -967,5 +1034,5 @@ namespace com.espertech.esper.compat.magic
         }
     }
 
-    #endregion
+#endregion
 }

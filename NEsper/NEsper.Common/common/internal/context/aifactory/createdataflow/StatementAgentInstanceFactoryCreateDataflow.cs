@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 {
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
         public EventType StatementEventType => viewable.EventType;
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

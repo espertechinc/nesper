@@ -66,6 +66,7 @@ using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         {
             var container = epRuntime.Container;
             var runtimeEnvContext = new RuntimeEnvContext();
-            var eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", false);
+            var eventProcessingRWLock = epRuntime.Container.RWLockManager().CreateLock("EventProcLock");
             var deploymentLifecycleService = new DeploymentLifecycleServiceImpl();
 
             var runtimeSettingsService = MakeRuntimeSettingsService(configs);
@@ -232,7 +233,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var tableManagementService = MakeTableManagementService(epServicesHA.RuntimeExtensionServices, tableExprEvaluatorContext);
             var tablePathRegistry = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
 
-            var metricsReporting = new MetricReportingServiceImpl(configs.Runtime.MetricsReporting, epRuntime.URI);
+            var metricsReporting = new MetricReportingServiceImpl(
+                configs.Runtime.MetricsReporting, epRuntime.URI, container.RWLockManager());
 
             var namedWindowFactoryService = MakeNamedWindowFactoryService();
             var namedWindowDispatchService = MakeNamedWindowDispatchService(
@@ -270,7 +272,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var rowRecogStateRepoFactory = MakeRowRecogStateRepoFactory();
 
             DatabaseConfigServiceRuntime databaseConfigServiceRuntime =
-                new DatabaseConfigServiceImpl(configs.Common.DatabaseReferences, importServiceRuntime);
+                new DatabaseConfigServiceImpl(
+                    container,
+                    configs.Common.DatabaseReferences,
+                    importServiceRuntime);
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);
 
             var dataflowService = new EPDataFlowServiceImpl();
@@ -358,7 +363,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string runtimeURI,
             Configuration configurationSnapshot,
             RuntimeEnvContext runtimeEnvContext,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRwLock,
             RuntimeSettingsService runtimeSettingsService);
 
         protected abstract ViewableActivatorFactory InitViewableActivatorFactory();
@@ -422,7 +427,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         protected abstract NamedWindowDispatchService MakeNamedWindowDispatchService(
             SchedulingServiceSPI schedulingService,
             Configuration configurationSnapshot,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
             VariableManagementService variableManagementService,
             TableManagementService tableManagementService,

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem(
             string propertyName,
             MethodInfo readMethod,
-            PropertyType? propertyType)
+            PropertyType propertyType)
         {
             PropertyName = propertyName;
             ReadMethod = readMethod;
@@ -71,6 +71,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="PropertyStem"/> class.  Used for merging.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="readMethod">The read method.</param>
+        /// <param name="accessorField">The accessor field.</param>
+        /// <param name="accessorProp">The accessor property.</param>
+        /// <param name="propertyType">Type of the property.</param>
+        public PropertyStem(string propertyName,
+            MethodInfo readMethod,
+            FieldInfo accessorField,
+            PropertyInfo accessorProp,
+            PropertyType propertyType)
+        {
+            PropertyName = propertyName;
+            ReadMethod = readMethod;
+            AccessorField = accessorField;
+            AccessorProp = accessorProp;
+            PropertyType = propertyType;
+        }
+
+        /// <summary>
         ///     Return the property name, for mapped and indexed properties this is just the property name
         ///     without parentheses or brackets.
         /// </summary>
@@ -81,13 +102,68 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns an enum indicating the type of property: simple, mapped, indexed.
         /// </summary>
         /// <returns>enum with property type info</returns>
-        public PropertyType? PropertyType { get; }
+        public PropertyType PropertyType { get; }
 
         /// <summary>
         ///     Returns the read method. Can return null if the property is backed by a field..
         /// </summary>
         /// <returns>read method of null if field property</returns>
         public MethodInfo ReadMethod { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is simple read method.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is simple read method; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsSimpleReadMethod {
+            get {
+                if (ReadMethod == null) {
+                    return false;
+                }
+
+                var parameters = ReadMethod.GetParameters();
+                return parameters.Length == 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is indexed read method.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is indexed read method; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIndexedReadMethod {
+            get {
+                if (ReadMethod == null) {
+                    return false;
+                }
+
+                var parameters = ReadMethod.GetParameters();
+                return parameters.Length == 1 &&
+                       parameters[0].ParameterType.IsInt32();
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is mapped read method.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is mapped read method; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsMappedReadMethod
+        {
+            get {
+                if (ReadMethod == null)
+                {
+                    return false;
+                }
+
+                var parameters = ReadMethod.GetParameters();
+                return parameters.Length == 1 &&
+                       parameters[0].ParameterType == typeof(string);
+            }
+        }
 
         /// <summary>
         ///     Returns the accessor field. Can return null if the property is backed by a method.

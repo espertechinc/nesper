@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     public class BeanEventPropertyWriterIndexedProp : BeanEventPropertyWriter
     {
-        private readonly int index;
+        private readonly int _index;
 
         public BeanEventPropertyWriterIndexedProp(
             Type clazz,
@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             int index)
             : base(clazz, writerMember)
         {
-            this.index = index;
+            this._index = index;
         }
 
         public override void Write(
             object value,
             EventBean target)
         {
-            Invoke(new[] {index, value}, target.Underlying);
+            Invoke(new[] {_index, value}, target.Underlying);
         }
     }
 } // end of namespace

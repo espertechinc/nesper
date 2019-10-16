@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.rettype
 {
@@ -197,14 +198,14 @@ namespace com.espertech.esper.common.@internal.rettype
         public static EPType FromMethod(MethodInfo method)
         {
             var returnType = method.ReturnType;
-            if (TypeHelper.IsImplementsInterface(returnType, typeof(ICollection<object>))) {
-                var componentType = TypeHelper.GetGenericReturnType(method, true);
-                return CollectionOfSingleValue(componentType);
-            }
-
-            if (method.ReturnType.IsArray) {
+            if (returnType.IsArray) {
                 var componentType = method.ReturnType.GetElementType();
                 return Array(componentType);
+            }
+
+            if (returnType.IsGenericCollection()) {
+                var componentType = TypeHelper.GetGenericReturnType(method, true);
+                return CollectionOfSingleValue(componentType);
             }
 
             return SingleValue(method.ReturnType.GetBoxedType());
@@ -297,7 +298,7 @@ namespace com.espertech.esper.common.@internal.rettype
 
             if (theType is ClassEPType) {
                 var type = (ClassEPType) theType;
-                return type.Clazz;
+                return type.Clazz.GetBoxedType();
             }
 
             if (theType is NullEPType) {

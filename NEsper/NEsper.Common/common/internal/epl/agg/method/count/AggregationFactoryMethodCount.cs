@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             this.countedValueType = countedValueType;
         }
 
-        public override Type ResultType => typeof(long);
+        public override Type ResultType => typeof(long?);
 
         public override AggregatorMethod Aggregator => aggregator;
 

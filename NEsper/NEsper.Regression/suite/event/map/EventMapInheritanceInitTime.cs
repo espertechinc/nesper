@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         public void Run(RegressionEnvironment env)
         {
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("base", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("sub1", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("suba", typeof(string), null, false, false, false, false, false)

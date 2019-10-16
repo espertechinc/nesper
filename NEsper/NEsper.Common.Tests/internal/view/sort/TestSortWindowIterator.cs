@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.view.sort
         [Test]
         public void TestEmpty()
         {
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
-            EPAssertionUtil.AssertEqualsExactOrder(null, it);
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(null, enumerator);
         }
 
         [Test]
@@ -60,12 +60,12 @@ namespace com.espertech.esper.common.@internal.view.sort
             var keyC = new HashableMultiKey(new object[] { "keyC" });
             testMap.Put(keyC, list3);
 
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
             EPAssertionUtil.AssertEqualsExactOrder(
                 new[] {
                     events.Get("a"), events.Get("c"), events.Get("d"),
                     events.Get("e"), events.Get("f"), events.Get("g")
-                }, it);
+                }, enumerator);
         }
 
         [Test]
@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.view.sort
             var key = new HashableMultiKey(new object[] { "akey" });
             testMap.Put(key, list);
 
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a") }, it);
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a") }, enumerator);
         }
 
         [Test]
@@ -94,8 +94,8 @@ namespace com.espertech.esper.common.@internal.view.sort
             var keyC = new HashableMultiKey(new object[] { "keyC" });
             testMap.Put(keyC, list2);
 
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b"), events.Get("c"), events.Get("d") }, it);
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b"), events.Get("c"), events.Get("d") }, enumerator);
         }
 
         [Test]
@@ -107,8 +107,8 @@ namespace com.espertech.esper.common.@internal.view.sort
             var key = new HashableMultiKey(new object[] { "keyA" });
             testMap.Put(key, list);
 
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b") }, it);
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("a"), events.Get("b") }, enumerator);
         }
 
         [Test]
@@ -123,8 +123,8 @@ namespace com.espertech.esper.common.@internal.view.sort
             var keyA = new HashableMultiKey(new object[] { "keyA" });
             testMap.Put(keyA, list2); // Actually before list1
 
-            IEnumerator<EventBean> it = testMap.GetMultiLevelEnumerator();
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("b"), events.Get("a") }, it);
+            IEnumerator<EventBean> enumerator = testMap.GetMultiLevelEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { events.Get("b"), events.Get("a") }, enumerator);
         }
     }
 } // end of namespace

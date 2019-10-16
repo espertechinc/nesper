@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLFromClauseMethodWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodCacheExpiry()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodCacheLRU()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodJoinPerformance()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLFromClauseMethodVariable()
         {
             RegressionSession session = RegressionRunner.Session();

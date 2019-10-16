@@ -70,8 +70,7 @@ namespace com.espertech.esper.compat.collections
 
         public static T[] MaterializeArray<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
-            {
+            if (enumerable == null) {
                 return new T[0];
             }
 
@@ -80,52 +79,58 @@ namespace com.espertech.esper.compat.collections
 
         public static T[] ToArrayOrNull<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
-            {
+            if (enumerable == null) {
                 return null;
             }
 
             var tempArray = enumerable.ToArray();
-            if (tempArray.Length == 0)
-            {
+            if (tempArray.Length == 0) {
                 return null;
             }
 
             return tempArray;
         }
 
-        public static T[] ToListOrNull<T>(this IEnumerable<T> enumerable, bool nullWhenEmpty = true)
+        public static T[] ToListOrNull<T>(
+            this IEnumerable<T> enumerable,
+            bool nullWhenEmpty = true)
         {
-            if (enumerable == null)
-            {
+            if (enumerable == null) {
                 return null;
             }
 
             var tempArray = enumerable.ToArray();
-            if (tempArray.Length == 0 && nullWhenEmpty)
-            {
+            if (tempArray.Length == 0 && nullWhenEmpty) {
                 return null;
             }
 
             return tempArray;
         }
 
-        public static bool IsGreaterThan<T>(this IComparable<T> self, T that)
+        public static bool IsGreaterThan<T>(
+            this IComparable<T> self,
+            T that)
         {
             return self.CompareTo(that) > 0;
         }
 
-        public static bool IsGreaterThanOrEqual<T>(this IComparable<T> self, T that)
+        public static bool IsGreaterThanOrEqual<T>(
+            this IComparable<T> self,
+            T that)
         {
             return self.CompareTo(that) >= 0;
         }
 
-        public static bool IsLessThan<T>(this IComparable<T> self, T that)
+        public static bool IsLessThan<T>(
+            this IComparable<T> self,
+            T that)
         {
             return self.CompareTo(that) < 0;
         }
 
-        public static bool IsLessThanOrEqual<T>(this IComparable<T> self, T that)
+        public static bool IsLessThanOrEqual<T>(
+            this IComparable<T> self,
+            T that)
         {
             return self.CompareTo(that) <= 0;
         }
@@ -133,20 +138,19 @@ namespace com.espertech.esper.compat.collections
         public static T[] ToPopArray<T>(this Stack<T> stack)
         {
             var array = new T[stack.Count];
-            for (var ii = 0; stack.Count != 0; ii++)
-            {
+            for (var ii = 0; stack.Count != 0; ii++) {
                 array[ii] = stack.Pop();
             }
 
             return array;
         }
 
-        public static bool Contains<T>(this IList<T> list, Predicate<T> predicate)
+        public static bool Contains<T>(
+            this IList<T> list,
+            Predicate<T> predicate)
         {
-            for (var ii = 0; ii < list.Count; ii++)
-            {
-                if (predicate.Invoke(list[ii]))
-                {
+            for (var ii = 0; ii < list.Count; ii++) {
+                if (predicate.Invoke(list[ii])) {
                     return true;
                 }
             }
@@ -154,7 +158,9 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
-        public static bool Contains<T>(this T[] array, T value)
+        public static bool Contains<T>(
+            this T[] array,
+            T value)
         {
             return Array.IndexOf(array, value) != -1;
         }
@@ -166,13 +172,11 @@ namespace com.espertech.esper.compat.collections
 
         public static HashSet<T> AsHashSet<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
-            {
+            if (enumerable == null) {
                 return null;
             }
 
-            if (enumerable is HashSet<T> set)
-            {
+            if (enumerable is HashSet<T> set) {
                 return set;
             }
 
@@ -196,8 +200,7 @@ namespace com.espertech.esper.compat.collections
 
         public static LinkedList<T> AsLinkedList<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable is LinkedList<T> list)
-            {
+            if (enumerable is LinkedList<T> list) {
                 return list;
             }
 
@@ -206,8 +209,7 @@ namespace com.espertech.esper.compat.collections
 
         public static IList<T> AsList<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable is IList<T> list)
-            {
+            if (enumerable is IList<T> list) {
                 return list;
             }
 
@@ -221,13 +223,11 @@ namespace com.espertech.esper.compat.collections
 
         public static IList<T> AsSortedList<T>(this IEnumerable<T> enumerable)
         {
-            if (enumerable == null)
-            {
+            if (enumerable == null) {
                 return null;
             }
 
-            if (!(enumerable is List<T> asList))
-            {
+            if (!(enumerable is List<T> asList)) {
                 asList = new List<T>(enumerable);
             }
 
@@ -236,74 +236,68 @@ namespace com.espertech.esper.compat.collections
             return asList;
         }
 
-        public static void ForEach<T>(this LinkedList<T> listThis, Action<T> action)
+        public static void ForEach<T>(
+            this LinkedList<T> listThis,
+            Action<T> action)
         {
-            if (listThis != null)
-            {
+            if (listThis != null) {
                 var node = listThis.First;
-                while (node != null)
-                {
+                while (node != null) {
                     action.Invoke(node.Value);
                     node = node.Next;
                 }
             }
         }
 
-        public static void ForEach<T>(this IList<T> arrayThis, Action<T> action)
+        public static void ForEach<T>(
+            this IList<T> arrayThis,
+            Action<T> action)
         {
-            if (arrayThis != null)
-            {
+            if (arrayThis != null) {
                 var length = arrayThis.Count;
-                for (var ii = 0; ii < length; ii++)
-                {
+                for (var ii = 0; ii < length; ii++) {
                     action.Invoke(arrayThis[ii]);
                 }
             }
         }
 
-        public static void ForEvery<T>(this T[] arrayThis, Action<T> action)
+        public static void ForEvery<T>(
+            this T[] arrayThis,
+            Action<T> action)
         {
-            if (arrayThis != null)
-            {
+            if (arrayThis != null) {
                 var length = arrayThis.Length;
-                for (var ii = 0; ii < length; ii++)
-                {
+                for (var ii = 0; ii < length; ii++) {
                     action.Invoke(arrayThis[ii]);
                 }
             }
         }
 
-        public static void For<T>(this IEnumerable<T> enumThis, Action<T> action)
+        public static void For<T>(
+            this IEnumerable<T> enumThis,
+            Action<T> action)
         {
-            unchecked
-            {
-                if (enumThis == null)
-                {
+            unchecked {
+                if (enumThis == null) {
                     return;
                 }
 
-                if (enumThis is ChainedArrayList<T> chainedArrayList)
-                {
+                if (enumThis is ChainedArrayList<T> chainedArrayList) {
                     chainedArrayList.ForEach(action);
                 }
-                else if (enumThis is List<T>)
-                {
+                else if (enumThis is List<T>) {
                     var arrayThis = (List<T>) enumThis;
                     arrayThis.ForEach(action);
                 }
-                else if (enumThis is IList<T>)
-                {
+                else if (enumThis is IList<T>) {
                     var arrayThis = (IList<T>) enumThis;
                     var length = arrayThis.Count;
-                    for (var ii = 0; ii < length; ii++)
-                    {
+                    for (var ii = 0; ii < length; ii++) {
                         action.Invoke(arrayThis[ii]);
                     }
                 }
-                else
-                {
-                    foreach (var item in enumThis)
-                    {
+                else {
+                    foreach (var item in enumThis) {
                         action.Invoke(item);
                     }
                 }
@@ -315,59 +309,62 @@ namespace com.espertech.esper.compat.collections
             return enumThis.Where(item => item is TX);
         }
 
-        public static IList<T> Fill<T>(this IList<T> listThis, T value)
+        public static IList<T> Fill<T>(
+            this IList<T> listThis,
+            T value)
         {
-            for (var ii = 0; ii < listThis.Count; ii++)
-            {
+            for (var ii = 0; ii < listThis.Count; ii++) {
                 listThis[ii] = value;
             }
 
             return listThis;
         }
 
-        public static T[] Fill<T>(this T[] arrayThis, T value)
+        public static T[] Fill<T>(
+            this T[] arrayThis,
+            T value)
         {
-            for (var ii = arrayThis.Length - 1; ii >= 0; ii--)
-            {
+            for (var ii = arrayThis.Length - 1; ii >= 0; ii--) {
                 arrayThis[ii] = value;
             }
 
             return arrayThis;
         }
 
-        public static T[] Fill<T>(this T[] arrayThis, Func<T> generator)
+        public static T[] Fill<T>(
+            this T[] arrayThis,
+            Func<T> generator)
         {
-            for (var ii = arrayThis.Length - 1; ii >= 0; ii--)
-            {
+            for (var ii = arrayThis.Length - 1; ii >= 0; ii--) {
                 arrayThis[ii] = generator.Invoke();
             }
 
             return arrayThis;
         }
 
-        public static T[] Fill<T>(this T[] arrayThis, Func<int, T> generator)
+        public static T[] Fill<T>(
+            this T[] arrayThis,
+            Func<int, T> generator)
         {
-            for (var ii = 0; ii < arrayThis.Length; ii++)
-            {
+            for (var ii = 0; ii < arrayThis.Length; ii++) {
                 arrayThis[ii] = generator.Invoke(ii);
             }
 
             return arrayThis;
         }
 
-        public static bool AreEqual(this Array arrayThis, Array arrayThat)
+        public static bool AreEqual(
+            this Array arrayThis,
+            Array arrayThat)
         {
             var arrayThisLength = arrayThis.Length;
             var arrayThatLength = arrayThat.Length;
-            if (arrayThisLength != arrayThatLength)
-            {
+            if (arrayThisLength != arrayThatLength) {
                 return false;
             }
 
-            for (var ii = 0; ii < arrayThisLength; ii++)
-            {
-                if (!Equals(arrayThis.GetValue(ii), arrayThat.GetValue(ii)))
-                {
+            for (var ii = 0; ii < arrayThisLength; ii++) {
+                if (!Equals(arrayThis.GetValue(ii), arrayThat.GetValue(ii))) {
                     return false;
                 }
             }
@@ -375,19 +372,18 @@ namespace com.espertech.esper.compat.collections
             return true;
         }
 
-        public static bool AreEqual<T>(this T[] arrayThis, T[] arrayThat)
+        public static bool AreEqual<T>(
+            this T[] arrayThis,
+            T[] arrayThat)
         {
             var arrayThisLength = arrayThis.Length;
             var arrayThatLength = arrayThat.Length;
-            if (arrayThisLength != arrayThatLength)
-            {
+            if (arrayThisLength != arrayThatLength) {
                 return false;
             }
 
-            for (var ii = 0; ii < arrayThisLength; ii++)
-            {
-                if (!Equals(arrayThis[ii], arrayThat[ii]))
-                {
+            for (var ii = 0; ii < arrayThisLength; ii++) {
+                if (!Equals(arrayThis[ii], arrayThat[ii])) {
                     return false;
                 }
             }
@@ -395,25 +391,22 @@ namespace com.espertech.esper.compat.collections
             return true;
         }
 
-        public static bool AreEqual<T>(this IEnumerator<T> enumThis, IEnumerator<T> enumThat)
+        public static bool AreEqual<T>(
+            this IEnumerator<T> enumThis,
+            IEnumerator<T> enumThat)
         {
-            while (true)
-            {
+            while (true) {
                 var testThis = enumThis.MoveNext();
                 var testThat = enumThat.MoveNext();
-                if (testThis && testThat)
-                {
-                    if (!Equals(enumThis.Current, enumThat.Current))
-                    {
+                if (testThis && testThat) {
+                    if (!Equals(enumThis.Current, enumThat.Current)) {
                         return false;
                     }
                 }
-                else if (!testThis && !testThat)
-                {
+                else if (!testThis && !testThat) {
                     return true;
                 }
-                else
-                {
+                else {
                     return false;
                 }
             }
@@ -425,7 +418,9 @@ namespace com.espertech.esper.compat.collections
         /// <param name="enumerable">The enumerable.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public static object AtIndex(this IEnumerable enumerable, int index)
+        public static object AtIndex(
+            this IEnumerable enumerable,
+            int index)
         {
             return AtIndex(enumerable, index, failIndex => null);
         }
@@ -437,23 +432,22 @@ namespace com.espertech.esper.compat.collections
         /// <param name="index">The index.</param>
         /// <param name="itemNotFound">The item not found.</param>
         /// <returns></returns>
-        public static object AtIndex(this IEnumerable enumerable, int index, Func<int, object> itemNotFound)
+        public static object AtIndex(
+            this IEnumerable enumerable,
+            int index,
+            Func<int, object> itemNotFound)
         {
-            if (enumerable is IList asList)
-            {
+            if (enumerable is IList asList) {
                 return index < asList.Count ? asList[index] : itemNotFound(index);
             }
 
             var enumerator = enumerable.GetEnumerator();
-            if (index == 0)
-            {
+            if (index == 0) {
                 return enumerator.MoveNext() ? enumerator.Current : itemNotFound(index);
             }
 
-            for (var myIndex = 1; myIndex <= index; myIndex++)
-            {
-                if (!enumerator.MoveNext())
-                {
+            for (var myIndex = 1; myIndex <= index; myIndex++) {
+                if (!enumerator.MoveNext()) {
                     return itemNotFound(index);
                 }
             }
@@ -468,12 +462,12 @@ namespace com.espertech.esper.compat.collections
         /// <param name="referenceCollection"></param>
         /// <param name="itemEnum"></param>
         /// <returns></returns>
-        public static bool ContainsAll<T>(this ICollection<T> referenceCollection, IEnumerable<T> itemEnum)
+        public static bool ContainsAll<T>(
+            this ICollection<T> referenceCollection,
+            IEnumerable<T> itemEnum)
         {
-            foreach (var item in itemEnum)
-            {
-                if (!referenceCollection.Contains(item))
-                {
+            foreach (var item in itemEnum) {
+                if (!referenceCollection.Contains(item)) {
                     return false;
                 }
             }
@@ -493,17 +487,16 @@ namespace com.espertech.esper.compat.collections
             return enumerator.Current;
         }
 
-        public static bool DeepUnorderedEquals<T>(this IList<T> pthis, IList<T> pthat)
+        public static bool DeepUnorderedEquals<T>(
+            this IList<T> pthis,
+            IList<T> pthat)
         {
-            if (pthis.Count != pthat.Count)
-            {
+            if (pthis.Count != pthat.Count) {
                 return false;
             }
 
-            for (var ii = pthis.Count - 1; ii >= 0; ii--)
-            {
-                if (!pthat.Contains(pthis[ii]))
-                {
+            for (var ii = pthis.Count - 1; ii >= 0; ii--) {
+                if (!pthat.Contains(pthis[ii])) {
                     return false;
                 }
             }
@@ -518,42 +511,37 @@ namespace com.espertech.esper.compat.collections
         /// <param name="pthis">The pthis.</param>
         /// <param name="pthat">The pthat.</param>
         /// <returns></returns>
-        public static bool DeepEquals<T>(this IList<T> pthis, IList<T> pthat)
+        public static bool DeepEquals<T>(
+            this IList<T> pthis,
+            IList<T> pthat)
         {
-            if (pthis == null && pthat == null)
-            {
+            if (pthis == null && pthat == null) {
                 return true;
             }
 
-            if (pthis == null)
-            {
+            if (pthis == null) {
                 return pthat.Count == 0;
             }
 
-            if (pthat == null)
-            {
+            if (pthat == null) {
                 return pthis.Count == 0;
             }
 
-            if (pthis.Count != pthat.Count)
-            {
+            if (pthis.Count != pthat.Count) {
                 return false;
             }
 
             var thisEnum = pthis.GetEnumerator();
             var thatEnum = pthat.GetEnumerator();
 
-            while (true)
-            {
+            while (true) {
                 var thisHasMore = thisEnum.MoveNext();
                 var thatHasMore = thatEnum.MoveNext();
-                if (!thisHasMore || !thatHasMore)
-                {
+                if (!thisHasMore || !thatHasMore) {
                     return !thisHasMore && !thatHasMore;
                 }
 
-                if (!Equals(thisEnum.Current, thatEnum.Current))
-                {
+                if (!Equals(thisEnum.Current, thatEnum.Current)) {
                     return false;
                 }
             }
@@ -619,35 +607,32 @@ namespace com.espertech.esper.compat.collections
         /// <typeparam name="T"></typeparam>
         /// <param name="pthis">The pthis.</param>
         /// <param name="source">The source.</param>
-        public static void AddAll<T>(this ICollection<T> pthis, IEnumerable<T> source)
+        public static void AddAll<T>(
+            this ICollection<T> pthis,
+            IEnumerable<T> source)
         {
-            if (source is IList<T> asList)
-            {
+            if (source is IList<T> asList) {
                 var asListCount = asList.Count;
-                for (var ii = 0; ii < asListCount; ii++)
-                {
+                for (var ii = 0; ii < asListCount; ii++) {
                     pthis.Add(asList[ii]);
                 }
             }
-            else if (source != null)
-            {
-                foreach (var value in source)
-                {
+            else if (source != null) {
+                foreach (var value in source) {
                     pthis.Add(value);
                 }
             }
         }
 
-        public static IEnumerable<Tuple<TA, TB>> Merge<TA, TB>(this IEnumerable<TA> enumA, IEnumerable<TB> enumB)
+        public static IEnumerable<Tuple<TA, TB>> Merge<TA, TB>(
+            this IEnumerable<TA> enumA,
+            IEnumerable<TB> enumB)
         {
-            if (enumA != null && enumB != null)
-            {
+            if (enumA != null && enumB != null) {
                 var enA = enumA.GetEnumerator();
                 var enB = enumB.GetEnumerator();
-                while (enA.MoveNext() && enB.MoveNext())
-                {
-                    yield return new Tuple<TA, TB>
-                    {
+                while (enA.MoveNext() && enB.MoveNext()) {
+                    yield return new Tuple<TA, TB> {
                         A = enA.Current,
                         B = enB.Current
                     };
@@ -657,8 +642,7 @@ namespace com.espertech.esper.compat.collections
 
         public static bool HasFirst<T>(this IEnumerable<T> pthis)
         {
-            if (pthis == null)
-            {
+            if (pthis == null) {
                 throw new ArgumentNullException(nameof(pthis));
             }
 
@@ -672,8 +656,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public static T Second<T>(this IEnumerable<T> pthis)
         {
-            if (pthis == null)
-            {
+            if (pthis == null) {
                 throw new ArgumentNullException(nameof(pthis));
             }
 
@@ -683,13 +666,13 @@ namespace com.espertech.esper.compat.collections
             return tableEnum.Current;
         }
 
-        public static void RemoveWhere<T>(this LinkedList<T> list, Func<T, bool> where)
+        public static void RemoveWhere<T>(
+            this LinkedList<T> list,
+            Func<T, bool> where)
         {
-            for (var curr = list.First; curr != null;)
-            {
+            for (var curr = list.First; curr != null;) {
                 var next = curr.Next;
-                if (where.Invoke(curr.Value))
-                {
+                if (where.Invoke(curr.Value)) {
                     list.Remove(curr);
                 }
 
@@ -697,37 +680,36 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public static void RemoveWhere<T>(this IList<T> list, Func<T, bool> where)
+        public static void RemoveWhere<T>(
+            this IList<T> list,
+            Func<T, bool> where)
         {
-            for (var ii = 0; ii < list.Count;)
-            {
+            for (var ii = 0; ii < list.Count;) {
                 var testItem = where.Invoke(list[ii]);
-                if (testItem)
-                {
+                if (testItem) {
                     list.RemoveAt(ii);
                 }
-                else
-                {
+                else {
                     ii++;
                 }
             }
         }
 
-        public static int RemoveWhere<T>(this IList<T> list, Func<T, bool> where, Action<T> collector)
+        public static int RemoveWhere<T>(
+            this IList<T> list,
+            Func<T, bool> where,
+            Action<T> collector)
         {
             var count = 0;
 
-            for (var ii = 0; ii < list.Count;)
-            {
+            for (var ii = 0; ii < list.Count;) {
                 var testItem = where.Invoke(list[ii]);
-                if (testItem)
-                {
+                if (testItem) {
                     count++;
                     collector.Invoke(list[ii]);
                     list.RemoveAt(ii);
                 }
-                else
-                {
+                else {
                     ii++;
                 }
             }
@@ -741,12 +723,12 @@ namespace com.espertech.esper.compat.collections
         /// <typeparam name="T"></typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="items">The items.</param>
-        public static void RemoveAll<T>(this ICollection<T> collection, IEnumerable<T> items)
+        public static void RemoveAll<T>(
+            this ICollection<T> collection,
+            IEnumerable<T> items)
         {
-            foreach (var item in items)
-            {
-                while (collection.Remove(item))
-                {
+            foreach (var item in items) {
+                while (collection.Remove(item)) {
                 }
             }
         }
@@ -755,13 +737,17 @@ namespace com.espertech.esper.compat.collections
         ///     Retains all items in the passed enumerable.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="collection">The collection.</param>
+        /// <param name="list">The input list.</param>
         /// <param name="items">The items.</param>
-        public static void RetainAll<T>(this ICollection<T> collection, IEnumerable<T> items)
+        public static void RetainAll<T>(
+            this IList<T> list,
+            ICollection<T> items)
         {
-            foreach (var item in items.Where(item => !collection.Contains(item)))
-            {
-                collection.Remove(item);
+            for (var ii = 0; ii < list.Count; ii++) {
+                var item = list[ii];
+                if (!items.Contains(item)) {
+                    list.RemoveAt(ii--);
+                }
             }
         }
 
@@ -772,8 +758,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="collection"></param>
         public static void Reverse<T>(this ICollection<T> collection)
         {
-            if (collection is List<T> tempList)
-            {
+            if (collection is List<T> tempList) {
                 tempList.Reverse();
                 return;
             }
@@ -784,13 +769,14 @@ namespace com.espertech.esper.compat.collections
 
             collection.Clear();
 
-            foreach (var item in tempList)
-            {
+            foreach (var item in tempList) {
                 collection.Add(item);
             }
         }
 
-        public static string Render<TK, TV>(this IEnumerable<KeyValuePair<TK, TV>> source, MagicMarker magicMarker)
+        public static string Render<TK, TV>(
+            this IEnumerable<KeyValuePair<TK, TV>> source,
+            MagicMarker magicMarker)
         {
             var fieldDelimiter = string.Empty;
 
@@ -806,7 +792,8 @@ namespace com.espertech.esper.compat.collections
                             textWriter.Write("null");
                         }
                         else if (current.Value.GetType().IsGenericDictionary()) {
-                            textWriter.Write(magicMarker.GetDictionaryFactory(current.Value.GetType()).Invoke(current.Value));
+                            textWriter.Write(
+                                magicMarker.GetDictionaryFactory(current.Value.GetType()).Invoke(current.Value));
                         }
                         else if (current.Value is string) {
                             textWriter.Write(RenderAny(current.Value));
@@ -833,17 +820,17 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source">the object to render.</param>
         /// <param name="textWriter">the destination to write to.</param>
         /// <returns></returns>
-        public static void Render(this IEnumerable source, TextWriter textWriter)
+        public static void Render(
+            this IEnumerable source,
+            TextWriter textWriter)
         {
             var fieldDelimiter = string.Empty;
 
-            if (source != null)
-            {
+            if (source != null) {
                 textWriter.Write('[');
 
                 var sourceEnum = source.GetEnumerator();
-                while (sourceEnum.MoveNext())
-                {
+                while (sourceEnum.MoveNext()) {
                     textWriter.Write(fieldDelimiter);
                     textWriter.Write(RenderAny(sourceEnum.Current));
                     fieldDelimiter = ", ";
@@ -851,8 +838,7 @@ namespace com.espertech.esper.compat.collections
 
                 textWriter.Write(']');
             }
-            else
-            {
+            else {
                 textWriter.Write("null");
             }
         }
@@ -863,7 +849,9 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source">The source.</param>
         /// <param name="renderEngine">The render engine.</param>
         /// <returns></returns>
-        public static string Render(this IEnumerable source, Func<object, string> renderEngine)
+        public static string Render(
+            this IEnumerable source,
+            Func<object, string> renderEngine)
         {
             var fieldDelimiter = string.Empty;
 
@@ -871,8 +859,7 @@ namespace com.espertech.esper.compat.collections
             builder.Append('[');
 
             var sourceEnum = source.GetEnumerator();
-            while (sourceEnum.MoveNext())
-            {
+            while (sourceEnum.MoveNext()) {
                 builder.Append(fieldDelimiter);
                 builder.Append(renderEngine(sourceEnum.Current));
                 fieldDelimiter = ", ";
@@ -890,7 +877,9 @@ namespace com.espertech.esper.compat.collections
         /// <param name="list">The list.</param>
         /// <param name="index">The index.</param>
         /// <returns></returns>
-        public static TV DeleteAt<TV>(this IList<TV> list, int index)
+        public static TV DeleteAt<TV>(
+            this IList<TV> list,
+            int index)
         {
             var tempItem = list[index];
             list.RemoveAt(index);
@@ -910,10 +899,11 @@ namespace com.espertech.esper.compat.collections
             return tempItem;
         }
 
-        public static TV Poll<TV>(this LinkedList<TV> list, TV defaultValue)
+        public static TV Poll<TV>(
+            this LinkedList<TV> list,
+            TV defaultValue)
         {
-            if (list.First == null)
-            {
+            if (list.First == null) {
                 return defaultValue;
             }
 
@@ -927,10 +917,11 @@ namespace com.espertech.esper.compat.collections
             return Poll(list, default(TV));
         }
 
-        public static TV Poll<TV>(this IList<TV> list, TV defaultValue)
+        public static TV Poll<TV>(
+            this IList<TV> list,
+            TV defaultValue)
         {
-            if (list.Count == 0)
-            {
+            if (list.Count == 0) {
                 return defaultValue;
             }
 
@@ -944,12 +935,12 @@ namespace com.espertech.esper.compat.collections
             return Poll(list, default(TV));
         }
 
-        public static LinkedListNode<TV> FirstNode<TV>(this LinkedList<TV> list, Func<TV, bool> whereClause)
+        public static LinkedListNode<TV> FirstNode<TV>(
+            this LinkedList<TV> list,
+            Func<TV, bool> whereClause)
         {
-            for (var curr = list.First; curr != null; curr = curr.Next)
-            {
-                if (whereClause(curr.Value))
-                {
+            for (var curr = list.First; curr != null; curr = curr.Next) {
+                if (whereClause(curr.Value)) {
                     return curr;
                 }
             }
@@ -960,11 +951,9 @@ namespace com.espertech.esper.compat.collections
         public static string[] ToUpper(this string[] inArray)
         {
             var outArray = new string[inArray.Length];
-            for (var ii = 0; ii < inArray.Length; ii++)
-            {
+            for (var ii = 0; ii < inArray.Length; ii++) {
                 var inItem = inArray[ii];
-                if (inItem != null)
-                {
+                if (inItem != null) {
                     outArray[ii] = inItem.ToUpper();
                 }
             }
@@ -982,98 +971,94 @@ namespace com.espertech.esper.compat.collections
             return ctor.GetParameters().Select(p => p.ParameterType).ToArray();
         }
 
-        public static IEnumerable<int> XRange(int lowerBound, int upperBound)
+        public static IEnumerable<int> XRange(
+            int lowerBound,
+            int upperBound)
         {
-            for (var ii = lowerBound; ii < upperBound; ii++)
-            {
+            for (var ii = lowerBound; ii < upperBound; ii++) {
                 yield return ii;
             }
         }
 
         public static bool CanUnwrap<T>(this object value)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return true;
             }
 
-            if (value is ICollection<T>)
-            {
+            if (value is ICollection<T>) {
                 return true;
             }
 
-            if (value is IEnumerable<object>)
-            {
+            if (value is IEnumerable<object>) {
                 return true;
             }
 
-            if (value is IEnumerable)
-            {
+            if (value is IEnumerable) {
                 return true;
             }
 
-            if (value is IEnumerator)
-            {
+            if (value is IEnumerator) {
                 return true;
             }
 
             return false;
         }
 
-        public static T[] UnwrapIntoArray<T>(this object value, bool includeNullValues = true)
+        public static T[] UnwrapIntoArray<T>(
+            this object value,
+            bool includeNullValues = true)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is T[] array)
-            {
+            if (value is T[] array) {
                 return array;
             }
 
             return Unwrap<T>(value, includeNullValues).ToArray();
         }
 
-        public static IList<T> UnwrapIntoList<T>(this object value, bool includeNullValues = true)
+        public static IList<T> UnwrapIntoList<T>(
+            this object value,
+            bool includeNullValues = true)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is IList<T> list)
-            {
+            if (value is IList<T> list) {
                 return list;
             }
 
             return Unwrap<T>(value, includeNullValues).ToList();
         }
 
-        public static ICollection<T> UnwrapSafe<T>(this object value, bool includeNullValues = false)
+        public static ICollection<T> UnwrapSafe<T>(
+            this object value,
+            bool includeNullValues = false)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is ICollection<T> collection)
-            {
+            if (value is ICollection<T> collection) {
                 return collection;
             }
 
             return UnwrapEnumerable<T>(value, includeNullValues).ToArray();
         }
 
-        public static ICollection<T> Unwrap<T>(this object value, bool includeNullValues = false)
+        public static ICollection<T> Unwrap<T>(
+            this object value,
+            bool includeNullValues = false)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is ICollection<T> collection)
-            {
+            if (value is ICollection<T> collection) {
                 return collection;
             }
 
@@ -1084,18 +1069,15 @@ namespace com.espertech.esper.compat.collections
             this object value,
             bool includeNullValues = false)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is IEnumerable<T> enumerableT)
-            {
+            if (value is IEnumerable<T> enumerableT) {
                 return enumerableT;
             }
 
-            if (value is IEnumerable<object>)
-            {
+            if (value is IEnumerable<object>) {
                 var expression = (IEnumerable<object>) value;
                 expression = includeNullValues
                     ? expression.Where(o => o == null || o is T)
@@ -1104,8 +1086,7 @@ namespace com.espertech.esper.compat.collections
                 return expression.Cast<T>();
             }
 
-            if (value is IEnumerable enumerable)
-            {
+            if (value is IEnumerable enumerable) {
                 var expression = enumerable.Cast<object>();
                 expression = includeNullValues
                     ? expression.Where(o => o == null || o is T)
@@ -1114,21 +1095,16 @@ namespace com.espertech.esper.compat.collections
                 return expression.Cast<T>();
             }
 
-            if (value is IEnumerator enumerator)
-            {
+            if (value is IEnumerator enumerator) {
                 var result = new List<T>();
-                while (enumerator.MoveNext())
-                {
+                while (enumerator.MoveNext()) {
                     var current = enumerator.Current;
-                    if (includeNullValues)
-                    {
-                        if (current is T currentAsT)
-                        {
+                    if (includeNullValues) {
+                        if (current is T currentAsT) {
                             result.Add(currentAsT);
                         }
                     }
-                    else if (current is T)
-                    {
+                    else if (current is T) {
                         result.Add((T) current);
                     }
                 }
@@ -1139,42 +1115,42 @@ namespace com.espertech.esper.compat.collections
             throw new ArgumentException("invalid value");
         }
 
-        public static IDictionary<object, object> UnwrapDictionary(this object value, MagicMarker magicMarker)
+        public static IDictionary<object, object> UnwrapDictionary(
+            this object value)
         {
-            if (value == null)
-            {
+            return UnwrapDictionary(value, MagicMarker.SingletonInstance);
+        }
+
+        public static IDictionary<object, object> UnwrapDictionary(
+            this object value,
+            MagicMarker magicMarker)
+        {
+            if (value == null) {
                 return null;
             }
 
-            if (value is IDictionary<object, object> stringDictionary)
-            {
+            if (value is IDictionary<object, object> stringDictionary) {
                 return stringDictionary;
             }
 
             var valueType = value.GetType();
-            if (valueType.IsGenericDictionary())
-            {
+            if (valueType.IsGenericDictionary()) {
                 return magicMarker.GetDictionaryFactory(valueType).Invoke(value);
             }
 
-            if (value is IEnumerable<KeyValuePair<object, object>> enumerables)
-            {
+            if (value is IEnumerable<KeyValuePair<object, object>> enumerables) {
                 var valueDataMap = new Dictionary<object, object>();
-                foreach (var valueKeyValuePair in enumerables)
-                {
+                foreach (var valueKeyValuePair in enumerables) {
                     valueDataMap[valueKeyValuePair.Key] = valueKeyValuePair.Value;
                 }
 
                 return valueDataMap;
             }
 
-            if (value is KeyValuePair<object, object> keyValuePair)
-            {
-                var valueDataMap = new Dictionary<object, object>
-                {
+            if (value is KeyValuePair<object, object> keyValuePair) {
+                return new Dictionary<object, object> {
                     [keyValuePair.Key] = keyValuePair.Value
                 };
-                return valueDataMap;
             }
 
             throw new ArgumentException("unable to convert input to string dictionary");
@@ -1185,40 +1161,35 @@ namespace com.espertech.esper.compat.collections
         {
             return UnwrapStringDictionary(value, MagicMarker.SingletonInstance);
         }
-        
-        public static IDictionary<string, object> UnwrapStringDictionary(this object value, MagicMarker magicMarker)
+
+        public static IDictionary<string, object> UnwrapStringDictionary(
+            this object value,
+            MagicMarker magicMarker)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
-            if (value is IDictionary<string, object> stringDictionary)
-            {
+            if (value is IDictionary<string, object> stringDictionary) {
                 return stringDictionary;
             }
 
             var valueType = value.GetType();
-            if (valueType.IsGenericStringDictionary())
-            {
+            if (valueType.IsGenericStringDictionary()) {
                 return magicMarker.GetStringDictionaryFactory(valueType).Invoke(value);
             }
 
-            if (value is IEnumerable<KeyValuePair<string, object>> pairs)
-            {
+            if (value is IEnumerable<KeyValuePair<string, object>> pairs) {
                 var valueDataMap = new Dictionary<string, object>();
-                foreach (var valueKeyValuePair in pairs)
-                {
+                foreach (var valueKeyValuePair in pairs) {
                     valueDataMap[valueKeyValuePair.Key] = valueKeyValuePair.Value;
                 }
 
                 return valueDataMap;
             }
 
-            if (value is KeyValuePair<string, object> valueKeyValuePair1)
-            {
-                return new Dictionary<string, object>
-                {
+            if (value is KeyValuePair<string, object> valueKeyValuePair1) {
+                return new Dictionary<string, object> {
                     [valueKeyValuePair1.Key] = valueKeyValuePair1.Value
                 };
             }
@@ -1227,8 +1198,7 @@ namespace com.espertech.esper.compat.collections
             // a more generalized method if this becomes commonplace.
 
             var dictType = valueType.FindGenericInterface(typeof(IDictionary<,>));
-            if (dictType != null)
-            {
+            if (dictType != null) {
                 var magicDictionary = magicMarker.GetDictionaryFactory(valueType).Invoke(value);
                 return magicDictionary.Transform(
                     Convert.ToString,
@@ -1248,29 +1218,53 @@ namespace com.espertech.esper.compat.collections
             return o as IDictionary<string, object>;
         }
 
-        [Obsolete]
-        public static IDictionary<string, object> AsStringDictionary(this object value, MagicMarker magicMarker)
+        public static IDictionary<string, object> AsStringDictionary(
+            this object value,
+            MagicMarker magicMarker)
         {
-#if DEPRECATED
             if (value == null)
                 return null;
-            if (value is IDictionary<string, object>)
-                return (IDictionary<string, object>)value;
+            if (value is IDictionary<string, object> stringDictionary)
+                return stringDictionary;
             if (value.GetType().IsGenericDictionary())
                 return magicMarker.GetStringDictionary(value);
 
             throw new ArgumentException("invalid value for string dictionary", nameof(value));
-#else
-            return UnwrapStringDictionary(value, magicMarker);
-#endif
+        }
+
+        public static IDictionary<object, object> AsObjectDictionary(
+            this object value)
+        {
+            return AsObjectDictionary(value, MagicMarker.SingletonInstance);
+        }
+
+        /// <summary>
+        /// Converts the value if it is an object dictionary or if it can reasonably be "cast"
+        /// to one without unpacking.  If you need more complex handling, see UnpackDictionary.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="magicMarker">The magic marker.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">unable to convert input to object dictionary</exception>
+        public static IDictionary<object, object> AsObjectDictionary(
+            this object value,
+            MagicMarker magicMarker)
+        {
+            if (value == null)
+                return null;
+            if (value is IDictionary<object, object> stringDictionary)
+                return stringDictionary;
+            if (value.GetType().IsGenericDictionary())
+                return magicMarker.GetDictionaryFactory(value.GetType()).Invoke(value);
+
+            throw new ArgumentException("unable to convert input to object dictionary");
         }
 
         public static void RenderAny(
             this object value,
             TextWriter textWriter)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 textWriter.Write("null");
                 return;
             }
@@ -1291,8 +1285,7 @@ namespace com.espertech.esper.compat.collections
 
             if (value is decimal) {
                 var text = value.ToString();
-                if (text.IndexOf('.') == -1)
-                {
+                if (text.IndexOf('.') == -1) {
                     text += ".0";
                 }
 
@@ -1301,11 +1294,9 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value is double)
-            {
+            if (value is double) {
                 var text = value.ToString();
-                if (text.IndexOf('.') == -1)
-                {
+                if (text.IndexOf('.') == -1) {
                     text += ".0";
                 }
 
@@ -1314,11 +1305,9 @@ namespace com.espertech.esper.compat.collections
                 return; // + 'd'
             }
 
-            if (value is float)
-            {
+            if (value is float) {
                 var text = value.ToString();
-                if (text.IndexOf('.') == -1)
-                {
+                if (text.IndexOf('.') == -1) {
                     text += ".0";
                 }
 
@@ -1327,21 +1316,18 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value is long)
-            {
+            if (value is long) {
                 textWriter.Write(value.ToString());
                 textWriter.Write('L');
                 return;
             }
 
-            if (value is int)
-            {
+            if (value is int) {
                 textWriter.Write(value.ToString());
                 return;
             }
 
-            if (value is DateTimeOffset dateTimeOffset)
-            {
+            if (value is DateTimeOffset dateTimeOffset) {
                 var dateOnly = dateTimeOffset.Date;
                 if (dateTimeOffset == dateOnly) {
                     textWriter.Write(dateTimeOffset.ToString("yyyy-MM-dd z"));
@@ -1357,17 +1343,14 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value is DateTime dateTime)
-            {
+            if (value is DateTime dateTime) {
                 var dateOnly = dateTime.Date;
-                if (dateTime == dateOnly)
-                {
+                if (dateTime == dateOnly) {
                     textWriter.Write(dateTime.ToString("yyyy-MM-dd"));
                     return;
                 }
 
-                if (dateTime.Millisecond == 0)
-                {
+                if (dateTime.Millisecond == 0) {
                     textWriter.Write(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
                     return;
                 }
@@ -1381,8 +1364,7 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value is Array array)
-            {
+            if (value is Array array) {
                 Render(array, textWriter);
                 return;
             }
@@ -1392,8 +1374,7 @@ namespace com.espertech.esper.compat.collections
                 return;
             }
 
-            if (value is IEnumerable enumerable)
-            {
+            if (value is IEnumerable enumerable) {
                 Render(enumerable, textWriter);
                 return;
             }
@@ -1428,7 +1409,9 @@ namespace com.espertech.esper.compat.collections
         /// <param name="array">The array.</param>
         /// <param name="textWriter">the destination to write to.</param>
         /// <returns></returns>
-        public static void Render(this Array array, TextWriter textWriter)
+        public static void Render(
+            this Array array,
+            TextWriter textWriter)
         {
             Render(array, textWriter, ", ", "[]");
         }
@@ -1441,17 +1424,19 @@ namespace com.espertech.esper.compat.collections
         /// <param name="itemSeparator">The item separator.</param>
         /// <param name="firstAndLast">The first and last.</param>
         /// <returns></returns>
-        public static void Render(this Array array, TextWriter textWriter, string itemSeparator, string firstAndLast)
+        public static void Render(
+            this Array array,
+            TextWriter textWriter,
+            string itemSeparator,
+            string firstAndLast)
         {
             var fieldDelimiter = string.Empty;
 
             textWriter.Write(firstAndLast[0]);
 
-            if (array != null)
-            {
+            if (array != null) {
                 var length = array.Length;
-                for (var ii = 0; ii < length; ii++)
-                {
+                for (var ii = 0; ii < length; ii++) {
                     textWriter.Write(fieldDelimiter);
                     textWriter.Write(RenderAny(array.GetValue(ii)));
                     fieldDelimiter = itemSeparator;
@@ -1468,7 +1453,10 @@ namespace com.espertech.esper.compat.collections
         /// <param name="itemSeparator">The item separator.</param>
         /// <param name="firstAndLast">The first and last.</param>
         /// <returns></returns>
-        public static string Render(this Array array, string itemSeparator, string firstAndLast)
+        public static string Render(
+            this Array array,
+            string itemSeparator,
+            string firstAndLast)
         {
             using (var stringWriter = new StringWriter()) {
                 Render(array, stringWriter, itemSeparator, firstAndLast);
@@ -1491,10 +1479,12 @@ namespace com.espertech.esper.compat.collections
         /// <param name="fromIndex">From index.</param>
         /// <param name="toIndex">To index.</param>
         /// <returns></returns>
-        public static IList<T> SubList<T>(this IList<T> list, int fromIndex, int toIndex)
+        public static IList<T> SubList<T>(
+            this IList<T> list,
+            int fromIndex,
+            int toIndex)
         {
-            if (toIndex >= list.Count)
-            {
+            if (toIndex >= list.Count) {
                 toIndex = list.Count;
             }
 
@@ -1508,15 +1498,15 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source">The source.</param>
         /// <param name="more">The more.</param>
         /// <returns></returns>
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> source, params T[] more)
+        public static IEnumerable<T> Append<T>(
+            this IEnumerable<T> source,
+            params T[] more)
         {
-            foreach (var item in source)
-            {
+            foreach (var item in source) {
                 yield return item;
             }
 
-            foreach (var item in more)
-            {
+            foreach (var item in more) {
                 yield return item;
             }
         }
@@ -1524,10 +1514,8 @@ namespace com.espertech.esper.compat.collections
         public static int Hash(IEnumerable @values)
         {
             var result = 0;
-            if (values != null)
-            {
-                foreach (var item in values)
-                {
+            if (values != null) {
+                foreach (var item in values) {
                     int itemHash = item?.GetHashCode() ?? 0;
                     result *= 397;
                     result ^= itemHash;
@@ -1540,10 +1528,8 @@ namespace com.espertech.esper.compat.collections
         public static int Hash<T>(T[] @objects)
         {
             var result = 0;
-            if (objects != null)
-            {
-                for (int ii = 0; ii < @objects.Length; ii++)
-                {
+            if (objects != null) {
+                for (int ii = 0; ii < @objects.Length; ii++) {
                     var item = @objects[ii];
                     if (item != null) {
                         int itemHash = item.GetHashCode();

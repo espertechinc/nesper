@@ -10,9 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.db
@@ -20,20 +18,8 @@ namespace com.espertech.esper.common.@internal.db
     /// <summary>
     /// Connection factory settings for using a DbDriverFactory.
     /// </summary>
-    [Serializable]
-    public class DriverConnectionFactoryDesc : ConnectionFactoryDesc
+    public static class DbDriverConnectionHelper
     {
-        /// <summary>
-        /// Database driver.
-        /// </summary>
-        private readonly DbDriver _driver;
-
-        /// <summary>
-        /// Gets the database driver.
-        /// </summary>
-        /// <value>The database driver.</value>
-        public virtual DbDriver Driver => _driver;
-
         /// <summary>
         /// Where do drivers in the default search path reside
         /// </summary>
@@ -49,7 +35,7 @@ namespace com.espertech.esper.common.@internal.db
         /// </summary>
         /// <param name="driverName">Name of the driver.</param>
         /// <returns></returns>
-        public static Type ResolveDriverTypeFromName(String driverName)
+        public static Type ResolveDriverTypeFromName(string driverName)
         {
             Type driverType;
 
@@ -59,14 +45,14 @@ namespace com.espertech.esper.common.@internal.db
             }
 
             // Check for the type in the driverNamespace
-            String specificName = String.Format("{0}.{1}", DriverNamespace, driverName);
+            string specificName = $"{DriverNamespace}.{driverName}";
             if ((driverType = TypeHelper.ResolveType(specificName, false)) != null) {
                 return driverType;
             }
 
             // Check for the type in the driverNamespace, but modified to include
             // a prefix to the name.
-            String pseudoName = String.Format("{0}.DbDriver{1}", DriverNamespace, driverName);
+            string pseudoName = $"{DriverNamespace}.DbDriver{driverName}";
             if ((driverType = TypeHelper.ResolveType(pseudoName, false)) != null) {
                 return driverType;
             }
@@ -83,7 +69,7 @@ namespace com.espertech.esper.common.@internal.db
         /// <returns></returns>
         public static DbDriver ResolveDriverFromName(
             IContainer container,
-            String driverName)
+            string driverName)
         {
             return ResolveDriverFromType(
                 container,
@@ -100,8 +86,11 @@ namespace com.espertech.esper.common.@internal.db
             Type driverType)
         {
             if (typeof(DbDriver).IsAssignableFrom(driverType)) {
-                return container.Resolve<DbDriver>(driverType.FullName);
-                //return Activator.CreateInstance(driverType) as DbDriver;
+                if (container.Has(driverType.FullName)) {
+                    return container.Resolve<DbDriver>(driverType.FullName);
+                }
+
+                return Activator.CreateInstance(driverType) as DbDriver;
             }
 
             throw new EPException(
@@ -109,13 +98,23 @@ namespace com.espertech.esper.common.@internal.db
                 typeof(DbDriver).FullName);
         }
 
+        public static DbDriver ResolveDriver(
+            IContainer container,
+            DriverConnectionFactoryDesc driverConnectionFactoryDesc)
+        {
+            var driver = ResolveDriverFromName(container, driverConnectionFactoryDesc.DriverName);
+            driver.Properties = driverConnectionFactoryDesc.DriverProperties;
+            return driver;
+        }
+
+#if false
         /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDesc"/> class.
+        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
         /// </summary>
         /// <param name="container">Resource container.</param>
         /// <param name="driverType">Type of the driver.</param>
         /// <param name="properties">The properties.</param>
-        public DriverConnectionFactoryDesc(
+        public DriverConnectionFactoryDescDeprecated(
             IContainer container,
             Type driverType,
             Properties properties)
@@ -125,14 +124,14 @@ namespace com.espertech.esper.common.@internal.db
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDesc"/> class.
+        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
         /// </summary>
         /// <param name="container">Resource container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <param name="properties">Properties that should be applied to the connection.</param>
-        public DriverConnectionFactoryDesc(
+        public DriverConnectionFactoryDescDeprecated(
             IContainer container,
-            String driverName,
+            string driverName,
             Properties properties)
         {
             _driver = ResolveDriverFromName(container, driverName);
@@ -140,11 +139,11 @@ namespace com.espertech.esper.common.@internal.db
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDesc"/> class.
+        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
         /// </summary>
         /// <param name="container">Resource container.</param>
         /// <param name="specification">The db specification.</param>
-        public DriverConnectionFactoryDesc(
+        public DriverConnectionFactoryDescDeprecated(
             IContainer container,
             DriverConfiguration specification)
         {
@@ -153,12 +152,13 @@ namespace com.espertech.esper.common.@internal.db
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDesc"/> class.
+        /// Initializes a new instance of the <see cref="DriverConnectionFactoryDescDeprecated"/> class.
         /// </summary>
         /// <param name="driver">The driver.</param>
-        public DriverConnectionFactoryDesc(DbDriver driver)
+        public DriverConnectionFactoryDescDeprecated(DbDriver driver)
         {
             _driver = driver;
         }
+#endif
     }
 }

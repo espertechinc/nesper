@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (!propertyDesc.PropertyType.Equals(PropertyType.SIMPLE)) {
+            if (!propertyDesc.PropertyType.IsSimple()) {
                 return null;
             }
 

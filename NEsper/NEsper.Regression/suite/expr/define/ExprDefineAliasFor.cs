@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     "expression total alias for {a -> 1} select total+1 from SupportBean",
-                    "For expression alias 'total' expecting an expression without parameters but received 'a =>' [expression total alias for {a -> 1} select total+1 from SupportBean]");
+                    "For expression alias 'total' expecting an expression without parameters but received 'a ->' [expression total alias for {a -> 1} select total+1 from SupportBean]");
                 TryInvalidCompile(
                     env,
                     "expression total alias for ['some text'] select total+1 from SupportBean",

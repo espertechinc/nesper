@@ -55,9 +55,9 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                         var found = false;
 
-                        using (IEnumerator<EventBean> it = stmt[i].GetSafeEnumerator()) {
-                            for (; it.MoveNext();) {
-                                var theEvent = it.Current;
+                        using (IEnumerator<EventBean> enumerator = stmt[i].GetSafeEnumerator()) {
+                            while (enumerator.MoveNext()) {
+                                var theEvent = enumerator.Current;
                                 if (theEvent.Get("TheString").Equals(id)) {
                                     found = true;
                                 }

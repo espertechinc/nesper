@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField serializers = classScope.AddFieldUnshared(
+            var serializers = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(Serializer[]),
                 StaticMethod(

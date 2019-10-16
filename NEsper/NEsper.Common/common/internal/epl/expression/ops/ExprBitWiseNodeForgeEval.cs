@@ -86,8 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var primitive = forge.EvaluationType.GetPrimitiveType();
-            block.DeclareVar(primitive, "l", Ref("left"))
-                .DeclareVar(primitive, "r", Ref("right"));
+            block
+                .DeclareVar(primitive, "l", Unbox(Ref("left"), leftType))
+                .DeclareVar(primitive, "r", Unbox(Ref("right"), rightType));
 
             block.MethodReturn(
                 Cast(primitive, Op(Ref("l"), forge.ForgeRenderable.BitWiseOpEnum.ExpressionText, Ref("r"))));

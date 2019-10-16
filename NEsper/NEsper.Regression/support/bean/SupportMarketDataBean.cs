@@ -57,15 +57,11 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public override string ToString()
         {
-            return "SupportMarketDataBean " +
-                   "symbol=" +
-                   Symbol +
-                   " Price=" +
-                   Price +
-                   " Volume=" +
-                   Volume +
-                   " Feed=" +
-                   Feed;
+            return "SupportMarketDataBean" +
+                   " Symbol=" + Symbol +
+                   " Price=" +  Price +
+                   " Volume=" + Volume +
+                   " Feed=" + Feed;
         }
     }
 } // end of namespace

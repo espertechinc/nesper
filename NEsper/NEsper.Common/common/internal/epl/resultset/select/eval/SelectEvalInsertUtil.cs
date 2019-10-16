@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -25,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 "Expression-returned event type '" +
                 sourceType.Name +
                 "' with underlying type '" +
-                sourceType.UnderlyingType.Name +
+                sourceType.UnderlyingType.CleanName() +
                 "' cannot be converted to target event type '" +
                 targetType.Name +
                 "' with underlying type '" +
-                targetType.UnderlyingType.Name +
+                targetType.UnderlyingType.CleanName() +
                 "'");
         }
 
@@ -39,11 +40,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             return new ExprValidationException(
                 "Expression-returned value of type '" +
-                sourceType.Name +
+                sourceType.CleanName() +
                 "' cannot be converted to target event type '" +
                 targetType.Name +
                 "' with underlying type '" +
-                targetType.UnderlyingType.Name +
+                targetType.UnderlyingType.CleanName() +
                 "'");
         }
     }

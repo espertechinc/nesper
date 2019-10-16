@@ -44,12 +44,13 @@ namespace com.espertech.esper.common.@internal.util
             ranks.Add(new MethodExecutableRank(1, true));
             ranks.Add(new MethodExecutableRank(0, false));
 
-            IEnumerator<MethodExecutableRank> it = ranks.GetEnumerator();
-            for (int i = 0; i < 6; i++) {
-                it.MoveNext();
-                MethodExecutableRank rank = it.Current;
-                Assert.AreEqual(i / 2, rank.ConversionCount, "failed for " + i);
-                Assert.AreEqual(i % 2 == 1, rank.IsVarargs(), "failed for " + i);
+            using (IEnumerator<MethodExecutableRank> enumerator = ranks.GetEnumerator()) {
+                for (int i = 0; i < 6; i++) {
+                    enumerator.MoveNext();
+                    MethodExecutableRank rank = enumerator.Current;
+                    Assert.AreEqual(i / 2, rank.ConversionCount, "failed for " + i);
+                    Assert.AreEqual(i % 2 == 1, rank.IsVarargs(), "failed for " + i);
+                }
             }
         }
     }

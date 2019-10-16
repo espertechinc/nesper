@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 using System.Text;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.compiler.client
@@ -15,6 +17,7 @@ namespace com.espertech.esper.compiler.client
     /// <summary>
     ///     Exception information.
     /// </summary>
+    [Serializable]
     public class EPCompileExceptionItem : EPException
     {
         /// <summary>
@@ -51,6 +54,12 @@ namespace com.espertech.esper.compiler.client
             LineNumber = lineNumber;
         }
 
+        protected EPCompileExceptionItem(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+
         /// <summary>
         ///     Returns expression text for statement.
         /// </summary>
@@ -63,17 +72,21 @@ namespace com.espertech.esper.compiler.client
         /// <returns>line number</returns>
         public int LineNumber { get; }
 
-        public override string Message {
+        public override string Message
+        {
             get {
                 StringBuilder msg;
-                if (!string.IsNullOrWhiteSpace(base.Message)) {
+                if (!string.IsNullOrWhiteSpace(base.Message))
+                {
                     msg = new StringBuilder(base.Message);
                 }
-                else {
+                else
+                {
                     msg = new StringBuilder("Unexpected exception");
                 }
 
-                if (Expression != null) {
+                if (Expression != null)
+                {
                     msg.Append(" [");
                     msg.Append(Expression);
                     msg.Append(']');

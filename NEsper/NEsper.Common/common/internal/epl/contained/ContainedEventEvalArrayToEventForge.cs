@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             var method = parent.MakeChild(typeof(ContainedEventEvalArrayToEvent), GetType(), classScope);
             CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluator(evaluator, method, GetType(), classScope);
             method.Block
-                .DeclareVar<EventBeanManufacturer>("manu", manufacturer.Make(method, classScope))
+                .DeclareVar<EventBeanManufacturer>("manu", manufacturer.Make(method.Block, method, classScope))
                 .MethodReturn(NewInstance<ContainedEventEvalArrayToEvent>(eval, Ref("manu")));
             return LocalMethod(method);
         }

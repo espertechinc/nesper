@@ -65,7 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 MyStaticEval.WaitTimeMSec = 0;
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select * from SupportBean#time(1) as sb, " +
+                var epl = "@Name('s0') select * from " +
+                          " SupportBean#time(1) as sb, " +
                           " SupportBean_S0#keepall as S0 " +
                           " where myStaticEvaluator(sb.TheString, S0.P00)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -129,20 +130,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send events for each stream
-                log.Info(methodName + " Preloading events");
+                log.Info("{0} Preloading events", methodName);
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     SendEvent(env, MakeMarketEvent("IBM_" + i, 1));
                     SendEvent(env, MakeSupportEvent("CSCO_" + i, 2));
                 }
 
-                log.Info(methodName + " Done preloading");
+                log.Info("{0} Done preloading", methodName);
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
+                var delta = endTime - startTime;
+                log.Info("{0} delta={1}", methodName, delta);
 
-                // Stay at 250, belwo 500ms
-                Assert.IsTrue(endTime - startTime < 500);
+                // Stay at 250, below 500ms
+                Assert.That(endTime - startTime, Is.LessThan(500));
                 env.UndeployAll();
             }
         }
@@ -161,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     Thread.Sleep((int) WaitTimeMSec);
                     CountCalled++;
                 }
-                catch (ThreadInterruptedException ex) {
+                catch (ThreadInterruptedException) {
                     return false;
                 }
 

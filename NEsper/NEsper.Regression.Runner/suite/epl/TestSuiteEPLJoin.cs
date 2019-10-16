@@ -24,6 +24,8 @@ using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
+using static NEsper.Avro.Extensions.TypeBuilder;
+
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
@@ -48,253 +50,253 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamSimple()
         {
             RegressionRunner.Run(session, new EPLJoin2StreamSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinSelectClause()
         {
             RegressionRunner.Run(session, new EPLJoinSelectClause());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinSingleOp3Stream()
         {
             RegressionRunner.Run(session, EPLJoinSingleOp3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamAndPropertyPerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamAndPropertyPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamSimplePerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamSimplePerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamRangePerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamRangePerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamSimpleCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamSimpleCoercionPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamRangePerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamRangePerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin5StreamPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin5StreamPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamExprPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin2StreamExprPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinCoercion()
         {
             RegressionRunner.Run(session, EPLJoinCoercion.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinMultiKeyAndRange()
         {
             RegressionRunner.Run(session, EPLJoinMultiKeyAndRange.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinStartStop()
         {
             RegressionRunner.Run(session, EPLJoinStartStop.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinDerivedValueViews()
         {
             RegressionRunner.Run(session, new EPLJoinDerivedValueViews());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinNoTableName()
         {
             RegressionRunner.Run(session, new EPLJoinNoTableName());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinNoWhereClause()
         {
             RegressionRunner.Run(session, EPLJoinNoWhereClause.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinEventRepresentation()
         {
             RegressionRunner.Run(session, EPLJoinEventRepresentation.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinInheritAndInterface()
         {
             RegressionRunner.Run(session, new EPLJoinInheritAndInterface());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinPatterns()
         {
             RegressionRunner.Run(session, EPLJoinPatterns.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamInKeywordPerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamInKeywordPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoin2Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoin2Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinUniqueIndex()
         {
             RegressionRunner.Run(session, new EPLJoinUniqueIndex());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterFullJoin3Stream()
         {
             RegressionRunner.Run(session, EPLOuterFullJoin3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterInnerJoin3Stream()
         {
             RegressionRunner.Run(session, EPLOuterInnerJoin3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterInnerJoin4Stream()
         {
             RegressionRunner.Run(session, EPLOuterInnerJoin4Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoin6Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoin6Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoin7Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoin7Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinCart4Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinCart4Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinCart5Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinCart5Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinChain4Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinChain4Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinUnidirectional()
         {
             RegressionRunner.Run(session, EPLOuterJoinUnidirectional.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinVarA3Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinVarA3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinVarB3Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinVarB3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinVarC3Stream()
         {
             RegressionRunner.Run(session, EPLOuterJoinVarC3Stream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOuterJoinLeftWWhere()
         {
             RegressionRunner.Run(session, EPLOuterJoinLeftWWhere.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinUnidirectionalStream()
         {
             RegressionRunner.Run(session, EPLJoinUnidirectionalStream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamAndPropertyPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamAndPropertyPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamCoercionPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamOuterJoinCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamOuterJoinCoercionPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin20Stream()
         {
             RegressionRunner.Run(session, new EPLJoin20Stream());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamInKeywordPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin3StreamInKeywordPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoinPropertyAccess()
         {
             RegressionRunner.Run(session, EPLJoinPropertyAccess.Executions());
@@ -333,7 +335,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             IDictionary<string, object> typeInfo = new Dictionary<string, object>();
-            typeInfo.Put("id", typeof(string));
+            typeInfo.Put("Id", typeof(string));
             typeInfo.Put("P00", typeof(int));
             configuration.Common.AddEventType("MapS0", typeInfo);
             configuration.Common.AddEventType("MapS1", typeInfo);
@@ -346,24 +348,24 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("Type3", mapType);
 
             IDictionary<string, object> typeInfoS0S0 = new Dictionary<string, object>();
-            typeInfoS0S0.Put("id", typeof(string));
+            typeInfoS0S0.Put("Id", typeof(string));
             typeInfoS0S0.Put("P00", typeof(int));
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
 
-            string[] names = new [] { "id","P00" };
+            string[] names = new [] { "Id","P00" };
             object[] types = new object[] { typeof(string), typeof(int) };
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);
 
             var schema = SchemaBuilder.Record("name",
-                    TypeBuilder.Field("id", TypeBuilder.StringType(
-                            TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))),
-                    TypeBuilder.RequiredInt("P00"));
+                    Field("Id", StringType(AvroConstant.PROP_STRING)),
+                    RequiredInt("P00"));
             configuration.Common.AddEventTypeAvro("S0_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
             configuration.Common.AddEventTypeAvro("S1_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
 
-            configuration.Compiler.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(EPLJoin2StreamAndPropertyPerformance.MyStaticEval), "MyStaticEvaluator");
+            configuration.Compiler.AddPlugInSingleRowFunction(
+                "myStaticEvaluator", typeof(EPLJoin2StreamAndPropertyPerformance.MyStaticEval), "MyStaticEvaluator");
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
         }

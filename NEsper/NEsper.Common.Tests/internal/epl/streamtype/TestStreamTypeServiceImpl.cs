@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 serviceRequireStreamName.ResolveByPropertyName("Volume", false);
                 Assert.Fail();
             }
-            catch (PropertyNotFoundException ex)
+            catch (PropertyNotFoundException)
             {
                 // expected
             }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByStreamAndPropName("xxx", "Volume", false);
                 Assert.Fail();
             }
-            catch (StreamNotFoundException ex)
+            catch (StreamNotFoundException)
             {
                 // Expected
             }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByStreamAndPropName("xxx.Volume", false);
                 Assert.Fail();
             }
-            catch (PropertyNotFoundException ex)
+            catch (PropertyNotFoundException)
             {
                 // Expected
             }
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByStreamAndPropName("s4.xxxx", false);
                 Assert.Fail();
             }
-            catch (PropertyNotFoundException ex)
+            catch (PropertyNotFoundException)
             {
                 // Expected
             }

@@ -109,11 +109,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var hasOneResultRow = false;
-            var it = repository.GetCursors(FromStream);
+            var enumerator = repository.GetCursors(FromStream);
 
             // Loop over all events for that stream
-            for (; it.MoveNext();) {
-                var cursor = it.Current;
+            while (enumerator.MoveNext()) {
+                var cursor = enumerator.Current;
                 var lookupEvent = cursor.TheEvent;
                 var streamCount = 0;
 

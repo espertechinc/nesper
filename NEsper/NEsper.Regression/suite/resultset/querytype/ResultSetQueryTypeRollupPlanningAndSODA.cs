@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Validate(env, "A, B, C", "A, B, rollup(C)", new[] {"A,B,C", "A,B"});
             Validate(env, "A, B, C", "A, rollup(B, C)", new[] {"A,B,C", "A,B", "A"});
             Validate(env, "A, B, C, D", "A, B, rollup(C, D)", new[] {"A,B,C,D", "A,B,C", "A,B"});
-            Validate(env, "A, B, C, D, e", "A, B, rollup(C, D, e)", new[] {"A,B,C,D,e", "A,B,C,D", "A,B,C", "A,B"});
+            Validate(env, "A, B, C, D, E", "A, B, rollup(C, D, E)", new[] {"A,B,C,D,E", "A,B,C,D", "A,B,C", "A,B"});
 
             // plain cube
             Validate(env, "A", "cube(A)", new[] {"A", ""});
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env,
                 "A, B, C, D, e",
                 "grouping sets(A, B, C), grouping sets(D, e)",
-                new[] {"A,D", "A,e", "B,D", "B,e", "C,D", "C,e"});
+                new[] {"A,D", "A,E", "B,D", "B,E", "C,D", "C,E"});
 
             // multiple rollups
             Validate(env, "A, B, C", "rollup(A, B), rollup(C)", new[] {"A,B,C", "A,B", "A,C", "A", "C", ""});

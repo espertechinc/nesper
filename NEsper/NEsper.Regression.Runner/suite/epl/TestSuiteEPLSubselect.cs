@@ -37,79 +37,79 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectUnfiltered()
         {
             RegressionRunner.Run(session, EPLSubselectUnfiltered.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectExists()
         {
             RegressionRunner.Run(session, EPLSubselectExists.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectAllAnySomeExpr()
         {
             RegressionRunner.Run(session, EPLSubselectAllAnySomeExpr.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectIn()
         {
             RegressionRunner.Run(session, EPLSubselectIn.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectFiltered()
         {
             RegressionRunner.Run(session, EPLSubselectFiltered.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectOrderOfEval()
         {
             RegressionRunner.Run(session, EPLSubselectOrderOfEval.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectFilteredPerformance()
         {
             RegressionRunner.Run(session, EPLSubselectFilteredPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectIndex()
         {
             RegressionRunner.Run(session, EPLSubselectIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectInKeywordPerformance()
         {
             RegressionRunner.Run(session, EPLSubselectInKeywordPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectAggregatedSingleValue()
         {
             RegressionRunner.Run(session, EPLSubselectAggregatedSingleValue.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectAggregatedInExistsAnyAll()
         {
             RegressionRunner.Run(session, EPLSubselectAggregatedInExistsAnyAll.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectMulticolumn()
         {
             RegressionRunner.Run(session, EPLSubselectMulticolumn.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectMultirow()
         {
             RegressionRunner.Run(session, EPLSubselectMultirow.Executions());
@@ -121,25 +121,25 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectAggregatedMultirowAndColumn.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectCorrelatedAggregationPerformance()
         {
             RegressionRunner.Run(session, new EPLSubselectCorrelatedAggregationPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectNamedWindowPerformance()
         {
             RegressionRunner.Run(session, EPLSubselectNamedWindowPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectWithinHaving()
         {
             RegressionRunner.Run(session, EPLSubselectWithinHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectWithinPattern()
         {
             RegressionRunner.Run(session, EPLSubselectWithinPattern.Executions());

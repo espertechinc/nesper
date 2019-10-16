@@ -19,42 +19,42 @@ namespace com.espertech.esper.regressionrun.suite.client
     [TestFixture]
     public class TestSuiteClientRuntimeWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeRuntimeStateChange()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             new ClientRuntimeRuntimeProvider.ClientRuntimeRuntimeStateChange().Run(configuration);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeRuntimeDestroy()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             new ClientRuntimeRuntimeProvider.ClientRuntimeRuntimeDestroy().Run(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeExHandlerGetContext()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             new ClientRuntimeExceptionHandler.ClientRuntimeExHandlerGetContext().Run(configuration);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeExceptionHandlerNoHandler()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             new ClientRuntimeExceptionHandler.ClientRuntimeExceptionHandlerNoHandler().Run(configuration);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeInvalidMicroseconds()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             new ClientRuntimeRuntimeProvider.ClientRuntimeMicrosecondInvalid().Run(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeAnnotationImportInvalid()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -65,43 +65,43 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeThreadedConfigInbound()
         {
             RegressionRunner.RunConfigurable(new ClientRuntimeThreadedConfigInbound());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeThreadedConfigInboundFastShutdown()
         {
             RegressionRunner.RunConfigurable(new ClientRuntimeThreadedConfigInboundFastShutdown());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeThreadedConfigOutbound()
         {
             RegressionRunner.RunConfigurable(new ClientRuntimeThreadedConfigOutbound());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeThreadedConfigRoute()
         {
             RegressionRunner.RunConfigurable(new ClientRuntimeThreadedConfigRoute());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeThreadedConfigTimer()
         {
             RegressionRunner.RunConfigurable(new ClientRuntimeThreadedConfigTimer());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeClockTypeRuntime()
         {
             new ClientRuntimeTimeControlClockType().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientSubscriberDisallowed()
         {
             RegressionSession session = RegressionRunner.Session();

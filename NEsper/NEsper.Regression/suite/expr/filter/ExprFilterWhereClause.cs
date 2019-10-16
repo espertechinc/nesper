@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env.SendEventMap(Collections.SingletonDataMap("criteria", 15), "MapEventWithCriteriaBool");
                     Assert.Fail(); // ensure exception handler rethrows
                 }
-                catch (EPException ex) {
+                catch (EPException) {
                     // fine
                 }
 

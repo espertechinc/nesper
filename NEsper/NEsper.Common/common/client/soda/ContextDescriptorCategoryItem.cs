@@ -14,6 +14,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Context descriptor for categories.
     /// </summary>
+    [Serializable]
     public class ContextDescriptorCategoryItem : ContextDescriptor
     {
         /// <summary>

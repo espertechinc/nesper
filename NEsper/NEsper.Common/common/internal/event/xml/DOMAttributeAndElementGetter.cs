@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMAttributeAndElementGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly string propertyName;
+        private readonly string _propertyName;
 
         /// <summary>
         ///     Ctor.
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="propertyName">property name</param>
         public DOMAttributeAndElementGetter(string propertyName)
         {
-            this.propertyName = propertyName;
+            this._propertyName = propertyName;
         }
 
         public object GetValueAsFragment(XmlNode node)
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            return GetNodePropertyValue(node, propertyName);
+            return GetNodePropertyValue(node, _propertyName);
         }
 
         public CodegenExpression GetValueAsNodeCodegen(
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var node = (XmlNode) eventBean.Underlying;
-            return GetNodePropertyExists(node, propertyName);
+            return GetNodePropertyExists(node, _propertyName);
         }
 
         public object GetFragment(EventBean eventBean)
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetNodePropertyValue", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetNodePropertyValue", underlyingExpression, Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "GetNodePropertyExists", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetNodePropertyExists", underlyingExpression, Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -172,15 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             if (namedNodeMap != null) {
                 for (var i = 0; i < namedNodeMap.Count; i++) {
                     var attrNode = namedNodeMap.Item(i);
-                    if (attrNode.LocalName != null) {
-                        if (propertyName.Equals(attrNode.LocalName)) {
-                            return attrNode;
-                        }
-
-                        continue;
-                    }
-
-                    if (propertyName.Equals(attrNode.Name)) {
+                    if (attrNode.LocalName == propertyName) {
                         return attrNode;
                     }
                 }
@@ -197,15 +189,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.LocalName != null) {
-                    if (propertyName.Equals(childNode.LocalName)) {
-                        return childNode;
-                    }
-
-                    continue;
-                }
-
-                if (childNode.Name.Equals(propertyName)) {
+                if (childNode.LocalName == propertyName) {
                     return childNode;
                 }
             }
@@ -227,15 +211,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             if (namedNodeMap != null) {
                 for (var i = 0; i < namedNodeMap.Count; i++) {
                     var attrNode = namedNodeMap.Item(i);
-                    if (attrNode.LocalName != null) {
-                        if (propertyName.Equals(attrNode.LocalName)) {
-                            return true;
-                        }
-
-                        continue;
-                    }
-
-                    if (propertyName.Equals(attrNode.Name)) {
+                    if (attrNode.LocalName == propertyName) {
                         return true;
                     }
                 }
@@ -252,15 +228,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.LocalName != null) {
-                    if (propertyName.Equals(childNode.LocalName)) {
-                        return true;
-                    }
-
-                    continue;
-                }
-
-                if (childNode.Name.Equals(propertyName)) {
+                if (childNode.LocalName == propertyName) {
                     return true;
                 }
             }

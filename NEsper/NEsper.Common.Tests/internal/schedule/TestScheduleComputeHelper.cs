@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.schedule
     [TestFixture]
     public class TestScheduleComputeHelper : AbstractCommonTest
     {
-        private static readonly SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        private static readonly SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-M-d H:mm:ss");
 
         public void CheckCorrect(
             ScheduleSpec spec,
@@ -68,15 +68,16 @@ namespace com.espertech.esper.common.@internal.schedule
 
             if (result != expectedDate)
             {
-                Log.Debug(".checkCorrect Difference in result found, spec=" + spec);
                 Log.Debug(
-                    ".checkCorrect      now=" + timeFormat.Format(nowDate.TimeFromMillis()) +
+                    ".checkCorrect Difference in result found, spec=" + spec);
+                Log.Debug(
+                    ".checkCorrect now=" + timeFormat.Format(nowDate.TimeFromMillis()) +
                     " long=" + nowDate);
                 Log.Debug(
                     ".checkCorrect expected=" + timeFormat.Format(expectedDate.TimeFromMillis()) +
                     " long=" + expectedDate);
                 Log.Debug(
-                    ".checkCorrect   result=" + timeFormat.Format(resultDate) +
+                    ".checkCorrect result=" + timeFormat.Format(resultDate) +
                     " long=" + resultDate.UtcMillis);
                 Assert.IsTrue(false);
             }
@@ -229,7 +230,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             CheckCorrect(spec, "2004-12-05 09:50:59", "2004-12-06 00:00:00");
             CheckCorrect(spec, "2004-12-06 00:00:00", "2004-12-13 00:00:00");
-            CheckCorrect(spec, "2004-12-07 00:80:00", "2004-12-13 00:00:00");
+            CheckCorrect(spec, "2004-12-07 01:20:00", "2004-12-13 00:00:00");
             CheckCorrect(spec, "2004-12-12 23:00:00", "2004-12-13 00:00:00");
             CheckCorrect(spec, "2004-12-13 23:00:00", "2004-12-15 00:00:00");
             CheckCorrect(spec, "2004-12-14 23:00:00", "2004-12-15 00:00:00");
@@ -345,7 +346,7 @@ namespace com.espertech.esper.common.@internal.schedule
             spec.AddValue(ScheduleUnit.HOURS, 7);
             spec.AddValue(ScheduleUnit.MINUTES, 0);
             spec.AddValue(ScheduleUnit.SECONDS, 0);
-            spec.OptionalTimeZone = "CST";
+            spec.OptionalTimeZone = "Central Standard Time";
 
             CheckCorrectWZone(spec, "2008-02-01T06:00:00.000GMT-10:00", "2008-02-02T03:00:00.000GMT-10:00");
             CheckCorrectWZone(spec, "2008-02-01T06:00:00.000GMT-9:00", "2008-02-02T04:00:00.000GMT-9:00");
@@ -359,7 +360,7 @@ namespace com.espertech.esper.common.@internal.schedule
             spec = new ScheduleSpec();
             spec.AddValue(ScheduleUnit.HOURS, 7);
             spec.AddValue(ScheduleUnit.SECONDS, 0);
-            spec.OptionalTimeZone = "EST";
+            spec.OptionalTimeZone = "Eastern Standard Time";
 
             CheckCorrectWZone(spec, "2008-02-01T06:00:00.000GMT-7:00", "2008-02-02T05:00:00.000GMT-7:00");
             CheckCorrectWZone(spec, "2008-02-01T06:00:00.000GMT-6:00", "2008-02-01T06:01:00.000GMT-6:00");

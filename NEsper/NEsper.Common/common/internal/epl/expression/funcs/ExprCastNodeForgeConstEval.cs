@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             initMethod.Block.MethodReturn(LocalMethod(compute, Constant(null), ConstantTrue(), ConstantNull()));
 
-            return codegenClassScope.AddFieldUnshared(true, evaluationType, LocalMethod(initMethod));
+            return codegenClassScope.AddDefaultFieldUnshared(true, evaluationType, LocalMethod(initMethod));
         }
     }
 } // end of namespace

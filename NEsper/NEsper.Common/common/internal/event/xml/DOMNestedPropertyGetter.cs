@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var member = codegenClassScope.AddFieldUnshared(
+            var member = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "result",
                     GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
+                .MethodReturn(ExprDotMethod(member, "GetEvent", Ref("result")));
         }
 
         private CodegenMethod GetValueAsNodeArrayCodegen(

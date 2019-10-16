@@ -54,9 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField eventSvcMember =
-                classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            CodegenExpressionField typeMember = classScope.AddFieldUnshared(
+            var eventSvcMember =
+                classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var typeMember = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(BeanEventType),
                 Cast(

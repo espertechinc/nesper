@@ -46,14 +46,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             var configDB = new ConfigurationCommonDBRef();
             configDB.SetDatabaseDriver(
-                container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
             return configDB;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLDatabaseQueryResultCache()
         {
             Run(new EPLDatabaseQueryResultCache(false, null, 1d, double.MaxValue, 5000L, 1000, false));

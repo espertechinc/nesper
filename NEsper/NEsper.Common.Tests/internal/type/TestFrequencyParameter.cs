@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.type
                 new FrequencyParameter(0);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected
             }

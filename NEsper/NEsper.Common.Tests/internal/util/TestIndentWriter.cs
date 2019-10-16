@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
                 new IndentWriter(stringWriter, 0, -1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.util
                 new IndentWriter(stringWriter, -1, 11);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

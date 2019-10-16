@@ -54,13 +54,6 @@ namespace com.espertech.esper.compat
             return new Singleton<T>(value);
         }
 
-        public static bool? AsBoxedBoolean(this object value)
-        {
-            if (value == null) return null;
-            if (value is bool) return (bool)value;
-            return AsBoolean(value);
-        }
-
         public static byte? AsBoxedByte(this object value)
         {
             if (value == null) return null;
@@ -68,7 +61,7 @@ namespace com.espertech.esper.compat
             return Convert.ToByte(value);
         }
 
-        public static short AsByte(this object value)
+        public static byte AsByte(this object value)
         {
             if (value is byte)
                 return (byte) value;
@@ -173,6 +166,18 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
+        /// Returns the value as a boxed float.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static float? AsBoxedFloat(this object value)
+        {
+            if (value == null)
+                return null;
+            return AsFloat(value);
+        }
+
+        /// <summary>
         /// Returns the value as a double.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -194,8 +199,7 @@ namespace com.espertech.esper.compat
 
             return Convert.ToDouble(value);
         }
-
-
+        
         /// <summary>
         /// Returns the value as a boxed double.
         /// </summary>
@@ -228,6 +232,18 @@ namespace com.espertech.esper.compat
                 return (decimal) ((BigInteger)value);
 
             return Convert.ToDecimal(value);
+        }
+
+        /// <summary>
+        /// Returns the value as a boxed decimal.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static decimal? AsBoxedDecimal(this object value)
+        {
+            if (value == null)
+                return null;
+            return AsDecimal(value);
         }
 
         public static BigInteger AsBigInteger(this object value)
@@ -264,6 +280,13 @@ namespace com.espertech.esper.compat
             throw new ArgumentException("invalid value for bool", nameof(value));
         }
 
+        public static bool? AsBoxedBoolean(this object value)
+        {
+            if (value == null)
+                return null;
+            return AsBoolean(value);
+        }
+
         public static DateTime AsDateTime(this object value)
         {
             if (value is DateTime)
@@ -274,6 +297,13 @@ namespace com.espertech.esper.compat
                 return DateTimeHelper.TimeFromMillis((long) value);
 
             throw new ArgumentException("invalid value for datetime", nameof(value));
+        }
+
+        public static DateTime? AsBoxedDateTime(this object value)
+        {
+            if (value == null)
+                return null;
+            return AsDateTime(value);
         }
 
         public static DateTimeOffset AsDateTimeOffset(this object value)
@@ -293,6 +323,20 @@ namespace com.espertech.esper.compat
                 return DateTimeOffsetHelper.TimeFromMillis((int) value, timeZone);
 
             throw new ArgumentException("invalid value for datetime", nameof(value));
+        }
+
+        public static DateTimeOffset? AsBoxedDateTimeOffset(this object value)
+        {
+            if (value == null)
+                return null;
+            return AsDateTimeOffset(value);
+        }
+
+        public static DateTimeOffset? AsBoxedDateTimeOffset(this object value, TimeZoneInfo timeZone)
+        {
+            if (value == null)
+                return null;
+            return AsDateTimeOffset(value, timeZone);
         }
 
         /// <summary>

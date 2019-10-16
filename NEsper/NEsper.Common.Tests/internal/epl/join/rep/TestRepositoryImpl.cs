@@ -106,13 +106,13 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         public void TestGetCursors()
         {
             // get cursor for root stream lookup
-            var it = repository.GetCursors(0);
-            Assert.IsTrue(it.MoveNext());
-            var cursor = it.Current;
+            var cursors = repository.GetCursors(0);
+            Assert.IsTrue(cursors.MoveNext());
+            var cursor = cursors.Current;
             Assert.That(s0Event, Is.SameAs(cursor.TheEvent));
             Assert.That(cursor.Stream, Is.Zero);
 
-            Assert.IsFalse(it.MoveNext());
+            Assert.IsFalse(cursors.MoveNext());
 
             // try invalid get cursor for no results
             Assert.That(() => repository.GetCursors(2), Throws.InstanceOf<NullReferenceException>());

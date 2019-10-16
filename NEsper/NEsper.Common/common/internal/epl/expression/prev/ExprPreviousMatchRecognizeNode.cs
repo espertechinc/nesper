@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var method = parent.MakeChild(evaluationType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
 
-            var strategy = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var strategy = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));
 

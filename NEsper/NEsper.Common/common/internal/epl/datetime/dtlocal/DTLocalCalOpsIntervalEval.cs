@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField = codegenClassScope
-                .AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                .AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalCalOpsIntervalEval), codegenClassScope)
                 .AddParam(typeof(DateTime), "startTimestamp")

@@ -59,7 +59,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 .SetProperty(
                     saiff,
                     "ResultSetProcessorFactoryProvider",
-                    NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
+                    NewInstance(
+                        resultSetProcessorProviderClassName, 
+                        symbols.GetAddInitSvc(method),
+                        Ref("statementFields")));
         }
     }
 } // end of namespace

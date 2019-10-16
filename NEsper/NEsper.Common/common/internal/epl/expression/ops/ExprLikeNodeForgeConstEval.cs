@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -45,9 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 value = value.ToString();
             }
 
-            var result = forge.ForgeRenderable.IsNot ^ forge.LikeUtil.Compare((string) value);
-
-            return result;
+            return forge.ForgeRenderable.IsNot ^ forge.LikeUtil.CompareTo((string) value);
         }
 
         public static CodegenMethod Codegen(
@@ -57,10 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression mLikeUtil = codegenClassScope.AddFieldUnshared(
+            var mLikeUtil = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(LikeUtil),
                 forge.LikeUtilInit);
+
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenExpression refLike,
             CodegenExpression stringExpr)
         {
-            var eval = ExprDotMethod(refLike, "Compare", stringExpr);
+            var eval = ExprDotMethod(refLike, "CompareTo", stringExpr);
             return !forge.ForgeRenderable.IsNot ? eval : Not(eval);
         }
     }

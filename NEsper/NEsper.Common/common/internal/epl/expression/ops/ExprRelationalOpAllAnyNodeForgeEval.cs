@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -282,7 +283,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                if (TypeHelper.IsImplementsInterface(reftype, typeof(ICollection<object>))) {
+                if (reftype.IsGenericCollection()) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refname));
@@ -312,7 +313,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                 }
-                else if (TypeHelper.IsImplementsInterface(reftype, typeof(IDictionary<object, object>))) {
+                else if (reftype.IsGenericDictionary()) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         var forEach = blockIfNotNull.ForEach(

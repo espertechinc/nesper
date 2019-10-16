@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgableAIFactoryProviderBase;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return AsField(codegenClassScope);
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(codegenClassScope).Field);
         }
 
         public Type EvaluationType => ResolvedType;
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
         {
-            return AsField(classScope);
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(classScope).Field);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -154,11 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprSubstitutionNode)) {
-                return false;
-            }
-
-            return true;
+            return node is ExprSubstitutionNode;
         }
 
         private CodegenExpressionField AsField(CodegenClassScope classScope)

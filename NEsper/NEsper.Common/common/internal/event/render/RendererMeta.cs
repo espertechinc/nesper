@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.render
             var gettersNested = new List<NestedGetterPair>();
 
             var descriptors = eventType.PropertyDescriptors;
-            foreach (var desc in descriptors) {
+            foreach (var desc in descriptors.OrderBy(d => d.PropertyName)) {
                 var propertyName = desc.PropertyName;
 
                 if (!desc.IsIndexed && !desc.IsMapped && !desc.IsFragment) {

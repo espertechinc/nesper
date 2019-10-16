@@ -12,11 +12,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilResolveExceptionHandlerDefault : ExprNodeUtilResolveExceptionHandler
     {
-        private readonly String resolvedExpression;
+        private readonly string resolvedExpression;
         private readonly bool configuredAsSingleRow;
 
         public ExprNodeUtilResolveExceptionHandlerDefault(
-            String resolvedExpression,
+            string resolvedExpression,
             bool configuredAsSingleRow)
         {
             this.resolvedExpression = resolvedExpression;
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprValidationException Handle(Exception e)
         {
-            String message;
+            string message;
             if (configuredAsSingleRow) {
                 message = e.Message;
             }

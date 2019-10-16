@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var s0 = new SupportBean_S0(id, p00, p01);
             env.SendEventBean(s0);
-            var fields = new [] { "P00","P01","s0","theSum" };
+            var fields = new [] { "P00","P01","S0","theSum" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
-                Assert.AreEqual(typeof(SupportBean_S0), env.Statement("s0").EventType.GetPropertyType("s0"));
+                Assert.AreEqual(typeof(SupportBean_S0), env.Statement("s0").EventType.GetPropertyType("S0"));
 
                 SendS0AssertNone(env, 0, "A", "G1");
                 SendS0AssertNone(env, -1, "B", "G1");

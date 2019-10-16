@@ -24,15 +24,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
 {
     public class ExpressionDeployTimeResolver
     {
-        public static CodegenExpressionField MakeRuntimeCacheKeyField(
+        public static CodegenExpressionInstanceField MakeRuntimeCacheKeyField(
+            CodegenExpression instance,
             ExpressionDeclItem expression,
             CodegenClassScope classScope,
             Type generator)
         {
             if (expression.Visibility == NameAccessModifier.TRANSIENT) {
-                // for private expression that cache key is simply an Object shared by the name of the expression (fields are per-statement already so its safe)
-                return classScope.NamespaceScope.AddOrGetFieldSharable(
-                    new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
+                // for private expression that cache key is simply an Object shared by the name of the
+                // expression (fields are per-statement already so its safe)
+                return classScope.NamespaceScope.AddOrGetInstanceFieldSharable(
+                    instance, new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
             }
 
             // global expressions need a cache key that derives from the deployment id of the expression and the expression name
@@ -50,8 +52,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                         Constant(expression.Visibility),
                         Constant(expression.ModuleName),
                         EPStatementInitServicesConstants.REF))
-                .MethodReturn(NewInstance<ExprDeclaredCacheKeyGlobal>(@Ref("deploymentId"), Constant(expression.Name)));
-            return classScope.NamespaceScope.AddFieldUnshared(
+                .MethodReturn(
+                    NewInstance<ExprDeclaredCacheKeyGlobal>(
+                        @Ref("deploymentId"),
+                        Constant(expression.Name)));
+
+            return classScope.NamespaceScope.AddInstanceFieldUnshared(
+                instance,
                 true,
                 typeof(ExprDeclaredCacheKeyGlobal),
                 LocalMethod(keyInit, EPStatementInitServicesConstants.REF));

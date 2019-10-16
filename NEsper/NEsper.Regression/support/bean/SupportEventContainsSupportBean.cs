@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
@@ -20,6 +21,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             Sb = sb;
         }
 
+        [PropertyName("sb")]
         public SupportBean Sb { get; }
     }
 } // end of namespace

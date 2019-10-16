@@ -140,14 +140,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select instanceof(item?, string) as t0, " +
-                          " instanceof(item?, int) as t1, " +
-                          " instanceof(item?, System.Single) as t2, " +
-                          " instanceof(item?, System.Single, char, byte) as t3, " +
-                          " instanceof(item?, System.Int32) as t4, " +
-                          " instanceof(item?, long) as t5, " +
-                          " instanceof(item?, long, long, System.Object) as t6, " +
-                          " instanceof(item?, long, float) as t7 " +
+                var epl = "@Name('s0') select instanceof(Item?, string) as t0, " +
+                          " instanceof(Item?, int) as t1, " +
+                          " instanceof(Item?, System.Single) as t2, " +
+                          " instanceof(Item?, System.Single, char, byte) as t3, " +
+                          " instanceof(Item?, System.Int32) as t4, " +
+                          " instanceof(Item?, long) as t5, " +
+                          " instanceof(Item?, long, long, System.Object) as t6, " +
+                          " instanceof(Item?, long, float) as t7 " +
                           " from SupportBeanDynRoot";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -185,38 +185,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select instanceof(item?, " +
-                          typeof(SupportMarkerInterface).FullName +
-                          ") as t0, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportA).FullName +
-                          ") as t1, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportBaseAB).FullName +
-                          ") as t2, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportBaseABImpl).FullName +
-                          ") as t3, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportA).FullName +
-                          ", " +
-                          typeof(ISupportB).FullName +
-                          ") as t4, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportBaseAB).FullName +
-                          ", " +
-                          typeof(ISupportB).FullName +
-                          ") as t5, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportAImplSuperG).FullName +
-                          ", " +
-                          typeof(ISupportB).FullName +
-                          ") as t6, " +
-                          " instanceof(item?, " +
-                          typeof(ISupportAImplSuperGImplPlus).FullName +
-                          ", " +
-                          typeof(SupportBeanAtoFBase).Name +
-                          ") as t7 " +
+                var epl = "@Name('s0') select" +
+                          " instanceof(Item?, " + typeof(SupportMarkerInterface).FullName + ") as t0, " +
+                          " instanceof(Item?, " + typeof(ISupportA).FullName + ") as t1, " +
+                          " instanceof(Item?, " + typeof(ISupportBaseAB).FullName + ") as t2, " +
+                          " instanceof(Item?, " + typeof(ISupportBaseABImpl).FullName + ") as t3, " + 
+                          " instanceof(Item?, " + typeof(ISupportA).FullName + ", " + typeof(ISupportB).FullName + ") as t4, " +
+                          " instanceof(Item?, " + typeof(ISupportBaseAB).FullName + ", " + typeof(ISupportB).FullName + ") as t5, " +
+                          " instanceof(Item?, " + typeof(ISupportAImplSuperG).FullName + ", " +  typeof(ISupportB).FullName + ") as t6, " +
+                          " instanceof(Item?, " + typeof(ISupportAImplSuperGImplPlus).FullName + ", " + typeof(SupportBeanAtoFBase).FullName + ") as t7 " +
                           " from SupportBeanDynRoot";
                 env.CompileDeploy(epl).AddListener("s0");
 

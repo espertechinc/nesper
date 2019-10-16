@@ -20,11 +20,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     {
         private static readonly object[] EMPTY_PARTITION_KEYS = new object[0];
 
-        private readonly IDictionary<object, ContextControllerKeyedSvcEntry> keys =
-            new Dictionary<object, ContextControllerKeyedSvcEntry>();
+        private readonly IDictionary<object, ContextControllerKeyedSvcEntry> _keys =
+            new NullableDictionary<object, ContextControllerKeyedSvcEntry>(
+                new Dictionary<object, ContextControllerKeyedSvcEntry>());
 
-        private int currentSubpathId;
-        private ContextControllerFilterEntry[] filterEntries;
+        private int _currentSubpathId;
+        private ContextControllerFilterEntry[] _filterEntries;
 
         public object[] MgmtGetPartitionKeys(IntSeqKey controllerPath)
         {
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public int MgmtGetIncSubpath(IntSeqKey controllerPath)
         {
-            var subpathId = currentSubpathId;
-            currentSubpathId++;
+            var subpathId = _currentSubpathId;
+            _currentSubpathId++;
             return subpathId;
         }
 
@@ -49,19 +50,19 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            this.filterEntries = filterEntries;
+            this._filterEntries = filterEntries;
         }
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
         {
-            return filterEntries;
+            return _filterEntries;
         }
 
         public bool KeyHasSeen(
             IntSeqKey controllerPath,
             object key)
         {
-            return keys.ContainsKey(key);
+            return _keys.ContainsKey(key);
         }
 
         public void KeyAdd(
@@ -70,20 +71,20 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             int subpathIdOrCPId,
             ContextControllerConditionNonHA terminationCondition)
         {
-            keys.Put(key, new ContextControllerKeyedSvcEntry(subpathIdOrCPId, terminationCondition));
+            _keys.Put(key, new ContextControllerKeyedSvcEntry(subpathIdOrCPId, terminationCondition));
         }
 
         public ContextControllerKeyedSvcEntry KeyRemove(
             IntSeqKey controllerPath,
             object key)
         {
-            return keys.Delete(key);
+            return _keys.Delete(key);
         }
 
         public IList<ContextControllerConditionNonHA> KeyGetTermConditions(IntSeqKey controllerPath)
         {
             IList<ContextControllerConditionNonHA> conditions = new List<ContextControllerConditionNonHA>();
-            foreach (var entry in keys) {
+            foreach (var entry in _keys) {
                 conditions.Add(entry.Value.TerminationCondition);
             }
 
@@ -94,7 +95,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             BiConsumer<object, int> keyAndSubpathOrCPId)
         {
-            foreach (var entry in keys) {
+            foreach (var entry in _keys) {
                 keyAndSubpathOrCPId.Invoke(entry.Key, entry.Value.SubpathOrCPId);
             }
         }
@@ -103,14 +104,14 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             object key)
         {
-            var entry = keys.Get(key);
+            var entry = _keys.Get(key);
             return entry == null ? -1 : entry.SubpathOrCPId;
         }
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)
         {
-            IList<int> result = new List<int>(keys.Count);
-            foreach (var entry in keys) {
+            IList<int> result = new List<int>(_keys.Count);
+            foreach (var entry in _keys) {
                 result.Add(entry.Value.SubpathOrCPId);
             }
 
@@ -120,8 +121,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public void Destroy()
         {
-            keys.Clear();
-            filterEntries = null;
+            _keys.Clear();
+            _filterEntries = null;
         }
     }
 } // end of namespace

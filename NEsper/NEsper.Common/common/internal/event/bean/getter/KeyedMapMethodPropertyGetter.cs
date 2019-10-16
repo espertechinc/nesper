@@ -137,12 +137,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             try {
                 var result = _method.Invoke(@object, null);
-                if (!(result is IDictionary<object, object>)) {
-                    return null;
-                }
-
-                var resultMap = (IDictionary<object, object>) result;
-                return resultMap.Get(key);
+                var resultMap = result.AsObjectDictionary();
+                return resultMap?.Get(key);
             }
             catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
@@ -161,20 +157,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(typeof(object), "key")
                 .Block
                 .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
-                .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
-                .MethodReturn(
-                    Cast(
-                        beanPropType,
-                        ExprDotMethod(Cast(typeof(IDictionary<object, object>), Ref("result")), "Get", Ref("key"))));
+                .DeclareVar<IDictionary<object, object>>("resultMap",
+                    StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
+                .IfRefNullReturnNull("resultMap")
+                .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("resultMap"), "Get", Ref("key"))));
         }
 
         public override string ToString()
         {
-            return "KeyedMapMethodPropertyGetter " +
-                   " method=" +
-                   _method +
-                   " key=" +
-                   _key;
+            return $"KeyedMapMethodPropertyGetter: method={_method} key={_key}";
         }
     }
 } // end of namespace

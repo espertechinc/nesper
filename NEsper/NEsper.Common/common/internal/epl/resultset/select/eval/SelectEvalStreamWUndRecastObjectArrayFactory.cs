@@ -202,11 +202,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                var manufacturerField = codegenClassScope.AddFieldUnshared(
+                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+                var manufacturerField = codegenClassScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventBeanManufacturer),
-                    manufacturer.Make(codegenMethodScope, codegenClassScope));
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+                    manufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 var block = methodNode.Block
                     .DeclareVar<ObjectArrayBackedEventBean>(

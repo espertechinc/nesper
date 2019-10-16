@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(
+            var cache = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(GetType(), "VariantGet", beanExpression, cache, Constant(propertyName));
         }
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(
+            var cache = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(GetType(), "VariantExists", beanExpression, cache, Constant(propertyName));
         }

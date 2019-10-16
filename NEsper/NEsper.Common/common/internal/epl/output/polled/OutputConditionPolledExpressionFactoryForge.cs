@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             variableInit.Block
                 .MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
-            var variableRW = classScope.NamespaceScope.AddFieldUnshared(
+            var variableRW = classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VariableReadWritePackage),
                 LocalMethod(variableInit, EPStatementInitServicesConstants.REF));

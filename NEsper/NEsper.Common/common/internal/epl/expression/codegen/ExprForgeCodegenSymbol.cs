@@ -62,6 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
         }
 
+        // --------------------------------------------------------------------------------
+        // Adding the following elements to scope is a fundamental wash because the
+        // scope for a lambda is the same as it's parent (assuming we're dealing with
+        // a lambda).
+        // --------------------------------------------------------------------------------
+
         public CodegenExpressionRef GetAddEPS(CodegenMethodScope scope)
         {
             if (optionalEPSRef == null) {
@@ -96,6 +102,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             return optionalExprEvalCtxRef;
         }
 
+        // --------------------------------------------------------------------------------
+
         public CodegenExpressionRef GetAddRequiredUnderlying(
             CodegenMethodScope scope,
             int streamNum,
@@ -125,17 +133,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenClassScope codegenClassScope)
         {
             foreach (var underlying in underlyingStreamNums) {
-                Type underlyingType = underlying.Value.EventType.UnderlyingType;
+                var underlyingValue = underlying.Value;
+                var underlyingType = underlyingValue.EventType.UnderlyingType;
                 var name = underlying.Value.Ref.Ref;
                 var arrayAtIndex = ArrayAtIndex(Ref(ExprForgeCodegenNames.NAME_EPS), Constant(underlying.Key));
 
-                if (!underlying.Value.IsOptionalEvent) {
+                if (!underlyingValue.IsOptionalEvent) {
+                    // Unwrapping Method - non-optional event
+                    // ----------------------------------------
+                    // {underlyingType} {name} = ({underlyingType}) eps[someConstantIndex];
+
                     processBlock.DeclareVar(
                         underlyingType,
                         name,
                         Cast(underlyingType, ExprDotUnderlying(arrayAtIndex)));
                 }
                 else {
+                    // Unwrapping Method - optional event
+                    // ----------------------------------------
+                    // {underlyingType} M{N}(EventBean eps) {
+                    //     EventBean @event = eps[someConstantIndex];
+                    //     if (@event == null) {
+                    //         return null;
+                    //     }
+                    //     return ({underlyingType}) @event.Underlying;
+                    // }
+
+
                     var methodNode = parent
                         .MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
                         .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);

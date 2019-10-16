@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     if (insertIntoTargetType != null &&
-                        fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i] &&
+                        ReferenceEquals(fragmentType.FragmentType.UnderlyingType, expressionReturnTypes[i]) &&
                         (targetFragment == null || targetFragment?.IsNative == true)) {
                         var getter = ((EventTypeSPI) eventTypeStream).GetGetterSPI(propertyName);
                         var returnType = eventTypeStream.GetPropertyType(propertyName);
@@ -466,13 +466,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     var expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
                                     var returnType = expression.Forge.EvaluationType;
                                     if (returnType == typeof(object[]) ||
-                                        TypeHelper.IsImplementsInterface(
-                                            returnType,
-                                            typeof(IDictionary<object, object>)) ||
+                                        returnType.IsGenericDictionary() ||
                                         returnType.IsBuiltinDataType()) {
                                         throw new ExprValidationException(
                                             "Invalid expression return type '" +
-                                            returnType.Name +
+                                            returnType.CleanName() +
                                             "' for transpose function");
                                     }
 
@@ -740,7 +738,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     "Cannot transpose additional properties in the select-clause to target event type '" +
                                     insertIntoTargetType.Name +
                                     "' with underlying type '" +
-                                    insertIntoTargetType.UnderlyingType.Name +
+                                    insertIntoTargetType.UnderlyingType.CleanName() +
                                     "', the " +
                                     ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE +
                                     " function must occur alone in the select clause");
@@ -755,10 +753,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         expression.Forge);
                             }
 
-                            if (insertIntoTargetType is MapEventType &&
-                                TypeHelper.IsImplementsInterface(
-                                    returnType,
-                                    typeof(IDictionary<object, object>))) {
+                            if (insertIntoTargetType is MapEventType && returnType.IsGenericStringDictionary())
+                            { 
                                 return new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceMap(
                                     insertIntoTargetType,
                                     expression.Forge);
@@ -775,16 +771,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             }
 
                             if (insertIntoTargetType is AvroSchemaEventType &&
-                                returnType.Name.Equals(TypeHelper.AVRO_GENERIC_RECORD_CLASSNAME)) {
+                                Equals(returnType.FullName, TypeHelper.AVRO_GENERIC_RECORD_CLASSNAME)) {
                                 return new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceAvro(
                                     insertIntoTargetType,
                                     expression.Forge);
                             }
 
-                            if (insertIntoTargetType is WrapperEventType) {
+                            if (insertIntoTargetType is WrapperEventType existing) {
                                 // for native event types as they got renamed, they become wrappers
                                 // check if the proposed wrapper is compatible with the existing wrapper
-                                var existing = (WrapperEventType) insertIntoTargetType;
                                 if (existing.UnderlyingEventType is BeanEventType) {
                                     var innerType = (BeanEventType) existing.UnderlyingEventType;
                                     var exprNode = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
@@ -793,9 +788,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         innerType.UnderlyingType)) {
                                         throw new ExprValidationException(
                                             "Invalid expression return type '" +
-                                            exprNode.Forge.EvaluationType +
+                                            exprNode.Forge.EvaluationType.CleanName() +
                                             "' for transpose function, expected '" +
-                                            innerType.UnderlyingType.GetSimpleName() +
+                                            innerType.UnderlyingType.CleanName() +
                                             "'");
                                     }
 
@@ -1233,7 +1228,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             if (insertIntoTargetType is WrapperEventType) {
                                 var wrapperType = (WrapperEventType) insertIntoTargetType;
                                 // Map and Object both supported
-                                if (wrapperType.UnderlyingEventType.UnderlyingType == columnOneType) {
+                                if (ReferenceEquals(wrapperType.UnderlyingEventType.UnderlyingType, columnOneType)) {
                                     singleColumnWrapOrBeanCoercion = true;
                                     resultEventType = insertIntoTargetType;
                                 }

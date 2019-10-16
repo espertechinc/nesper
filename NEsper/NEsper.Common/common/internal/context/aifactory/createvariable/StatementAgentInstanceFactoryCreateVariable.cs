@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
@@ -130,7 +131,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

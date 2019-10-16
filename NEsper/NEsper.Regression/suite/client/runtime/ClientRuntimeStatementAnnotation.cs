@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -81,18 +82,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             annotations = SortAlpha(annotations);
             Assert.AreEqual(3, annotations.Length);
 
-            Assert.AreEqual(typeof(DescriptionAttribute), annotations[0].GetType());
-            Assert.AreEqual("MyTestStmt description", ((DescriptionAttribute) annotations[0]).Value);
+            Assert.AreEqual(typeof(AnnotationDescription), annotations[0].GetType());
+            Assert.AreEqual("MyTestStmt description", ((AnnotationDescription) annotations[0]).Value);
             Assert.AreEqual("@Description(\"MyTestStmt description\")", annotations[0].ToString());
 
-            Assert.AreEqual(typeof(NameAttribute), annotations[1].GetType());
-            Assert.AreEqual("MyTestStmt", ((NameAttribute) annotations[1]).Value);
+            Assert.AreEqual(typeof(AnnotationName), annotations[1].GetType());
+            Assert.AreEqual("MyTestStmt", ((AnnotationName) annotations[1]).Value);
             Assert.AreEqual("MyTestStmt", stmt.Name);
             Assert.AreEqual("@Name(\"MyTestStmt\")", annotations[1].ToString());
 
-            Assert.AreEqual(typeof(TagAttribute), annotations[2].GetType());
-            Assert.AreEqual("UserId", ((TagAttribute) annotations[2]).Name);
-            Assert.AreEqual("value", ((TagAttribute) annotations[2]).Value);
+            Assert.AreEqual(typeof(AnnotationTag), annotations[2].GetType());
+            Assert.AreEqual("UserId", ((AnnotationTag) annotations[2]).Name);
+            Assert.AreEqual("value", ((AnnotationTag) annotations[2]).Value);
             Assert.AreEqual("@Tag(Name=\"UserId\", Value=\"value\")", annotations[2].ToString());
 
             Assert.IsFalse(annotations[2].Equals(annotations[1]));
@@ -108,10 +109,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationSimple " +
                     "@MyAnnotationValue('abc') " +
                     "@MyAnnotationValueDefaulted " +
-                    "@MyAnnotationValueEnum(SupportEnum=" +
-                    typeof(SupportEnum).FullName +
-                    ".ENUM_VALUE_3) " +
-                    "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5) " +
+                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
                     "@Name('STMTONE') " +
                     "select * from SupportBean";
                 var stmtTextFormatted =
@@ -121,11 +120,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     NEWLINE +
                     "@MyAnnotationValueDefaulted" +
                     NEWLINE +
-                    "@MyAnnotationValueEnum(SupportEnum=" +
-                    typeof(SupportEnum).FullName +
-                    ".ENUM_VALUE_3)" +
+                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" +
                     NEWLINE +
-                    "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5)" +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" +
                     NEWLINE +
                     "@Name('STMTONE')" +
                     NEWLINE +
@@ -138,16 +135,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 annotations = SortAlpha(annotations);
                 Assert.AreEqual(6, annotations.Length);
 
-                Assert.AreEqual(typeof(MyAnnotationSimpleAttribute), annotations[0].GetType());
-                Assert.AreEqual("abc", ((MyAnnotationValueAttribute) annotations[1]).Value);
-                Assert.AreEqual("XYZ", ((MyAnnotationValueDefaultedAttribute) annotations[2]).Value);
-                Assert.AreEqual("STMTONE", ((NameAttribute) annotations[5]).Value);
+                Assert.AreEqual("STMTONE", ((AnnotationName) annotations[0]).Value);
+                Assert.AreEqual(typeof(MyAnnotationSimpleAttribute), annotations[1].GetType());
+                Assert.AreEqual("abc", ((MyAnnotationValueAttribute) annotations[2]).Value);
+                Assert.AreEqual("XYZ", ((MyAnnotationValueDefaultedAttribute) annotations[3]).Value);
 
-                var enumval = (MyAnnotationValueEnumAttribute) annotations[3];
+                var enumval = (MyAnnotationValueEnumAttribute) annotations[4];
                 Assert.AreEqual(SupportEnum.ENUM_VALUE_2, enumval.SupportEnumDef);
                 Assert.AreEqual(SupportEnum.ENUM_VALUE_3, enumval.SupportEnum);
 
-                var pair = (MyAnnotationValuePairAttribute) annotations[4];
+                var pair = (MyAnnotationValuePairAttribute) annotations[5];
                 Assert.AreEqual("a", pair.StringVal);
                 Assert.AreEqual(-1, pair.IntVal);
                 Assert.AreEqual(2L, pair.LongVal);
@@ -175,8 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // test array
-                stmtText =
-                    "@MyAnnotationValueArray(value={1,2,3},IntArray={4,5},doubleArray={},stringArray={'X'}) @Name('s0') select * from SupportBean";
+                stmtText = "@MyAnnotationValueArray(Value={1,2,3},IntArray={4,5},DoubleArray={},StringArray={'X'}) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 Assert.That(() => env.Statement("s0").Annotations, Throws.Nothing);
@@ -209,39 +205,39 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValuePair(stringVal='abc') select * from Bean",
+                    "@MyAnnotationValuePair(StringVal='abc') select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'booleanVal' [@MyAnnotationValuePair(stringVal='abc') select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'booleanVal' [@MyAnnotationValuePair(StringVal='abc') select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "MyAnnotationValueArray(value=5) select * from Bean",
+                    "MyAnnotationValueArray(Value=5) select * from Bean",
                     true,
-                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(value=5) select * from Bean]");
+                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(Value=5) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(value=null) select * from Bean",
+                    "@MyAnnotationValueArray(Value=null) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'doubleArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'doubleArray' [@MyAnnotationValueArray(Value=null) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={null},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={1},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValue(value='a', value='a') select * from Bean",
+                    "@MyAnnotationValue(Value='a', Value='a') select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'value' [@MyAnnotationValue(value='a', value='a') select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@ABC select * from Bean",
@@ -272,9 +268,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'value' but received a Integer-typed value [@MyAnnotationValue(5) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(value=\"ABC\", IntArray={}, doubleArray={}, stringArray={}) select * from Bean",
+                    "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", IntArray={}, doubleArray={}, stringArray={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueEnum(a.b.CC) select * from Bean",
@@ -454,8 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 // NoLock
                 env.CompileDeploy("@Name('s0') @NoLock select * from SupportBean");
                 Assert.AreEqual(
-                    1,
-                    AnnotationUtil.FindAnnotations(env.Statement("s0").Annotations, typeof(NoLockAttribute)).Count);
+                    1, AnnotationUtil.FindAnnotations(env.Statement("s0").Annotations, typeof(NoLockAttribute)).Count);
 
                 env.UndeployAll();
             }

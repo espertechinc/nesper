@@ -437,7 +437,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             string dateFormatString,
             CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.AddFieldUnshared(
+            return codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(DateFormat),
                 NewInstance<SimpleDateFormat>(Constant(dateFormatString)));
@@ -453,7 +453,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 codegenClassScope.NamespaceScope.InitMethod,
                 codegenClassScope);
             CodegenExpression formatInit = LocalMethod(formatEval, ConstantNull(), ConstantTrue(), ConstantNull());
-            return codegenClassScope.AddFieldUnshared(true, type, formatInit);
+            return codegenClassScope.AddDefaultFieldUnshared(true, type, formatInit);
         }
 
         private ExprValidationException GetFailedExpected(

@@ -16,6 +16,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 namespace NEsper.Avro.Core
 {
@@ -47,7 +48,7 @@ namespace NEsper.Avro.Core
             if (!(avroGenericDataDotRecord is GenericRecord)) {
                 throw new EPException(
                     "Unexpected event object type '" +
-                    (avroGenericDataDotRecord == null ? "null" : avroGenericDataDotRecord.GetType().Name) +
+                    (avroGenericDataDotRecord == null ? "null" : avroGenericDataDotRecord.GetType().CleanName()) +
                     "' encountered, please supply a GenericRecord");
             }
 

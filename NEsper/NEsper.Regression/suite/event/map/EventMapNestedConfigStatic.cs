@@ -26,21 +26,26 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             RegressionEnvironment env,
             RegressionPath path)
         {
-            var statementText = "@Name('s0') select nested as a, " +
-                                "nested.n1 as b," +
-                                "nested.n2 as c," +
-                                "nested.n2.n1n1 as d " +
-                                "from NestedMapWithSimpleProps#length(5)";
+            var statementText = "@Name('s0') select" +
+                                " nested as a," +
+                                " nested.n1 as b," +
+                                " nested.n2 as c," +
+                                " nested.n2.n1n1 as d " +
+                                " from NestedMapWithSimpleProps#length(5)";
             env.CompileDeploy(statementText, path).AddListener("s0");
 
             var mapEvent = GetTestData();
             env.SendEventMap(mapEvent, "NestedMapWithSimpleProps");
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreSame(mapEvent.Get("nested"), theEvent.Get("a"));
-            Assert.AreSame("abc", theEvent.Get("b"));
-            Assert.AreSame(((IDictionary<string, object>) mapEvent.Get("nested")).Get("n2"), theEvent.Get("c"));
-            Assert.AreSame("def", theEvent.Get("d"));
+            var mapEventNested = mapEvent.Get("nested");
+            Assert.That(mapEventNested, Is.InstanceOf<IDictionary<string, object>>());
+            Assert.That(theEvent.Get("a"), Is.SameAs(mapEventNested));
+            Assert.That(theEvent.Get("b"), Is.SameAs("abc"));
+
+            var mapEventNestedMap = (IDictionary<string, object>) mapEventNested;
+            Assert.That(theEvent.Get("c"), Is.SameAs(mapEventNestedMap.Get("n2")));
+            Assert.That(theEvent.Get("d"), Is.SameAs("def"));
 
             env.UndeployAll();
         }

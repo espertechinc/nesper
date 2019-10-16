@@ -8,12 +8,17 @@
 
 using System;
 using System.IO;
+using System.Net;
+
 using com.espertech.esper.container;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace com.espertech.esper.common.client.configuration
 {
-    [TestFixture]
+    // this test is not applicable as we never release NEsper 7
+
+    //[TestFixture]
     public class TestConfigurationSchema7To8Upgrade : AbstractCommonTest
     {
         private static readonly string FILE_PREFIX = "regression/esper_version_7_old_configuration_file_";
@@ -23,14 +28,18 @@ namespace com.espertech.esper.common.client.configuration
 
         private void RunAssertion(string file)
         {
-            using (var stream = container.ResourceManager().GetResourceAsStream(file)) {
-                var result = ConfigurationSchema7To8Upgrade.Upgrade(stream, file);
-                Assert.That(result, Is.Not.Null);
-                Console.WriteLine(result);
+            var url = container.ResourceManager().ResolveResourceURL(file);
+            using (var client = new WebClient())
+            {
+                using (var stream = client.OpenRead(url)) {
+                    var result = ConfigurationSchema7To8Upgrade.Upgrade(stream, file);
+                    Assert.That(result, Is.Not.Null);
+                    Console.WriteLine(result);
+                }
             }
         }
 
-        [Test]
+        //[Test]
         public void TestIt()
         {
             RunAssertion(FILE_ONE);

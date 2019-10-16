@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             method.Block.IfCondition(Not(ExprDotMethod(points, "IsEmpty")))
                 .DeclareVar<long>("newest", Cast(typeof(long), ExprDotName(points, "Last")))
                 .DeclareVar<bool>(
-                    "eave",
+                    "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
                         "RemoveFromHead",
@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            CodegenExpression timeProvider = classScope.AddOrGetFieldSharable(TimeProviderField.INSTANCE);
+            CodegenExpression timeProvider = classScope.AddOrGetDefaultFieldSharable(TimeProviderField.INSTANCE);
             method.Block.DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
                 .ExprDotMethod(points, "Add", Ref("timestamp"))
                 .DeclareVar<bool>(

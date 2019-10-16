@@ -20,12 +20,6 @@ namespace com.espertech.esper.common.client.dataflow.annotations
     public class OutputTypesAttribute : Attribute
     {
         /// <summary>
-        /// Types
-        /// </summary>
-        /// <returns>types</returns>
-        public OutputTypeAttribute[] Value { get; set; }
-
-        /// <summary>
         /// Port number
         /// </summary>
         /// <returns>port number</returns>
@@ -33,20 +27,16 @@ namespace com.espertech.esper.common.client.dataflow.annotations
 
         public OutputTypesAttribute()
         {
-            Value = new OutputTypeAttribute[0];
             PortNumber = 0;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OutputTypesAttribute"/> class.
         /// </summary>
-        /// <param name="value">The value.</param>
         /// <param name="portNumber">The port number.</param>
         public OutputTypesAttribute(
-            OutputTypeAttribute[] value,
             int portNumber)
         {
-            Value = value;
             PortNumber = portNumber;
         }
     }

@@ -7,11 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
 
 using Castle.DynamicProxy;
+
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -23,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         static ExprNodeProxy()
         {
-            TARGET_GETFORGE = typeof(ExprNode).GetMethod("GetForge");
+            TARGET_GETFORGE = typeof(ExprNode).GetProperty("Forge")?.GetGetMethod();
             TARGET_EQUALSNODE = typeof(ExprNode).GetMethod("EqualsNode");
             if (TARGET_GETFORGE == null || TARGET_EQUALSNODE == null) {
                 throw new EPRuntimeException("Failed to find required methods");
@@ -47,31 +50,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             else {
                 invocation.ReturnValue = invocation.Method.Invoke(
-                    invocation.Proxy,
-                    invocation.Arguments);
+                    Proxy, invocation.Arguments);
             }
         }
 
         public static object NewInstance(ExprNode exprNode)
         {
-            return (ExprForge) generator.CreateInterfaceProxyWithoutTarget(
-                exprNode.GetType(),
-                exprNode.GetType().GetInterfaces(),
-                new ExprNodeProxy(exprNode));
+            var interfaces = exprNode.GetType()
+                .GetInterfaces()
+                .Where(t => t != typeof(ExprNode))
+                .ToArray();
+
+            return generator.CreateInterfaceProxyWithTarget(
+                typeof(ExprNode), interfaces, exprNode, new ExprNodeProxy(exprNode));
         }
 
         private void HandleEqualsNode(IInvocation invocation)
         {
             var args = invocation.Arguments;
-
-            ExprNode otherNode;
-            try {
-                otherNode = ((ExprNodeProxy) args[0]).Proxy;
-            }
-            catch (ArgumentException) {
-                otherNode = (ExprNode) args[0];
-            }
-
+            var otherNode = (ExprNode) args[0];
             invocation.ReturnValue = Proxy.EqualsNode(otherNode, (bool) args[1]);
         }
 

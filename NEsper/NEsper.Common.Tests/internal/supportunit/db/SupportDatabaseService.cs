@@ -53,7 +53,8 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         {
             _container = container;
 
-            var configurationFile = new FileInfo(ESPER_REGRESSION_CONFIG_FILE);
+            var configurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ESPER_REGRESSION_CONFIG_FILE);
+            var configurationFile = new FileInfo(configurationPath);
             var configuration = new ConfigurationCommon();
             var configurationDocument = new XmlDocument();
             configurationDocument.Load(configurationFile.FullName);
@@ -75,12 +76,12 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         /// <summary>
         /// Gets the first database driver.
         /// </summary>
-        public DbDriver DriverNative => DriverConnectionFactoryNative.Driver;
+        public DbDriver DriverNative => DbDriverConnectionHelper.ResolveDriver(_container, DriverConnectionFactoryNative);
 
-	    /// <summary>
+        /// <summary>
         /// Gets the second database driver.
         /// </summary>
-        public DbDriver DriverODBC => DriverConnectionFactoryOdbc.Driver;
+        public DbDriver DriverODBC => DbDriverConnectionHelper.ResolveDriver(_container, DriverConnectionFactoryOdbc);
 
         public const string DBNAME_FULL = "mydb";
         public const string DBNAME_PART = "mydb2";
@@ -94,7 +95,7 @@ namespace com.espertech.esper.common.@internal.supportunit.db
             mapDatabaseRef.Put(DBNAME_PART, DbConfigReferenceODBC);
 
             return new DatabaseConfigServiceImpl(
-                mapDatabaseRef, importService);
+                _container, mapDatabaseRef, importService);
 		}
 
         public Properties DefaultProperties
@@ -128,7 +129,7 @@ namespace com.espertech.esper.common.@internal.supportunit.db
 	    public ConfigurationCommonDBRef CreateDefaultConfig(Properties properties = null)
 	    {
 	        var configDB = new ConfigurationCommonDBRef();
-	        configDB.SetDatabaseDriver(DriverConnectionFactoryDefault, properties);
+	        configDB.SetDatabaseDriver(DriverConnectionFactoryDefault.Merge(properties));
 	        return configDB;
 	    }
 	}

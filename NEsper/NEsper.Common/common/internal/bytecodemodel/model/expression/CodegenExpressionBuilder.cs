@@ -55,6 +55,30 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionAndOr(false, first, second, more);
         }
 
+        public static CodegenExpression Unbox<T>(
+            CodegenExpression valueExpression)
+        {
+            return Unbox(valueExpression, typeof(T));
+        }
+
+        public static CodegenExpression Unbox(
+            CodegenExpression valueExpression)
+        {
+            return ExprDotMethod(valueExpression, "GetValueOrDefault");
+        }
+
+        public static CodegenExpression Unbox(
+            CodegenExpression valueExpression,
+            Type valueExpressionType)
+        {
+            if (valueExpressionType.IsNullable()) {
+                return ExprDotMethod(valueExpression, "GetValueOrDefault");
+            }
+            else {
+                return valueExpression;
+            }
+        }
+
         public static CodegenExpressionExprDotName ExprDotName(
             CodegenExpression left,
             string name)
@@ -146,6 +170,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionLocalProperty(propertyNode);
         }
 
+        public static CodegenExpressionInstanceField InstanceField(
+            CodegenExpression instance,
+            CodegenField fieldNode)
+        {
+            return new CodegenExpressionInstanceField(instance, fieldNode);
+        }
+
         public static CodegenExpression ConstantTrue()
         {
             return CodegenExpressionConstantTrue.INSTANCE;
@@ -171,6 +202,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionField(field);
         }
 
+#if DEPRECATED
         public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
             CodegenBlock parentBlock,
             Type interfaceOrSuperClass,
@@ -178,6 +210,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return new CodegenExpressionNewAnonymousClass(parentBlock, interfaceOrSuperClass, ctorParams);
         }
+#endif
 
         public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
             CodegenBlock parentBlock,

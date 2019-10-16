@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 1000, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
             env.UndeployAll();
         }

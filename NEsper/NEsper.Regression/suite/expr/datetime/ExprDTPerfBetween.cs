@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
-            Assert.IsTrue(delta < 500, "Delta=" + delta / 1000d);
+            Assert.That(delta, Is.LessThan(500), "Delta=" + delta / 1000d);
 
             env.SendEventBean(SupportDateTime.Make("2002-05-30T10:00:00.050"));
             Assert.AreEqual("ALater", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));

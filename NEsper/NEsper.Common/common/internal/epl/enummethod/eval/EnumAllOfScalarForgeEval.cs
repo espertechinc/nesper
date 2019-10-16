@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var typeMember = codegenClassScope.AddFieldUnshared(
+            var typeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
@@ -80,6 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
+
+            //block.CommentFullLine("-- trace --");
+            //block.Debug("enumcoll: {0}", ExprDotMethod(Ref("enumcoll"), "RenderAny"));
+
             block.IfConditionReturnConst(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"), true);
             block.DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",

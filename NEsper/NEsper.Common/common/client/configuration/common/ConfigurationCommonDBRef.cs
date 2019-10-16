@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
+using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.util;
@@ -162,56 +163,46 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Sets the connection factory to use to obtain a connection.
+        /// Sets the database driver.
         /// </summary>
-        /// <param name="className">is the driver class name</param>
-        /// <param name="connectionString">is the URL</param>
-        /// <param name="connectionArgs">are optional connection arguments</param>
-        public void SetDriverManagerConnection(
-            string className,
-            string connectionString,
-            Properties connectionArgs)
+        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
+        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, connectionArgs);
+            ConnectionFactoryDesc = driverConnectionFactoryDesc;
         }
 
-        /// <summary>
-        ///     Sets the connection factory to use to obtain a connection.
-        /// </summary>
-        /// <param name="className">is the driver class name</param>
-        /// <param name="connectionString">is the URL</param>
-        /// <param name="username">is the username to obtain a connection</param>
-        /// <param name="password">is the password to obtain a connection</param>
-        public void SetDriverManagerConnection(
-            string className,
+        /// <summary>Sets the database driver.</summary>
+        /// <param name="driverName">Name of the driver.</param>
+        /// <param name="connectionString">A specific connection string.</param>
+        /// <param name="properties">The properties.</param>
+        public void SetDatabaseDriver(
+            string driverName,
             string connectionString,
-            string username,
-            string password)
+            Properties properties)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, username, password);
+            if (!string.IsNullOrEmpty(connectionString)) {
+                if (properties != null) {
+                    properties = properties.Copy();
+                }
+                else {
+                    properties = new Properties();
+                }
+
+                properties.Put(DriverConfiguration.PROPERTY_CONNECTION_STRING, connectionString);
+            }
+
+            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(driverName, properties);
         }
 
-        /// <summary>
-        ///     Sets the connection factory to use to obtain a connection.
-        /// </summary>
-        /// <param name="className">is the driver class name</param>
-        /// <param name="connectionString">is the URL</param>
-        /// <param name="username">is the username to obtain a connection</param>
-        /// <param name="password">is the password to obtain a connection</param>
-        /// <param name="connectionArgs">are optional connection arguments</param>
-        public void SetDriverManagerConnection(
-            string className,
-            string connectionString,
-            string username,
-            string password,
-            Properties connectionArgs)
+        /// <summary>Sets the database driver.</summary>
+        /// <param name="driverName">Name of the driver.</param>
+        /// <param name="properties">The properties.</param>
+
+        public void SetDatabaseDriver(
+            string driverName,
+            Properties properties)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(
-                className,
-                connectionString,
-                username,
-                password,
-                connectionArgs);
+            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(driverName, properties);
         }
 
         /// <summary>
@@ -278,52 +269,11 @@ namespace com.espertech.esper.common.client.configuration.common
                 DatabaseTypeEnumExtensions.GetEnum(desiredType.FullName);
                 DataTypesMapping[sqlType] = desiredType;
             }
-            catch (ArgumentException e) {
+            catch (ArgumentException) {
                 var supported = EnumHelper.GetValues<DatabaseTypeEnum>().RenderAny();
                 throw new ConfigurationException(
                     "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
-        }
-
-        /// <summary>
-        /// Sets the database provider connection.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="driverName">Name of the driver.</param>
-        /// <param name="properties">The properties.</param>
-        public void SetDatabaseDriver(
-            IContainer container,
-            string driverName,
-            Properties properties)
-        {
-            var driver = DriverConnectionFactoryDesc.ResolveDriverFromName(
-                container,
-                driverName);
-            driver.Properties = properties;
-
-            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(driver);
-        }
-
-        /// <summary>
-        /// Sets the database driver.
-        /// </summary>
-        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
-        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc)
-        {
-            ConnectionFactoryDesc = driverConnectionFactoryDesc;
-        }
-
-        /// <summary>
-        /// Sets the database driver.
-        /// </summary>
-        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
-        /// <param name="properties">The properties.</param>
-        public void SetDatabaseDriver(
-            DriverConnectionFactoryDesc driverConnectionFactoryDesc,
-            Properties properties)
-        {
-            ConnectionFactoryDesc = new DriverConnectionFactoryDesc(
-                driverConnectionFactoryDesc.Driver);
         }
     }
 } // end of namespace

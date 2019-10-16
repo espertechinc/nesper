@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
     [TestFixture]
     public class TestSuiteEventVariantWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfig()
         {
             ConfigurationCommonVariantStream config = new ConfigurationCommonVariantStream();

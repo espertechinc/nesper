@@ -19,8 +19,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         public void Run(RegressionEnvironment env)
         {
             var stmtText = "@Name('s0') select SimpleProperty?, " +
-                           "Indexed[1]? as indexed, " +
-                           "Mapped('keyOne')? as mapped " +
+                           "Indexed[1]? as Indexed, " +
+                           "Mapped('keyOne')? as Mapped " +
                            "from SupportBeanComplexProps";
             env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 1000, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
             env.UndeployAll();
         }

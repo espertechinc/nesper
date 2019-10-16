@@ -116,15 +116,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every (every b=SupportBean_B and not SupportBean_B)", null);
             TryAssertion(env, "every (b=SupportBean_B and not SupportBean_B)", null);
             TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) and SupportBean_G", null);
-            TryAssertion(env, "(b=SupportBean_B => d=SupportBean_D) and (a=SupportBean_A -> e=SupportBean_E)", null);
+            TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) and (a=SupportBean_A -> e=SupportBean_E)", null);
             TryAssertion(
                 env,
                 "b=SupportBean_B -> (d=SupportBean_D() or a=SupportBean_A)",
                 "b=SupportBean_B -> d=SupportBean_D or a=SupportBean_A");
             TryAssertion(
                 env,
-                "b=SupportBean_B => ((d=SupportBean_D => a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E))",
-                "b=SupportBean_B => (d=SupportBean_D => a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E)");
+                "b=SupportBean_B -> ((d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E))",
+                "b=SupportBean_B -> (d=SupportBean_D -> a=SupportBean_A) or (a=SupportBean_A -> e=SupportBean_E)");
             TryAssertion(env, "(b=SupportBean_B -> d=SupportBean_D) or a=SupportBean_A", null);
             TryAssertion(
                 env,
@@ -152,28 +152,28 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "timer:at(*,9,*,*,*) and timer:at(55,*,*,*,*)", null);
             TryAssertion(env, "timer:at(40,8,*,*,*,1) and b=SupportBean_B", null);
             TryAssertion(env, "timer:interval(2 seconds)", null);
-            TryAssertion(env, "timer:interval(2.001)", null);
+            TryAssertion(env, "timer:interval(2.001d)", null);
             TryAssertion(env, "timer:interval(2999 milliseconds)", null);
             TryAssertion(env, "timer:interval(4 seconds) -> b=SupportBean_B", null);
             TryAssertion(env, "b=SupportBean_B -> timer:interval(0)", null);
-            TryAssertion(env, "b=SupportBean_B => timer:interval(6.0) -> d=SupportBean_D", null);
-            TryAssertion(env, "every (b=SupportBean_B => timer:interval(2.0) -> d=SupportBean_D)", null);
-            TryAssertion(env, "b=SupportBean_B or timer:interval(2.001)", null);
-            TryAssertion(env, "b=SupportBean_B or timer:interval(8.5)", null);
-            TryAssertion(env, "timer:interval(8.5) or timer:interval(7.5)", null);
+            TryAssertion(env, "b=SupportBean_B -> timer:interval(6.0d) -> d=SupportBean_D", null);
+            TryAssertion(env, "every (b=SupportBean_B -> timer:interval(2.0d) -> d=SupportBean_D)", null);
+            TryAssertion(env, "b=SupportBean_B or timer:interval(2.001d)", null);
+            TryAssertion(env, "b=SupportBean_B or timer:interval(8.5d)", null);
+            TryAssertion(env, "timer:interval(8.5d) or timer:interval(7.5d)", null);
             TryAssertion(env, "timer:interval(999999 milliseconds) or g=SupportBean_G", null);
             TryAssertion(env, "b=SupportBean_B and timer:interval(4000 milliseconds)", null);
             TryAssertion(env, "b=SupportBean_B(Id=\"B1\") where timer:within(2 seconds)", null);
-            TryAssertion(env, "(every b=SupportBean_B) where timer:within(2.001)", null);
+            TryAssertion(env, "(every b=SupportBean_B) where timer:within(2.001d)", null);
             TryAssertion(
                 env,
-                "every (b=SupportBean_B) where timer:within(6.001)",
-                "every b=SupportBean_B where timer:within(6.001)");
+                "every (b=SupportBean_B) where timer:within(6.001d)",
+                "every b=SupportBean_B where timer:within(6.001d)");
             TryAssertion(env, "b=SupportBean_B -> d=SupportBean_D where timer:within(4001 milliseconds)", null);
             TryAssertion(env, "b=SupportBean_B -> d=SupportBean_D where timer:within(4 seconds)", null);
             TryAssertion(
                 env,
-                "every (b=SupportBean_B where timer:within(4.001) and d=SupportBean_D where timer:within(6.001))",
+                "every (b=SupportBean_B where timer:within(4.001d) and d=SupportBean_D where timer:within(6.001d))",
                 null);
             TryAssertion(env, "every b=SupportBean_B -> d=SupportBean_D where timer:within(4000 seconds)", null);
             TryAssertion(env, "every b=SupportBean_B -> every d=SupportBean_D where timer:within(4000 seconds)", null);
@@ -209,13 +209,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 "(every b=SupportBean_B) where timer:within(2000) and every d=SupportBean_D where timer:within(6001)",
                 null);
             TryAssertion(env, "b=SupportBean_B(Id=\"B1\") where timer:withinmax(2 seconds,100)", null);
-            TryAssertion(env, "(every b=SupportBean_B) where timer:withinmax(4.001,2)", null);
-            TryAssertion(env, "every b=SupportBean_B where timer:withinmax(2.001,4)", null);
+            TryAssertion(env, "(every b=SupportBean_B) where timer:withinmax(4.001d,2)", null);
+            TryAssertion(env, "every b=SupportBean_B where timer:withinmax(2.001d,4)", null);
             TryAssertion(
                 env,
                 "every (b=SupportBean_B where timer:withinmax(2001,0))",
                 "every b=SupportBean_B where timer:withinmax(2001,0)");
-            TryAssertion(env, "(every b=SupportBean_B) where timer:withinmax(4.001,2)", null);
+            TryAssertion(env, "(every b=SupportBean_B) where timer:withinmax(4.001d,2)", null);
             TryAssertion(
                 env,
                 "every b=SupportBean_B -> d=SupportBean_D where timer:withinmax(4000 milliseconds,1)",

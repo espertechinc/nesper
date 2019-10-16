@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Runtime.VariableService.GetVariableValue(deploymentId, var);
                 Assert.Fail();
             }
-            catch (VariableNotFoundException ex) {
+            catch (VariableNotFoundException) {
                 // expected
             }
         }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env.Deployment.Undeploy(env.DeploymentId(name));
                     Assert.Fail();
                 }
-                catch (EPUndeployPreconditionException ex) {
+                catch (EPUndeployPreconditionException) {
                     // expected
                 }
                 catch (EPUndeployException ex) {
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env.Deployment.Undeploy(env.DeploymentId("S0"));
                     Assert.Fail();
                 }
-                catch (EPUndeployException ex) {
+                catch (EPUndeployException) {
                     // expected
                 }
 

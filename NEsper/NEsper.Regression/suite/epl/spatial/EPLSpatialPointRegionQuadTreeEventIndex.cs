@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.IsTrue(delta < 1000, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.IsTrue(delta < 1000, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -679,21 +679,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 RegressionPath path,
                 IList<SupportSpatialPoint> points)
             {
-                var it = points.GetEnumerator();
-                var count = 0;
-                IList<string> ids = new List<string>();
-                for (var ii = 0; ii < points.Count; ii++) {
-                    var p = points[ii];
-                    if (count % 2 == 1) {
-                        points.RemoveAt(ii--);
-                        ids.Add(p.Id);
+                using (var enumerator = points.GetEnumerator()) {
+                    var count = 0;
+                    IList<string> ids = new List<string>();
+                    for (var ii = 0; ii < points.Count; ii++) {
+                        var p = points[ii];
+                        if (count % 2 == 1) {
+                            points.RemoveAt(ii--);
+                            ids.Add(p.Id);
+                        }
+
+                        count++;
                     }
 
-                    count++;
+                    var query = BuildDeleteQueryWithInClause("PointWindow", "Id", ids);
+                    env.CompileExecuteFAF(query, path);
                 }
-
-                var query = BuildDeleteQueryWithInClause("PointWindow", "Id", ids);
-                env.CompileExecuteFAF(query, path);
             }
 
             private void RemoveAllPoints(
@@ -879,7 +880,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                         SendPoint(env, p.Id, p.Px, p.Py);
                         Assert.Fail();
                     }
-                    catch (Exception t) {
+                    catch (Exception) {
                         // expected
                     }
                 }

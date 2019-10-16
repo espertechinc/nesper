@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            InjectionStrategyClassNewInstance injectionStrategy =
+            var injectionStrategy =
                 (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAgentFactory;
-            CodegenExpressionField factoryField = classScope.AddFieldUnshared(
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionAgentFactory),
                 injectionStrategy.GetInitializationExpression(classScope));

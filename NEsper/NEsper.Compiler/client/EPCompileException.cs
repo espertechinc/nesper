@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.client
@@ -17,6 +19,7 @@ namespace com.espertech.esper.compiler.client
     ///     <para />
     ///     May carry information on individual items.
     /// </summary>
+    [Serializable]
     public class EPCompileException : Exception
     {
         /// <summary>
@@ -55,6 +58,12 @@ namespace com.espertech.esper.compiler.client
             : base(message, cause)
         {
             Items = items;
+        }
+
+        protected EPCompileException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
 
         /// <summary>

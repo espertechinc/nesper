@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             SupportEnum enumValue)
         {
             TheString = theString;
-            IsBoolBoxed = boolBoxed;
+            BoolBoxed = boolBoxed;
             IntPrimitive = intPrimitive;
             LongPrimitive = longPrimitive;
             DoublePrimitive = doublePrimitive;
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public string TheString { get; }
 
-        public bool IsBoolBoxed { get; }
+        public bool BoolBoxed { get; }
 
         public int? IntPrimitive { get; }
 
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.support.bean
         protected bool Equals(SupportBeanVariantStream other)
         {
             return string.Equals(TheString, other.TheString) &&
-                   IsBoolBoxed == other.IsBoolBoxed &&
+                   BoolBoxed == other.BoolBoxed &&
                    IntPrimitive == other.IntPrimitive &&
                    LongPrimitive == other.LongPrimitive &&
                    DoublePrimitive.Equals(other.DoublePrimitive) &&
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.support.bean
         {
             unchecked {
                 var hashCode = TheString != null ? TheString.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ IsBoolBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ BoolBoxed.GetHashCode();
                 hashCode = (hashCode * 397) ^ IntPrimitive.GetHashCode();
                 hashCode = (hashCode * 397) ^ LongPrimitive;
                 hashCode = (hashCode * 397) ^ DoublePrimitive.GetHashCode();

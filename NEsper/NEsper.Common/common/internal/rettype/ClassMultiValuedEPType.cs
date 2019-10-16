@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.rettype
     {
         internal static int id = 0;
 
-        internal ClassMultiValuedEPType(
+        public ClassMultiValuedEPType(
             Type container,
             Type component)
         {

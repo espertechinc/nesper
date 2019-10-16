@@ -34,11 +34,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            var ctor = codegenClassScope.AddFieldUnshared(
+            var ctor = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ConstructorInfo),
-                StaticMethod(typeof(BeanInstantiatorForgeByCtor), "GetSunJVMCtor", Constant(underlyingType)));
-            return StaticMethod(typeof(BeanInstantiatorForgeByCtor), "InstantiateSunJVMCtor", ctor);
+                StaticMethod(typeof(BeanInstantiatorForgeByCtor), "GetCtor", Constant(underlyingType)));
+            return StaticMethod(typeof(BeanInstantiatorForgeByCtor), "InstantiateCtor", ctor);
         }
 
         /// <summary>

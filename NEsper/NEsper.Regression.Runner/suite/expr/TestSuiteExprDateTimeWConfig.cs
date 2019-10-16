@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprDateTimeWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTMicrosecondResolution()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidConfigure()
         {
             ConfigurationCommonEventTypeBean configBean = new ConfigurationCommonEventTypeBean();
@@ -54,11 +54,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             configBean.EndTimestampPropertyName = null;
             configBean.StartTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared start timestamp property 'TheString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
+            TryInvalidConfig(typeof(SupportBean), configBean, "Declared start timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "LongPrimitive";
             configBean.EndTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
+            TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "LongDate";
             configBean.EndTimestampPropertyName = "DateTimeEx";
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         private void TryInvalidConfig(Type beanEventClass, ConfigurationCommonEventTypeBean configBean, string expected)
         {
             TryInvalidConfigurationCompileAndRuntime(SupportConfigFactory.GetConfiguration(),
-                config => config.Common.AddEventType(beanEventClass.FullName, beanEventClass.Name, configBean),
+                config => config.Common.AddEventType(beanEventClass.Name, beanEventClass.FullName, configBean),
                 expected);
         }
     }

@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
     [TestFixture]
     public class TestSuiteResultSetOutputLimitWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitChangeSetOpt()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitMicrosecondResolution()
         {
             RegressionSession session = RegressionRunner.Session();

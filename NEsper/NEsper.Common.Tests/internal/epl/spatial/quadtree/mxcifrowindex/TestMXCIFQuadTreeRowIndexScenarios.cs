@@ -160,6 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Remove(tree, 65, 75, 1, 1, "P1");
             Remove(tree, 80, 60, 1, 1, "P3");
 
+            collection = NavigateLeaf(tree, "se").Data.UnwrapIntoList<XYWHRectangleMultiType>();
             Assert.AreEqual(3, NavigateLeaf(tree, "se").Count);
             AssertFound(tree, 60, 60, 21, 21, "P2,P4,P5");
             Assert.AreEqual(3, collection.Count);
@@ -235,6 +236,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 10, 10, 1, 1, "P1,P4,P7,P10,P11,P12");
             AssertFound(tree, 9, 9, 2, 2, "P1,P2,P4,P6,P7,P10,P11,P12");
 
+            collection = NavigateLeaf(tree, "nw").Data.UnwrapIntoList<XYWHRectangleMultiType>();
             Assert.AreEqual(8, NavigateLeaf(tree, "nw").Count);
             Assert.AreEqual(2, collection.Count);
             Compare(10, 10, 0, 0, "[\"P1\", \"P4\", \"P7\", \"P10\", \"P11\", \"P12\"]", collection[0]);

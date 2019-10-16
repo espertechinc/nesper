@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
@@ -21,7 +22,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         private readonly TableExprEvaluatorContext tableExprEvaluatorContext;
 
         public SafeEnumeratorWTableImpl(
-            StatementAgentInstanceLock iteratorLock,
+            IReaderWriterLock iteratorLock,
             IEnumerator<E> underlying,
             TableExprEvaluatorContext tableExprEvaluatorContext)
             : base(iteratorLock, underlying)

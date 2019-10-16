@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 // invalid without explicit conversion
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "insert into MyEvent(isodate) select dto from SupportEventWithDateTime",
+                    "insert into MyEvent(isodate) select dto from SupportEventWithDateTimeOffset",
                     "Invalid assignment of column 'isodate' of type '" +
                     TypeHelper.CleanName<DateTimeOffset>() +
                     "' to event property 'isodate' typed as '" +
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
                 // with hook
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyEvent(isodate) select ldt from SupportEventWithDateTimeOffset")
+                        "@Name('s0') insert into MyEvent(isodate) select dto from SupportEventWithDateTimeOffset")
                     .AddListener("s0");
 
                 var now = DateTimeHelper.GetCurrentTimeUniversal();

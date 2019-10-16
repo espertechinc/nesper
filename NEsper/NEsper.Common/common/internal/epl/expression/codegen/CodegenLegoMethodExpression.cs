@@ -70,10 +70,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             var exprMethod = parent
                 .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
+
+            exprMethod.Block.DebugStack();
+
             var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
-            exprMethod.Block.Debug("eventsPerStream: {0}", ExprDotMethod(Ref("eventsPerStream"), "RenderAny"));
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
-            exprMethod.Block.Debug("u0: {0}", expression);
             exprMethod.Block.MethodReturn(expression);
             return exprMethod;
         }

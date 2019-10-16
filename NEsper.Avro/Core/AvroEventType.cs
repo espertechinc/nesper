@@ -169,7 +169,7 @@ namespace NEsper.Avro.Core
 
         public string[] PropertyNames => _propertyNames;
 
-        public EventPropertyDescriptor[] PropertyDescriptors => _propertyDescriptors;
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _propertyDescriptors;
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {

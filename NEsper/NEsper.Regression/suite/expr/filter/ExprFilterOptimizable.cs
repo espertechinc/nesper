@@ -923,7 +923,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
 
             log.Info("Equals delta=" + delta);
-            Assert.IsTrue(delta < 1000, "Delta is " + delta);
+            Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
             env.UndeployAll();
         }
 
@@ -941,7 +941,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 try {
                     admin.Deploy(compiled);
                 }
-                catch (EPDeployException ex) {
+                catch (EPDeployException) {
                     //ex.PrintStackTrace();
                     Assert.Fail();
                 }
@@ -973,7 +973,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
 
             log.Info("Boolean delta=" + delta);
-            Assert.IsTrue(delta < 1000, "Delta is " + delta);
+            Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
             env.UndeployAll();
         }
 
@@ -1014,7 +1014,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             try {
                 Assert.IsTrue(latch.Await(10, TimeUnit.SECONDS));
             }
-            catch (ThreadInterruptedException e) {
+            catch (ThreadInterruptedException) {
                 Assert.Fail();
             }
 
@@ -1550,7 +1550,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // System.out.println("Ending " + DateTime.print(new Date()));
                 var delta = (PerformanceObserver.NanoTime - start) / 1000d / 1000d;
                 // System.out.println("Delta=" + (delta + " msec"));
-                Assert.IsTrue(delta < 500);
+                Assert.That(delta, Is.LessThan(500));
 
                 env.UndeployAll();
             }

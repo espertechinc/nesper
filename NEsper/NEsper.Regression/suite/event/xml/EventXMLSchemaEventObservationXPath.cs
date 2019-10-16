@@ -43,7 +43,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("e2").Advance());
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("e3").Advance());
 
-            var resultArray = env.GetEnumerator("s0").Advance().Get("idarray");
+            var resultEnumerator = env.GetEnumerator("s0");
+            Assert.That(resultEnumerator, Is.Not.Null);
+            Assert.That(resultEnumerator.MoveNext(), Is.True);
+            Assert.That(resultEnumerator.Current, Is.Not.Null);
+
+            var resultArray = resultEnumerator.Current.Get("idarray");
             EPAssertionUtil.AssertEqualsExactOrder(
                 (object[]) resultArray,
                 new[] {"urn:epc:1:2.24.400", "urn:epc:1:2.24.401"});

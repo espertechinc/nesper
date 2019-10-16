@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -13,6 +14,7 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -58,14 +60,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
             Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
-            Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("EnumValue"));
+            Assert.AreEqual(typeof(SupportEnum?), eventType.GetPropertyType("EnumValue"));
             foreach (var expectedProp in expected) {
                 Assert.IsNotNull(eventType.GetGetter(expectedProp));
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
             }
 
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {
+                new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "TheString",
                         typeof(string),
@@ -113,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                         false),
                     new EventPropertyDescriptor(
                         "EnumValue",
-                        typeof(SupportEnum),
+                        typeof(SupportEnum?),
                         null,
                         false,
                         false,
@@ -263,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy(
                     "insert into MainEventWindow select " +
                     typeof(EventVariantStream).Name +
-                    ".preProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
+                    ".PreProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
                     path);
                 env.CompileDeploy("@Name('s0') select * from MainEventWindow where TheString = 'E'", path);
                 env.Statement("s0").AddListenerWithReplay(env.ListenerNew());
@@ -364,47 +366,45 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("@Name('s0') select * from MyVariantStreamTwo").AddListener("s0");
                 var eventType = env.Statement("s0").EventType;
 
-                var expected = new [] { "p0","p1","p2","p3","p4","p5","indexed","mapped","inneritem" };
+                var expected = new [] { "P0","P1","P2","P3","P4","P5","Indexed","Mapped","Inneritem" };
                 var propertyNames = eventType.PropertyNames;
                 EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
                 Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
                 Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("P1"));
                 Assert.AreEqual(typeof(LinkedList<object>), eventType.GetPropertyType("P2"));
-                Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("p3"));
-                Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p4"));
-                Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p5"));
+                Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("P3"));
+                Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P4"));
+                Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P5"));
                 Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("Indexed"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Mapped"));
-                Assert.AreEqual(
-                    typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
-                    eventType.GetPropertyType("inneritem"));
+                Assert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("Mapped"));
+                Assert.AreEqual(typeof(SupportBeanVariantOne.SupportBeanVariantOneInner), eventType.GetPropertyType("Inneritem"));
 
                 env.UndeployModuleContaining("s0");
 
                 env.CompileDeploy(
-                    "@Name('s0') select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,mappedKey('a') as p8,inneritem as p9,inneritem.val as P10 from MyVariantStreamTwo");
+                    "@Name('s0') select P0,P1,P2,P3,P4,P5,Indexed[0] as P6,IndexArr[1] as P7,MappedKey('a') as P8,Inneritem as P9,Inneritem.Val as P10 from MyVariantStreamTwo");
                 env.AddListener("s0");
                 eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p6"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p7"));
-                Assert.AreEqual(typeof(string), eventType.GetPropertyType("p8"));
+                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P6"));
+                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P7"));
+                Assert.AreEqual(typeof(string), eventType.GetPropertyType("P8"));
                 Assert.AreEqual(
                     typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
-                    eventType.GetPropertyType("p9"));
+                    eventType.GetPropertyType("P9"));
                 Assert.AreEqual(typeof(string), eventType.GetPropertyType("P10"));
 
                 var ev1 = new SupportBeanVariantOne();
                 env.SendEventBean(ev1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "p6","p7","p8","p9","P10" },
+                    new [] { "P6","P7","P8","P9","P10" },
                     new object[] {1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
 
                 var ev2 = new SupportBeanVariantTwo();
                 env.SendEventBean(ev2);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "p6","p7","p8","p9","P10" },
+                    new [] { "P6","P7","P8","P9","P10" },
                     new object[] {10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
 
                 env.UndeployAll();

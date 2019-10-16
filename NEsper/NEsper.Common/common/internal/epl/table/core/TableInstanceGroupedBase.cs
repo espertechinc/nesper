@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             EventType eventType = table.MetaData.InternalEventType;
             AggregationRow aggregationRow = table.AggregationRowFactory.Make();
-            var data = new object[eventType.PropertyDescriptors.Length];
+            var data = new object[eventType.PropertyDescriptors.Count];
             data[0] = aggregationRow;
 
             int[] groupKeyColNums = table.MetaData.KeyColNums;

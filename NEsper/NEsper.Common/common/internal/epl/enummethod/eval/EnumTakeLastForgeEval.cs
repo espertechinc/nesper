@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(EnumTakeLastForgeEval),
                     scope,
                     codegenClassScope)
@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
-        public static ICollection<object> EvaluateEnumMethodTakeLast(
-            ICollection<object> enumcoll,
+        public static ICollection<T> EvaluateEnumMethodTakeLast<T>(
+            ICollection<T> enumcoll,
             int size)
         {
             if (enumcoll.IsEmpty()) {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (size <= 0) {
-                return Collections.GetEmptyList<object>();
+                return Collections.GetEmptyList<T>();
             }
 
             if (enumcoll.Count < size) {
@@ -95,19 +95,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (size == 1) {
-                object last = null;
+                var last = default(T);
                 foreach (var next in enumcoll) {
                     last = next;
                 }
 
-                return Collections.SingletonList(last);
+                return Collections.SingletonList<T>(last);
             }
 
-            var result = new List<object>();
+            var result = new List<T>();
             foreach (var next in enumcoll) {
                 result.Add(next);
                 if (result.Count > size) {
-                    result.Remove(0);
+                    result.RemoveAt(0);
                 }
             }
 

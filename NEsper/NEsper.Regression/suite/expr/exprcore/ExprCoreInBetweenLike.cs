@@ -317,10 +317,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             )));
                 env.AddListener("s0");
 
-                env.SendEventBean(new SupportBean("E1", 10), typeof(SupportBean).FullName);
+                env.SendEventBean(new SupportBean("E1", 10), typeof(SupportBean).Name);
                 Assert.IsTrue((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                env.SendEventBean(new SupportBean("E2", 9), typeof(SupportBean).FullName);
+                env.SendEventBean(new SupportBean("E2", 9), typeof(SupportBean).Name);
                 Assert.IsFalse((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
                 env.UndeployAll();
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "resOne"," resTwo" };
                 var epl =
-                    "@Name('s0') select 1 in (intCol, LongCol) as resOne, 1 not in (LongCol, intCol) as resTwo from SupportBeanArrayCollMap";
+                    "@Name('s0') select 1 in (IntCol, LongCol) as resOne, 1 not in (LongCol, IntCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new[] {10, 20, 30}, null));
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select 1 in (LongBoxed, IntArr, LongMap, intCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, intCol) as resTwo from SupportBeanArrayCollMap";
+                    "@Name('s0') select 1 in (LongBoxed, IntArr, LongMap, IntCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, IntCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "resOne"," resTwo" };

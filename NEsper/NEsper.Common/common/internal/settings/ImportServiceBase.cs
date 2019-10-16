@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.settings
             catch (TypeLoadException ex) {
                 // Attempt to resolve from auto-name packages
                 Type clazz = null;
-                foreach (var javaPackageName in _eventTypeAutoNames) {
-                    var generatedClassName = javaPackageName + "." + fullyQualClassName;
+                foreach (var @namespace in _eventTypeAutoNames) {
+                    var generatedClassName = @namespace + "." + fullyQualClassName;
                     try {
                         var resolvedClass = ClassForNameProvider.ClassForName(generatedClassName);
                         if (clazz != null) {
@@ -87,10 +87,10 @@ namespace com.espertech.esper.common.@internal.settings
                                 "Failed to resolve name '" +
                                 fullyQualClassName +
                                 "', the class was ambiguously found both in " +
-                                "package '" +
+                                "namespace '" +
                                 clazz.Namespace +
                                 "' and in " +
-                                "package '" +
+                                "namespace '" +
                                 resolvedClass.Namespace +
                                 "'",
                                 ex);

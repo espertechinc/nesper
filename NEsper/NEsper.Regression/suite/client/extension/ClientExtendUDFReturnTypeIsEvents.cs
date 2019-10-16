@@ -43,35 +43,37 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(
                 "@Name('s0') select " +
                 methodName +
-                "(TheString).where(v -> v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
+                "(TheString).where(v -> v.Id in ('id1', 'id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
-            env.SendEventBean(new SupportBean("id0,Id1,Id2,Id3,Id4", 0));
+            env.SendEventBean(new SupportBean("id0,id1,id2,id3,id4", 0));
             var real = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
             var coll = real.Unwrap<IDictionary<string, object>>();
-            //var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<IDictionary<string, object>>();
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
                 new [] { "Id" },
-                new[] {new object[] {"id1"}, new object[] {"id3"}});
+                new[] {
+                    new object[] {"id1"},
+                    new object[] {"id3"}
+                });
 
             env.UndeployAll();
         }
 
         private static void TryAssertionReturnTypeIsEventsInvalid(RegressionEnvironment env)
         {
-            env.CompileDeploy("select MyItemProducerInvalidNoType(TheString) as c0 from SupportBean");
+            env.CompileDeploy("select myItemProducerInvalidNoType(TheString) as c0 from SupportBean");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select MyItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'MyItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
+                "select myItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'myItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
+                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
 
             env.UndeployAll();
         }

@@ -39,18 +39,18 @@ namespace com.espertech.esper.regressionrun.suite.client
         [SetUp]
         public void SetUp()
         {
-            session = RegressionRunner.Session();
-            Configure(session.Configuration);
+            _session = RegressionRunner.Session();
+            Configure(_session.Configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
-            session.Destroy();
-            session = null;
+            _session.Destroy();
+            _session = null;
         }
 
-        private RegressionSession session;
+        private RegressionSession _session;
 
         private void Configure(Configuration configuration)
         {
@@ -122,76 +122,76 @@ namespace com.espertech.esper.regressionrun.suite.client
             configuration.Runtime.Execution.IsPrioritized = true;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeEPStatement()
         {
-            RegressionRunner.Run(session, ClientRuntimeEPStatement.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeEPStatement.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeExceptionHandler()
         {
-            RegressionRunner.Run(session, ClientRuntimeExceptionHandler.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeExceptionHandler.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeItself()
         {
-            RegressionRunner.Run(session, ClientRuntimeItself.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeItself.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeListener()
         {
-            RegressionRunner.Run(session, ClientRuntimeListener.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeListener.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimePriorityAndDropInstructions()
         {
-            RegressionRunner.Run(session, ClientRuntimePriorityAndDropInstructions.Executions());
+            RegressionRunner.Run(_session, ClientRuntimePriorityAndDropInstructions.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeRuntimeProvider()
         {
-            RegressionRunner.Run(session, ClientRuntimeRuntimeProvider.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeRuntimeProvider.Executions());
         }
 
         [Test]
         public void TestClientRuntimeSolutionPatternPortScan()
         {
-            RegressionRunner.Run(session, ClientRuntimeSolutionPatternPortScan.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.Executions());
         }
 
         [Test]
         public void TestClientRuntimeStatementAnnotation()
         {
-            RegressionRunner.Run(session, ClientRuntimeStatementAnnotation.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeStatementName()
         {
-            RegressionRunner.Run(session, ClientRuntimeStatementName.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeStatementName.Executions());
         }
 
         [Test]
         public void TestClientRuntimeSubscriber()
         {
-            RegressionRunner.Run(session, new ClientRuntimeSubscriber());
+            RegressionRunner.Run(_session, new ClientRuntimeSubscriber());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeTimeControl()
         {
-            RegressionRunner.Run(session, ClientRuntimeTimeControl.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeTimeControl.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeUnmatchedListener()
         {
-            RegressionRunner.Run(session, ClientRuntimeUnmatchedListener.Executions());
+            RegressionRunner.Run(_session, ClientRuntimeUnmatchedListener.Executions());
         }
     }
 } // end of namespace

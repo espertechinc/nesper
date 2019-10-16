@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.util;
@@ -15,6 +16,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using Castle.DynamicProxy;
+
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.annotation
 {
@@ -76,7 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
         public Attribute CreateProxyInstance()
         {
-            return (Attribute) Generator.CreateClassProxy(AnnotationClass, ProxyGenerationOptions.Default, this);
+            var interfaces = AnnotationClass
+                .GetInterfaces()
+                .ToArray();
+
+            return (Attribute) Generator.CreateClassProxy(
+                AnnotationClass, interfaces, ProxyGenerationOptions.Default, this);
         }
 
         private string HandleToString()

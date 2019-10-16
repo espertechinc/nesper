@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression value,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var eventType = codegenClassScope.AddFieldUnshared(
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));

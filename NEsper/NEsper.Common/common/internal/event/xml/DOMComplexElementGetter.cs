@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var ff = codegenClassScope.AddFieldUnshared(
+            var ff = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
@@ -221,15 +221,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.LocalName != null) {
-                    if (propertyName.Equals(childNode.LocalName)) {
-                        return childNode;
-                    }
-
-                    continue;
-                }
-
-                if (propertyName.Equals(childNode.Name)) {
+                if (childNode.LocalName == propertyName) {
                     return childNode;
                 }
             }
@@ -273,15 +265,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.LocalName != null) {
-                    if (propertyName.Equals(childNode.LocalName)) {
-                        nodes[realized++] = childNode;
-                    }
-
-                    continue;
-                }
-
-                if (childNode.Name.Equals(propertyName)) {
+                if (childNode.LocalName == propertyName) {
                     nodes[realized++] = childNode;
                 }
             }

@@ -328,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 "Get",
                                 AggregationServiceCodegenNames.REF_GROUPKEY)))
                     .IfCondition(EqualsNull(REF_CURRENTROW))
-                    .AssignRef(REF_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault)));
+                    .AssignRef(REF_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault), Ref("o")));
             }
         }
 
@@ -430,7 +430,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
             if (localGroupByPlan.OptionalLevelTopForge != null) {
                 method.Block.IfCondition(EqualsNull(REF_AGGREGATORSTOPLEVEL))
-                    .AssignRef(REF_AGGREGATORSTOPLEVEL, NewInstance(classNames.RowTop))
+                    .AssignRef(REF_AGGREGATORSTOPLEVEL, NewInstance(classNames.RowTop, Ref("o")))
                     .BlockEnd()
                     .ExprDotMethod(
                         REF_AGGREGATORSTOPLEVEL,
@@ -461,8 +461,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         REF_EXPREVALCONTEXT);
                 }
 
+                method.Block.CommentFullLine("--about to declare var--");
 
-                method.Block.DeclareVar<object>(groupKeyName, groupKeyExp)
+                method.Block
+                    .DeclareVar<object>(groupKeyName, groupKeyExp)
                     .DeclareVar<AggregationRow>(
                         rowName,
                         Cast(
@@ -472,7 +474,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 "Get",
                                 Ref(groupKeyName))))
                     .IfCondition(EqualsNull(Ref(rowName)))
-                    .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum)))
+                    .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum), Ref("o")))
                     .ExprDotMethod(
                         ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
                         "Put",

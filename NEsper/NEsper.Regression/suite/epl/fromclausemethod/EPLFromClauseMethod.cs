@@ -1022,7 +1022,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     SendBeanEvent(env, "E1");
                     Assert.Fail(); // default test configuration rethrows this exception
                 }
-                catch (EPException ex) {
+                catch (EPException) {
                     // fine
                 }
 

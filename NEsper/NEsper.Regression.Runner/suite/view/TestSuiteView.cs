@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.view
                 "EvaluateExpiryUDF");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewDerived()
         {
             RegressionRunner.Run(session, ViewDerived.Executions());
@@ -90,37 +90,37 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionRunner.Run(session, ViewExpressionWindow.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewExternallyBatched()
         {
             RegressionRunner.Run(session, ViewExternallyTimedBatched.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewExternallyTimedWin()
         {
             RegressionRunner.Run(session, ViewExternallyTimedWin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewFirstEvent()
         {
             RegressionRunner.Run(session, ViewFirstEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewFirstLength()
         {
             RegressionRunner.Run(session, ViewFirstLength.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewFirstTime()
         {
             RegressionRunner.Run(session, ViewFirstTime.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewFirstUnique()
         {
             RegressionRunner.Run(session, ViewFirstUnique.Executions());
@@ -132,97 +132,97 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionRunner.Run(session, ViewGroup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewIntersect()
         {
             RegressionRunner.Run(session, ViewIntersect.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewInvalid()
         {
             RegressionRunner.Run(session, new ViewInvalid());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewKeepAll()
         {
             RegressionRunner.Run(session, ViewKeepAll.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewLastEvent()
         {
             RegressionRunner.Run(session, ViewLastEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewLengthBatch()
         {
             RegressionRunner.Run(session, ViewLengthBatch.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewLengthWin()
         {
             RegressionRunner.Run(session, ViewLengthWin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewParameterizedByContext()
         {
             RegressionRunner.Run(session, ViewParameterizedByContext.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewRank()
         {
             RegressionRunner.Run(session, ViewRank.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewSort()
         {
             RegressionRunner.Run(session, ViewSort.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeAccum()
         {
             RegressionRunner.Run(session, ViewTimeAccum.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeBatch()
         {
             RegressionRunner.Run(session, ViewTimeBatch.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeLengthBatch()
         {
             RegressionRunner.Run(session, ViewTimeLengthBatch.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeOrderAndTimeToLive()
         {
             RegressionRunner.Run(session, ViewTimeOrderAndTimeToLive.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewTimeWin()
         {
             RegressionRunner.Run(session, ViewTimeWin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewUnion()
         {
             RegressionRunner.Run(session, ViewUnion.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewUnique()
         {
             RegressionRunner.Run(session, ViewUnique.Executions());

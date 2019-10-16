@@ -12,13 +12,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using com.espertech.esper.collection;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -93,6 +96,15 @@ namespace com.espertech.esper.compiler.@internal.util
             return this;
         }
 
+        internal bool IsGeneratedAssembly(Assembly assembly)
+        {
+            var generatedAttributesCount = assembly
+                .GetCustomAttributes()
+                .OfType<EPGeneratedAttribute>()
+                .Count();
+            return generatedAttributesCount > 0;
+        }
+
         /// <summary>
         /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
         /// </summary>
@@ -105,7 +117,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-                    if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location)) {
+                    if (!IsGeneratedAssembly(assembly) &&
+                        !assembly.IsDynamic && 
+                        !string.IsNullOrEmpty(assembly.Location)) {
                         lock (PortableExecutionReferenceCache) {
                             if (!PortableExecutionReferenceCache.TryGetValue(
                                 assembly,
@@ -127,6 +141,8 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private Pair<CodegenClass, SyntaxTree> Compile(CodegenClass codegenClass)
         {
+            Console.WriteLine(codegenClass.ClassName);
+
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
             // Convert the codegen to source
             var source = CodegenSyntaxGenerator.Compile(codegenClass);
@@ -134,6 +150,39 @@ namespace com.espertech.esper.compiler.@internal.util
             return new Pair<CodegenClass, SyntaxTree>(
                 codegenClass,
                 CSharpSyntaxTree.ParseText(source, options));
+        }
+
+        private SyntaxTree CompileAssemblyBindings()
+        {
+            Console.WriteLine("Creating assembly bindings");
+
+            CompilationUnitSyntax assemblyBindingsCompilationUnit = CompilationUnit()
+                .WithUsings(
+                    SingletonList<UsingDirectiveSyntax>(
+                        UsingDirective(
+                            QualifiedName(
+                                QualifiedName(
+                                    QualifiedName(
+                                        QualifiedName(
+                                            IdentifierName("com"),
+                                            IdentifierName("espertech")),
+                                        IdentifierName("esper")),
+                                    IdentifierName("common")),
+                                IdentifierName("client")))))
+                .WithAttributeLists(
+                    SingletonList<AttributeListSyntax>(
+                        AttributeList(
+                                SingletonSeparatedList<AttributeSyntax>(
+                                    Attribute(
+                                        IdentifierName("EPGenerated"))))
+                            .WithTarget(
+                                AttributeTargetSpecifier(
+                                    Token(SyntaxKind.AssemblyKeyword)))))
+                .NormalizeWhitespace();
+
+            Console.WriteLine("assemblyBinding: " + assemblyBindingsCompilationUnit);
+
+            return SyntaxTree(assemblyBindingsCompilationUnit);
         }
 
         /// <summary>
@@ -148,6 +197,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var syntaxTrees = syntaxTreePairs
                 .Select(p => p.Second)
                 .ToList();
+
+            syntaxTrees.Insert(0, CompileAssemblyBindings());
             
             // Create an in-memory representation of the compiled source.
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
@@ -224,7 +275,8 @@ namespace com.espertech.esper.compiler.@internal.util
             internal readonly Assembly Assembly;
             internal readonly MetadataReference MetadataReference;
 
-            public CacheBinding(Assembly assembly,
+            public CacheBinding(
+                Assembly assembly,
                 MetadataReference metadataReference)
             {
                 Assembly = assembly;

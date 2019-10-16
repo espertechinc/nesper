@@ -30,24 +30,24 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestEmpty()
         {
-            var it = SuperEnumerator.For(Make(null), Make(null));
-            Assert.IsFalse(it.MoveNext());
+            var enumerator = SuperEnumerator.For(Make(null), Make(null));
+            Assert.IsFalse(enumerator.MoveNext());
         }
 
         [Test]
         public void TestFlow()
         {
-            var it = SuperEnumerator.For(Make("a"), Make(null));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a"}, it);
+            var enumerator = SuperEnumerator.For(Make("a"), Make(null));
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a"}, enumerator);
 
-            it = SuperEnumerator.For(Make("a,b"), Make(null));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, it);
+            enumerator = SuperEnumerator.For(Make("a,b"), Make(null));
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, enumerator);
 
-            it = SuperEnumerator.For(Make("a"), Make("b"));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, it);
+            enumerator = SuperEnumerator.For(Make("a"), Make("b"));
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, enumerator);
 
-            it = SuperEnumerator.For(Make(null), Make("a,b"));
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, it);
+            enumerator = SuperEnumerator.For(Make(null), Make("a,b"));
+            EPAssertionUtil.AssertEqualsExactOrder(new object[] {"a", "b"}, enumerator);
         }
     }
 } // end of namespace

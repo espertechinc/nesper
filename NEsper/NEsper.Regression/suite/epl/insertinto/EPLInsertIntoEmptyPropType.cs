@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         private static void TryAssertionInsertBean(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create schema MyBeanWithoutProps as " + typeof(SupportBeanWithoutProps).Name, path);
+            env.CompileDeploy("create schema MyBeanWithoutProps as " + typeof(SupportBeanWithoutProps).MaskTypeName(), path);
             env.CompileDeploy("insert into MyBeanWithoutProps select null from SupportBean", path);
             env.CompileDeploy("@Name('s0') select * from MyBeanWithoutProps", path).AddListener("s0");
 
@@ -60,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.SendEventBean(new SupportBean());
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.IsTrue(((IDictionary<string, object>) @event.Underlying).IsEmpty());
-            Assert.AreEqual(0, @event.EventType.PropertyDescriptors.Length);
+            Assert.AreEqual(0, @event.EventType.PropertyDescriptors.Count);
 
             env.UndeployAll();
         }

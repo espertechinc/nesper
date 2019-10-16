@@ -23,6 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if false
             execs.Add(new ResultSetAggregateFirstAggSODA(false));
             execs.Add(new ResultSetAggregateFirstAggSODA(true));
             execs.Add(new ResultSetAggregateMethodAggSQLAll());
@@ -46,6 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             execs.Add(new ResultSetAggregateFilterNamedParamInvalid());
             execs.Add(new ResultSetAggregateMethodPlugIn());
             execs.Add(new ResultSetAggregateAccessAggPlugIn());
+#endif
             execs.Add(new ResultSetAggregateIntoTable(false));
             execs.Add(new ResultSetAggregateIntoTable(true));
             execs.Add(new ResultSetAggregateIntoTableCountMinSketch());
@@ -99,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             SendEvent(env, theString, 0);
             var value = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<object>();
-            Assert.AreEqual(expected, value.ToString());
+            Assert.AreEqual(expected, value.RenderAny());
         }
 
         private static void SendEventAssert(
@@ -521,7 +523,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, filter:(IntPrimitive, DoublePrimitive)) from SupportBean",
-                    "Failed to validate select-clause expression 'sum(IntPrimitive,filter:(intPrimiti...(55 chars)': Filter named parameter requires a single expression returning a boolean-typed value");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,filter:(IntPrimiti...(55 chars)': Filter named parameter requires a single expression returning a boolean-typed value");
 
                 // multiple filter expressions
                 SupportMessageAssertUtil.TryInvalidCompile(

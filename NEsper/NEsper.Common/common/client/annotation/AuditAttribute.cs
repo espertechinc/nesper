@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 namespace com.espertech.esper.common.client.annotation
 {
@@ -15,6 +16,9 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public class AuditAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuditAttribute"/> class.
+        /// </summary>
         public AuditAttribute()
         {
             Value = "*";
@@ -24,7 +28,7 @@ namespace com.espertech.esper.common.client.annotation
         ///     Initializes a new instance of the <see cref="AuditAttribute" /> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public AuditAttribute(string value = "*")
+        public AuditAttribute(string value)
         {
             Value = value;
         }
@@ -34,6 +38,7 @@ namespace com.espertech.esper.common.client.annotation
         /// </summary>
         /// <value>The value.</value>
         /// <returns>comma-separated list of audit keywords</returns>
+        [DefaultValue("*")]
         public virtual string Value { get; set; }
     }
 } // end of namespace

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionrun.suite.context
     [TestFixture]
     public class TestSuiteContextWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedPrioritized()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionrun.suite.context
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedWInitTermPrioritized()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionrun.suite.context
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextInitTermPrioritized()
         {
             RegressionSession session = RegressionRunner.Session();

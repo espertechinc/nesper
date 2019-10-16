@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -125,7 +126,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public void AddPreprocessing(
             InternalEventRouterDesc internalEventRouterDesc,
             InternalRoutePreprocessView outputView,
-            StatementAgentInstanceLock agentInstanceLock,
+            IReaderWriterLock agentInstanceLock,
             bool hasSubselect)
         {
             lock (this) {
@@ -268,14 +269,14 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             private readonly InternalEventRouterDesc internalEventRouterDesc;
             private readonly InternalRoutePreprocessView outputView;
-            private readonly StatementAgentInstanceLock agentInstanceLock;
+            private readonly IReaderWriterLock agentInstanceLock;
             private readonly bool hasSubselect;
             private readonly ExprEvaluator optionalWhereClauseEvaluator;
 
             internal IRDescEntry(
                 InternalEventRouterDesc internalEventRouterDesc,
                 InternalRoutePreprocessView outputView,
-                StatementAgentInstanceLock agentInstanceLock,
+                IReaderWriterLock agentInstanceLock,
                 bool hasSubselect,
                 ExprEvaluator optionalWhereClauseEvaluator)
             {
@@ -306,7 +307,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 get => outputView;
             }
 
-            public StatementAgentInstanceLock AgentInstanceLock {
+            public IReaderWriterLock AgentInstanceLock {
                 get => agentInstanceLock;
             }
 

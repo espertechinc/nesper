@@ -355,12 +355,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             }
 
             var method = parent.MakeChild(
-                typeof(IDictionary<string, object>),
+                typeof(IDictionary<EventType, EventBeanCopyMethod>),
                 typeof(VariableReadWritePackageForge),
                 classScope);
-            method.Block.DeclareVar<IDictionary<string, object>>(
+            method.Block.DeclareVar<IDictionary<EventType, EventBeanCopyMethod>>(
                 "methods",
-                NewInstance(typeof(Dictionary<string, object>), Constant(copyMethods.Count)));
+                NewInstance(typeof(Dictionary<EventType, EventBeanCopyMethod>), Constant(copyMethods.Count)));
             foreach (var entry in copyMethods) {
                 var type = EventTypeUtility.ResolveTypeCodegen(entry.Key, symbols.GetAddInitSvc(method));
                 var copyMethod = entry.Value.MakeCopyMethodClassScoped(classScope);

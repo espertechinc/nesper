@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             iterator.Block.DeclareVar<EventBean[]>(
                     "eventsPerStream",
                     NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar<IList<object>>("outgoingEvents", NewInstance(typeof(List<object>)))
+                .DeclareVar<IList<EventBean>>("outgoingEvents", NewInstance(typeof(List<EventBean>)))
                 .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)));
 
             {
@@ -350,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
 
             if (forge.IsOutputAll) {
                 instance.AddMember(NAME_OUTPUTALLUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputAllHelper));

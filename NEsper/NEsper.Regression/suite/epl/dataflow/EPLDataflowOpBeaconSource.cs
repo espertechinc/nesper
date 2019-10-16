@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "BeaconSource -> BeaconStream<" +
                 typeName +
                 "> {" +
-                "  myfield : 'abc', iterations : 1" +
+                "  Myfield : 'abc', iterations : 1" +
                 "}" +
                 "DefaultSupportCaptureOp(BeaconStream) {}");
 

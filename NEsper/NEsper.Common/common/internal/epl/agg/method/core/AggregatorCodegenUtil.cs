@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
 
         public static CodegenExpression WriteNullable(
             CodegenExpression value,
-            CodegenExpressionField serde,
+            CodegenExpressionInstanceField serde,
             CodegenExpressionRef output,
             CodegenExpressionRef unitKey,
             CodegenExpressionRef writer,
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         }
 
         public static CodegenExpression ReadNullable(
-            CodegenExpressionField serde,
+            CodegenExpressionInstanceField serde,
             CodegenExpressionRef input,
             CodegenExpressionRef unitKey,
             CodegenClassScope classScope)
@@ -54,14 +55,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             var filterType = filterForge.EvaluationType;
             method.Block.DeclareVar(
-                filterType,
+                filterType.GetBoxedType(),
                 "pass",
                 filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
             if (!filterType.IsPrimitive) {
                 method.Block.IfRefNull("pass").BlockReturnNoValue();
             }
 
-            method.Block.IfCondition(Not(Ref("pass"))).BlockReturnNoValue();
+            method.Block.IfCondition(Not(Unbox(Ref("pass")))).BlockReturnNoValue();
         }
 
         public static Consumer<CodegenBlock> WriteBoolean(

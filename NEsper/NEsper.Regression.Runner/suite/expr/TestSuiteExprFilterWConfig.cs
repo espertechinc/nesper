@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprFilterWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprFilterLargeThreading()
         {
             RegressionSession session = RegressionRunner.Session();

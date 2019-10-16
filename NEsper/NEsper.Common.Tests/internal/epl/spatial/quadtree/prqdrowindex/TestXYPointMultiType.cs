@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 vOne.AddMultiType(new XYPointMultiType(5, 20, "Y"));
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 vOne.AddMultiType(new XYPointMultiType(10, 19, "Y"));
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

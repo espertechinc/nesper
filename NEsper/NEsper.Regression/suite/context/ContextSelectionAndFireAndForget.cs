@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (UnsupportedOperationException ex) {
                     Assert.AreEqual(
                         ex.Message,
-                        "Iterator with context selector is only supported for statements under context");
+                        "Enumerator with context selector is only supported for statements under context");
                 }
 
                 try {
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (UnsupportedOperationException ex) {
                     Assert.AreEqual(
                         ex.Message,
-                        "Iterator with context selector is only supported for statements under context");
+                        "Enumerator with context selector is only supported for statements under context");
                 }
 
                 env.UndeployAll();

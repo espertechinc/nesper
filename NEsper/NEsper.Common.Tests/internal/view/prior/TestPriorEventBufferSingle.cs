@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.view.prior
                 buffer.GetRelativeToEvent(theEvent, index);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }

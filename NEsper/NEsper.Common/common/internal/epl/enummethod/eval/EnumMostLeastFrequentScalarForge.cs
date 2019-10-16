@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             IDictionary<object, int> items = new LinkedHashMap<object, int>();
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 int? existing = items.Get(next);
                 if (existing == null) {
                     existing = 1;
@@ -73,14 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenBlock block = codegenMethodScope
+            var block = codegenMethodScope
                 .MakeChild(returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IDictionary<string, object>>("items", NewInstance(typeof(LinkedHashMap<string, object>)));
-            CodegenBlock forEach = block
+            var forEach = block
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<int>("existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "Get", @Ref("next"))))
                 .IfCondition(EqualsNull(@Ref("existing")))
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .Increment("existing")
                 .BlockEnd()
                 .ExprDotMethod(@Ref("items"), "Put", @Ref("next"), @Ref("existing"));
-            CodegenMethod method = block.MethodReturn(
+            var method = block.MethodReturn(
                 Cast(
                     returnType,
                     StaticMethod(

@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 MakeGetter(-1);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

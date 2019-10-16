@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         private static long DateToLong(string dateText)
         {
-            var format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            var format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.fff");
             var date = format.Parse(dateText);
             log.Debug(".dateToLong out=" + date);
             return date.UtcMillis;

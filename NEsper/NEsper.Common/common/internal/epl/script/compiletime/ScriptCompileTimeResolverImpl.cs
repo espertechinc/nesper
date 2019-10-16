@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 {
     public class ScriptCompileTimeResolverImpl : ScriptCompileTimeResolver
     {
-        private readonly string moduleName;
-        private readonly ICollection<string> moduleUses;
-        private readonly ScriptCompileTimeRegistry locals;
-        private readonly PathRegistry<NameAndParamNum, ExpressionScriptProvided> path;
-        private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly string _moduleName;
+        private readonly ICollection<string> _moduleUses;
+        private readonly ScriptCompileTimeRegistry _locals;
+        private readonly PathRegistry<NameAndParamNum, ExpressionScriptProvided> _path;
+        private readonly ModuleDependenciesCompileTime _moduleDependencies;
 
         public ScriptCompileTimeResolverImpl(
             string moduleName,
@@ -33,11 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             PathRegistry<NameAndParamNum, ExpressionScriptProvided> path,
             ModuleDependenciesCompileTime moduleDependencies)
         {
-            this.moduleName = moduleName;
-            this.moduleUses = moduleUses;
-            this.locals = locals;
-            this.path = path;
-            this.moduleDependencies = moduleDependencies;
+            this._moduleName = moduleName;
+            this._moduleUses = moduleUses;
+            this._locals = locals;
+            this._path = path;
+            this._moduleDependencies = moduleDependencies;
         }
 
         public ExpressionScriptProvided Resolve(
@@ -47,24 +47,24 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             var key = new NameAndParamNum(name, numParameters);
 
             // try self-originated protected types first
-            ExpressionScriptProvided localExpr = locals.Scripts.Get(key);
+            ExpressionScriptProvided localExpr = _locals.Scripts.Get(key);
             if (localExpr != null) {
                 return localExpr;
             }
 
             try {
-                var expression = path.GetAnyModuleExpectSingle(
+                var expression = _path.GetAnyModuleExpectSingle(
                     new NameAndParamNum(name, numParameters),
-                    moduleUses);
+                    _moduleUses);
                 if (expression != null) {
                     if (!NameAccessModifierExtensions.Visible(
                         expression.First.Visibility,
                         expression.First.ModuleName,
-                        moduleName)) {
+                        _moduleName)) {
                         return null;
                     }
 
-                    moduleDependencies.AddPathScript(key, expression.Second);
+                    _moduleDependencies.AddPathScript(key, expression.Second);
                     return expression.First;
                 }
             }

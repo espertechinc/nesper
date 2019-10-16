@@ -55,6 +55,7 @@ namespace com.espertech.esper.common.@internal.util
         ///     Initializes a new instance of the <see cref="ProxyDatabaseTypeBinding&lt;T&gt;" /> class.
         /// </summary>
         /// <param name="retriever">The retriever.</param>
+        /// <param name="codeGenerator">the code generator</param>
         public ProxyDatabaseTypeBinding(
             DataRetriever retriever,
             Func<CodegenExpression> codeGenerator)

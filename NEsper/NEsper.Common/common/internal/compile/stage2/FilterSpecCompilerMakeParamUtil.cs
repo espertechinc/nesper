@@ -548,9 +548,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string propertyName)
         {
             var text = "Implicit conversion from datatype '" +
-                       fromType.Name +
+                       fromType.CleanName() +
                        "' to '" +
-                       toType.Name +
+                       toType.CleanName() +
                        "' for property '" +
                        propertyName +
                        "' is not allowed (strict filter type coercion)";
@@ -778,129 +778,131 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
             IList<FilterSpecParamInValueForge> listofValues = new List<FilterSpecParamInValueForge>();
-            IEnumerator<ExprNode> it = Arrays.AsList(constituent.ChildNodes).GetEnumerator();
-            it.MoveNext(); // ignore the first node as it's the identifier
-            while (it.MoveNext()) {
-                var subNode = it.Current;
-                if (subNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                    var constant = subNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-                    if (constant != null) {
-                        if (constant.GetType().IsGenericCollection()) {
-                            return null;
-                        }
-
-                        if (constant.GetType().IsGenericDictionary()) {
-                            return null;
-                        }
-                    }
-
-                    if (constant != null && constant is Array constantArray) {
-                        for (var i = 0; i < constantArray.Length; i++) {
-                            object arrayElement = constantArray.GetValue(i);
-                            var arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
-                            listofValues.Add(new FilterForEvalConstantAnyTypeForge(arrayElementCoerced));
-                            if (i > 0) {
-                                expectedNumberOfConstants++;
-                            }
-                        }
-                    }
-                    else {
-                        constant = HandleConstantsCoercion(lookupable, constant);
-                        listofValues.Add(new FilterForEvalConstantAnyTypeForge(constant));
-                    }
-                }
-                else if (subNode is ExprContextPropertyNode) {
-                    var contextPropertyNode = (ExprContextPropertyNode) subNode;
-                    var returnType = contextPropertyNode.Type;
-                    SimpleNumberCoercer coercer;
-                    if (returnType.IsCollectionMapOrArray()) {
-                        CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
-                        coercer = null;
-                    }
-                    else {
-                        coercer = GetNumberCoercer(
-                            left.Forge.EvaluationType,
-                            contextPropertyNode.Type,
-                            lookupable.Expression);
-                    }
-
-                    var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
-                    listofValues.Add(
-                        new FilterForEvalContextPropForge(
-                            contextPropertyNode.PropertyName,
-                            contextPropertyNode.Getter,
-                            coercer,
-                            finalReturnType));
-                }
-                else if (subNode.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
-                         subNode is ExprNodeDeployTimeConst) {
-                    var deployTimeConst = (ExprNodeDeployTimeConst) subNode;
-                    var returnType = subNode.Forge.EvaluationType;
-                    SimpleNumberCoercer coercer;
-                    if (returnType.IsCollectionMapOrArray()) {
-                        CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
-                        coercer = null;
-                    }
-                    else {
-                        coercer = GetNumberCoercer(left.Forge.EvaluationType, returnType, lookupable.Expression);
-                    }
-
-                    listofValues.Add(new FilterForEvalDeployTimeConstForge(deployTimeConst, coercer, returnType));
-                }
-
-                if (subNode is ExprIdentNode) {
-                    var identNodeInner = (ExprIdentNode) subNode;
-                    if (identNodeInner.StreamId == 0) {
-                        break; // for same event evals use the boolean expression, via count compare failing below
-                    }
-
-                    var isMustCoerce = false;
-                    var coerceToType = lookupable.ReturnType.GetBoxedType();
-                    var identReturnType = identNodeInner.Forge.EvaluationType;
-
-                    if (identReturnType.IsCollectionMapOrArray()) {
-                        CheckArrayCoercion(identReturnType, lookupable.ReturnType, lookupable.Expression);
-                        coerceToType = identReturnType;
-                        // no action
-                    }
-                    else if (identReturnType != lookupable.ReturnType) {
-                        if (lookupable.ReturnType.IsNumeric()) {
-                            if (!identReturnType.CanCoerce(lookupable.ReturnType)) {
-                                ThrowConversionError(identReturnType, lookupable.ReturnType, lookupable.Expression);
+            using (var enumerator = Arrays.AsList(constituent.ChildNodes).GetEnumerator())
+            { 
+                enumerator.MoveNext(); // ignore the first node as it's the identifier
+                while (enumerator.MoveNext()) {
+                    var subNode = enumerator.Current;
+                    if (subNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
+                        var constant = subNode.Forge.ExprEvaluator.Evaluate(null, true, null);
+                        if (constant != null) {
+                            if (constant.GetType().IsGenericCollection()) {
+                                return null;
                             }
 
-                            isMustCoerce = true;
+                            if (constant.GetType().IsGenericDictionary()) {
+                                return null;
+                            }
+                        }
+
+                        if (constant != null && constant is Array constantArray) {
+                            for (var i = 0; i < constantArray.Length; i++) {
+                                object arrayElement = constantArray.GetValue(i);
+                                var arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
+                                listofValues.Add(new FilterForEvalConstantAnyTypeForge(arrayElementCoerced));
+                                if (i > 0) {
+                                    expectedNumberOfConstants++;
+                                }
+                            }
                         }
                         else {
-                            break; // assumed not compatible
+                            constant = HandleConstantsCoercion(lookupable, constant);
+                            listofValues.Add(new FilterForEvalConstantAnyTypeForge(constant));
                         }
                     }
+                    else if (subNode is ExprContextPropertyNode) {
+                        var contextPropertyNode = (ExprContextPropertyNode) subNode;
+                        var returnType = contextPropertyNode.Type;
+                        SimpleNumberCoercer coercer;
+                        if (returnType.IsCollectionMapOrArray()) {
+                            CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
+                            coercer = null;
+                        }
+                        else {
+                            coercer = GetNumberCoercer(
+                                left.Forge.EvaluationType,
+                                contextPropertyNode.Type,
+                                lookupable.Expression);
+                        }
 
-                    FilterSpecParamInValueForge inValue;
-                    var streamName = identNodeInner.ResolvedStreamName;
-                    if (arrayEventTypes != null &&
-                        !arrayEventTypes.IsEmpty() &&
-                        arrayEventTypes.ContainsKey(streamName)) {
-                        var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
-                        var innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
-                        inValue = new FilterForEvalEventPropIndexedForge(
-                            identNodeInner.ResolvedStreamName,
-                            indexAndProp.First,
-                            indexAndProp.Second,
-                            innerEventType,
-                            isMustCoerce,
-                            coerceToType);
+                        var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
+                        listofValues.Add(
+                            new FilterForEvalContextPropForge(
+                                contextPropertyNode.PropertyName,
+                                contextPropertyNode.Getter,
+                                coercer,
+                                finalReturnType));
                     }
-                    else {
-                        inValue = new FilterForEvalEventPropForge(
-                            identNodeInner.ResolvedStreamName,
-                            identNodeInner.ResolvedPropertyName,
-                            identNodeInner.ExprEvaluatorIdent,
-                            isMustCoerce,
-                            coerceToType);
+                    else if (subNode.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
+                             subNode is ExprNodeDeployTimeConst) {
+                        var deployTimeConst = (ExprNodeDeployTimeConst) subNode;
+                        var returnType = subNode.Forge.EvaluationType;
+                        SimpleNumberCoercer coercer;
+                        if (returnType.IsCollectionMapOrArray()) {
+                            CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
+                            coercer = null;
+                        }
+                        else {
+                            coercer = GetNumberCoercer(left.Forge.EvaluationType, returnType, lookupable.Expression);
+                        }
+
+                        listofValues.Add(new FilterForEvalDeployTimeConstForge(deployTimeConst, coercer, returnType));
                     }
 
-                    listofValues.Add(inValue);
+                    if (subNode is ExprIdentNode) {
+                        var identNodeInner = (ExprIdentNode) subNode;
+                        if (identNodeInner.StreamId == 0) {
+                            break; // for same event evals use the boolean expression, via count compare failing below
+                        }
+
+                        var isMustCoerce = false;
+                        var coerceToType = lookupable.ReturnType.GetBoxedType();
+                        var identReturnType = identNodeInner.Forge.EvaluationType;
+
+                        if (identReturnType.IsCollectionMapOrArray()) {
+                            CheckArrayCoercion(identReturnType, lookupable.ReturnType, lookupable.Expression);
+                            coerceToType = identReturnType;
+                            // no action
+                        }
+                        else if (identReturnType != lookupable.ReturnType) {
+                            if (lookupable.ReturnType.IsNumeric()) {
+                                if (!identReturnType.CanCoerce(lookupable.ReturnType)) {
+                                    ThrowConversionError(identReturnType, lookupable.ReturnType, lookupable.Expression);
+                                }
+
+                                isMustCoerce = true;
+                            }
+                            else {
+                                break; // assumed not compatible
+                            }
+                        }
+
+                        FilterSpecParamInValueForge inValue;
+                        var streamName = identNodeInner.ResolvedStreamName;
+                        if (arrayEventTypes != null &&
+                            !arrayEventTypes.IsEmpty() &&
+                            arrayEventTypes.ContainsKey(streamName)) {
+                            var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
+                            var innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
+                            inValue = new FilterForEvalEventPropIndexedForge(
+                                identNodeInner.ResolvedStreamName,
+                                indexAndProp.First,
+                                indexAndProp.Second,
+                                innerEventType,
+                                isMustCoerce,
+                                coerceToType);
+                        }
+                        else {
+                            inValue = new FilterForEvalEventPropForge(
+                                identNodeInner.ResolvedStreamName,
+                                identNodeInner.ResolvedPropertyName,
+                                identNodeInner.ExprEvaluatorIdent,
+                                isMustCoerce,
+                                coerceToType);
+                        }
+
+                        listofValues.Add(inValue);
+                    }
                 }
             }
 

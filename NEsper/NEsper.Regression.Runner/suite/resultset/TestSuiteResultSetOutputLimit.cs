@@ -41,86 +41,86 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitSimple()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitSimple.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowForAll()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowForAll.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowPerEvent()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowPerEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowPerGroup()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowPerGroup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitAggregateGrouped()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitAggregateGrouped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowPerGroupRollup()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowPerGroupRollup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowLimit()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowLimit.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitChangeSetOpt()
         {
             RegressionRunner.Run(session, new ResultSetOutputLimitChangeSetOpt(true));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitFirstHaving()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitFirstHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitCrontabWhen()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitCrontabWhen.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitMicrosecondResolution()
         {
             RegressionRunner.Run(session, new ResultSetOutputLimitMicrosecondResolution(0, "1", 1000, 1000));
             RegressionRunner.Run(session, new ResultSetOutputLimitMicrosecondResolution(789123456789L, "0.1", 789123456789L + 100, 100));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitParameterizedByContext()
         {
             RegressionRunner.Run(session, new ResultSetOutputLimitParameterizedByContext());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitAfter()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitAfter.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitInsertInto()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitInsertInto.Executions());

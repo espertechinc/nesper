@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField = codegenClassScope.AddOrGetFieldSharable(
+            CodegenExpression timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(
                 RuntimeSettingsTimeZoneField.INSTANCE);
             return StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", inner, timeZoneField);
         }

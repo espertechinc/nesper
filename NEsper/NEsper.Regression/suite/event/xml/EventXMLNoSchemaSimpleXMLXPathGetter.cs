@@ -17,7 +17,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmt = "@Name('s0') select element1, invalidelement, " +
+            var stmt = "@Name('s0') select " +
+                       "element1, " +
+                       "invalidelement, " +
                        "element4.element41 as nestedElement," +
                        "element2.element21('e21_2') as mappedElement," +
                        "element2.element21[1] as indexedElement," +

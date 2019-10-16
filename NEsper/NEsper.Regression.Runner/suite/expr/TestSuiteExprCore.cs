@@ -44,25 +44,25 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreRelOp()
         {
             RegressionRunner.Run(session, new ExprCoreRelOp());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreAndOrNot()
         {
             RegressionRunner.Run(session, new ExprCoreAndOrNot());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreConcat()
         {
             RegressionRunner.Run(session, new ExprCoreConcat());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreLikeRegexp()
         {
             RegressionRunner.Run(session, ExprCoreLikeRegexp.Executions());
@@ -74,121 +74,121 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprCoreMath.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreInBetweenLike()
         {
             RegressionRunner.Run(session, ExprCoreInBetweenLike.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreArray()
         {
             RegressionRunner.Run(session, ExprCoreArray.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreAnyAllSome()
         {
             RegressionRunner.Run(session, ExprCoreAnyAllSome.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreBitWiseOperators()
         {
             RegressionRunner.Run(session, ExprCoreBitWiseOperators.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreCoalesce()
         {
             RegressionRunner.Run(session, ExprCoreCoalesce.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreNewInstance()
         {
             RegressionRunner.Run(session, ExprCoreNewInstance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreCast()
         {
             RegressionRunner.Run(session, ExprCoreCast.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreCase()
         {
             RegressionRunner.Run(session, ExprCoreCase.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreCurrentTimestamp()
         {
             RegressionRunner.Run(session, ExprCoreCurrentTimestamp.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreEqualsIs()
         {
             RegressionRunner.Run(session, ExprCoreEqualsIs.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreInstanceOf()
         {
             RegressionRunner.Run(session, ExprCoreInstanceOf.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreExists()
         {
             RegressionRunner.Run(session, ExprCoreExists.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreNewStruct()
         {
             RegressionRunner.Run(session, ExprCoreNewStruct.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreDotExpression()
         {
             RegressionRunner.Run(session, ExprCoreDotExpression.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreMinMaxNonAgg()
         {
             RegressionRunner.Run(session, ExprCoreMinMaxNonAgg.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreBigNumberSupport()
         {
             RegressionRunner.Run(session, ExprCoreBigNumberSupport.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreCurrentEvaluationContext()
         {
             RegressionRunner.Run(session, ExprCoreCurrentEvaluationContext.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreTypeOf()
         {
             RegressionRunner.Run(session, ExprCoreTypeOf.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCorePrevious()
         {
             RegressionRunner.Run(session, ExprCorePrevious.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCorePrior()
         {
             RegressionRunner.Run(session, ExprCorePrior.Executions());

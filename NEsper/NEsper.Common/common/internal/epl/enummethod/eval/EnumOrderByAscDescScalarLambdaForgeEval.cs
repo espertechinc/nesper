@@ -45,18 +45,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            OrderedDictionary<object, object> sort = new OrderedDictionary<object, object>();
-            bool hasColl = false;
+            var sort = new OrderedDictionary<object, object>();
+            var hasColl = false;
 
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 props[0] = next;
 
-                IComparable comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
-                object entry = sort.Get(comparable);
+                var comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var entry = sort.Get(comparable);
 
                 if (entry == null) {
                     sort.Put(comparable, next);
@@ -84,23 +84,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
+            var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            Type innerBoxedType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerBoxedType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumOrderByAscDescScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar<OrderedDictionary<object, object>>(
                     "sort",
                     NewInstance(typeof(OrderedDictionary<object, object>)))

@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 concatNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }

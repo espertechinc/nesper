@@ -1064,11 +1064,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
             var groupKeyTypes = Constant(forge.GroupKeyTypes);
 
             if (forge.IsOutputAll) {
-                CodegenExpression eventTypes = classScope.AddFieldUnshared(
+                CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventType[]),
                     EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -1288,8 +1288,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 classScope,
                 instance);
 
-            var helperFactory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            var outputFactory = classScope.AddFieldUnshared(
+            var helperFactory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var outputFactory = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(OutputConditionPolledFactory),
                 forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
@@ -1581,9 +1581,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             var generateOutputBatchedAddToListSingle =
                 GenerateOutputBatchedAddToListSingleCodegen(forge, classScope, instance);
 
-            var helperFactory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var helperFactory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
             var groupKeyTypes = Constant(forge.GroupKeyTypes);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -1935,8 +1935,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 classScope,
                 instance);
 
-            var helperFactory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            var outputFactory = classScope.AddFieldUnshared(
+            var helperFactory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var outputFactory = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(OutputConditionPolledFactory),
                 forge.OptionalOutputFirstConditionFactory.Make(classScope.NamespaceScope.InitMethod, classScope));
@@ -2242,9 +2242,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             var generateOutputBatchedAddToListSingle =
                 GenerateOutputBatchedAddToListSingleCodegen(forge, classScope, instance);
 
-            var helperFactory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var helperFactory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
             var groupKeyTypes = Constant(forge.GroupKeyTypes);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));

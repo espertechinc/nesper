@@ -43,16 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
+            var beans = (ICollection<EventBean>) enumcoll;
             if (beans.Count <= 1) {
                 return beans;
             }
 
             IDictionary<IComparable, EventBean> distinct = new LinkedHashMap<IComparable, EventBean>();
-            foreach (EventBean next in beans) {
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
-                IComparable comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (!distinct.ContainsKey(comparable)) {
                     distinct.Put(comparable, next);
                 }
@@ -67,17 +67,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(ICollection<EventBean>),
                     typeof(EnumDistinctEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<IDictionary<object, EventBean>>("distinct", NewInstance(typeof(LinkedHashMap<object, EventBean>)));

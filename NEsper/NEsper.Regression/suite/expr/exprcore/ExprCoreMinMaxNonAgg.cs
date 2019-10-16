@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 model.FromClause = FromClause
                     .Create(
-                        FilterStream.Create(typeof(SupportBean).FullName)
+                        FilterStream.Create(typeof(SupportBean).Name)
                             .AddView("length", Expressions.Constant(3)));
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(EPL, model.ToEPL());

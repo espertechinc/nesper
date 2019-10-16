@@ -73,32 +73,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(ICollection<object>), typeof(EnumUnionForgeEval), scope, codegenClassScope)
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(typeof(ICollection<EventBean>), typeof(EnumUnionForgeEval), scope, codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             if (forge.scalar) {
                 block.DeclareVar<ICollection<object>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
             block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
-            block.DeclareVar<List<object>>(
-                    "result",
-                    NewInstance<List<object>>(
-                        Op(
-                            ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"),
-                            "+",
-                            ExprDotName(@Ref("other"), "Count"))))
+            block.DeclareVar<List<EventBean>>("result", NewInstance<List<EventBean>>())
                 .Expression(ExprDotMethod(@Ref("result"), "AddAll", EnumForgeCodegenNames.REF_ENUMCOLL))
                 .Expression(ExprDotMethod(@Ref("result"), "AddAll", @Ref("other")))
                 .MethodReturn(@Ref("result"));

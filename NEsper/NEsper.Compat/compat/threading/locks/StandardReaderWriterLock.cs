@@ -53,6 +53,16 @@ namespace com.espertech.esper.compat.threading.locks
             return WriteLock.Acquire();
         }
 
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
+        {
+            return WriteLock.Acquire((long) lockWaitDuration.TotalMilliseconds);
+        }
+
+        public void ReleaseWriteLock()
+        {
+            ReleaseWriterLock();
+        }
+
 #if DEBUG
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="StandardReaderWriterLock"/> is TRACE.

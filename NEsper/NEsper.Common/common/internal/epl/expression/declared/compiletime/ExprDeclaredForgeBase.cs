@@ -554,9 +554,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        private CodegenExpressionField GetNodeObject(CodegenClassScope codegenClassScope)
+        private CodegenExpressionInstanceField GetNodeObject(CodegenClassScope codegenClassScope)
         {
             return ExpressionDeployTimeResolver.MakeRuntimeCacheKeyField(
+                Ref("statementFields"),
                 parent.PrototypeWVisibility,
                 codegenClassScope,
                 GetType());

@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 object[][] rows = {
                     new object[] {"P00", typeof(string)},
-                    new object[] {"val", typeof(int?[])}
+                    new object[] {"val", typeof(int[])}
                 };
                 for (var i = 0; i < rows.Length; i++) {
                     var message = "Failed assertion for " + rows[i][0];
@@ -60,11 +60,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.SendEventBean(new SupportBean("T1", 6));
                 env.SendEventBean(new SupportBean_S0(0));
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.IsTrue(@event.Get("val") is int?[]);
+                Assert.IsTrue(@event.Get("val") is int[]);
                 EPAssertionUtil.AssertProps(
                     @event,
                     fields,
-                    new object[] {null, new int?[] {5, 10, 15, 6}});
+                    new object[] {null, new[] {5, 10, 15, 6}});
 
                 // test named window and late start
                 env.UndeployModuleContaining("s0");

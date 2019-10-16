@@ -37,6 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     accessStateFactory.AggregatorLinear.GetFirstValueCodegen(context.ClassScope, context.Method))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
@@ -69,6 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     accessStateFactory.AggregatorLinear.GetFirstValueCodegen(context.ClassScope, context.Method))
+                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",

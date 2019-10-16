@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
             Console.Out.WriteLine("Delta=" + delta);
-            Assert.IsTrue(delta < 1000, "Delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "Delta=" + delta);
 
             env.UndeployAll();
         }

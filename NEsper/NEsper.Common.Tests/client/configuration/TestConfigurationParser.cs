@@ -28,6 +28,8 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
+using com.espertech.esper.epl.db.drivers;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.client.configuration
@@ -37,7 +39,7 @@ namespace com.espertech.esper.common.client.configuration
         [Test]
         public void TestRegressionFileConfig()
         {
-            var config = new Configuration();
+            var config = new Configuration(container);
             var url = container.ResourceManager().ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
             using (var client = new WebClient()) {
                 using (var stream = client.OpenRead(url)) {
@@ -50,7 +52,7 @@ namespace com.espertech.esper.common.client.configuration
         [Test]
         public void TestConfigurationDefaults()
         {
-            var config = new Configuration();
+            var config = new Configuration(container);
 
             var common = config.Common;
             Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
@@ -61,24 +63,24 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
             Assert.IsNull(common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
             Assert.IsNull(common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
-            Assert.IsTrue(common.Logging.IsEnableQueryPlan);
-            Assert.IsTrue(common.Logging.IsEnableADO);
+            Assert.IsFalse(common.Logging.IsEnableQueryPlan);
+            Assert.IsFalse(common.Logging.IsEnableADO);
             Assert.AreEqual(TimeUnit.MILLISECONDS, common.TimeSource.TimeUnit);
             Assert.AreEqual(ThreadingProfile.NORMAL, common.Execution.ThreadingProfile);
 
             var compiler = config.Compiler;
-            Assert.IsTrue(compiler.ViewResources.IsIterableUnbound);
+            Assert.IsFalse(compiler.ViewResources.IsIterableUnbound);
             Assert.IsTrue(compiler.ViewResources.IsOutputLimitOpt);
-            Assert.IsTrue(compiler.Logging.IsEnableCode);
+            Assert.IsFalse(compiler.Logging.IsEnableCode);
             Assert.AreEqual(16, compiler.Execution.FilterServiceMaxFilterWidth);
             Assert.IsTrue(compiler.Execution.IsEnabledDeclaredExprValueCache);
             var byteCode = compiler.ByteCode;
-            Assert.IsTrue(byteCode.IsIncludeComments);
-            Assert.IsTrue(byteCode.IsIncludeDebugSymbols);
+            Assert.IsFalse(byteCode.IsIncludeComments);
+            Assert.IsFalse(byteCode.IsIncludeDebugSymbols);
             Assert.IsTrue(byteCode.IsAttachEPL);
-            Assert.IsTrue(byteCode.IsAttachModuleEPL);
-            Assert.IsTrue(byteCode.IsInstrumented);
-            Assert.IsTrue(byteCode.IsAllowSubscriber);
+            Assert.IsFalse(byteCode.IsAttachModuleEPL);
+            Assert.IsFalse(byteCode.IsInstrumented);
+            Assert.IsFalse(byteCode.IsAllowSubscriber);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierContext);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierEventType);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierExpression);
@@ -88,12 +90,12 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierVariable);
             Assert.AreEqual(EventTypeBusModifier.NONBUS, byteCode.BusModifierEventType);
             Assert.AreEqual(StreamSelector.ISTREAM_ONLY, compiler.StreamSelection.DefaultStreamSelector);
-            Assert.IsTrue(compiler.Language.IsSortUsingCollator);
-            Assert.IsTrue(compiler.Expression.IsIntegerDivision);
-            Assert.IsTrue(compiler.Expression.IsDivisionByZeroReturnsNull);
+            Assert.IsFalse(compiler.Language.IsSortUsingCollator);
+            Assert.IsFalse(compiler.Expression.IsIntegerDivision);
+            Assert.IsFalse(compiler.Expression.IsDivisionByZeroReturnsNull);
             Assert.IsTrue(compiler.Expression.IsUdfCache);
             Assert.IsTrue(compiler.Expression.IsExtendedAggregation);
-            Assert.IsTrue(compiler.Expression.IsDuckTyping);
+            Assert.IsFalse(compiler.Expression.IsDuckTyping);
             Assert.IsNull(compiler.Expression.MathContext);
             Assert.AreEqual("js", compiler.Scripts.DefaultDialect);
 
@@ -106,10 +108,10 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(100, runtime.Threading.InternalTimerMsecResolution);
             Assert.AreEqual(Locking.SPIN, runtime.Threading.InsertIntoDispatchLocking);
             Assert.AreEqual(Locking.SPIN, runtime.Threading.ListenerDispatchLocking);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolInbound);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolOutbound);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolRouteExec);
-            Assert.IsTrue(runtime.Threading.IsThreadPoolTimerExec);
+            Assert.IsFalse(runtime.Threading.IsThreadPoolInbound);
+            Assert.IsFalse(runtime.Threading.IsThreadPoolOutbound);
+            Assert.IsFalse(runtime.Threading.IsThreadPoolRouteExec);
+            Assert.IsFalse(runtime.Threading.IsThreadPoolTimerExec);
             Assert.AreEqual(2, runtime.Threading.ThreadPoolInboundNumThreads);
             Assert.AreEqual(2, runtime.Threading.ThreadPoolOutboundNumThreads);
             Assert.AreEqual(2, runtime.Threading.ThreadPoolRouteExecNumThreads);
@@ -118,12 +120,12 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsNull(runtime.Threading.ThreadPoolOutboundCapacity);
             Assert.IsNull(runtime.Threading.ThreadPoolRouteExecCapacity);
             Assert.IsNull(runtime.Threading.ThreadPoolTimerExecCapacity);
-            Assert.IsTrue(runtime.Threading.IsRuntimeFairlock);
-            Assert.IsTrue(runtime.MetricsReporting.IsRuntimeMetrics);
+            Assert.IsFalse(runtime.Threading.IsRuntimeFairlock);
+            Assert.IsFalse(runtime.MetricsReporting.IsRuntimeMetrics);
             Assert.IsTrue(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
-            Assert.AreEqual(Int64.MaxValue, runtime.Threading.NamedWindowConsumerDispatchTimeout);
+            Assert.AreEqual(Int32.MaxValue, runtime.Threading.NamedWindowConsumerDispatchTimeout);
             Assert.AreEqual(Locking.SPIN, runtime.Threading.NamedWindowConsumerDispatchLocking);
-            Assert.IsTrue(runtime.Logging.IsEnableExecutionDebug);
+            Assert.IsFalse(runtime.Logging.IsEnableExecutionDebug);
             Assert.IsTrue(runtime.Logging.IsEnableTimerDebug);
             Assert.IsNull(runtime.Logging.AuditPattern);
             Assert.AreEqual(15000, runtime.Variables.MsecVersionRelease);
@@ -132,8 +134,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsNull(runtime.MatchRecognize.MaxStates);
             Assert.IsTrue(runtime.MatchRecognize.IsMaxStatesPreventStart);
             Assert.AreEqual(TimeSourceType.MILLI, runtime.TimeSource.TimeSourceType);
-            Assert.IsTrue(runtime.Execution.IsPrioritized);
-            Assert.IsTrue(runtime.Execution.IsDisableLocking);
+            Assert.IsFalse(runtime.Execution.IsPrioritized);
+            Assert.IsFalse(runtime.Execution.IsDisableLocking);
             Assert.AreEqual(FilterServiceProfile.READMOSTLY, runtime.Execution.FilterServiceProfile);
             Assert.AreEqual(1, runtime.Execution.DeclaredExprValueCacheSize);
             Assert.IsTrue(runtime.Expression.IsSelfSubselectPreeval);
@@ -143,7 +145,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsNull(runtime.ConditionHandling.HandlerFactories);
 
             var domType = new ConfigurationCommonEventTypeXMLDOM();
-            Assert.IsTrue(domType.IsXPathPropertyExpr);
+            Assert.IsFalse(domType.IsXPathPropertyExpr);
             Assert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
             Assert.IsTrue(domType.IsEventSenderValidatesRoot);
             Assert.IsTrue(domType.IsAutoFragment);
@@ -151,6 +153,7 @@ namespace com.espertech.esper.common.client.configuration
 
         internal static void AssertFileConfig(Configuration config)
         {
+            var container = config.Container;
             var common = config.Common;
             var compiler = config.Compiler;
             var runtime = config.Runtime;
@@ -195,7 +198,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsNull(noSchemaDesc.XPathProperties.Get("element1").OptionalCastToType);
             Assert.IsNull(noSchemaDesc.XPathFunctionResolver);
             Assert.IsNull(noSchemaDesc.XPathVariableResolver);
-            Assert.IsTrue(noSchemaDesc.IsXPathPropertyExpr);
+            Assert.IsFalse(noSchemaDesc.IsXPathPropertyExpr);
 
             // assert XML DOM - with schema
             var schemaDesc = common.EventTypesXMLDOM.Get("MySchemaXMLEventName");
@@ -206,19 +209,19 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("default-name-space", schemaDesc.DefaultNamespace);
             Assert.AreEqual("/myevent/element2", schemaDesc.XPathProperties.Get("element2").XPath);
             Assert.AreEqual(XPathResultType.String, schemaDesc.XPathProperties.Get("element2").Type);
-            Assert.AreEqual(typeof(long?), schemaDesc.XPathProperties.Get("element2").OptionalCastToType);
+            Assert.AreEqual(typeof(long), schemaDesc.XPathProperties.Get("element2").OptionalCastToType);
             Assert.AreEqual("/bookstore/book", schemaDesc.XPathProperties.Get("element3").XPath);
             Assert.AreEqual(XPathResultType.NodeSet, schemaDesc.XPathProperties.Get("element3").Type);
             Assert.IsNull(schemaDesc.XPathProperties.Get("element3").OptionalCastToType);
             Assert.AreEqual("MyOtherXMLNodeEvent", schemaDesc.XPathProperties.Get("element3").OptionalEventTypeName);
             Assert.AreEqual(1, schemaDesc.NamespacePrefixes.Count);
             Assert.AreEqual("samples:schemas:simpleSchema", schemaDesc.NamespacePrefixes.Get("ss"));
-            Assert.IsTrue(schemaDesc.IsXPathResolvePropertiesAbsolute);
+            Assert.IsFalse(schemaDesc.IsXPathResolvePropertiesAbsolute);
             Assert.AreEqual("com.mycompany.OptionalFunctionResolver", schemaDesc.XPathFunctionResolver);
             Assert.AreEqual("com.mycompany.OptionalVariableResolver", schemaDesc.XPathVariableResolver);
             Assert.IsTrue(schemaDesc.IsXPathPropertyExpr);
-            Assert.IsTrue(schemaDesc.IsEventSenderValidatesRoot);
-            Assert.IsTrue(schemaDesc.IsAutoFragment);
+            Assert.IsFalse(schemaDesc.IsEventSenderValidatesRoot);
+            Assert.IsFalse(schemaDesc.IsAutoFragment);
             Assert.AreEqual("startts", schemaDesc.StartTimestampPropertyName);
             Assert.AreEqual("endts", schemaDesc.EndTimestampPropertyName);
 
@@ -226,8 +229,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1, common.EventTypesMapEvents.Count);
             Assert.IsTrue(common.EventTypesMapEvents.Keys.Contains("MyMapEvent"));
             var expectedProps = new HashMap<string, string>();
-            expectedProps.Put("MyInt", "int");
-            expectedProps.Put("MyString", "string");
+            expectedProps.Put("myInt", "int");
+            expectedProps.Put("myString", "string");
             Assert.AreEqual(expectedProps, common.EventTypesMapEvents.Get("MyMapEvent"));
             Assert.AreEqual(1, common.MapTypeConfigurations.Count);
             var superTypes = common.MapTypeConfigurations.Get("MyMapEvent").SuperTypes;
@@ -239,8 +242,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1, common.EventTypesNestableObjectArrayEvents.Count);
             Assert.IsTrue(common.EventTypesNestableObjectArrayEvents.ContainsKey("MyObjectArrayEvent"));
             var expectedPropsObjectArray = new HashMap<string, string>();
-            expectedPropsObjectArray.Put("MyInt", "int");
-            expectedPropsObjectArray.Put("MyString", "string");
+            expectedPropsObjectArray.Put("myInt", "int");
+            expectedPropsObjectArray.Put("myString", "string");
             Assert.AreEqual(expectedPropsObjectArray, common.EventTypesNestableObjectArrayEvents.Get("MyObjectArrayEvent"));
             Assert.AreEqual(1, common.ObjectArrayTypeConfigurations.Count);
             var superTypesOA = common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").SuperTypes;
@@ -259,11 +262,11 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
             var avroTwo = common.EventTypesAvro.Get("MyAvroEventTwo");
             Assert.AreEqual(
-                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"String\"}}]}",
+                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                 avroTwo.AvroSchemaText);
             Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
             Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);
-            Assert.AreEqual("[SomeSuperAvro, SomeSuperAvroTwo]", avroTwo.SuperTypes.ToString());
+            Assert.AreEqual("[\"SomeSuperAvro\", \"SomeSuperAvroTwo\"]", avroTwo.SuperTypes.RenderAny());
 
             // assert legacy type declaration
             Assert.AreEqual(1, common.EventTypesBean.Count);
@@ -282,12 +285,13 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("endts", legacy.EndTimestampPropertyName);
 
             // assert database reference - data source config
-            Assert.AreEqual(3, common.DatabaseReferences.Count);
+            Assert.AreEqual(2, common.DatabaseReferences.Count);
             var configDBRef = common.DatabaseReferences.Get("mydb1");
-            var dsDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
+            var dbDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
+            var dbDriver = DbDriverConnectionHelper.ResolveDriver(container, dbDef);
 
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dsDef.Driver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
+            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dbDriver.GetType().FullName);
+            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
             Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycleEnum);
             Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
             Assert.IsNull(configDBRef.ConnectionSettings.Catalog);
@@ -305,8 +309,9 @@ namespace com.espertech.esper.common.client.configuration
             configDBRef = common.DatabaseReferences.Get("mydb2");
 
             var dmDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
-            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDef.Driver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dmDef.Driver.ConnectionString);
+            var dmDriver = DbDriverConnectionHelper.ResolveDriver(container, dmDef);
+            Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDriver.GetType().FullName);
+            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
 
             Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycleEnum);
             Assert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);
@@ -325,9 +330,9 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
             Assert.AreEqual(AccessorStyle.PUBLIC, common.EventMeta.DefaultAccessorStyle);
             Assert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableAvro);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableNativeString);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
+            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableAvro);
+            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableNativeString);
+            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
             Assert.AreEqual("myObjectValueTypeWidenerFactoryClass", common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
             Assert.AreEqual("myTypeToRepresentationMapperClass", common.EventMeta.AvroSettings.TypeRepresentationMapperClass);
 
@@ -341,11 +346,11 @@ namespace com.espertech.esper.common.client.configuration
             var variable = common.Variables.Get("var1");
             Assert.AreEqual(typeof(int).FullName, variable.VariableType);
             Assert.AreEqual("1", variable.InitializationValue);
-            Assert.IsTrue(variable.IsConstant);
+            Assert.IsFalse(variable.IsConstant);
             variable = common.Variables.Get("var2");
             Assert.AreEqual(typeof(string).FullName, variable.VariableType);
             Assert.IsNull(variable.InitializationValue);
-            Assert.IsTrue(variable.IsConstant);
+            Assert.IsFalse(variable.IsConstant);
             variable = common.Variables.Get("var3");
             Assert.IsTrue(variable.IsConstant);
 
@@ -423,7 +428,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1, pluginMultiAgg.AdditionalConfiguredProperties.Count);
             Assert.AreEqual("value1", pluginMultiAgg.AdditionalConfiguredProperties.Get("prop1"));
 
-            // assert plug-in singlerow function loaded
+            // assert plug-in single-row function loaded
             Assert.AreEqual(2, compiler.PlugInSingleRowFunctions.Count);
             var pluginSingleRow = compiler.PlugInSingleRowFunctions[0];
             Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod0", pluginSingleRow.FunctionClassName);
@@ -431,7 +436,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("func3", pluginSingleRow.Name);
             Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, pluginSingleRow.ValueCache);
             Assert.AreEqual(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED, pluginSingleRow.FilterOptimizable);
-            Assert.IsTrue(pluginSingleRow.RethrowExceptions);
+            Assert.IsFalse(pluginSingleRow.RethrowExceptions);
             pluginSingleRow = compiler.PlugInSingleRowFunctions[1];
             Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod1", pluginSingleRow.FunctionClassName);
             Assert.AreEqual("func4", pluginSingleRow.Name);
@@ -465,7 +470,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
 
             Assert.IsTrue(compiler.ViewResources.IsIterableUnbound);
-            Assert.IsTrue(compiler.ViewResources.IsOutputLimitOpt);
+            Assert.IsFalse(compiler.ViewResources.IsOutputLimitOpt);
 
             Assert.IsTrue(compiler.Logging.IsEnableCode);
 
@@ -474,7 +479,7 @@ namespace com.espertech.esper.common.client.configuration
             var byteCode = compiler.ByteCode;
             Assert.IsTrue(byteCode.IsIncludeComments);
             Assert.IsTrue(byteCode.IsIncludeDebugSymbols);
-            Assert.IsTrue(byteCode.IsAttachEPL);
+            Assert.IsFalse(byteCode.IsAttachEPL);
             Assert.IsTrue(byteCode.IsAttachModuleEPL);
             Assert.IsTrue(byteCode.IsInstrumented);
             Assert.IsTrue(byteCode.IsAllowSubscriber);
@@ -489,17 +494,17 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
             Assert.AreEqual(100, compiler.Execution.FilterServiceMaxFilterWidth);
-            Assert.IsTrue(compiler.Execution.IsEnabledDeclaredExprValueCache);
+            Assert.IsFalse(compiler.Execution.IsEnabledDeclaredExprValueCache);
 
             Assert.IsTrue(compiler.Language.IsSortUsingCollator);
 
             Assert.IsTrue(compiler.Expression.IsIntegerDivision);
             Assert.IsTrue(compiler.Expression.IsDivisionByZeroReturnsNull);
-            Assert.IsTrue(compiler.Expression.IsUdfCache);
-            Assert.IsTrue(compiler.Expression.IsExtendedAggregation);
+            Assert.IsFalse(compiler.Expression.IsUdfCache);
+            Assert.IsFalse(compiler.Expression.IsExtendedAggregation);
             Assert.IsTrue(compiler.Expression.IsDuckTyping);
             Assert.AreEqual(2, compiler.Expression.MathContext.Precision);
-            Assert.AreEqual(MidpointRounding.AwayFromZero, compiler.Expression.MathContext.RoundingMode);
+            Assert.AreEqual(MidpointRounding.ToEven, compiler.Expression.MathContext.RoundingMode);
 
             Assert.AreEqual("abc", compiler.Scripts.DefaultDialect);
 
@@ -509,14 +514,14 @@ namespace com.espertech.esper.common.client.configuration
              */
 
             // assert runtime defaults
-            Assert.IsTrue(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
+            Assert.IsFalse(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
             Assert.AreEqual(3000, runtime.Threading.InsertIntoDispatchTimeout);
             Assert.AreEqual(Locking.SUSPEND, runtime.Threading.InsertIntoDispatchLocking);
-            Assert.IsTrue(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
+            Assert.IsFalse(runtime.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
             Assert.AreEqual(4000, runtime.Threading.NamedWindowConsumerDispatchTimeout);
             Assert.AreEqual(Locking.SUSPEND, runtime.Threading.NamedWindowConsumerDispatchLocking);
 
-            Assert.IsTrue(runtime.Threading.IsListenerDispatchPreserveOrder);
+            Assert.IsFalse(runtime.Threading.IsListenerDispatchPreserveOrder);
             Assert.AreEqual(2000, runtime.Threading.ListenerDispatchTimeout);
             Assert.AreEqual(Locking.SUSPEND, runtime.Threading.ListenerDispatchLocking);
             Assert.IsTrue(runtime.Threading.IsThreadPoolInbound);
@@ -533,16 +538,16 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(2000, (int) runtime.Threading.ThreadPoolRouteExecCapacity);
             Assert.IsTrue(runtime.Threading.IsRuntimeFairlock);
 
-            Assert.IsTrue(runtime.Threading.IsInternalTimerEnabled);
+            Assert.IsFalse(runtime.Threading.IsInternalTimerEnabled);
             Assert.AreEqual(1234567, runtime.Threading.InternalTimerMsecResolution);
             Assert.IsTrue(runtime.Logging.IsEnableExecutionDebug);
-            Assert.IsTrue(runtime.Logging.IsEnableTimerDebug);
+            Assert.IsFalse(runtime.Logging.IsEnableTimerDebug);
             Assert.AreEqual("[%u] %m", runtime.Logging.AuditPattern);
             Assert.AreEqual(30000, runtime.Variables.MsecVersionRelease);
             Assert.AreEqual(3L, (long) runtime.Patterns.MaxSubexpressions);
-            Assert.IsTrue(runtime.Patterns.IsMaxSubexpressionPreventStart);
+            Assert.IsFalse(runtime.Patterns.IsMaxSubexpressionPreventStart);
             Assert.AreEqual(3L, (long) runtime.MatchRecognize.MaxStates);
-            Assert.IsTrue(runtime.MatchRecognize.IsMaxStatesPreventStart);
+            Assert.IsFalse(runtime.MatchRecognize.IsMaxStatesPreventStart);
 
             // assert adapter loaders parsed
             IList<ConfigurationRuntimePluginLoader> plugins = runtime.PluginLoaders;
@@ -554,7 +559,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("val1", pluginOne.ConfigProperties.Get("name1"));
             Assert.AreEqual("val2", pluginOne.ConfigProperties.Get("name2"));
             Assert.AreEqual(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sample-initializer><some-any-xml-can-be-here>This section for use by a plugin loader.</some-any-xml-can-be-here></sample-initializer>",
+                "<sample-initializer xmlns=\"http://www.espertech.com/schema/esper\"><some-any-xml-can-be-here>This section for use by a plugin loader.</some-any-xml-can-be-here></sample-initializer>",
                 pluginOne.ConfigurationXML);
 
             var pluginTwo = plugins[1];
@@ -573,7 +578,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(metrics.IsEnableMetricsReporting);
             Assert.AreEqual(4000L, metrics.RuntimeInterval);
             Assert.AreEqual(500L, metrics.StatementInterval);
-            Assert.IsTrue(metrics.IsThreading);
+            Assert.IsFalse(metrics.IsThreading);
             Assert.AreEqual(2, metrics.StatementGroups.Count);
             Assert.IsTrue(metrics.IsRuntimeMetrics);
             var def = metrics.StatementGroups.Get("MyStmtGroup");
@@ -590,11 +595,11 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(def.Patterns[4], new Pair<StringPatternSet, bool>(new StringPatternSetLike("%SomerOtherStatement%"), true));
             def = metrics.StatementGroups.Get("MyStmtGroupTwo");
             Assert.AreEqual(200, def.Interval);
-            Assert.IsTrue(def.IsDefaultInclude);
+            Assert.IsFalse(def.IsDefaultInclude);
             Assert.AreEqual(100, def.NumStatements);
-            Assert.IsTrue(def.IsReportInactive);
+            Assert.IsFalse(def.IsReportInactive);
             Assert.AreEqual(0, def.Patterns.Count);
-            Assert.IsTrue(runtime.Expression.IsSelfSubselectPreeval);
+            Assert.IsFalse(runtime.Expression.IsSelfSubselectPreeval);
             Assert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), runtime.Expression.TimeZone);
             Assert.AreEqual(2, runtime.ExceptionHandling.HandlerFactories.Count);
             Assert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", runtime.ExceptionHandling.HandlerFactories[0]);

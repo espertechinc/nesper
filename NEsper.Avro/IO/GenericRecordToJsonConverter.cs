@@ -5,6 +5,7 @@ using System.Linq;
 using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 
 using Newtonsoft.Json.Linq;
@@ -198,7 +199,7 @@ namespace NEsper.Avro.IO
                     return new JValue((string) value);
 
                 case Schema.Type.Bytes:
-                    return new JValue((byte[]) value);
+                    return new JValue(value.UnwrapIntoArray<byte>(false));
 
                 case Schema.Type.Error:
                     throw new NotImplementedException();

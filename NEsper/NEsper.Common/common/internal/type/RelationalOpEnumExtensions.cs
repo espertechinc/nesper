@@ -180,6 +180,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Returns the computer to use for the relational operation based on the coercion type.
         /// </summary>
+        /// <param name="value">the relational op value (this)</param>
         /// <param name="coercedType">is the object type</param>
         /// <param name="typeOne">the compare-to type on the LHS</param>
         /// <param name="typeTwo">the compare-to type on the RHS</param>
@@ -308,10 +309,7 @@ namespace com.espertech.esper.common.@internal.type
             CodegenExpressionRelational.CodegenRelational rel)
         {
             return CodegenExpressionBuilder.Relational(
-                CodegenExpressionBuilder.ExprDotMethod(
-                    RelationalOpEnumExtensions.CodegenAsString(lhs, lhsType),
-                    "Compare",
-                    RelationalOpEnumExtensions.CodegenAsString(rhs, rhsType)),
+                CodegenExpressionBuilder.ExprDotMethod(CodegenAsString(lhs, lhsType),"CompareTo",CodegenAsString(rhs, rhsType)),
                 rel,
                 CodegenExpressionBuilder.Constant(0));
         }
@@ -333,7 +331,7 @@ namespace com.espertech.esper.common.@internal.type
             CodegenExpressionRelational.CodegenRelational rel)
         {
             return CodegenExpressionBuilder.Relational(
-                CodegenExpressionBuilder.ExprDotMethod(lhs, "Compare", rhs),
+                CodegenExpressionBuilder.ExprDotMethod(lhs, "CompareTo", rhs),
                 rel,
                 CodegenExpressionBuilder.Constant(0));
         }
@@ -350,7 +348,7 @@ namespace com.espertech.esper.common.@internal.type
             var leftConv = convLeft.CoerceBoxedBigIntCodegen(lhs, lhsType);
             var rightConv = convRight.CoerceBoxedBigIntCodegen(rhs, rhsType);
             return CodegenExpressionBuilder.Relational(
-                CodegenExpressionBuilder.ExprDotMethod(leftConv, "Compare", rightConv),
+                CodegenExpressionBuilder.ExprDotMethod(leftConv, "CompareTo", rightConv),
                 rel,
                 CodegenExpressionBuilder.Constant(0));
         }

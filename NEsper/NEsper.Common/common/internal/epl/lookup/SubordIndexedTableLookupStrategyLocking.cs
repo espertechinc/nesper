@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
 {
@@ -21,11 +22,11 @@ namespace com.espertech.esper.common.@internal.epl.lookup
     public class SubordIndexedTableLookupStrategyLocking : SubordTableLookupStrategy
     {
         private readonly SubordTableLookupStrategy _inner;
-        private readonly StatementAgentInstanceLock _statementLock;
+        private readonly IReaderWriterLock _statementLock;
 
         public SubordIndexedTableLookupStrategyLocking(
             SubordTableLookupStrategy inner,
-            StatementAgentInstanceLock statementLock)
+            IReaderWriterLock statementLock)
         {
             this._inner = inner;
             this._statementLock = statementLock;
@@ -56,18 +57,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             EventBean[] events,
             ExprEvaluatorContext context)
         {
-            _statementLock.AcquireReadLock();
-            try {
+            using (_statementLock.AcquireReadLock())
+            {
                 var result = _inner.Lookup(events, context);
-                if (result != null) {
+                if (result != null)
+                {
                     return new ArrayDeque<EventBean>(result);
                 }
-                else {
+                else
+                {
                     return new EmptyList<EventBean>();
                 }
-            }
-            finally {
-                _statementLock.ReleaseReadLock();
             }
         }
     }

@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
     public class AggregatorLastEver : AggregatorMethodWDistinctWFilterWValueBase
     {
         private readonly CodegenExpressionRef lastValue;
-        private readonly CodegenExpressionField serde;
+        private readonly CodegenExpressionInstanceField serde;
+        private readonly Type _childType;
 
         public AggregatorLastEver(
             AggregationForgeFactory factory,
@@ -51,8 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
                 hasFilter,
                 optionalFilter)
         {
-            lastValue = membersColumnized.AddMember(col, typeof(object), "lastValue");
-            serde = classScope.AddOrGetFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
+            _childType = childType.GetBoxedType();
+            lastValue = membersColumnized.AddMember(col, _childType, "lastValue");
+            serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -63,7 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(lastValue, forges[0].EvaluateCodegen(typeof(object), method, symbols, classScope));
+            method.Block.AssignRef(lastValue, forges[0].EvaluateCodegen(
+                _childType, method, symbols, classScope));
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -145,7 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(RowDotRef(row, lastValue), ReadNullable(serde, input, unitKey, classScope));
+            method.Block
+                .AssignRef(RowDotRef(row, lastValue), 
+                    Cast(_childType, ReadNullable(serde, input, unitKey, classScope)));
         }
     }
 } // end of namespace

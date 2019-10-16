@@ -8,12 +8,14 @@
 
 using System;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
     ///     Exception for resolution of a method failed.
     /// </summary>
+    [Serializable]
     public class MethodResolverNoSuchCtorException : Exception
     {
         [NonSerialized] private readonly ConstructorInfo nearestMissCtor;
@@ -29,6 +31,12 @@ namespace com.espertech.esper.common.@internal.util
             : base(message)
         {
             this.nearestMissCtor = nearestMissCtor;
+        }
+
+        protected MethodResolverNoSuchCtorException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
 
         /// <summary>

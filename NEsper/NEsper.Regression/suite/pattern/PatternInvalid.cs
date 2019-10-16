@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileWCheckedEx("select * from pattern[" + eplInvalidPattern + "]");
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 // Expected exception
             }
         }

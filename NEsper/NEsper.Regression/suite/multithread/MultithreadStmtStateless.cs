@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            env.CompileDeploy("@Name('s0') select * from SentenceEvent[words]");
+            env.CompileDeploy("@Name('s0') select * from SentenceEvent[Words]");
             AssertStatelessStmt(env, "s0", true);
 
             var runnables = new StatelessRunnable[numThreads];

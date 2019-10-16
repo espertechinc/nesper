@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.collection
                 new NumberAscCombinationEnumeration(0);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

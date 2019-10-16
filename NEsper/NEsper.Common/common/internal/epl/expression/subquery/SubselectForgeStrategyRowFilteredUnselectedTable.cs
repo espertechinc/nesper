@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField eventToPublic =
+            CodegenExpressionInstanceField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
             CodegenMethod method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
 

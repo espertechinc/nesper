@@ -36,7 +36,6 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var configDB = new ConfigurationCommonDBRef();
             configDB.SetDatabaseDriver(
-                configuration.Container,
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;

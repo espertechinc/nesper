@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            CodegenExpression refEPS = exprSymbol.GetAddEPS(methodNode);
+            var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
                 typeof(SelectEvalInsertWildcardSSWrapperRevision),
                 "SelectExprInsertWildcardSSWrapRevision",

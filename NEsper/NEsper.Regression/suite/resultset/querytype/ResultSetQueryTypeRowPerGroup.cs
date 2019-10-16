@@ -1085,7 +1085,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = new [] { "symbol","Price","mycount" };
+                var fields = new [] { "Symbol","Price","mycount" };
                 var epl = "@Name('s0') select irstream Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price order by Symbol asc";

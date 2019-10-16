@@ -8,17 +8,21 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.client.annotation;
 
-namespace com.espertech.esper.common.@internal.epl.historical.database.connection
+namespace com.espertech.esper.common.@internal.type
 {
-    public class SupportDatabaseURL
+    [AttributeUsage(AttributeTargets.All)]
+    public class AnnotationHook : HookAttribute
     {
-        public const string DBUSER = "root";
-        public const string DBPWD = "password";
-        public const string DRIVER = "com.mysql.jdbc.Driver";
-        public const string FULLURL = "jdbc:mysql://localhost/test?user=root&password=password";
-        public const string PARTURL = "jdbc:mysql://localhost/test";
+        public AnnotationHook(
+            HookType type,
+            string hook)
+        {
+            Hook = hook;
+            HookType = type;
+        }
+
+        public Type AnnotationType => typeof(HookAttribute);
     }
 } // end of namespace

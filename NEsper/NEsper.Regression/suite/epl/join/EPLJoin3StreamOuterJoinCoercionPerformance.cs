@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1500, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventBean(new SupportBean_ST1("ST1X", "K", 5004));
                 Assert.AreEqual(301, env.Listener("s0").GetAndResetLastNewData().Length);
 
-                Assert.IsTrue(delta < 500, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }

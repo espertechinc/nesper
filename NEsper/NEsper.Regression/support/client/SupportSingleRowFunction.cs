@@ -13,6 +13,7 @@ using System.Numerics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.support.bean;
 
 namespace com.espertech.esper.regressionlib.support.client
@@ -227,7 +228,7 @@ namespace com.espertech.esper.regressionlib.support.client
             var delimiter = "";
             foreach (object item in values) {
                 writer.Write(delimiter);
-                writer.Write(item == null ? "null" : item.ToString());
+                writer.Write(item.RenderAny());
                 delimiter = ",";
             }
 

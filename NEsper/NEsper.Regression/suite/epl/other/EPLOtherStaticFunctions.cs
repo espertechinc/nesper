@@ -605,7 +605,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 2000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(2000), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -627,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -635,7 +635,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public class LevelZero
         {
-            public static LevelOne GetLevelOne()
+            public LevelOne GetLevelOne()
             {
                 return new LevelOne();
             }
@@ -646,6 +646,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             private static string field;
 
             public string LevelTwoValue => field;
+
+            public string GetLevelTwoValue()
+            {
+                return field;
+            }
 
             public static string Field {
                 set => field = value;

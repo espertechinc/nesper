@@ -35,11 +35,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         public CodegenExpression Make(
+            CodegenBlock codegenBlock,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var beanType = codegenClassScope.AddFieldUnshared(
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var beanType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));

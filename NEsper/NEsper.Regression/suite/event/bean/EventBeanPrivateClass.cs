@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
@@ -16,8 +17,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "create schema MyPrivateEvent as " + typeof(MyPrivateEvent).Name,
-                "Event class '" + typeof(MyPrivateEvent).Name + "' does not have public visibility");
+                "create schema MyPrivateEvent as " + typeof(MyPrivateEvent).MaskTypeName(),
+                "Event class '" + typeof(MyPrivateEvent).FullName + "' does not have public visibility");
         }
 
         internal class MyPrivateEvent

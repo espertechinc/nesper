@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var endTime = PerformanceObserver.MilliTime;
             log.Info("delta=" + (endTime - startTime));
 
-            Assert.IsTrue(endTime - startTime < 500);
+            Assert.That(endTime - startTime, Is.LessThan(500));
             env.UndeployModuleContaining("s0");
         }
 
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("delta=" + delta);
 
                 // This works best with a nested iteration join (and not a cardinal join)
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
                 env.UndeployAll();
             }
         }

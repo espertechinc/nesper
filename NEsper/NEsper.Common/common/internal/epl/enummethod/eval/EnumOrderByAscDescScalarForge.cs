@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenBlock block = codegenMethodScope.MakeChild(
+            var block = codegenMethodScope.MakeChild(
                     typeof(ICollection<object>),
                     typeof(EnumOrderByAscDescScalarForge),
                     codegenClassScope)
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.StaticMethod(typeof(Collections), "Sort", @Ref("list"));
             }
 
-            CodegenMethod method = block.MethodReturn(@Ref("list"));
+            var method = block.MethodReturn(@Ref("list"));
             return LocalMethod(method, args.Expressions);
         }
     }

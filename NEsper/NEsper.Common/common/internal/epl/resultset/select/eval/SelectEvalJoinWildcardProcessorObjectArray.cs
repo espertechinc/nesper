@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
-            var mType = codegenClassScope.AddFieldUnshared(
+            var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF));

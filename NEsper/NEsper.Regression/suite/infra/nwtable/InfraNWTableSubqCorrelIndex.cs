@@ -505,16 +505,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     ? "@Hint('enable_window_subquery_indexshare') create window MyInfraMIH#keepall as select * from SupportSimpleBeanOne"
                     : "create table MyInfraMIH(s1 String primary key, i1 int  primary key, d1 double primary key, l1 long primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("create unique index I1 on MyInfraMIH (s1)", path);
-                env.CompileDeploy("create unique index I2 on MyInfraMIH (i1)", path);
+                env.CompileDeploy("create unique index I1 on MyInfraMIH (S1)", path);
+                env.CompileDeploy("create unique index I2 on MyInfraMIH (I1)", path);
 
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
                     "@Hint('index(subquery(1), I1, bust)')\n" +
                     "@Hint('index(subquery(0), I2, bust)')\n" +
                     "select " +
-                    "(select * from MyInfraMIH where s1 = ssb2.S2 and i1 = ssb2.i2) as sub1," +
-                    "(select * from MyInfraMIH where i1 = ssb2.i2 and s1 = ssb2.S2) as sub2 " +
+                    "(select * from MyInfraMIH where S1 = ssb2.S2 and I1 = ssb2.I2) as sub1," +
+                    "(select * from MyInfraMIH where I1 = ssb2.I2 and S1 = ssb2.S2) as sub2 " +
                     "from SupportSimpleBeanTwo ssb2",
                     path);
                 var subqueries = SupportQueryPlanIndexHook.GetAndResetSubqueries();
@@ -528,12 +528,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     subqueries[0],
                     1,
                     "I1",
-                    "unique hash={s1(string)} btree={} advanced={}");
+                    "unique hash={S1(string)} btree={} advanced={}");
                 SupportQueryPlanIndexHook.AssertSubquery(
                     subqueries[1],
                     0,
                     "I2",
-                    "unique hash={i1(int)} btree={} advanced={}");
+                    "unique hash={I1(int)} btree={} advanced={}");
 
                 env.UndeployAll();
             }

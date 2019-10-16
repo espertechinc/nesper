@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         }
 
         public override Type ResultType {
-            get => aggregationFunctionForge.ValueType;
+            get => aggregationFunctionForge.ValueType.GetBoxedType();
         }
 
         public override ExprForge[] GetMethodAggregationForge(

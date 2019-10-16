@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 oa);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTBetween()
         {
             RegressionRunner.Run(session, ExprDTBetween.Executions());
@@ -132,19 +132,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprDTDataSources.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTDocSamples()
         {
             RegressionRunner.Run(session, new ExprDTDocSamples());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTFormat()
         {
             RegressionRunner.Run(session, ExprDTFormat.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTGet()
         {
             RegressionRunner.Run(session, ExprDTGet.Executions());
@@ -162,79 +162,79 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTIntervalOpsCreateSchema());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTInvalid()
         {
             RegressionRunner.Run(session, new ExprDTInvalid());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTNested()
         {
             RegressionRunner.Run(session, new ExprDTNested());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTPerfBetween()
         {
             RegressionRunner.Run(session, new ExprDTPerfBetween());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTPerfIntervalOps()
         {
             RegressionRunner.Run(session, new ExprDTPerfIntervalOps());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTPlusMinus()
         {
             RegressionRunner.Run(session, ExprDTPlusMinus.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTResolution()
         {
             RegressionRunner.Run(session, ExprDTResolution.Executions(false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTRound()
         {
             RegressionRunner.Run(session, ExprDTRound.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTSet()
         {
             RegressionRunner.Run(session, ExprDTSet.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTToDateCalMSec()
         {
             RegressionRunner.Run(session, new ExprDTToDateCalMSec());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTWithDate()
         {
             RegressionRunner.Run(session, new ExprDTWithDate());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTWithMax()
         {
             RegressionRunner.Run(session, ExprDTWithMax.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTWithMin()
         {
             RegressionRunner.Run(session, ExprDTWithMin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTWithTime()
         {
             RegressionRunner.Run(session, new ExprDTWithTime());

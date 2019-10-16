@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
@@ -37,25 +38,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 forge.ChildNode,
                 context.Method,
                 context.ClassScope);
+            var childExprType = forge.ChildNode.EvaluationType.GetBoxedType();
+
+            CodegenExpression invokeChild = LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull());
+            if (forge.ComponentType != childExprType) {
+                invokeChild = Unbox(invokeChild);
+            }
 
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    TypeHelper.GetArrayType(forge.ComponentType),
-                    "array",
-                    NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("it", iterator)
-                .DeclareVar<EventBean[]>(
-                    "eventsPerStreamBuf",
-                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+                .DebugStack()
+                .DeclareVar<EventBean[]>("eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
-                .AssignArrayElement(
-                    Ref("array"),
-                    Ref("count"),
-                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
+                .AssignArrayElement(Ref("array"), Ref("count"), invokeChild)
                 .Increment("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
@@ -91,6 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
+                .DebugStack()
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))

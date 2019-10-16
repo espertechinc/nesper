@@ -160,15 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var namedNodeMap = node.Attributes;
             for (var i = 0; i < namedNodeMap.Count; i++) {
                 var attrNode = namedNodeMap.Item(i);
-                if (attrNode.LocalName != null) {
-                    if (propertyName.Equals(attrNode.LocalName)) {
-                        return attrNode;
-                    }
-
-                    continue;
-                }
-
-                if (propertyName.Equals(attrNode.Name)) {
+                if (attrNode.LocalName == propertyName) {
                     return attrNode;
                 }
             }

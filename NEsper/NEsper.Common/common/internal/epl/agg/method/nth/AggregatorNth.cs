@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
 
         private readonly AggregationFactoryMethodNth factory;
         private readonly CodegenExpressionRef numDataPoints;
-        private readonly CodegenExpressionField serdeValue;
+        private readonly CodegenExpressionInstanceField serdeValue;
 
         public AggregatorNth(
             AggregationFactoryMethodNth factory,
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             circularBuffer = membersColumnized.AddMember(col, typeof(object[]), "buf");
             currentBufferElementPointer = membersColumnized.AddMember(col, typeof(int), "cbep");
             numDataPoints = membersColumnized.AddMember(col, typeof(long), "cnt");
-            serdeValue =
-                classScope.AddOrGetFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, factory.childType));
+            serdeValue = classScope
+                .AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, factory.childType));
         }
 
         protected override void ApplyEvalEnterNonNull(

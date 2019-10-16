@@ -31,7 +31,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Raises the <see cref="E:LockReleased"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="com.espertech.esper.compat.threading.TelemetryEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="TelemetryEventArgs"/> instance containing the event data.</param>
         protected void OnLockReleased(TelemetryEventArgs e)
         {
             if ( LockReleased != null ) {

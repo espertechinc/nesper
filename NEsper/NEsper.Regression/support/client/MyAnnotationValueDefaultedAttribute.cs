@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -21,6 +22,7 @@ namespace com.espertech.esper.regressionlib.support.client
             Value = value;
         }
 
+        [DefaultValue("XYZ")]
         public string Value { get; set; }
     }
 } // end of namespace

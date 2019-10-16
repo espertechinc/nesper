@@ -48,20 +48,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return new ExprDotStaticMethodWrapArrayEvents(null, type);
             }
 
-#if DEFUNCT
-            if (method.ReturnType.IsGenericCollection())
-            {
+            if (method.ReturnType.IsGenericCollection()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
                 if (genericType == typeof(EventBean)) {
                     var eventType = RequireEventType(method, optionalEventTypeName, validationContext);
                     return new ExprDotStaticMethodWrapEventBeanColl(eventType);
                 }
 
-                if (genericType == null || TypeHelper.IsJavaBuiltinDataType(genericType)) {
+                if (genericType == null || TypeHelper.IsBuiltinDataType(genericType)) {
                     return new ExprDotStaticMethodWrapCollection(method.Name, genericType);
                 }
             }
-#endif
 
             if (method.ReturnType.IsGenericEnumerable()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);

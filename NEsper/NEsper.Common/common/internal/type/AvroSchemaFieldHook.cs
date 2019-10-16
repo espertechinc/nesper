@@ -14,20 +14,11 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AvroSchemaFieldHook : AvroSchemaFieldAttribute
     {
-        private readonly string name;
-        private readonly string schema;
-
         public AvroSchemaFieldHook(
             string name,
-            string schema)
+            string schema) : base(name, schema)
         {
-            this.name = name;
-            this.schema = schema;
         }
-
-        public override string Name => name;
-
-        public override string Schema => schema;
 
         public Type AnnotationType() => typeof(AvroSchemaFieldAttribute);
     }

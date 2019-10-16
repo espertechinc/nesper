@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -29,7 +30,7 @@ using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -1102,10 +1103,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" +
-                        typeof(SupportBean_A).Name +
-                        "' cannot be converted to target event type 'MergeInfra' with underlying type '" +
-                        typeof(SupportBean).Name +
+                        "Validation failed in when-not-matched (clause 1): Expression-returned " +
+                        "event type 'SupportBean_A' with underlying type '" + typeof(SupportBean_A).CleanName() +
+                        "' cannot be converted to target " +
+                        "event type 'MergeInfra' with underlying type '" + typeof(SupportBean).CleanName() +
                         "' [on SupportBean_A as up merge MergeInfra as mv where mv.TheString=Id when matched then insert select *]");
                 }
 

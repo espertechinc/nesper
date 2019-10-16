@@ -105,21 +105,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     if (!typeOne.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeOne.GetSimpleName() +
+                            typeOne.CleanName() +
                             "' to numeric is not allowed");
                     }
 
                     if (!typeTwo.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeTwo.GetSimpleName() +
+                            typeTwo.CleanName() +
                             "' to numeric is not allowed");
                     }
 
                     if (!typeThree.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
-                            typeThree.GetSimpleName() +
+                            typeThree.CleanName() +
                             "' to numeric is not allowed");
                     }
                 }
@@ -153,38 +153,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             IList<ExprNode> children = ChildNodes;
-            IEnumerator<ExprNode> it = children.GetEnumerator();
-            if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
-                it.Advance().ToEPL(writer, Precedence);
-                if (IsNotBetween) {
-                    writer.Write(" not between ");
-                }
-                else {
-                    writer.Write(" between ");
-                }
+            using (IEnumerator<ExprNode> enumerator = children.GetEnumerator()) {
+                if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
+                    enumerator.Advance().ToEPL(writer, Precedence);
+                    if (IsNotBetween) {
+                        writer.Write(" not between ");
+                    }
+                    else {
+                        writer.Write(" between ");
+                    }
 
-                it.Advance().ToEPL(writer, Precedence);
-                writer.Write(" and ");
-                it.Advance().ToEPL(writer, Precedence);
-            }
-            else {
-                it.Advance().ToEPL(writer, Precedence);
-                writer.Write(" in ");
-                if (IsLowEndpointIncluded) {
-                    writer.Write('[');
+                    enumerator.Advance().ToEPL(writer, Precedence);
+                    writer.Write(" and ");
+                    enumerator.Advance().ToEPL(writer, Precedence);
                 }
                 else {
-                    writer.Write('(');
-                }
+                    enumerator.Advance().ToEPL(writer, Precedence);
+                    writer.Write(" in ");
+                    if (IsLowEndpointIncluded) {
+                        writer.Write('[');
+                    }
+                    else {
+                        writer.Write('(');
+                    }
 
-                it.Advance().ToEPL(writer, Precedence);
-                writer.Write(':');
-                it.Advance().ToEPL(writer, Precedence);
-                if (IsHighEndpointIncluded) {
-                    writer.Write(']');
-                }
-                else {
-                    writer.Write(')');
+                    enumerator.Advance().ToEPL(writer, Precedence);
+                    writer.Write(':');
+                    enumerator.Advance().ToEPL(writer, Precedence);
+                    if (IsHighEndpointIncluded) {
+                        writer.Write(']');
+                    }
+                    else {
+                        writer.Write(')');
+                    }
                 }
             }
         }

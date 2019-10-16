@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddFieldUnshared(
+            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue(),
                         ConstantTrue()))
-                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "SingletonSet", Ref("output")));
+                .MethodReturn(StaticMethod(typeof(Arrays), "GetEnumerator", Ref("output")));
         }
     }
 } // end of namespace

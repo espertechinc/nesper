@@ -97,9 +97,9 @@ namespace com.espertech.esper.common.@internal.view.length
             var expiredCount = _indexedEvents.Count - Size;
             if (expiredCount > 0) {
                 expiredArr = new EventBean[expiredCount];
-                using (var it = _indexedEvents.GetEnumerator()) {
-                    for (var ii = 0; it.MoveNext() && ii < expiredCount; ii++) {
-                        expiredArr[ii] = it.Current;
+                using (var enumerator = _indexedEvents.GetEnumerator()) {
+                    for (var ii = 0; enumerator.MoveNext() && ii < expiredCount; ii++) {
+                        expiredArr[ii] = enumerator.Current;
                     }
                 }
 

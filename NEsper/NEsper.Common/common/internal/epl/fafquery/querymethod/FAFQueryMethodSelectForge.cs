@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .DeclareVar(
                     _classNameResultSetProcessor,
                     "rsp",
-                    NewInstance(_classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
+                    NewInstance(_classNameResultSetProcessor, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(select, "ResultSetProcessorFactoryProvider", Ref("rsp"))
                 .SetProperty(select, "QueryGraph", _desc.QueryGraph.Make(method, symbols, classScope))
                 .SetProperty(

@@ -157,9 +157,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             ResultSetProcessorRowPerGroupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
             if (unboundedProcessor) {
-                var factory = classScope.AddOrGetFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+                var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
                 instance.AddMember(NAME_GROUPREPS, typeof(ResultSetProcessorRowPerGroupUnboundHelper));
-                var eventType = classScope.AddFieldUnshared(
+                var eventType = classScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventType),
                     EventTypeUtility.ResolveTypeCodegen(typesPerStream[0], EPStatementInitServicesConstants.REF));

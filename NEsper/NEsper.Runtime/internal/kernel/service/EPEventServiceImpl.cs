@@ -309,7 +309,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 InstrumentationHelper.Get().QEvent(eventBean, Services.RuntimeURI, true);
             }
 
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock()) {
+            using (Services.EventProcessingRWLock.AcquireReadLock()) {
                 try {
                     ProcessMatches(eventBean);
                 }
@@ -730,7 +730,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 InstrumentationHelper.Get().QEvent(eventBean, Services.RuntimeURI, false);
             }
 
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock()) {
+            using (Services.EventProcessingRWLock.AcquireReadLock()) {
                 try {
                     ProcessMatches(eventBean);
                 }
@@ -761,7 +761,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 InstrumentationHelper.Get().QEvent(eventBean, Services.RuntimeURI, false);
             }
 
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock()) {
+            using (Services.EventProcessingRWLock.AcquireReadLock()) {
                 try {
                     ProcessMatches(eventBean);
                 }
@@ -797,7 +797,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 InstrumentationHelper.Get().QEvent(eventBean, Services.RuntimeURI, false);
             }
 
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock()) {
+            using (Services.EventProcessingRWLock.AcquireReadLock()) {
                 try {
                     ProcessMatches(eventBean);
                 }
@@ -830,7 +830,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             if (matches.Count == 0) {
                 if (_unmatchedListener != null) {
-                    Services.EventProcessingRWLock.ReleaseReadLock(); // Allow listener to create new statements
+                    Services.EventProcessingRWLock.ReadLock.Release(); // Allow listener to create new statements
                     try {
                         _unmatchedListener.Invoke(theEvent);
                     }
@@ -1254,12 +1254,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             // Evaluation of schedules is protected by an optional scheduling service lock and then the runtime lock
             // We want to stay in this order for allowing the runtime lock as a second-order lock to the
             // services own lock, if it has one.
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock())
+            using (Services.EventProcessingRWLock.AcquireReadLock())
             {
                 Services.SchedulingService.Evaluate(handles);
             }
 
-            using (Services.EventProcessingRWLock.AcquireDisposableReadLock()) {
+            using (Services.EventProcessingRWLock.AcquireReadLock()) {
                 try {
                     ProcessScheduleHandles(handles);
                 }

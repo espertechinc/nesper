@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowNonBlockingJoinCancel());
-            execs.Add(new EPLDataflowNonBlockingJoinException());
+            //execs.Add(new EPLDataflowNonBlockingJoinCancel());
+            //execs.Add(new EPLDataflowNonBlockingJoinException());
             execs.Add(new EPLDataflowNonBlockingException());
             execs.Add(new EPLDataflowBlockingException());
             execs.Add(new EPLDataflowBlockingCancel());
@@ -173,6 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     });
                 unlatchingThread.Name = GetType().Name + "-unlatching";
                 unlatchingThread.Start();
+
                 try {
                     dfOne.Join();
                 }
@@ -830,7 +831,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             }
         }
 
-        public class MyException : Exception
+        public class MyException : EPRuntimeException
         {
             public MyException(string message) : base(message)
             {

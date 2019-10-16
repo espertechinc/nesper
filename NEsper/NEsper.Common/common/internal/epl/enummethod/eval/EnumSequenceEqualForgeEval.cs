@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object otherObj = innerExpression.Evaluate(eventsLambda, isNewData, context);
+            var otherObj = innerExpression.Evaluate(eventsLambda, isNewData, context);
             return EnumSequenceEqualsCompare(enumcoll, otherObj);
         }
 
@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumSequenceEqualForgeEval), scope, codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
@@ -64,15 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
-        public static bool EnumSequenceEqualsCompare(
-            ICollection<object> enumcoll,
+        public static bool EnumSequenceEqualsCompare<T>(
+            ICollection<T> enumcoll,
             object otherObj)
         {
             if (otherObj == null) {
                 return false;
             }
 
-            if (!(otherObj is ICollection<object>)) {
+            if (!(otherObj is ICollection<T>)) {
                 if (otherObj is Array otherArray) {
                     if (enumcoll.Count != otherArray.Length) {
                         return false;
@@ -82,10 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         return true;
                     }
 
-                    IEnumerator<object> myIterator = enumcoll.GetEnumerator();
-                    for (int i = 0; i < enumcoll.Count; i++) {
-                        object first = myIterator.Current;
-                        object second = otherArray.GetValue(i);
+                    var myIterator = enumcoll.GetEnumerator();
+                    for (var i = 0; i < enumcoll.Count; i++) {
+                        var first = myIterator.Current;
+                        var second = (T) otherArray.GetValue(i);
                         if (!Equals(first, second)) {
                             return false;
                         }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
             }
 
-            ICollection<object> other = (ICollection<object>) otherObj;
+            var other = (ICollection<T>) otherObj;
             if (enumcoll.Count != other.Count) {
                 return false;
             }
@@ -111,11 +111,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return true;
             }
 
-            IEnumerator<object> oneit = enumcoll.GetEnumerator();
-            IEnumerator<object> twoit = other.GetEnumerator();
-            for (int i = 0; i < enumcoll.Count; i++) {
-                object first = oneit.Current;
-                object second = twoit.Current;
+            var oneEnum = enumcoll.GetEnumerator();
+            var twoEnum = other.GetEnumerator();
+            for (var i = 0; i < enumcoll.Count; i++) {
+                var first = oneEnum.Current;
+                var second = twoEnum.Current;
 
                 if (first == null) {
                     if (second != null) {

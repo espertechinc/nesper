@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.IsTrue(delta < 1500, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(1500), "delta=" + delta);
         }
 
         private static void RunFAFQuery(
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var end = PerformanceObserver.MilliTime;
                 var delta = end - start;
-                Assert.IsTrue(delta < 500, "delta=" + delta);
+                Assert.That(delta, Is.LessThan(500), "delta=" + delta);
 
                 // test no value returned
                 queryText = "select * from MyInfraOne where f1='KX'";

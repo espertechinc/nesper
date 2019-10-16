@@ -54,6 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
+#if false
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean for ",
@@ -63,6 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     "select * from SupportBean for other_keyword",
                     "Expected any of the [grouped_delivery, discrete_delivery] for-clause keywords after reserved keyword 'for'");
+#endif
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

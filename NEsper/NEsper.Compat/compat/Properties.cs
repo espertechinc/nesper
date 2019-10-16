@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.compat
 {
     /// <summary>
@@ -26,6 +28,13 @@ namespace com.espertech.esper.compat
         protected Properties(SerializationInfo info, StreamingContext context) 
             : base(info, context)
         {
+        }
+
+        public Properties Copy()
+        {
+            Properties clone = new Properties();
+            clone.PutAll(this);
+            return clone;
         }
 
         /// <summary>

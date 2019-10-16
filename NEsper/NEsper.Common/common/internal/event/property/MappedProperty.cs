@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.property
@@ -69,29 +70,74 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
-            if (propertyDesc != null) {
-                var method = propertyDesc.ReadMethod;
-                return new KeyedMethodPropertyGetter(method, Key, eventBeanTypedEventFactory, beanEventTypeFactory);
-            }
-
-            // Try the array as a simple property
-            propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
             if (propertyDesc == null) {
                 return null;
             }
 
-            var returnType = propertyDesc.ReturnType;
-            if (!returnType.IsGenericStringDictionary()) {
+            if (propertyDesc.IsMappedReadMethod) {
+                return new KeyedMethodPropertyGetter(
+                    propertyDesc.ReadMethod,
+                    Key,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            // Try the as a simple property
+            if (!propertyDesc.PropertyType.IsSimple()) {
                 return null;
             }
 
-            if (propertyDesc.ReadMethod != null) {
-                var method = propertyDesc.ReadMethod;
-                return new KeyedMapMethodPropertyGetter(method, Key, eventBeanTypedEventFactory, beanEventTypeFactory);
+            var returnType = propertyDesc.ReturnType;
+            if (returnType.IsGenericStringDictionary()) {
+                return GetGetterFromDictionary(
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory,
+                    propertyDesc);
             }
 
-            var field = propertyDesc.AccessorField;
-            return new KeyedMapFieldPropertyGetter(field, Key, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return null;
+        }
+
+        private EventPropertyGetterSPI GetGetterFromDictionary(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            PropertyStem propertyDesc)
+        {
+            if (propertyDesc.AccessorProp != null) {
+                return new KeyedMapPropertyPropertyGetter(
+                    propertyDesc.AccessorProp,
+                    Key,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            if (propertyDesc.IsSimpleReadMethod) {
+                return new KeyedMapMethodPropertyGetter(
+                    propertyDesc.ReadMethod,
+                    Key,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+
+            if (propertyDesc.AccessorField != null) {
+                var field = propertyDesc.AccessorField;
+                return new KeyedMapFieldPropertyGetter(
+                    field,
+                    Key,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            throw new IllegalStateException($"unable to determine property getter for requested member");
+        }
+
+
+        public static void AssertGenericDictionary(Type t)
+        {
+            if (!GenericExtensions.IsMapped(t)) {
+                throw new IllegalStateException("type is not a mapped value");
+            }
         }
 
         public override Type GetPropertyType(
@@ -99,30 +145,37 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
-            if (propertyDesc != null) {
+            if (propertyDesc == null) {
+                return null;
+            }
+
+            if (propertyDesc.IsMappedReadMethod) {
                 return propertyDesc.ReadMethod.ReturnType;
             }
 
-            // Check if this is an method returning array which is a type of simple property
-            var descriptor = eventType.GetSimpleProperty(PropertyNameAtomic);
-            if (descriptor == null) {
+            if (!propertyDesc.PropertyType.IsSimple()) {
                 return null;
             }
 
-            var returnType = descriptor.ReturnType;
-            if (!returnType.IsImplementsInterface(typeof(IDictionary<string, object>))) {
-                return null;
+            if (propertyDesc.AccessorProp != null) {
+                var accessorPropType = propertyDesc.AccessorProp.PropertyType;
+                AssertGenericDictionary(accessorPropType);
+                return accessorPropType.GetDictionaryValueType();
             }
 
-            if (descriptor.ReadMethod != null) {
-                return TypeHelper.GetGenericReturnTypeMap(descriptor.ReadMethod, false);
+            if (propertyDesc.IsSimpleReadMethod) {
+                var accessorPropType = propertyDesc.ReadMethod.ReturnType;
+                AssertGenericDictionary(accessorPropType);
+                return accessorPropType.GetDictionaryValueType();
             }
 
-            if (descriptor.AccessorField != null) {
-                return TypeHelper.GetGenericFieldTypeMap(descriptor.AccessorField, false);
+            if (propertyDesc.AccessorField != null) {
+                var accessorFieldType = propertyDesc.AccessorField.FieldType;
+                AssertGenericDictionary(accessorFieldType);
+                return accessorFieldType.GetDictionaryValueType();
             }
 
-            return null;
+            throw new IllegalStateException($"invalid property descriptor: {propertyDesc}");
         }
 
         public override GenericPropertyDesc GetPropertyTypeGeneric(
@@ -130,29 +183,34 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
-            if (propertyDesc != null) {
+            if (propertyDesc == null) {
+                return null;
+            }
+
+            if (propertyDesc.IsMappedReadMethod) {
                 return new GenericPropertyDesc(propertyDesc.ReadMethod.ReturnType);
             }
 
-            // Check if this is an method returning array which is a type of simple property
-            var descriptor = eventType.GetSimpleProperty(PropertyNameAtomic);
-            if (descriptor == null) {
+            if (!propertyDesc.PropertyType.IsSimple()) {
                 return null;
             }
 
-            var returnType = descriptor.ReturnType;
-            if (!returnType.IsImplementsInterface(typeof(IDictionary<string, object>))) {
-                return null;
-            }
+            var returnType = propertyDesc.ReturnType;
+            if (returnType.IsGenericStringDictionary()) {
+                if (propertyDesc.AccessorProp != null) {
+                    var genericType = TypeHelper.GetGenericPropertyTypeMap(propertyDesc.AccessorProp, false);
+                    return new GenericPropertyDesc(genericType);
+                }
 
-            if (descriptor.ReadMethod != null) {
-                var genericType = TypeHelper.GetGenericReturnTypeMap(descriptor.ReadMethod, false);
-                return new GenericPropertyDesc(genericType);
-            }
+                if (propertyDesc.ReadMethod != null) {
+                    var genericType = TypeHelper.GetGenericReturnTypeMap(propertyDesc.ReadMethod, false);
+                    return new GenericPropertyDesc(genericType);
+                }
 
-            if (descriptor.AccessorField != null) {
-                var genericType = TypeHelper.GetGenericFieldTypeMap(descriptor.AccessorField, false);
-                return new GenericPropertyDesc(genericType);
+                if (propertyDesc.AccessorField != null) {
+                    var genericType = TypeHelper.GetGenericFieldTypeMap(propertyDesc.AccessorField, false);
+                    return new GenericPropertyDesc(genericType);
+                }
             }
 
             return null;
@@ -167,10 +225,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (type is Type asType) {
-                if (asType.IsGenericStringDictionary()) {
-                    return typeof(object);
-                }
+            if (type is Type asType && asType.IsGenericStringDictionary()) {
+                return typeof(object);
             }
 
             return null; // Mapped properties are not allowed in non-dynamic form in a map
@@ -187,10 +243,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (type is Type asType) {
-                if (asType.IsGenericStringDictionary()) {
-                    return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
-                }
+            if (type is Type asType && asType.IsGenericStringDictionary()) {
+                return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
             }
 
             if (type is IDictionary<string, object>) {
@@ -260,10 +314,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             var type = nestableTypes.Get(PropertyNameAtomic);
-            if (type is Type asType) {
-                if (asType.IsGenericStringDictionary()) {
-                    return new ObjectArrayMappedPropertyGetter(index, Key);
-                }
+            if (type is Type asType && asType.IsGenericStringDictionary()) {
+                return new ObjectArrayMappedPropertyGetter(index, Key);
             }
 
             if (type is IDictionary<string, object>) {

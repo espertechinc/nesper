@@ -17,8 +17,9 @@ namespace com.espertech.esper.common.@internal.type
     public partial class MathArithType
     {
         /// <summary>
-        ///     Computer for type-specific arith. operations.
+        ///     Computer for type-specific arith operations.
         /// </summary>
+        [Serializable]
         public class AddDecimal : Computer
         {
             public object Compute(
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                return CodegenExpressionBuilder.ExprDotMethod(left, "+", right);
+                return CodegenExpressionBuilder.Op(left, "+", right);
             }
         }
     }

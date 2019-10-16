@@ -46,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             double width,
             double height)
         {
-            return (ICollection<EventBean>) PointRegionQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
+            return PointRegionQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height)
+                .Unwrap<EventBean>();
         }
 
         public void AddRemove(

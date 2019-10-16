@@ -18,9 +18,9 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    ///     Copy method for bean events utilizing serializable.
+    ///     Copy method for bean events utilizing a copy mechanism.
     /// </summary>
-    public class BeanEventBeanSerializableCopyMethod : EventBeanCopyMethod
+    public class BeanEventBeanObjectCopyMethod : EventBeanCopyMethod
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -32,10 +32,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <param name="beanEventType">event type</param>
         /// <param name="eventAdapterService">for creating the event object</param>
         /// <param name="copier">an object copier</param>
-        public BeanEventBeanSerializableCopyMethod(
+        public BeanEventBeanObjectCopyMethod(
             BeanEventType beanEventType,
             EventBeanTypedEventFactory eventAdapterService,
-            SerializableObjectCopier copier)
+            IObjectCopier copier)
         {
             _copier = copier;
             _beanEventType = beanEventType;

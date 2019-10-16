@@ -87,8 +87,6 @@ namespace com.espertech.esper.common.@internal.collection
         /// Sets the given key in the dictionary.  If the key
         /// already exists, then it is remapped to thenew value.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         public void Put(

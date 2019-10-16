@@ -129,14 +129,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "on SupportBean_S0 S0 merge MyWindow mw when matched then update set IntPrimitive = 1",
-                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name");
+                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context \"NineToFive\", please declare the same context name");
 
                 // Trigger in different context
                 TryInvalidCompile(
                     env,
                     path,
                     "context TenToFive on SupportBean_S0 S0 merge MyWindow mw when matched then update set IntPrimitive = 1",
-                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead");
+                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context \"NineToFive\", please use the same context instead");
 
                 // Named window not in context, trigger in different context
                 env.UndeployModuleContaining("createwindow");
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "context TenToFive on SupportBean_S0 S0 merge MyWindowTwo mw when matched then update set IntPrimitive = 1",
-                    "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared with context 'null', please use the same context instead");
+                    "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared with context null, please use the same context instead");
 
                 env.UndeployAll();
             }

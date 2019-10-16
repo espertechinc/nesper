@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.framework
                     .GetInstance(env.Container)
                     .Copy(orig);
             }
-            catch (Exception t) {
+            catch (Exception) {
                 throw;
                 //throw new AssertionException("Exception occurred during serialized copy", t);
             }

@@ -101,7 +101,8 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public DateTimeEx Parse(string dateTimeString)
         {
-            throw new NotImplementedException();
+            var dateTime = DateTime.ParseExact(dateTimeString, FormatString, null, DateTimeStyles.None);
+            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, dateTime);
         }
     }
 }

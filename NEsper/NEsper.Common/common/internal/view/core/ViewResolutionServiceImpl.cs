@@ -78,6 +78,14 @@ namespace com.espertech.esper.common.@internal.view.core
                     Log.Debug(".create Successfully instantiated view");
                 }
             }
+            catch (TypeInstantiationException e) {
+                var message = "Error instantiating view factory instance to " +
+                              typeof(ViewFactoryForge).CleanName() +
+                              " interface for view '" +
+                              name +
+                              "'";
+                throw new ViewProcessingException(message, e);
+            }
             catch (InvalidCastException e) {
                 var message = "Error casting view factory instance to " +
                               typeof(ViewFactoryForge).CleanName() +

@@ -199,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.S2 between 'E3' and 'E4'",
                     BACKING_MULTI_UNIQUE,
                     assertSendEvents);
-                TryAssertion(env, false, "l2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_UNIQUE, assertSendEvents);
-                TryAssertion(env, true, "l2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_DUPS, assertSendEvents);
+                TryAssertion(env, false, "L2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_UNIQUE, assertSendEvents);
+                TryAssertion(env, true, "L2", "where ssb2.L2 = ssb1.L1", BACKING_SINGLE_DUPS, assertSendEvents);
                 TryAssertion(
                     env,
                     false,
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.I1 > ssb2.I2", BACKING_SORTED, assertGreater);
+                TryAssertion(env, false, "S2", "where ssb1.I1 > ssb2.I2", BACKING_SORTED, assertGreater);
 
                 // greater-equals
                 IndexAssertionEventSend assertGreaterEquals = () => {
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.I1 >= ssb2.I2", BACKING_SORTED, assertGreaterEquals);
+                TryAssertion(env, false, "S2", "where ssb1.I1 >= ssb2.I2", BACKING_SORTED, assertGreaterEquals);
 
                 // less
                 IndexAssertionEventSend assertLess = () => {
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.I1 < ssb2.I2", BACKING_SORTED, assertLess);
+                TryAssertion(env, false, "S2", "where ssb1.I1 < ssb2.I2", BACKING_SORTED, assertLess);
 
                 // less-equals
                 IndexAssertionEventSend assertLessEquals = () => {
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         fields,
                         new object[] {"E", null});
                 };
-                TryAssertion(env, false, "s2", "where ssb1.I1 <= ssb2.I2", BACKING_SORTED, assertLessEquals);
+                TryAssertion(env, false, "S2", "where ssb1.I1 <= ssb2.I2", BACKING_SORTED, assertLessEquals);
             }
         }
 

@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(long), "ts")
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+                codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(DateTime), "input")

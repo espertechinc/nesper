@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.support
     {
         NAME,
         TYPE,
-        FRAGEMENT_TYPE_NAME,
+        FRAGMENT_TYPE_NAME,
         FRAGMENT_IS_INDEXED
     }
 
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.support
                         desc,
                         eventType) => desc.PropertyType;
 
-                case SupportEventTypeAssertionEnum.FRAGEMENT_TYPE_NAME:
+                case SupportEventTypeAssertionEnum.FRAGMENT_TYPE_NAME:
                     return (
                         desc,
                         eventType) => {
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.support
             return new SupportEventTypeAssertionEnum[] {
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE,
-                SupportEventTypeAssertionEnum.FRAGEMENT_TYPE_NAME,
+                SupportEventTypeAssertionEnum.FRAGMENT_TYPE_NAME,
                 SupportEventTypeAssertionEnum.FRAGMENT_IS_INDEXED
             };
         }

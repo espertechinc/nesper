@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.util
                                   "' of null type to event property '" +
                                   writeablePropertyName +
                                   "' typed as '" +
-                                  writeablePropertyType.Name +
+                                  writeablePropertyType.CleanName() +
                                   "', nullable type mismatch";
                     throw new TypeWidenerException(message);
                 }
@@ -123,15 +123,16 @@ namespace com.espertech.esper.common.@internal.util
                     return OBJECT_ARRAY_TO_COLLECTION_COERCER;
                 }
 
-                if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed)) {
-                    var writablePropName = writeablePropertyType.Name;
+                if (!columnType.IsAssignmentCompatible(writeablePropertyType) && 
+                    !columnClassBoxed.IsAssignmentCompatible(targetClassBoxed)) {
+                    var writablePropName = writeablePropertyType.CleanName();
                     if (writeablePropertyType.IsArray) {
-                        writablePropName = writeablePropertyType.GetElementType().Name + "[]";
+                        writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
                     }
 
-                    var columnTypeName = columnType.Name;
+                    var columnTypeName = columnType.CleanName();
                     if (columnType.IsArray) {
-                        columnTypeName = columnType.GetElementType().Name + "[]";
+                        columnTypeName = columnType.GetElementType().CleanName() + "[]";
                     }
 
                     var message = "Invalid assignment of column '" +
@@ -222,11 +223,12 @@ namespace com.espertech.esper.common.@internal.util
             Type generator,
             CodegenClassScope codegenClassScope)
         {
-            var method = codegenMethodScope.MakeChild(typeof(ICollection<object>), generator, codegenClassScope)
+            var collectionType = typeof(ICollection<>).MakeGenericType(arrayType.GetElementType());
+            var method = codegenMethodScope.MakeChild(collectionType, generator, codegenClassScope)
                 .AddParam(typeof(object), "input")
                 .Block
                 .IfRefNullReturnNull("input")
-                .MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Cast(arrayType, Ref("input"))));
+                .MethodReturn(StaticMethod(typeof(Arrays), "AsList", new Type[0], Cast(arrayType, Ref("input"))));
             return LocalMethodBuild(method).Pass(expression).Call();
         }
 

@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 {
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         {
         }
 
-        public abstract StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public abstract IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId);
 

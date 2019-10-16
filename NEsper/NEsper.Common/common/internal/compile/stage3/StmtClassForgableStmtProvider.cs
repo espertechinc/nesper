@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,6 +22,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StmtClassForgableStmtProvider : StmtClassForgable
     {
+        private const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
         private const string MEMBERNAME_INFORMATION = "statementInformationals";
         private const string MEMBERNAME_FACTORY_PROVIDER = "factoryProvider";
 
@@ -48,15 +50,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
+            if (_namespaceScope.FieldsClassName != null) {
+                members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassName, MEMBERNAME_STATEMENT_FIELDS));
+            }
+
             members.Add(new CodegenTypedParam(typeof(StatementInformationalsRuntime), MEMBERNAME_INFORMATION));
-            members.Add(
-                new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER)
-                    .WithFinal(false));
+            members.Add(new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER));
 
             // ctor
             var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
             var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-            ctor.Block.AssignRef(MEMBERNAME_INFORMATION, _statementInformationals.Make(ctor, classScope));
+            if (_namespaceScope.FieldsClassName != null) {
+                ctor.Block.AssignRef(MEMBERNAME_INFORMATION, _statementInformationals.Make(ctor, classScope));
+            }
 
             var initializeMethod = MakeInitialize(classScope);
             var statementAIFactoryProviderProp = MakeGetStatementAIFactoryProvider(classScope);
@@ -112,9 +118,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .AddParam(
                     typeof(EPStatementInitServices),
                     SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+            if (_namespaceScope.FieldsClassName != null) {
+                method.Block.AssignRef(
+                    MEMBERNAME_STATEMENT_FIELDS,
+                    NewInstance(_namespaceScope.FieldsClassName));
+            }
+
             method.Block.AssignRef(
                 MEMBERNAME_FACTORY_PROVIDER,
-                NewInstance(_statementAiFactoryClassName, SAIFFInitializeSymbol.REF_STMTINITSVC));
+                NewInstance(_statementAiFactoryClassName,
+                    SAIFFInitializeSymbol.REF_STMTINITSVC,
+                    Ref(MEMBERNAME_STATEMENT_FIELDS)));
             return method;
         }
 

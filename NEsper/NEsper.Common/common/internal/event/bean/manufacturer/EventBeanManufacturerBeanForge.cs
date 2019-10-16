@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.instantiator;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -31,14 +30,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     public class EventBeanManufacturerBeanForge : EventBeanManufacturerForge
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(EventBeanManufacturerBeanForge));
-        private readonly ImportService _importService;
-        private readonly BeanEventType beanEventType;
 
-        private readonly BeanInstantiatorForge beanInstantiator;
-        private readonly bool hasPrimitiveTypes;
-        private readonly bool[] primitiveType;
-        private readonly WriteablePropertyDescriptor[] properties;
-        private readonly MemberInfo[] writeMembersReflection;
+        private readonly ImportService _importService;
+        private readonly BeanEventType _beanEventType;
+
+        private readonly BeanInstantiatorForge _beanInstantiator;
+        private readonly bool _hasPrimitiveTypes;
+        private readonly bool[] _primitiveType;
+        private readonly WriteablePropertyDescriptor[] _properties;
+        private readonly MemberInfo[] _writeMembersReflection;
 
         /// <summary>
         ///     Ctor.
@@ -53,63 +53,51 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             ImportService importService
         )
         {
-            this.beanEventType = beanEventType;
-            this.properties = properties;
+            _beanEventType = beanEventType;
+            _properties = properties;
             _importService = importService;
 
-            beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService);
+            _beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, importService);
 
-            writeMembersReflection = new MemberInfo[properties.Length];
+            _writeMembersReflection = new MemberInfo[properties.Length];
 
             var primitiveTypeCheck = false;
-            primitiveType = new bool[properties.Length];
+            _primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                writeMembersReflection[i] = properties[i].WriteMember;
-                primitiveType[i] = properties[i].PropertyType.IsPrimitive;
-                primitiveTypeCheck |= primitiveType[i];
+                _writeMembersReflection[i] = properties[i].WriteMember;
+                _primitiveType[i] = properties[i].PropertyType.IsPrimitive;
+                primitiveTypeCheck |= _primitiveType[i];
             }
 
-            hasPrimitiveTypes = primitiveTypeCheck;
+            _hasPrimitiveTypes = primitiveTypeCheck;
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerBean(beanEventType, eventBeanTypedEventFactory, properties, _importService);
+            return new EventBeanManufacturerBean(
+                _beanEventType,
+                eventBeanTypedEventFactory,
+                _properties,
+                _importService);
         }
 
         public CodegenExpression Make(
+            CodegenBlock codegenBlock,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var init = codegenClassScope.NamespaceScope.InitMethod;
-
-            var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-            var beanType = codegenClassScope.AddFieldUnshared(
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF));
 
-            var makeUndLambda = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
-                "makeUndFunc",
-                makeUndLambda);
-            MakeUnderlyingCodegen(
-                codegenMethodScope,
-                makeUndLambda.Block,
-                codegenClassScope);
+            var makeUndLambda = new CodegenExpressionLambda(codegenBlock)
+                .WithParam<object[]>("properties")
+                .WithBody(block => MakeUnderlyingCodegen(codegenMethodScope, block, codegenClassScope));
 
-            var makeLambda = new CodegenExpressionLambda(init.Block)
-                .WithParam<object[]>("properties");
-            makeLambda.Block
-                .DeclareVar<object>("und", ExprDotMethod(Ref("makeUndFunc"), "Invoke", Ref("properties")))
-                .ReturnMethodOrBlock(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
-
-            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
-                "makeFunc",
-                makeLambda);
-
-            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(Ref("makeFunc"), Ref("makeUndFunc"));
+            var manufacturer = NewInstance<ProxyBeanEventBeanManufacturer>(
+                eventType, factory, makeUndLambda);
 
             //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
@@ -125,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             //    .DeclareVar<object>("und", LocalMethod(makeUndMethod, Ref("properties")))
             //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
 
-            return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
+            return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         private void MakeUnderlyingCodegen(
@@ -135,17 +123,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             block
                 .DeclareVar(
-                    beanEventType.UnderlyingType,
+                    _beanEventType.UnderlyingType,
                     "und",
-                    Cast(beanEventType.UnderlyingType, beanInstantiator.Make(method, codegenClassScope)))
+                    Cast(_beanEventType.UnderlyingType, _beanInstantiator.Make(method, codegenClassScope)))
                 .DeclareVar<object>("value", ConstantNull());
 
-            for (var i = 0; i < writeMembersReflection.Length; i++) {
+            for (var i = 0; i < _writeMembersReflection.Length; i++) {
                 block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
 
-                var writeMember = writeMembersReflection[i];
                 Type targetType;
 
+                var writeMember = _writeMembersReflection[i];
                 if (writeMember is MethodInfo writeMethod) {
                     targetType = writeMethod.GetParameters()[0].ParameterType;
                 }
@@ -162,7 +150,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 //    value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
                 //}
                 //else {
-                    value = Cast(targetType, Ref("value"));
+                value = Cast(targetType, Ref("value"));
                 //}
 
                 CodegenExpression set = null;
@@ -174,7 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     set = SetProperty(Ref("und"), writeMember.Name, value);
                 }
 
-                if (primitiveType[i]) {
+                if (_primitiveType[i]) {
                     block.IfRefNotNull("value").Expression(set).BlockEnd();
                 }
                 else {

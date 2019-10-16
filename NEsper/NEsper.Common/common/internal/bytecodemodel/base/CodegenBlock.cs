@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using Castle.Core.Internal;
@@ -748,6 +750,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             return AssignCompound(Ref(@ref), @operator, assignment);
+        }
+
+        public CodegenBlock DebugStack()
+        {
+            var stackTrace = new StackTrace(true);
+            CheckClosed();
+            var stackFrames = stackTrace.GetFrames();
+            var stackFrameCount = Math.Min(stackFrames.Length, 5);
+            for (int ii = 1; ii < stackFrameCount; ii++) {
+                string comment = string.Format(
+                    "#{3}: File: {0}, Line: {1}, Method: {2}",
+                    stackFrames[ii].GetFileName(),
+                    stackFrames[ii].GetFileLineNumber(),
+                    stackFrames[ii].GetMethod().Name,
+                    ii);
+                statements.Add(new CodegenStatementCommentFullLine(comment));
+            }
+            return this;
         }
 
         public CodegenBlock CommentFullLine(string comment)

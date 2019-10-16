@@ -42,11 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            double sum = 0d;
-            int count = 0;
+            var sum = 0d;
+            var count = 0;
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            foreach (EventBean next in beans) {
+            var beans = (ICollection<EventBean>) enumcoll;
+            foreach (var next in beans) {
                 eventsLambda[forge.streamNumLambda] = next;
 
                 var num = innerExpression.Evaluate(eventsLambda, isNewData, context);
@@ -71,20 +71,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.innerExpression.EvaluationType;
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(double?),
                     typeof(EnumAverageEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0));
-            CodegenBlock forEach = block
+            var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(

@@ -192,7 +192,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     statementProviderClassName,
                     informationals,
                     packageScope));
-            forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
+            forgables.Add(
+                new StmtClassForgableStmtFields(
+                    statementFieldsClassName,
+                    packageScope,
+                    0));
 
             return new StmtForgeMethodResult(
                 forgables,

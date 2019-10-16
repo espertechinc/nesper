@@ -9,13 +9,15 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.hook.condition;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {

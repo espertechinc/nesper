@@ -176,31 +176,31 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherAsKeywordBacktick()
         {
             RegressionRunner.Run(session, EPLOtherAsKeywordBacktick.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherComments()
         {
             RegressionRunner.Run(session, new EPLOtherComments());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherCreateExpression()
         {
             RegressionRunner.Run(session, EPLOtherCreateExpression.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherCreateIndex()
         {
             RegressionRunner.Run(session, EPLOtherCreateIndex.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherCreateSchema()
         {
             RegressionRunner.Run(session, EPLOtherCreateSchema.Executions());
@@ -212,97 +212,97 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherDistinct.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherForGroupDelivery()
         {
             RegressionRunner.Run(session, EPLOtherForGroupDelivery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherInvalid()
         {
             RegressionRunner.Run(session, EPLOtherInvalid.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherIStreamRStreamKeywords()
         {
             RegressionRunner.Run(session, EPLOtherIStreamRStreamKeywords.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherLiteralConstants()
         {
             RegressionRunner.Run(session, new EPLOtherLiteralConstants());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherPatternEventProperties()
         {
             RegressionRunner.Run(session, EPLOtherPatternEventProperties.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherPatternQueries()
         {
             RegressionRunner.Run(session, EPLOtherPatternQueries.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherPlanExcludeHint()
         {
             RegressionRunner.Run(session, EPLOtherPlanExcludeHint.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherPlanInKeywordQuery()
         {
             RegressionRunner.Run(session, EPLOtherPlanInKeywordQuery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectExpr()
         {
             RegressionRunner.Run(session, EPLOtherSelectExpr.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectExprEventBeanAnnotation()
         {
             RegressionRunner.Run(session, EPLOtherSelectExprEventBeanAnnotation.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectExprSQLCompat()
         {
             RegressionRunner.Run(session, EPLOtherSelectExprSQLCompat.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectExprStreamSelector()
         {
             RegressionRunner.Run(session, EPLOtherSelectExprStreamSelector.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectJoin()
         {
             RegressionRunner.Run(session, EPLOtherSelectJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSelectWildcardWAdditional()
         {
             RegressionRunner.Run(session, EPLOtherSelectWildcardWAdditional.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherSplitStream()
         {
             RegressionRunner.Run(session, EPLOtherSplitStream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherStaticFunctions()
         {
             RegressionRunner.Run(session, EPLOtherStaticFunctions.Executions());
@@ -314,13 +314,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherStreamExpr.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherUnaryMinus()
         {
             RegressionRunner.Run(session, new EPLOtherUnaryMinus());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherUpdateIStream()
         {
             RegressionRunner.Run(session, EPLOtherUpdateIStream.Executions());

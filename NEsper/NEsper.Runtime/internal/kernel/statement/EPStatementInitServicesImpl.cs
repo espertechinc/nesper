@@ -36,6 +36,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
@@ -73,6 +74,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         }
 
         public IContainer Container => ServicesContext.Container;
+
+        public IObjectCopier ObjectCopier => ServicesContext.Container.Resolve<IObjectCopier>();
 
         public EPServicesContext ServicesContext { get; }
 

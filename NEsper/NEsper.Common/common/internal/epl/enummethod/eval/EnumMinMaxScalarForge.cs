@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")))
                 .IfElse()
                 .IfCondition(
-                    Relational(ExprDotMethod(ExprDotName(Ref("minKey"), "Value"), "CompareTo", Ref("value")), max ? LT : GT, Constant(0)))
+                    Relational(ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")), max ? LT : GT, Constant(0)))
                 .AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")));
 
             var method = block.MethodReturn(Ref("minKey"));
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             IComparable minKey = null;
 
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 var comparable = next;
                 if (comparable == null) {
                     continue;

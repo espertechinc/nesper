@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.ontrigger;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             return new InfraOnMergeViewFactory(infraEventType, mergeHelper);
         }
 
-        public override StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public override IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

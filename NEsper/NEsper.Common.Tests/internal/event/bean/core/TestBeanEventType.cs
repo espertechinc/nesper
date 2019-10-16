@@ -68,9 +68,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         private static void RunTest(
-            IList<PropTestDesc> tests,
             BeanEventType eventType,
-            EventBean eventBean)
+            EventBean eventBean,
+            params PropTestDesc[] tests)
+        {
+            foreach (var desc in tests)
+            {
+                RunTest(desc, eventType, eventBean);
+            }
+        }
+
+        private static void RunTest(
+            BeanEventType eventType,
+            EventBean eventBean,
+            IList<PropTestDesc> tests)
         {
             foreach (var desc in tests)
             {
@@ -188,16 +199,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var properties = eventTypeSimple.PropertyNames;
             Assert.IsTrue(properties.Length == 2);
-            Assert.That(properties, Has.One.EqualTo("MyInt"));
-            Assert.That(properties, Has.One.EqualTo("MyString"));
-            Assert.That(
+            CollectionAssert.Contains(properties, "MyInt");
+            CollectionAssert.Contains(properties, "MyString");
+
+            CollectionAssert.Contains(
                 eventTypeSimple.PropertyDescriptors,
-                Has.One.EqualTo(
-                    new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false)));
-            Assert.That(
+                new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false));
+
+            CollectionAssert.Contains(
                 eventTypeSimple.PropertyDescriptors,
-                Has.One.EqualTo(
-                    new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false)));
+                new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false));
 
             properties = eventTypeComplex.PropertyNames;
 
@@ -215,7 +226,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         false),
                     new EventPropertyDescriptor(
                         "MapProperty",
-                        typeof(IDictionary<string, object>),
+                        typeof(IDictionary<string, string>),
                         typeof(string),
                         false,
                         false,
@@ -225,16 +236,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     new EventPropertyDescriptor(
                         "MappedProps",
                         typeof(Properties),
-                        typeof(KeyValuePair<string, string>),
+                        typeof(string),
                         false,
                         false,
                         false,
-                        false,
+                        true,
                         false),
                     new EventPropertyDescriptor(
                         "Mapped",
                         typeof(string),
-                        typeof(object),
+                        typeof(string),
                         false,
                         true,
                         false,
@@ -319,89 +330,141 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var nestedOneArr = typeof(SupportBeanCombinedProps.NestedLevOne[]);
             var nestedTwo = typeof(SupportBeanCombinedProps.NestedLevTwo);
 
-            // test nested/combined/indexed/mapped properties
-            // PropertyName                 isProperty              getXsSimpleType         hasGetter   getterValue
-            IList<PropTestDesc> tests = new List<PropTestDesc>();
-
-            tests = new List<PropTestDesc>();
-            tests.Add(new PropTestDesc("SimpleProperty", true, typeof(string), true, "simple"));
-            tests.Add(new PropTestDesc("dummy", false, null, false, null));
-            tests.Add(new PropTestDesc("Indexed", false, null, false, null));
-            tests.Add(new PropTestDesc("Indexed[1]", true, typeof(int), true, 2));
-            tests.Add(new PropTestDesc("Nested", true, typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), true, objComplex.Nested));
-            tests.Add(new PropTestDesc("Nested.NestedValue", true, typeof(string), true, objComplex.Nested.NestedValue));
-            tests.Add(
+            RunTest(
+                eventTypeComplex,
+                eventComplex,
+                new PropTestDesc("SimpleProperty", true, typeof(string), true, "simple"),
+                new PropTestDesc("dummy", false, null, false, null),
+                new PropTestDesc("Indexed", false, null, false, null),
+                new PropTestDesc("Indexed[1]", true, typeof(int), true, 2),
+                new PropTestDesc(
+                    "Nested",
+                    true,
+                    typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
+                    true,
+                    objComplex.Nested),
+                new PropTestDesc("Nested.NestedValue", true, typeof(string), true, objComplex.Nested.NestedValue),
                 new PropTestDesc(
                     "Nested.NestedNested",
                     true,
                     typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNestedNested),
                     true,
-                    objComplex.Nested.NestedNested));
-            tests.Add(
+                    objComplex.Nested.NestedNested),
                 new PropTestDesc(
                     "Nested.NestedNested.NestedNestedValue",
                     true,
                     typeof(string),
                     true,
-                    objComplex.Nested.NestedNested.NestedNestedValue));
-            tests.Add(new PropTestDesc("Nested.dummy", false, null, false, null));
-            tests.Add(new PropTestDesc("Mapped", false, null, false, null));
-            tests.Add(new PropTestDesc("Mapped('keyOne')", true, typeof(string), true, "valueOne"));
-            tests.Add(new PropTestDesc("ArrayProperty", true, typeof(int[]), true, objComplex.ArrayProperty));
-            tests.Add(new PropTestDesc("ArrayProperty[1]", true, typeof(int), true, 20));
-            tests.Add(new PropTestDesc("MapProperty('xOne')", true, typeof(string), true, "yOne"));
-            tests.Add(new PropTestDesc("google('x')", false, null, false, null));
-            tests.Add(new PropTestDesc("Mapped('x')", true, typeof(string), true, null));
-            tests.Add(new PropTestDesc("Mapped('x').x", false, null, false, null));
-            tests.Add(new PropTestDesc("MapProperty", true, typeof(IDictionary<string, object>), true, objComplex.MapProperty));
-            RunTest(tests, eventTypeComplex, eventComplex);
+                    objComplex.Nested.NestedNested.NestedNestedValue),
+                new PropTestDesc("Nested.dummy", false, null, false, null));
 
-            tests = new List<PropTestDesc>();
-            tests.Add(new PropTestDesc("dummy", false, null, false, null));
-            tests.Add(new PropTestDesc("MyInt", true, typeof(int), true, objSimple.MyInt));
-            tests.Add(new PropTestDesc("MyString", true, typeof(string), true, objSimple.MyString));
-            tests.Add(new PropTestDesc("dummy('a')", false, null, false, null));
-            tests.Add(new PropTestDesc("dummy[1]", false, null, false, null));
-            tests.Add(new PropTestDesc("dummy.Nested", false, null, false, null));
-            RunTest(tests, eventTypeSimple, eventSimple);
+            RunTest(
+                eventTypeComplex,
+                eventComplex,
+                new PropTestDesc("Mapped", false, null, false, null),
+                new PropTestDesc("Mapped('keyOne')", true, typeof(string), true, "valueOne"),
+                new PropTestDesc("ArrayProperty", true, typeof(int[]), true, objComplex.ArrayProperty),
+                new PropTestDesc("ArrayProperty[1]", true, typeof(int), true, 20));
 
-            tests = new List<PropTestDesc>();
-            tests.Add(new PropTestDesc("Indexed", false, null, false, null));
-            tests.Add(new PropTestDesc("Indexed[1]", true, nestedOne, true, objCombined.GetIndexed(1)));
-            tests.Add(new PropTestDesc("Indexed.Mapped", false, null, false, null));
-            tests.Add(new PropTestDesc("Indexed[1].Mapped", false, null, false, null));
-            tests.Add(new PropTestDesc("Array", true, nestedOneArr, true, objCombined.Array));
-            tests.Add(new PropTestDesc("Array.Mapped", false, null, false, null));
-            tests.Add(new PropTestDesc("Array[0]", true, nestedOne, true, objCombined.Array[0]));
-            tests.Add(new PropTestDesc("Array[1].Mapped", false, null, false, null));
-            tests.Add(new PropTestDesc("Array[1].Mapped('x')", true, nestedTwo, true, objCombined.Array[1].GetMapped("x")));
-            tests.Add(new PropTestDesc("Array[1].Mapped('1mb')", true, nestedTwo, true, objCombined.Array[1].GetMapped("1mb")));
-            tests.Add(new PropTestDesc("Indexed[1].Mapped('x')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("x")));
-            tests.Add(new PropTestDesc("Indexed[1].Mapped('x').Value", true, typeof(string), true, null));
-            tests.Add(new PropTestDesc("Indexed[1].Mapped('1mb')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("1mb")));
-            tests.Add(
-                new PropTestDesc("Indexed[1].Mapped('1mb').Value", true, typeof(string), true, objCombined.GetIndexed(1).GetMapped("1mb").Value));
-            tests.Add(
-                new PropTestDesc("Array[1].mapprop", true, typeof(IDictionary<string, object>), true, objCombined.GetIndexed(1).GetMapprop()));
-            tests.Add(
+            RunTest(
+                eventTypeComplex,
+                eventComplex,
+                new PropTestDesc("MapProperty('xOne')", true, typeof(string), true, "yOne"));
+
+            RunTest(
+                eventTypeComplex,
+                eventComplex,
+                new PropTestDesc("google('x')", false, null, false, null),
+                new PropTestDesc("Mapped('x')", true, typeof(string), true, null),
+                new PropTestDesc("Mapped('x').x", false, null, false, null),
                 new PropTestDesc(
-                    "Array[1].mapprop('1ma')",
+                    "MapProperty",
+                    true,
+                    typeof(IDictionary<string, string>),
+                    true,
+                    objComplex.MapProperty));
+
+            RunTest(
+                eventTypeSimple,
+                eventSimple,
+                new PropTestDesc("dummy", false, null, false, null),
+                new PropTestDesc("MyInt", true, typeof(int), true, objSimple.MyInt),
+                new PropTestDesc("MyString", true, typeof(string), true, objSimple.MyString),
+                new PropTestDesc("dummy('a')", false, null, false, null),
+                new PropTestDesc("dummy[1]", false, null, false, null),
+                new PropTestDesc("dummy.Nested", false, null, false, null));
+
+            RunTest(
+                eventTypeNested,
+                eventNested,
+                new PropTestDesc("Indexed", false, null, false, null),
+                new PropTestDesc("Indexed[1]", true, nestedOne, true, objCombined.GetIndexed(1)),
+                new PropTestDesc("Indexed.Mapped", false, null, false, null),
+                new PropTestDesc("Indexed[1].Mapped", false, null, false, null),
+                new PropTestDesc("Array", true, nestedOneArr, true, objCombined.Array),
+                new PropTestDesc("Array.Mapped", false, null, false, null),
+                new PropTestDesc("Array[0]", true, nestedOne, true, objCombined.Array[0]),
+                new PropTestDesc("Array[1].Mapped", false, null, false, null),
+                new PropTestDesc("Array[1].Mapped('x')", true, nestedTwo, true, objCombined.Array[1].GetMapped("x")),
+                new PropTestDesc(
+                    "Array[1].Mapped('1mb')",
+                    true,
+                    nestedTwo,
+                    true,
+                    objCombined.Array[1].GetMapped("1mb")),
+                new PropTestDesc(
+                    "Indexed[1].Mapped('x')",
+                    true,
+                    nestedTwo,
+                    true,
+                    objCombined.GetIndexed(1).GetMapped("x")),
+                new PropTestDesc("Indexed[1].Mapped('x').Value", true, typeof(string), true, null),
+                new PropTestDesc(
+                    "Indexed[1].Mapped('1mb')",
+                    true,
+                    nestedTwo,
+                    true,
+                    objCombined.GetIndexed(1).GetMapped("1mb")),
+                new PropTestDesc(
+                    "Indexed[1].Mapped('1mb').Value",
+                    true,
+                    typeof(string),
+                    true,
+                    objCombined.GetIndexed(1).GetMapped("1mb").Value),
+                new PropTestDesc(
+                    "Array[1].Mapprop",
+                    true,
+                    typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>),
+                    true,
+                    objCombined.GetIndexed(1).GetMapprop()));
+
+            RunTest(
+                eventTypeNested,
+                eventNested,
+                new PropTestDesc(
+                    "Array[1].Mapprop('1ma')",
                     true,
                     typeof(SupportBeanCombinedProps.NestedLevTwo),
                     true,
-                    objCombined.Array[1].GetMapped("1ma")));
-            tests.Add(
-                new PropTestDesc("Array[1].mapprop('1ma').Value", true, typeof(string), true, "1ma0"));
-            tests.Add(
-                new PropTestDesc("Indexed[1].mapprop", true, typeof(IDictionary<string, object>),
-                    true, objCombined.GetIndexed(1).GetMapprop()));
-            RunTest(tests, eventTypeNested, eventNested);
+                    objCombined.Array[1].GetMapped("1ma")),
+                new PropTestDesc(
+                    "Array[1].Mapprop('1ma').Value",
+                    true,
+                    typeof(string),
+                    true,
+                    "1ma0"),
+                new PropTestDesc(
+                    "Indexed[1].Mapprop",
+                    true,
+                    typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>),
+                    true,
+                    objCombined.GetIndexed(1).GetMapprop()));
 
             TryInvalidIsProperty(eventTypeComplex, "x[");
             TryInvalidIsProperty(eventTypeComplex, "dummy()");
             TryInvalidIsProperty(eventTypeComplex, "Nested.xx['a']");
             TryInvalidIsProperty(eventTypeNested, "dummy[(");
-            TryInvalidIsProperty(eventTypeNested, "Array[1].mapprop[x].Value");
+            TryInvalidIsProperty(eventTypeNested, "Array[1].Mapprop[x].Value");
         }
     }
 } // end of namespace

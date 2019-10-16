@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,9 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
     /// </summary>
     public class AggregatorFirstEver : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionRef isSet;
-        private readonly CodegenExpressionRef firstValue;
-        private readonly CodegenExpressionField serde;
+        private readonly CodegenExpressionRef _isSet;
+        private readonly CodegenExpressionRef _firstValue;
+        private readonly CodegenExpressionInstanceField _serde;
+        private Type _childType;
 
         public AggregatorFirstEver(
             AggregationForgeFactory factory,
@@ -53,9 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
                 hasFilter,
                 optionalFilter)
         {
-            isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
-            firstValue = membersColumnized.AddMember(col, typeof(object), "firstValue");
-            serde = classScope.AddOrGetFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
+            _childType = childType.GetBoxedType();
+            _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
+            _firstValue = membersColumnized.AddMember(col, _childType, "firstValue");
+            _serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -66,7 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(EnterConsumer(forges[0].EvaluateCodegen(typeof(object), method, symbols, classScope)));
+            method.Block.Apply(EnterConsumer(forges[0].EvaluateCodegen(
+                _childType, method, symbols, classScope)));
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -102,15 +106,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(firstValue, ConstantNull())
-                .AssignRef(isSet, ConstantFalse());
+            method.Block.AssignRef(_firstValue, ConstantNull())
+                .AssignRef(_isSet, ConstantFalse());
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(firstValue);
+            method.Block.MethodReturn(_firstValue);
         }
 
         protected override void WriteWODistinct(
@@ -122,8 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(WriteBoolean(output, row, isSet))
-                .Expression(WriteNullable(RowDotRef(row, firstValue), serde, output, unitKey, writer, classScope));
+            method.Block
+                .Apply(WriteBoolean(output, row, _isSet))
+                .Expression(WriteNullable(RowDotRef(row, _firstValue), _serde, output, unitKey, writer, classScope));
         }
 
         protected override void ReadWODistinct(
@@ -134,15 +139,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(ReadBoolean(row, isSet, input))
-                .AssignRef(RowDotRef(row, firstValue), ReadNullable(serde, input, unitKey, classScope));
+            method.Block
+                .Apply(ReadBoolean(row, _isSet, input))
+                .AssignRef(RowDotRef(row, _firstValue),
+                    Cast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
         }
 
         private Consumer<CodegenBlock> EnterConsumer(CodegenExpression value)
         {
-            return block => block.IfCondition(Not(isSet))
-                .AssignRef(isSet, ConstantTrue())
-                .AssignRef(firstValue, value);
+            return block => block.IfCondition(Not(_isSet))
+                .AssignRef(_isSet, ConstantTrue())
+                .AssignRef(_firstValue, value);
         }
     }
 } // end of namespace

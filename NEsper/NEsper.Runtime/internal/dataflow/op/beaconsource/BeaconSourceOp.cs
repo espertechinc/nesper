@@ -25,8 +25,8 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
     public class BeaconSourceOp : DataFlowSourceOperator
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly Pair<EventPropertyWriter, object>[] additionalProperties;
 
+        private readonly Pair<EventPropertyWriter, object>[] additionalProperties;
         private readonly BeaconSourceFactory factory;
         private readonly long initialDelayMSec;
         private readonly long iterations;

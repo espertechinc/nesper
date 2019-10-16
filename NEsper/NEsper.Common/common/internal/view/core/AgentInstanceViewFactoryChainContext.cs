@@ -27,6 +27,7 @@ using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -88,7 +89,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public TimeProvider TimeProvider => AgentInstanceContext.TimeProvider;
 
-        public StatementAgentInstanceLock AgentInstanceLock => AgentInstanceContext.AgentInstanceLock;
+        public IReaderWriterLock AgentInstanceLock => AgentInstanceContext.AgentInstanceLock;
 
         public EventBean ContextProperties => AgentInstanceContext.ContextProperties;
 

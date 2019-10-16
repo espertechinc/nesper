@@ -11,6 +11,7 @@ using System;
 using Antlr4.Runtime.Tree;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.compiler.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
@@ -118,19 +119,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             // try to parse as an int first, else try to parse as a long
             try
             {
-                return Int32.Parse(arg) * factor;
+                return SimpleTypeParserFunctions.ParseInt32(arg) * factor;
             }
             catch (Exception e1) when (e1 is OverflowException || e1 is FormatException)
             {
-                try
-                {
-                    return LongValue.ParseString(arg) * factor;
+                try {
+                    return SimpleTypeParserFunctions.ParseInt64(arg) * factor;
                 }
                 catch (Exception)
                 {
-                    try
-                    {
-                        return Byte.Parse(arg);
+                    try {
+                        return SimpleTypeParserFunctions.ParseByte(arg);
                     }
                     catch (Exception)
                     {

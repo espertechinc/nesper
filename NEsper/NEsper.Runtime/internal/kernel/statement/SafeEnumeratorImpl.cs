@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
@@ -21,28 +22,27 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
     /// </summary>
     public class SafeEnumeratorImpl<E> : SafeEnumerator<E>
     {
-        private readonly StatementAgentInstanceLock iteratorLock;
+        private IDisposable iteratorLock;
         private readonly IEnumerator<E> underlying;
-        private bool lockTaken;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="iteratorLock">for locking resources to safely-iterate over</param>
         /// <param name="underlying">is the underlying iterator to protect</param>
-        public SafeEnumeratorImpl(StatementAgentInstanceLock iteratorLock, IEnumerator<E> underlying)
+        public SafeEnumeratorImpl(IReaderWriterLock iteratorLock, IEnumerator<E> underlying)
         {
-            this.iteratorLock = iteratorLock;
+            // acquire a unique lock just for the iterator
+            this.iteratorLock = iteratorLock.AcquireReadLock();
             this.underlying = underlying;
-            this.lockTaken = true;
         }
 
         public virtual void Dispose()
         {
-            if (lockTaken)
+            if (iteratorLock != null)
             {
-                iteratorLock.ReleaseReadLock();
-                lockTaken = false;
+                iteratorLock.Dispose();
+                iteratorLock = null;
             }
         }
 

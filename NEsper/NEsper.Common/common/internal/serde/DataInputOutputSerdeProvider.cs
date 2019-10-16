@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.serde
 
         DataInputOutputSerdeWCollation<E> RefCountedSetAtomicInteger<E>(EventType eventType);
 
-        DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<E>(
+        DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque(
             Type[] valueTypes,
             EventType eventType);
     }

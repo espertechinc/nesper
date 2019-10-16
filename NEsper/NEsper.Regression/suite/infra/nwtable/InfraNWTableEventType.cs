@@ -45,7 +45,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 : "@Name('s0') create table MyInfra (c0 int[], c1 int[primitive])";
             env.CompileDeploy(eplCreate);
 
-            object[][] expectedType = {new object[] {"c0", typeof(int?[])}, new object[] {"c1", typeof(int[])}};
+            object[][] expectedType = {
+                new object[] {
+                    "c0", typeof(int?[])
+                },
+                new object[] {
+                    "c1", typeof(int[])
+                }
+            };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedType,
                 env.Statement("s0").EventType,

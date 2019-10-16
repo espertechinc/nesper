@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     public class VariableDeployTimeResolver
     {
-        public static CodegenExpressionField MakeVariableField(
+        public static CodegenExpressionInstanceField MakeVariableField(
             VariableMetaData variableMetaData,
             CodegenClassScope classScope,
             Type generator)
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     EPStatementInitServicesConstants.REF.Ref);
             variableInit.Block.MethodReturn(
                 MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF));
-            return classScope.NamespaceScope.AddFieldUnshared(
+            return classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
                 typeof(Variable),
                 LocalMethod(variableInit, EPStatementInitServicesConstants.REF));

@@ -951,9 +951,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                             "' in property '" +
                             propName +
                             "' expected " +
-                            boxedThis +
+                            boxedThis.CleanName() +
                             " but receives " +
-                            boxedOther);
+                            boxedOther.CleanName());
                     }
                 }
             }
@@ -967,9 +967,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                         "' in property '" +
                         propName +
                         "' expected " +
-                        boxedThis +
+                        boxedThis.CleanName() +
                         " but receives " +
-                        boxedOther);
+                        boxedOther.CleanName());
                 }
             }
             else if (setTwoType is EventType[] &&
@@ -985,9 +985,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                         "' in property '" +
                         propName +
                         "' expected " +
-                        boxedThis +
+                        boxedThis.CleanName() +
                         " but receives " +
-                        boxedOther);
+                        boxedOther.CleanName());
                 }
             }
             else if (setTwoType is Map && setOneType is Map) {
@@ -1097,24 +1097,24 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return "null";
             }
 
-            if (type is Type) {
-                return ((Type) type).Name;
+            if (type is Type asType) {
+                return asType.Name;
             }
 
-            if (type is EventType) {
-                return "event type '" + ((EventType) type).Name + "'";
+            if (type is EventType eventType) {
+                return "event type '" + eventType.Name + "'";
             }
 
-            if (type is EventType[]) {
-                return "event type array '" + ((EventType[]) type)[0].Name + "'";
+            if (type is EventType[] eventTypes) {
+                return "event type array '" + eventTypes[0].Name + "'";
             }
 
-            if (type is TypeBeanOrUnderlying) {
-                return "event type '" + ((TypeBeanOrUnderlying) type).EventType.Name + "'";
+            if (type is TypeBeanOrUnderlying typeBeanOrUnderlying) {
+                return "event type '" + typeBeanOrUnderlying.EventType.Name + "'";
             }
 
-            if (type is TypeBeanOrUnderlying[]) {
-                return "event type array '" + ((TypeBeanOrUnderlying[]) type)[0].EventType.Name + "'";
+            if (type is TypeBeanOrUnderlying[] typeBeanOrUnderlyingArray) {
+                return "event type array '" + typeBeanOrUnderlyingArray[0].EventType.Name + "'";
             }
 
             return type.GetType().Name;

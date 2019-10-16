@@ -6,18 +6,46 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.compat
 {
     /// <summary> Enumeration of property types.</summary>
+    [Flags]
     public enum PropertyType
     {
+        UNDEFINED = 0,
+
         /// <summary> Simple property.</summary>
-        SIMPLE,
+        SIMPLE = 1,
 
         /// <summary> Indexed property.</summary>
-        INDEXED,
+        INDEXED = 2,
 
         /// <summary> Mapped property.</summary>
-        MAPPED
+        MAPPED = 4
+    }
+
+    public static class PropertyTypeExtensions
+    {
+        public static bool IsSimple(this PropertyType propertyType)
+        {
+            return (propertyType & PropertyType.SIMPLE) == PropertyType.SIMPLE;
+        }
+
+        public static bool IsIndexed(this PropertyType propertyType)
+        {
+            return (propertyType & PropertyType.INDEXED) == PropertyType.INDEXED;
+        }
+
+        public static bool IsMapped(this PropertyType propertyType)
+        {
+            return (propertyType & PropertyType.MAPPED) == PropertyType.MAPPED;
+        }
+
+        public static bool IsUndefined(this PropertyType propertyType)
+        {
+            return propertyType == PropertyType.UNDEFINED;
+        }
     }
 }

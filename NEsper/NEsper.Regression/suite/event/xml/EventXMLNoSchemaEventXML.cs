@@ -18,16 +18,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmt = "@Name('s0') select event.type as type, event.uId as uId from MyEventWTypeAndUID";
+            var stmt = "@Name('s0') select event.type as type, event.uid as uid from MyEventWTypeAndUID";
             env.CompileDeploy(stmt).AddListener("s0");
 
             SendXMLEvent(
                 env,
-                "<event type=\"a-f-G\" uId=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>",
+                "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>",
                 "MyEventWTypeAndUID");
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual("a-f-G", theEvent.Get("type"));
-            Assert.AreEqual("terminal.55", theEvent.Get("uId"));
+            Assert.AreEqual("terminal.55", theEvent.Get("uid"));
 
             env.UndeployAll();
         }

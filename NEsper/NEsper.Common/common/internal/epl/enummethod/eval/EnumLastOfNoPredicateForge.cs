@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEvaluatorContext context)
         {
             object result = null;
-            foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
                 result = next;
             }
 
@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            Type type = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
-            CodegenMethod method = codegenMethodScope
+            var type = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
+            var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumLastOfNoPredicateForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block

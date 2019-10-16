@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.ComponentModel;
 
 using com.espertech.esper.common.@internal.support;
 
@@ -15,6 +16,7 @@ namespace com.espertech.esper.regressionlib.support.client
     public class MyAnnotationValueEnumAttribute : Attribute
     {
         public SupportEnum SupportEnum { get; set; }
-        public SupportEnum SupportEnumDef { get; set; } = SupportEnum.ENUM_VALUE_2;
+        [DefaultValue(SupportEnum.ENUM_VALUE_2)]
+        public SupportEnum SupportEnumDef { get; set; }
     }
 } // end of namespace

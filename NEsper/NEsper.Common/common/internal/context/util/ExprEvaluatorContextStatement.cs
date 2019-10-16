@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InstrumentationCommon InstrumentationProvider => InstrumentationCommonDefault.INSTANCE;
 
-        public StatementAgentInstanceLock AgentInstanceLock =>
+        public IReaderWriterLock AgentInstanceLock =>
             throw new UnsupportedOperationException("Agent-instance lock not available");
 
         public TableExprEvaluatorContext TableExprEvaluatorContext {

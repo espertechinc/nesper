@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             this.valueDouble = valueDouble;
         }
 
-        public CodegenExpressionField Make(CodegenClassScope classScope)
+        public CodegenExpressionInstanceField Make(CodegenClassScope classScope)
         {
-            return classScope.AddFieldUnshared(
+            return classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
                 NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryConst>(Constant(valueDouble)));

@@ -44,13 +44,9 @@ namespace com.espertech.esper.common.@internal.util
             XmlNode node,
             string key)
         {
-            var valueNode = node.Attributes.GetNamedItem(key);
+            var valueNode = node?.Attributes?.GetNamedItem(key);
             if (valueNode == null) {
                 var name = node.LocalName;
-                if (name == null) {
-                    name = node.Name;
-                }
-
                 throw new ConfigurationException(
                     "Required attribute by name '" + key + "' not found for element '" + name + "'");
             }
@@ -62,12 +58,8 @@ namespace com.espertech.esper.common.@internal.util
             XmlNode node,
             string key)
         {
-            var valueNode = node.Attributes.GetNamedItem(key);
-            if (valueNode != null) {
-                return valueNode.InnerText;
-            }
-
-            return null;
+            var valueNode = node?.Attributes?.GetNamedItem(key);
+            return valueNode?.InnerText;
         }
 
         public static Properties GetProperties(

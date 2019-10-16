@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 NStreamOuterQueryPlanBuilder.VerifyJoinedPerStream(0, map);
                 Assert.Fail();
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 // expected
             }
         }
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 NStreamOuterQueryPlanBuilder.GraphOuterJoins(3, new OuterJoinDesc[0]);
                 Assert.Fail();
             }
-            catch (ArgumentException ex) {
+            catch (ArgumentException) {
                 // expected
             }
         }

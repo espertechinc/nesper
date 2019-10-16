@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     /// <summary>
     /// ScriptingService is a wrapper around the scripting engine and it's abstractions.
     /// </summary>
-    public interface ScriptingService : IDisposable
+    public interface ScriptServiceCompileTime : IDisposable
     {
         /// <summary>
         /// Compiles the specified script given the specified dialect.

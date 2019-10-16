@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             try {
                 return Build(@namespace, classPostfix, services);
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 throw;
             }
             catch (Exception t) {

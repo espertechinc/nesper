@@ -24,6 +24,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
@@ -58,6 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             typeof(int?), NAME_SUBQUERYNUMBER,
             typeof(int[]), NAME_GROUPID);
 
+        private static readonly CodegenExpressionRef CTX_REF = Ref("o");
+        private static readonly CodegenExpressionRef STATEMENT_FIELDS_REF = Ref("statementFields");
+        private static readonly CodegenExpressionRef STATEMENT_FIELDS_FIELD_REF = Ref("this.statementFields");
+        private static readonly CodegenExpressionRef STATEMENT_FIELDS_PARAM_REF = Ref("o.statementFields");
+
         public static AggregationServiceFactoryMakeResult MakeInnerClassesAndInit(
             bool join,
             AggregationServiceFactoryForge forge,
@@ -85,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     rowCtorDescConsumer,
                     classScope,
                     innerClasses,
-                    classNames);
+                    classNames,
+                    providerClassName);
 
                 MakeRowFactory(
                     generator.RowLevelDesc,
@@ -153,7 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 rowCtorDesc => AggregationServiceCodegenUtil.GenerateIncidentals(false, false, rowCtorDesc),
                 classScope,
                 innerClasses,
-                classNames);
+                classNames,
+                providerClassName);
 
             MakeRowFactory(rowLevelDesc, forgeClass, classScope, innerClasses, providerClassName, classNames);
 
@@ -226,11 +234,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             rowCtorParams.Add(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(forgeClass, classScope, rowCtorParams);
 
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            var members = new List<CodegenTypedParam> {
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false)
+            };
+
+            ctor.Block.AssignRef(
+                STATEMENT_FIELDS_FIELD_REF,
+                STATEMENT_FIELDS_PARAM_REF);
+
+            // --------------------------------------------------------------------------------
+
             if (forgeClass == AggregationServiceNullFactory.INSTANCE.GetType()) {
                 makeMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                makeMethod.Block.MethodReturn(NewInstance(classNameRow));
+                makeMethod.Block.MethodReturn(NewInstance(classNameRow, CTX_REF));
             }
 
             var methods = new CodegenClassMethods();
@@ -240,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classNameFactory,
                 typeof(AggregationRowFactory),
                 ctor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                members,
                 methods,
                 properties);
             innerClasses.Add(innerClass);
@@ -299,9 +326,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             IList<CodegenInnerClass> innerClasses,
             string providerClassName)
         {
-            IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>();
-            ctorParams.Add(new CodegenTypedParam(providerClassName, "o"));
+            var ctorParams = new List<CodegenTypedParam>() {
+                new CodegenTypedParam(providerClassName, "o")
+            };
             var ctor = new CodegenCtor(forgeClass, classScope, ctorParams);
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            var members = new List<CodegenTypedParam> {
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false)
+            };
+
+            ctor.Block.AssignRef(
+                STATEMENT_FIELDS_FIELD_REF,
+                STATEMENT_FIELDS_PARAM_REF);
+
+            // --------------------------------------------------------------------------------
 
             // Generic interface must be cast in Janino, is this true for Roslyn?
             var input = Ref("input");
@@ -333,7 +380,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 readMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                readMethod.Block.DeclareVar(classNameRow, "row", NewInstance(classNameRow));
+                readMethod.Block.DeclareVar(classNameRow, "row", NewInstance(classNameRow, CTX_REF));
                 readConsumer.Invoke(readMethod, level);
 
                 var methodFactories = levelDesc.StateDesc.MethodFactories;
@@ -344,11 +391,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     Cast(classNameRow, Ref("@object")));
                 writeConsumer.Invoke(writeMethod, level);
 
+                var row = Ref("row");
                 if (methodFactories != null) {
                     for (var i = 0; i < methodFactories.Length; i++) {
                         methodFactories[i]
                             .Aggregator.WriteCodegen(
-                                Ref("row"),
+                                row,
                                 i,
                                 output,
                                 unitKey,
@@ -360,7 +408,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     for (var i = 0; i < methodFactories.Length; i++) {
                         methodFactories[i]
                             .Aggregator.ReadCodegen(
-                                Ref("row"),
+                                row,
                                 i,
                                 input,
                                 unitKey,
@@ -373,7 +421,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     for (var i = 0; i < accessStates.Length; i++) {
                         accessStates[i]
                             .Aggregator.WriteCodegen(
-                                Ref("row"),
+                                row,
                                 i,
                                 output,
                                 unitKey,
@@ -385,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     for (var i = 0; i < accessStates.Length; i++) {
                         accessStates[i]
                             .Aggregator.ReadCodegen(
-                                Ref("row"),
+                                row,
                                 i,
                                 input,
                                 readMethod,
@@ -394,11 +442,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     }
                 }
 
-                readMethod.Block.MethodReturn(Ref("row"));
+                readMethod.Block.MethodReturn(row);
             }
 
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
+
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
@@ -407,7 +456,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classNameSerde,
                 innerClassInterface,
                 ctor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                members,
                 methods,
                 properties);
             innerClass.InterfaceGenericClass = classNameRow;
@@ -422,7 +471,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Consumer<AggregationRowCtorDesc> rowCtorConsumer,
             CodegenClassScope classScope,
             IList<CodegenInnerClass> innerClasses,
-            AggregationClassNames classNames)
+            AggregationClassNames classNames,
+            string providerClassName)
         {
             if (rowLevelDesc.OptionalTopRow != null) {
                 MakeRowForLevel(
@@ -433,7 +483,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     forgeClass,
                     rowCtorConsumer,
                     classScope,
-                    innerClasses);
+                    innerClasses,
+                    providerClassName);
             }
 
             if (rowLevelDesc.OptionalAdditionalRows != null) {
@@ -447,7 +498,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         forgeClass,
                         rowCtorConsumer,
                         classScope,
-                        innerClasses);
+                        innerClasses,
+                        providerClassName);
                 }
             }
         }
@@ -460,19 +512,43 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type forgeClass,
             Consumer<AggregationRowCtorDesc> rowCtorConsumer,
             CodegenClassScope classScope,
-            IList<CodegenInnerClass> innerClasses)
+            IList<CodegenInnerClass> innerClasses,
+            string providerClassName)
         {
             var methodForges = detail.StateDesc.OptionalMethodForges;
             var methodFactories = detail.StateDesc.MethodFactories;
             var accessFactories = detail.StateDesc.AccessStateForges;
             var accessAccessors = detail.AccessAccessors;
-            var numMethodFactories = methodFactories == null ? 0 : methodFactories.Length;
+            var numMethodFactories = methodFactories?.Length ?? 0;
 
             // make member+ctor
             IList<CodegenTypedParam> rowCtorParams = new List<CodegenTypedParam>();
+            rowCtorParams.Add(new CodegenTypedParam(providerClassName, "o"));
+
             var rowCtor = new CodegenCtor(forgeClass, classScope, rowCtorParams);
+
             var namedMethods = new CodegenNamedMethods();
+
             IList<CodegenTypedParam> rowMembers = new List<CodegenTypedParam>();
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            rowMembers.Add(
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false));
+
+            rowCtor.Block.AssignRef(
+                STATEMENT_FIELDS_FIELD_REF,
+                STATEMENT_FIELDS_PARAM_REF);
+
+            // --------------------------------------------------------------------------------
+
             rowCtorConsumer.Invoke(new AggregationRowCtorDesc(classScope, rowCtor, rowMembers, namedMethods));
             var membersColumnized = InitForgesMakeRowCtor(
                 isJoin,
@@ -1138,6 +1214,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             IList<CodegenTypedParam> ctorParams = new List<CodegenTypedParam>();
             ctorParams.Add(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(AggregationServiceFactoryCompiler), classScope, ctorParams);
+
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            members.Add(
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false));
+
+            ctor.Block.AssignRef(
+                STATEMENT_FIELDS_FIELD_REF,
+                STATEMENT_FIELDS_PARAM_REF);
+
+            // --------------------------------------------------------------------------------
+
             forge.CtorCodegen(ctor, members, classScope, classNames);
 
             var innerProperties = new CodegenClassProperties();
@@ -1264,6 +1359,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(AggregationServiceFactoryCompiler), classScope, ctorParams);
 
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            var members = new List<CodegenTypedParam> {
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false)
+            };
+
+            ctor.Block.AssignRef(
+                STATEMENT_FIELDS_FIELD_REF,
+                STATEMENT_FIELDS_PARAM_REF);
+
+            // --------------------------------------------------------------------------------
+
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
             CodegenStackGenerator.RecursiveBuildStack(makeServiceMethod, "MakeService", methods, properties);
@@ -1271,7 +1385,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classNames.ServiceFactory,
                 typeof(AggregationServiceFactory),
                 ctor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                members,
                 methods,
                 properties);
             innerClasses.Add(innerClass);

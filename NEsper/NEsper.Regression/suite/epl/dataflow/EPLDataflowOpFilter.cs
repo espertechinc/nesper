@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         "DefaultSupportSourceOp -> instream.with.dot<" +
                         typeName +
                         ">{}\n" +
-                        "filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
+                        "filter(instream.with.dot) -> outstream.dot {filter: MyString = 'two'}\n" +
                         "DefaultSupportCaptureOp(outstream.dot) {}";
             env.CompileDeploy(graph);
 
@@ -107,12 +107,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidFilter(
                     env,
                     "TheString = 1",
-                    "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
+                    "Failed to obtain operator 'filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'System.Nullable<System.Int32>' to 'System.String' is not allowed");
 
                 TryInvalidFilter(
                     env,
                     "prev(TheString, 1) = 'abc'",
-                    "Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                    "Failed to obtain operator 'filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
             }
         }
 

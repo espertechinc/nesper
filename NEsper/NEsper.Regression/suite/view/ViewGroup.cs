@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            //execs.Add(new ViewGroupObjectArrayEvent());
-            //execs.Add(new ViewGroupStats());
+            execs.Add(new ViewGroupObjectArrayEvent());
+            execs.Add(new ViewGroupStats());
             execs.Add(new ViewGroupReclaimTimeWindow());
             execs.Add(new ViewGroupReclaimAgedHint());
             execs.Add(new ViewGroupCorrel());
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(timestamp.getDayOfWeek())#length(2)";
+                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(Timestamp.getDayOfWeek())#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(
                     new SupportBeanTimestamp(
                         "E3",
-                        DateTimeParsingFunctions.ParseDefaultMSec("2002-01-015T09:0:00.000")));
+                        DateTimeParsingFunctions.ParseDefaultMSec("2002-01-15T09:0:00.000")));
                 Assert.AreEqual(1, env.Listener("s0").DataListsFlattened.Second.Length);
 
                 env.UndeployAll();
@@ -653,7 +653,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 if (useGroup) {
                     // 0.69 sec for 100k
                     var stmtString =
-                        "@Name('s0') select * from SupportSensorEvent#groupwin(type)#length(10000000)#weighted_avg(measurement, confIdence)";
+                        "@Name('s0') select * from SupportSensorEvent#groupwin(Type)#length(10000000)#weighted_avg(Measurement, Confidence)";
                     env.CompileDeploy(stmtString).AddListener("s0");
                 }
                 else {
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     for (var i = 0; i < 10; i++) {
                         var stmtString = "SELECT * FROM SupportSensorEvent(type='A" +
                                          i +
-                                         "')#length(1000000)#weighted_avg(measurement,confIdence)";
+                                         "')#length(1000000)#weighted_avg(measurement,confidence)";
                         env.CompileDeploy(stmtString).AddListener("s0");
                     }
                 }
@@ -689,7 +689,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var endTime = PerformanceObserver.NanoTime;
                 var delta = (endTime - startTime) / 1000d / 1000d / 1000d;
                 // System.out.println("delta=" + delta);
-                Assert.IsTrue(delta < 1);
+#if PRODUCTION_TESTING
+                Assert.That(delta, Is.LessThan(1.0));
+#else
+                Assert.That(delta, Is.LessThan(5.0));
+#endif
 
                 env.UndeployAll();
             }
@@ -857,7 +861,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(timestamp, 10 sec)";
+                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event

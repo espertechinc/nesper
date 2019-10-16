@@ -91,9 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    typeTwo.GetSimpleName() +
+                    typeTwo.CleanName() +
                     "' to '" +
-                    typeOne.GetSimpleName() +
+                    typeOne.CleanName() +
                     "' is not allowed");
             }
 

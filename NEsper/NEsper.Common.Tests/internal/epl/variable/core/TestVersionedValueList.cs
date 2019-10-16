@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 list.GetVersion(version);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
             }
         }

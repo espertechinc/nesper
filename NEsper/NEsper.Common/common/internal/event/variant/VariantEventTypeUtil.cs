@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
 {
     public class VariantEventTypeUtil
     {
-        public static CodegenExpressionField GetField(
+        public static CodegenExpressionInstanceField GetField(
             VariantEventType variantEventType,
             CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.AddFieldUnshared(
+            return codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VariantEventType),
                 Cast(

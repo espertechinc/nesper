@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 {
@@ -101,7 +102,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-        public StatementAgentInstanceLock ObtainAgentInstanceLock(
+        public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {

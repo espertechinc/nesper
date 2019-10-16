@@ -22,6 +22,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
+        [Serializable]
         public class MultiplyDecimalConvComputer : Computer
         {
             private readonly SimpleNumberCoercer convOne;

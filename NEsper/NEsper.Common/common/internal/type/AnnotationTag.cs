@@ -14,58 +14,12 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class AnnotationTag : TagAttribute
     {
-        private readonly string name;
-        private readonly string value;
-
         public AnnotationTag(
             string name,
-            string value)
+            string value) : base(name, value)
         {
-            this.name = name;
-            this.value = value;
         }
 
-        public override string Name {
-            get { return name; }
-        }
-
-        public override string Value {
-            get { return value; }
-        }
-
-        public Type AnnotationType {
-            get { return typeof(TagAttribute); }
-        }
-
-        public override string ToString()
-        {
-            return "@Tag(name=\"" + name + "\", value=\"" + value + "\")";
-        }
-
-        public override bool Equals(object o)
-        {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || GetType() != o.GetType()) {
-                return false;
-            }
-
-            var that = (AnnotationTag) o;
-
-            if (name != null ? !name.Equals(that.name) : that.name != null) {
-                return false;
-            }
-
-            return value != null ? value.Equals(that.value) : that.value == null;
-        }
-
-        public override int GetHashCode()
-        {
-            var result = name != null ? name.GetHashCode() : 0;
-            result = 31 * result + (value != null ? value.GetHashCode() : 0);
-            return result;
-        }
+        public Type AnnotationType => typeof(TagAttribute);
     }
 } // end of namespace

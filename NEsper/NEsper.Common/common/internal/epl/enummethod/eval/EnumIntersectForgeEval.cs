@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     typeof(ICollection<EventBean>),
                     typeof(EnumIntersectForgeEval),
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             if (forge.scalar) {
                 block.DeclareVar<ICollection<EventBean>>(
                     "other",
@@ -106,24 +106,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (scalar) {
-                List<EventBean> resultX = new List<EventBean>(enumcoll.Unwrap<EventBean>());
+                var resultX = new List<EventBean>(enumcoll.Unwrap<EventBean>());
                 resultX.RetainAll(other.Unwrap<EventBean>());
                 return resultX;
             }
 
-            ICollection<EventBean> targetEvents = enumcoll.Unwrap<EventBean>();
-            ICollection<EventBean> sourceEvents = other.Unwrap<EventBean>();
-            List<EventBean> result = new List<EventBean>();
+            var targetEvents = enumcoll.Unwrap<EventBean>();
+            var sourceEvents = other.Unwrap<EventBean>();
+            var result = new List<EventBean>();
 
             // we compare event underlying
-            foreach (EventBean targetEvent in targetEvents) {
+            foreach (var targetEvent in targetEvents) {
                 if (targetEvent == null) {
                     result.Add(null);
                     continue;
                 }
 
-                bool found = false;
-                foreach (EventBean sourceEvent in sourceEvents) {
+                var found = false;
+                foreach (var sourceEvent in sourceEvents) {
                     if (targetEvent == sourceEvent) {
                         found = true;
                         break;

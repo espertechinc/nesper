@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
     [TestFixture]
     public class TestSuiteEPLSubselectWConfig
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectCorrelatedAggregationPerformance()
         {
             RegressionSession session = RegressionRunner.Session();

@@ -9,25 +9,30 @@
 using System;
 using System.Collections.Generic;
 
+using Castle.Facilities.TypedFactory.Internal;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.epl
 {
     public class SupportJoinMethods
     {
+        private static readonly IDictionary<string, object>[] Empty = 
+            new IDictionary<string, object>[0];
         public static IDictionary<string, object>[] FetchVal(
             string prefix,
             int? number)
         {
-            if (number == null || number == 0) {
-                return new IDictionary<string, object>[0];
+            if (number == null || number.Value == 0) {
+                return Empty;
             }
 
             var result = new IDictionary<string, object>[number.Value];
             for (var i = 0; i < number; i++) {
-                result[i] = new Dictionary<string, object>();
-                result[i].Put("val", prefix + Convert.ToString(i + 1));
-                result[i].Put("index", i + 1);
+                result[i] = new Dictionary<string, object> {
+                    ["val"] = prefix + Convert.ToString(i + 1),
+                    ["index"] = i + 1
+                };
             }
 
             return result;

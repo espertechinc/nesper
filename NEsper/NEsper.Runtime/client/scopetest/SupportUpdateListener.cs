@@ -24,8 +24,6 @@ namespace com.espertech.esper.runtime.client.scopetest
     /// </summary>
     public class SupportUpdateListener : UpdateListener, SupportListener
     {
-        private bool _isInvokedAndReset;
-
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -53,7 +51,10 @@ namespace com.espertech.esper.runtime.client.scopetest
         ///     last
         ///     reset
         /// </value>
-        public EventBean[] LastNewData { get; set; }
+        public EventBean[] LastNewData {
+            get;
+            set;
+        }
 
         /// <summary>Returns the last array of remove-stream events that were received. </summary>
         /// <value>

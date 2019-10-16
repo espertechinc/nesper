@@ -101,14 +101,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                 return typeof(BigInteger);
             }
 
-            if (type == typeof(decimal)) {
-                return typeof(decimal);
+            if (type.IsDecimal()) {
+                return typeof(decimal?);
             }
 
-            return Boxing.GetBoxedType(GetMemberType(type));
+            return GetMemberType(type).GetBoxedType();
         }
 
-        protected internal static SimpleNumberCoercer GetCoercerNonBigIntDec(Type inputValueType)
+        protected internal static SimpleNumberCoercer GetCoercerNonBigInt(Type inputValueType)
         {
             SimpleNumberCoercer coercer;
             if (inputValueType == typeof(long?) || inputValueType == typeof(long)) {

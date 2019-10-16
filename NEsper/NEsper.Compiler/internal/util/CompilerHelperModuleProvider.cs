@@ -156,7 +156,13 @@ namespace com.espertech.esper.compiler.@internal.util
             out Assembly assembly)
         {
             // write code to create an implementation of StatementResource
-            var namespaceScope = new CodegenNamespaceScope(@namespace, null, compileTimeServices.IsInstrumented());
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementFields),
+                moduleIdentPostfix);
+            var namespaceScope = new CodegenNamespaceScope(
+                @namespace,
+                statementFieldsClassName,
+                compileTimeServices.IsInstrumented());
             var moduleClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(ModuleProvider),
                 moduleIdentPostfix);
@@ -311,15 +317,47 @@ namespace com.espertech.esper.compiler.@internal.util
             // build stack
             CodegenStackGenerator.RecursiveBuildStack(moduleNameProp, "ModuleName", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(modulePropertiesProp, "ModuleProperties", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(moduleDependenciesProp, "ModuleDependencies", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeNamedWindowsMethod, "InitializeNamedWindows", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                moduleDependenciesProp,
+                "ModuleDependencies",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeEventTypesMethod,
+                "InitializeEventTypes",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeNamedWindowsMethod,
+                "InitializeNamedWindows",
+                methods,
+                properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeTablesMethod, "InitializeTables", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeIndexesMethod, "InitializeIndexes", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeContextsMethod, "InitializeContexts", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeVariablesMethod, "InitializeVariables", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeExprDeclaredMethod, "InitializeExprDeclareds", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeScriptsMethod, "InitializeScripts", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeIndexesMethod,
+                "InitializeIndexes",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeContextsMethod,
+                "InitializeContexts",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeVariablesMethod,
+                "InitializeVariables",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeExprDeclaredMethod,
+                "InitializeExprDeclareds",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeScriptsMethod,
+                "InitializeScripts",
+                methods,
+                properties);
             CodegenStackGenerator.RecursiveBuildStack(statementsProp, "Statements", methods, properties);
 
             var clazz = new CodegenClass(
@@ -349,13 +387,14 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenProperty property)
         {
             if (props.IsEmpty()) {
-                property.GetterBlock.BlockReturn(StaticMethod(
-                    typeof(Collections),
-                    "GetEmptyMap",
-                    new Type[] {
-                        typeof(ModuleProperty),
-                        typeof(object)
-                    }));
+                property.GetterBlock.BlockReturn(
+                    StaticMethod(
+                        typeof(Collections),
+                        "GetEmptyMap",
+                        new Type[] {
+                            typeof(ModuleProperty),
+                            typeof(object)
+                        }));
 
                 return;
             }
@@ -673,26 +712,29 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenClassScope classScope)
         {
             if (deepSuperTypes == null || deepSuperTypes.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(EventType) });
+                return StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(EventType)});
             }
 
             if (deepSuperTypes.Count == 1) {
                 return StaticMethod(
                     typeof(Collections),
                     "SingletonSet",
-                    new Type[] { typeof(EventType) },
+                    new Type[] {typeof(EventType)},
                     EventTypeUtility.ResolveTypeCodegen(deepSuperTypes.First(), symbols.GetAddInitSvc(parent)));
             }
 
-            var method = parent.MakeChild(typeof(ISet<object>), typeof(CompilerHelperModuleProvider), classScope);
-            method.Block.DeclareVar<ISet<object>>(
+            var method = parent.MakeChild(
+                typeof(ISet<EventType>),
+                typeof(CompilerHelperModuleProvider),
+                classScope);
+            method.Block.DeclareVar<ISet<EventType>>(
                 "dst",
-                NewInstance(typeof(LinkedHashSet<object>)));
+                NewInstance(typeof(LinkedHashSet<EventType>)));
             foreach (var eventType in deepSuperTypes) {
-                method.Block.ExprDotMethod(
-                    @Ref("dst"),
-                    "Add",
-                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)));
+                var dstRef = Ref("dst");
+                var initServicesRef = symbols.GetAddInitSvc(method);
+                var valueToAdd = EventTypeUtility.ResolveTypeCodegen(eventType, initServicesRef);
+                method.Block.ExprDotMethod(dstRef, "Add", valueToAdd);
             }
 
             method.Block.MethodReturn(@Ref("dst"));

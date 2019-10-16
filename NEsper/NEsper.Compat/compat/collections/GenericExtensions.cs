@@ -92,10 +92,42 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
+        public static bool IsMapped(this Type t)
+        {
+            if (t == null)
+                return false;
+            if (t.IsGenericDictionary())
+                return true;
+            return false;
+        }
+
+        public static Type GetDictionaryKeyType(this Type t)
+        {
+            if (t == null)
+                return null;
+            if (t.IsGenericDictionary())
+                return FindGenericDictionaryInterface(t).GetGenericArguments()[0];
+            return null;
+        }
+
+        public static Type GetDictionaryValueType(this Type t)
+        {
+            if (t == null)
+                return null;
+            if (t.IsGenericDictionary())
+                return FindGenericDictionaryInterface(t).GetGenericArguments()[1];
+            return null;
+        }
+        
         public static bool IsGenericDictionary(this Type t)
         {
             var dictType = FindGenericInterface(t, typeof(IDictionary<,>));
             return (dictType != null);
+        }
+
+        public static bool IsNotGenericDictionary(this Type t)
+        {
+            return !IsGenericDictionary(t);
         }
 
         private static readonly IDictionary<Type, bool> StringDictionaryResultCache = 
@@ -168,12 +200,17 @@ namespace com.espertech.esper.compat.collections
             return null;
         }
 
-        public static Type FindGenericDictionaryInterface(Type t)
+        public static Type FindGenericDictionaryInterface(this Type t)
         {
             return t.FindGenericInterface(typeof (IDictionary<,>));
         }
 
-        public static Type FindGenericEnumerationInterface(Type t)
+        public static Type FindGenericCollectionInterface(this Type t)
+        {
+            return t.FindGenericInterface(typeof (ICollection<>));
+        }
+        
+        public static Type FindGenericEnumerationInterface(this Type t)
         {
             return t.FindGenericInterface(typeof (IEnumerable<>));
         }
@@ -219,6 +256,15 @@ namespace com.espertech.esper.compat.collections
         private static readonly Dictionary<Type, Func<object, object, bool>> CollectionAccessorTable =
             new Dictionary<Type, Func<object, object, bool>>();
 
+        public static Type GetCollectionItemType(this Type t)
+        {
+            if (t == null)
+                return null;
+            if (t.IsGenericCollection())
+                return FindGenericCollectionInterface(t).GetGenericArguments()[0];
+            return null;
+        }
+        
         public static Func<object, object, bool> CreateCollectionContainsAccessor(this Type t)
         {
             lock( CollectionAccessorTable ) {

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -22,8 +20,6 @@ using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
-
-using Microsoft.CodeAnalysis;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -159,10 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 classScope);
             method.Block.IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<KeyValuePair<string, object>>(
+                .DeclareVar<KeyValuePair<EventBean, object>>(
                     "entry",
                     Cast(
-                        typeof(KeyValuePair<string, object>),
+                        typeof(KeyValuePair<EventBean, object>),
                         ExprDotMethodChain(refSet).Add("First")))
                 .MethodReturn(Cast(typeof(EventBean), ExprDotName(Ref("entry"), "Key")));
             return LocalMethod(method);
@@ -275,7 +271,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     classScope)
                 .AddParam(typeof(EventBean), "theEvent");
             method.Block.AssignRef(array, ConstantNull())
-                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "Get", Ref("theEvent"))))
+                .DeclareVar<int?>("value", ExprDotMethod(ExprDotMethod(refSet, "Get", Ref("theEvent")), "AsBoxedInt"))
                 .IfRefNull("value")
                 .ExprDotMethod(refSet, "Put", Ref("theEvent"), Constant(1))
                 .BlockReturnNoValue()
@@ -295,7 +291,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     classScope)
                 .AddParam(typeof(EventBean), "theEvent");
             method.Block.AssignRef(array, ConstantNull())
-                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "Get", Ref("theEvent"))))
+                .DeclareVar<int?>("value", ExprDotMethod(ExprDotMethod(refSet, "Get", Ref("theEvent")), "AsBoxedInt"))
                 .IfRefNull("value")
                 .BlockReturnNoValue()
                 .IfCondition(EqualsIdentity(Ref("value"), Constant(1)))
@@ -324,9 +320,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 code);
         }
 
-        private CodegenExpressionField GetSerde(CodegenClassScope classScope)
+        private CodegenExpressionInstanceField GetSerde(CodegenClassScope classScope)
         {
-            return classScope.AddOrGetFieldSharable(
+            return classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeEventTyped(LINKEDMAPEVENTSANDINT, forge.EventType));
         }
     }

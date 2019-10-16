@@ -64,11 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     return new SelectExprInsertNativeExpressionCoerceAvro(eventType, forges[0]);
                 }
 
-                throw new IllegalStateException("Unrecognied event type " + eventType);
+                throw new IllegalStateException("Unrecognized event type " + eventType);
             }
 
             // handle special case where the target type has no properties and there is a single "null" value selected
-            if (eventType.PropertyDescriptors.Length == 0 &&
+            if (eventType.PropertyDescriptors.Count == 0 &&
                 columnNames.Length == 1 &&
                 columnNames[0].Equals("null") &&
                 expressionReturnTypes[0] == null &&
@@ -336,7 +336,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var inner = forge;
                         forge = new ExprForgeStreamWithInner(inner, componentReturnType);
                     }
-                    else if (!(columnType is Type)) {
+                    else if (!(columnType is Type columnAsType)) {
                         var message = "Invalid assignment of column '" +
                                       columnNames[i] +
                                       "' of type '" +
@@ -344,7 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                       "' to event property '" +
                                       desc.PropertyName +
                                       "' typed as '" +
-                                      desc.PropertyType.Name +
+                                      desc.PropertyType.CleanName() +
                                       "', column and parameter types mismatch";
                         throw new ExprValidationException(message);
                     }

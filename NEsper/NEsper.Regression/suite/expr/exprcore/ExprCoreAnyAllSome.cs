@@ -25,11 +25,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
+#if false
             executions.Add(new ExprCoreAnyAllSomeEqualsAll());
             executions.Add(new ExprCoreEqualsAllArray());
             executions.Add(new ExprCoreEqualsAny());
             executions.Add(new ExprCoreEqualsAnyBigInt());
             executions.Add(new ExprCoreEqualsAnyArray());
+#endif
             executions.Add(new ExprCoreRelationalOpAllArray());
             executions.Add(new ExprCoreRelationalOpNullOrNoRows());
             executions.Add(new ExprCoreRelationalOpAnyArray());
@@ -37,6 +39,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             executions.Add(new ExprCoreRelationalOpAny());
             executions.Add(new ExprCoreEqualsInNullOrNoRows());
             executions.Add(new ExprCoreAnyAllSomeInvalid());
+#if false
+#endif
             return executions;
         }
 
@@ -202,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var bean = new SupportBean();
                 bean.BigInteger = new BigInteger(1);
-                bean.DecimalPrimitive = 1m;
+                bean.DecimalBoxed = 1m;
                 env.SendEventBean(bean);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -257,8 +261,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "g","ge" };
                 var epl = "@Name('s0') select " +
-                          "LongBoxed>all({1,2},IntArr,intCol) as g, " +
-                          "LongBoxed>=all({1,2},IntArr,intCol) as ge " +
+                          "LongBoxed>all({1,2},IntArr,IntCol) as g, " +
+                          "LongBoxed>=all({1,2},IntArr,IntCol) as ge " +
                           "from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -404,8 +408,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "g","ge" };
                 var epl = "@Name('s0') select " +
-                          "LongBoxed > any ({1, 2}, IntArr, intCol) as g, " +
-                          "LongBoxed >= any ({1, 2}, IntArr, intCol) as ge " +
+                          "LongBoxed > any ({1, 2}, IntArr, IntCol) as g, " +
+                          "LongBoxed >= any ({1, 2}, IntArr, IntCol) as ge " +
                           "from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 

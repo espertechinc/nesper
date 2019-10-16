@@ -134,103 +134,103 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Common.Logging.IsEnableQueryPlan = true;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowConsumer()
         {
             RegressionRunner.Run(session, InfraNamedWindowConsumer.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowContainedEvent()
         {
             RegressionRunner.Run(session, new InfraNamedWindowContainedEvent());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowIndex()
         {
             RegressionRunner.Run(session, new InfraNamedWindowIndex());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowInsertFrom()
         {
             RegressionRunner.Run(session, InfraNamedWindowInsertFrom.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowJoin()
         {
             RegressionRunner.Run(session, InfraNamedWindowJoin.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowLateStartIndex()
         {
             RegressionRunner.Run(session, new InfraNamedWindowLateStartIndex());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOM()
         {
             RegressionRunner.Run(session, InfraNamedWindowOM.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnDelete()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnDelete.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnMerge()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnMerge.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnSelect()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnSelect.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnUpdate()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnUpdate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOutputrate()
         {
             RegressionRunner.Run(session, new InfraNamedWindowOutputrate());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowProcessingOrder()
         {
             RegressionRunner.Run(session, InfraNamedWindowProcessingOrder.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowRemoveStream()
         {
             RegressionRunner.Run(session, new InfraNamedWindowRemoveStream());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowSubquery()
         {
             RegressionRunner.Run(session, InfraNamedWindowSubquery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowTypes()
         {
             RegressionRunner.Run(session, InfraNamedWindowTypes.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowViews()
         {
             RegressionRunner.Run(session, InfraNamedWindowViews.Executions());

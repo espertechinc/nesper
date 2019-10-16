@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => typeof(ICollection<EventBean>);
+            get => typeof(ICollection<object>);
+            //get => typeof(ICollection<EventBean>);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {

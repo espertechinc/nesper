@@ -70,7 +70,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 testIndex.Add(testEventType, handleSetNode);
                 Assert.IsTrue(false);
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected
             }

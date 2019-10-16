@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 }
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new object[] {
+                    new EventPropertyDescriptor[] {
                         new EventPropertyDescriptor("a", typeof(SupportBean_A), null, false, false, false, false, true),
                         new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
                     },
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileDeploy(stmtTxtOne).AddListener("s0");
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new object[] {
+                    new EventPropertyDescriptor[] {
                         new EventPropertyDescriptor(
                             "a",
                             typeof(SupportBean_A[]),

@@ -123,10 +123,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 // ESPER-663
                 var epl =
-                    "@Audit @Name('CTX') create context Ctx partition by grp, subGrp from SupportGroupSubgroupEvent;\n" +
-                    "@Audit @Name('Window') context Ctx create window EventData#unique(type) as SupportGroupSubgroupEvent;" +
-                    "@Audit @Name('Insert') context Ctx insert into EventData select * from SupportGroupSubgroupEvent;" +
-                    "@Audit @Name('Test') context Ctx select irstream * from EventData;";
+                    "@Audit @Name('CTX') create context ctx partition by Grp, SubGrp from SupportGroupSubgroupEvent;\n" +
+                    "@Audit @Name('Window') context ctx create window EventData#unique(Type) as SupportGroupSubgroupEvent;" +
+                    "@Audit @Name('Insert') context ctx insert into EventData select * from SupportGroupSubgroupEvent;" +
+                    "@Audit @Name('Test') context ctx select irstream * from EventData;";
                 env.CompileDeploy(epl);
                 env.AddListener("Test");
                 env.SendEventBean(new SupportGroupSubgroupEvent("G1", "SG1", 1, 10.45));

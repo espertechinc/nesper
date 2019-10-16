@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     mapGetter.UnderlyingFragmentCodegen(
-                        Cast(typeof(IDictionary<object, object>), Ref("value")),
+                        Cast(typeof(IDictionary<string, object>), Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
         }

@@ -12,6 +12,9 @@ namespace com.espertech.esper.common.client.db
 {
     public class DriverConfiguration
     {
+        public const string PROPERTY_CONNECTION_STRING = "connectionString";
+        public const string PROPERTY_CONNECTION_STRING_HYPHENATED = "connection-string";
+
         /// <summary>
         /// Gets or sets the name of the driver.
         /// </summary>

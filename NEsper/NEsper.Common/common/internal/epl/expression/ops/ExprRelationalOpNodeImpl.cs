@@ -78,14 +78,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (!TypeHelper.IsNumeric(typeOne)) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
-                        (typeOne == null ? "null" : typeOne.GetSimpleName()) +
+                        (typeOne == null ? "null" : typeOne.CleanName()) +
                         "' to numeric is not allowed");
                 }
 
                 if (!TypeHelper.IsNumeric(typeTwo)) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
-                        (typeTwo == null ? "null" : typeTwo.GetSimpleName()) +
+                        (typeTwo == null ? "null" : typeTwo.CleanName()) +
                         "' to numeric is not allowed");
                 }
             }

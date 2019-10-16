@@ -147,9 +147,13 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                     if (normalized.Length == selectClauseTypes.Length) {
                         var fits = true;
                         for (var i = 0; i < normalized.Length; i++) {
-                            var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
-                            var boxedParameterType = normalized[i].GetBoxedType();
-                            if (boxedExpressionType != null && !boxedExpressionType.IsAssignmentCompatible(boxedParameterType)) {
+                            var expressionType = selectClauseTypes[i];
+                            var parameterType = normalized[i];
+
+                            //var boxedExpressionType = expressionType.GetBoxedType();
+                            //var boxedParameterType = parameterType.GetBoxedType();
+
+                            if (expressionType != null && !expressionType.IsAssignmentCompatible(parameterType)) {
                                 fits = false;
                                 break;
                             }

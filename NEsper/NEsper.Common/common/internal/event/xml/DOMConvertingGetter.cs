@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var parserMember = codegenClassScope.AddFieldUnshared(
+            var parserMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(SimpleTypeParser),
                 SimpleTypeParserFactory.CodegenSimpleParser(
@@ -138,11 +138,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             XmlNode node,
             SimpleTypeParser parser)
         {
-            if (node == null) {
-                return null;
-            }
-
-            var text = node.InnerText;
+            var text = node?.InnerText;
             if (text == null) {
                 return null;
             }

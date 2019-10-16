@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression cache = codegenClassScope.AddFieldUnshared<CopyOnWriteList<Pair<Type, bool>>>(
+            CodegenExpression cache = codegenClassScope.AddDefaultFieldUnshared<CopyOnWriteList<Pair<Type, bool>>>(
                 true,
                 NewInstance(typeof(CopyOnWriteList<Pair<Type, bool>>)));
             var methodNode = codegenMethodScope.MakeChild(

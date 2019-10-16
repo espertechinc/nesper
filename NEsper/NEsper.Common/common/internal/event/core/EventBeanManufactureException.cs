@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
     /// <summary>
     ///     Thrown to indicate a problem creating or populating an underlying event objects.
     /// </summary>
+    [Serializable]
     public class EventBeanManufactureException : Exception
     {
         /// <summary>
@@ -24,6 +26,12 @@ namespace com.espertech.esper.common.@internal.@event.core
             string message,
             Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected EventBeanManufactureException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

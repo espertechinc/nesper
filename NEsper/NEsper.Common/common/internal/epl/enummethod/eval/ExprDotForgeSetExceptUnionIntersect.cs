@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprDotEvalParam first = bodiesAndParameters[0];
+            var first = bodiesAndParameters[0];
 
-            ExprDotEnumerationSourceForge enumSrc = ExprDotNodeUtility.GetEnumerationSource(
+            var enumSrc = ExprDotNodeUtility.GetEnumerationSource(
                 first.Body,
                 streamTypeService,
                 true,
@@ -66,11 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (inputEventType != null) {
-                EventType setType = enumSrc.Enumeration == null
+                var setType = enumSrc.Enumeration == null
                     ? null
                     : enumSrc.Enumeration.GetEventTypeCollection(statementRawInfo, services);
                 if (setType == null) {
-                    string message = "Enumeration method '" +
+                    var message = "Enumeration method '" +
                                      enumMethodUsedName +
                                      "' requires an expression yielding a " +
                                      "collection of events of type '" +
@@ -80,9 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
 
                 if (setType != inputEventType) {
-                    bool isSubtype = EventTypeUtility.IsTypeOrSubTypeOf(setType, inputEventType);
+                    var isSubtype = EventTypeUtility.IsTypeOrSubTypeOf(setType, inputEventType);
                     if (!isSubtype) {
-                        string message = "Enumeration method '" +
+                        var message = "Enumeration method '" +
                                          enumMethodUsedName +
                                          "' expects event type '" +
                                          inputEventType.Name +
@@ -94,19 +94,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
             }
             else {
-                Type setType = enumSrc.Enumeration == null ? null : enumSrc.Enumeration.ComponentTypeCollection;
+                var setType = enumSrc.Enumeration?.ComponentTypeCollection;
                 if (setType == null) {
-                    string message = "Enumeration method '" +
+                    var message = "Enumeration method '" +
                                      enumMethodUsedName +
                                      "' requires an expression yielding a " +
                                      "collection of values of type '" +
-                                     collectionComponentType.Name +
+                                     collectionComponentType.CleanName() +
                                      "' as input parameter";
                     throw new ExprValidationException(message);
                 }
 
                 if (!TypeHelper.IsAssignmentCompatible(setType, collectionComponentType)) {
-                    string message = "Enumeration method '" +
+                    var message = "Enumeration method '" +
                                      enumMethodUsedName +
                                      "' expects scalar type '" +
                                      collectionComponentType.Name +

@@ -458,7 +458,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                                 "', no child node found under initializer element, expecting an element node");
                         }
 
-                        configXML = nodeIter.Current.InnerXml;
+                        configXML = nodeIter.Current.OuterXml;
                         break;
                     }
                 }

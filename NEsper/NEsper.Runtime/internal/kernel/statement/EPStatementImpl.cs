@@ -162,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             statementContext.VariableManagementService.SetLocalVersion();
             if (destroyed || parentView == null)
             {
-                return null;
+                return EnumerationHelper.Empty<EventBean>();
             }
 
             IEnumerator<EventBean> theIterator;
@@ -201,23 +201,18 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             // Set variable version and acquire the lock first
             var holder = statementContext.StatementCPCacheService.StatementResourceService.ResourcesUnpartitioned;
             var @lock = holder.AgentInstanceContext.AgentInstanceLock;
-            @lock.AcquireReadLock();
-            try
-            {
+            using (@lock.AcquireReadLock()) {
                 statementContext.VariableManagementService.SetLocalVersion();
 
                 // Provide iterator - that iterator MUST be closed else the lock is not released
-                if (statementContext.EpStatementHandle.HasTableAccess)
-                {
-                    return new SafeEnumeratorWTableImpl<EventBean>(@lock, parentView.GetEnumerator(), statementContext.TableExprEvaluatorContext);
+                if (statementContext.EpStatementHandle.HasTableAccess) {
+                    return new SafeEnumeratorWTableImpl<EventBean>(
+                        @lock,
+                        parentView.GetEnumerator(),
+                        statementContext.TableExprEvaluatorContext);
                 }
 
                 return new SafeEnumeratorImpl<EventBean>(@lock, parentView.GetEnumerator());
-            }
-            catch (Exception)
-            {
-                @lock.ReleaseReadLock();
-                throw;
             }
         }
 
@@ -370,64 +365,53 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             var holder = statementContext.StatementCPCacheService.StatementResourceService.ResourcesUnpartitioned;
             var @lock = holder.AgentInstanceContext.AgentInstanceLock;
 
-            @lock.AcquireReadLock();
+            using (@lock.AcquireReadLock()) {
+                try {
+                    // Add listener - listener not receiving events from this statement, as the statement is locked
+                    statementListenerSet.AddListener(listener);
+                    statementResultService.SetUpdateListeners(statementListenerSet, false);
 
-            try
-            {
-                // Add listener - listener not receiving events from this statement, as the statement is locked
-                statementListenerSet.AddListener(listener);
-                statementResultService.SetUpdateListeners(statementListenerSet, false);
+                    var events = new List<EventBean>();
 
-                var it = GetEnumerator();
-
-                var events = new List<EventBean>();
-                while (it.MoveNext())
-                {
-                    events.Add(it.Current);
-                }
-
-                if (events.IsEmpty())
-                {
-                    try
-                    {
-                        listener.Update(this, new UpdateEventArgs(runtime, this, null, null));
+                    using (var enumerator = GetEnumerator()) {
+                        while (enumerator.MoveNext()) {
+                            events.Add(enumerator.Current);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        var message = string.Format(
-                            "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
-                            listener.GetType().FullName,
-                            ex.GetType().Name,
-                            ex.Message);
-                        Log.Error(message, ex);
+
+                    if (events.IsEmpty()) {
+                        try {
+                            listener.Update(this, new UpdateEventArgs(runtime, this, null, null));
+                        }
+                        catch (Exception ex) {
+                            var message = string.Format(
+                                "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
+                                listener.GetType().FullName,
+                                ex.GetType().Name,
+                                ex.Message);
+                            Log.Error(message, ex);
+                        }
                     }
-                }
-                else
-                {
-                    var iteratorResult = events.ToArray();
-                    try
-                    {
-                        listener.Update(this, new UpdateEventArgs(runtime, this, iteratorResult, null));
-                    }
-                    catch (Exception ex)
-                    {
-                        var message = string.Format(
-                            "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
-                            listener.GetType().FullName,
-                            ex.GetType().Name,
-                            ex.Message);
-                        Log.Error(message, ex);
+                    else {
+                        var iteratorResult = events.ToArray();
+                        try {
+                            listener.Update(this, new UpdateEventArgs(runtime, this, iteratorResult, null));
+                        }
+                        catch (Exception ex) {
+                            var message = string.Format(
+                                "Unexpected exception invoking delegate for replay on '{0}' : {1} : {2}",
+                                listener.GetType().FullName,
+                                ex.GetType().Name,
+                                ex.Message);
+                            Log.Error(message, ex);
+                        }
                     }
                 }
-            }
-            finally
-            {
-                if (statementContext.EpStatementHandle.HasTableAccess)
-                {
-                    statementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                finally {
+                    if (statementContext.EpStatementHandle.HasTableAccess) {
+                        statementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                    }
                 }
-
-                @lock.ReleaseReadLock();
             }
         }
 

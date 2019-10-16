@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddMatchingEvents(method)));
             }
             else {
-                CodegenExpression filter = ExprNodeUtilityCodegen.CodegenEvaluator(
+                var filter = ExprNodeUtilityCodegen.CodegenEvaluator(
                     subselect.FilterExpr,
                     method,
                     GetType(),
@@ -209,10 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .IfCondition(ExprDotMethod(Ref("rows"), "IsEmpty"))
                     .BlockReturn(EnumValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY"))
-                    .MethodReturn(
-                        Cast(
-                            typeof(object[][]),
-                            ExprDotMethod(Ref("rows"), "toArray", NewArrayByLength(typeof(object[]), Constant(0)))));
+                    .MethodReturn(ExprDotMethod(Ref("rows"), "ToArray"));
                 return LocalMethod(method);
             }
         }

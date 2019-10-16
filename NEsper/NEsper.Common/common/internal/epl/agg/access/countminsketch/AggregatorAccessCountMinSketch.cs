@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
     {
         private readonly AggregationStateCountMinSketchForge forge;
         private readonly CodegenExpressionRef state;
-        private readonly CodegenExpressionField spec;
+        private readonly CodegenExpressionInstanceField spec;
 
         public AggregatorAccessCountMinSketch(
             AggregationStateCountMinSketchForge forge,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             this.forge = forge;
             state = membersColumnized.AddMember(col, typeof(CountMinSketchAggState), "state");
-            spec = classScope.NamespaceScope.AddFieldUnshared(
+            spec = classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
                 typeof(CountMinSketchSpec),
                 forge.specification.CodegenMake(classScope.NamespaceScope.InitMethod, classScope));

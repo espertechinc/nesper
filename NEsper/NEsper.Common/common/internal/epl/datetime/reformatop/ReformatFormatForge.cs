@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             return DateFormatFormatter.Format(dateTime);
         }
 
-        private CodegenExpressionField CodegenFormatFieldInit(CodegenClassScope classScope)
+        private CodegenExpressionInstanceField CodegenFormatFieldInit(CodegenClassScope classScope)
         {
             var formatEvalCall = CodegenLegoMethodExpression.CodegenExpression(
                 formatter,
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 init = LocalMethod(parse);
             }
 
-            return classScope.AddFieldUnshared(
+            return classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(DateFormat),
                 init);

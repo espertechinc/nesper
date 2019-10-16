@@ -6,8 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.schedule
 {
@@ -42,6 +42,12 @@ namespace com.espertech.esper.common.@internal.schedule
         /// </param>
         public ScheduleServiceException(System.Exception cause)
             : base(string.Empty, cause)
+        {
+        }
+
+        protected ScheduleServiceException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

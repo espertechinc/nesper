@@ -16,7 +16,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmt = "@Name('s0') select element1, invalidelement, " +
+            var stmt = "@Name('s0') select " +
+                       "element1, " +
+                       "invalidelement, " +
                        "element4.element41 as nestedElement," +
                        "element2.element21('e21_2') as mappedElement," +
                        "element2.element21[1] as indexedElement," +
@@ -44,9 +46,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             Assert.AreEqual(element1, theEvent.Get("element1"));
             Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("MappedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("IndexedElement"));
+            Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
+            Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
+#if true
+            Assert.AreEqual(null, theEvent.Get("invalidelement"));
+            Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+#else
             if (isInvalidReturnsEmptyString) {
                 Assert.AreEqual("", theEvent.Get("invalidelement"));
                 Assert.AreEqual("", theEvent.Get("invalidattribute"));
@@ -55,6 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.AreEqual(null, theEvent.Get("invalidelement"));
                 Assert.AreEqual(null, theEvent.Get("invalidattribute"));
             }
+#endif
         }
     }
 } // end of namespace
