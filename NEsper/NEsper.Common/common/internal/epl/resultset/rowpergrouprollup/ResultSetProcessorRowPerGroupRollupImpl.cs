@@ -2619,7 +2619,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenInstanceAux instance)
         {
             Consumer<CodegenMethod> code = methodNode => methodNode.Block
-                .ForEach(typeof(LinkedHashMap<object, EventBean>), "anEventPerGroupBuf", Ref(memberName))
+                .ForEachVar("anEventPerGroupBuf", Ref(memberName))
                 .ExprDotMethod(Ref("anEventPerGroupBuf"), "Clear");
 
             return instance.Methods.AddMethod(
@@ -2641,7 +2641,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 classScope,
                 instance);
             Consumer<CodegenMethod> code = methodNode => {
-                methodNode.Block.IfRefNullReturnNull("events")
+                methodNode.Block
+                    .IfRefNullReturnNull("events")
                     .DeclareVar<object[][]>(
                         "result",
                         NewArrayByLength(typeof(object[]), ArrayLength(Ref("events"))))
@@ -2691,7 +2692,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateGroupKeysView",
                 CodegenNamedParam.From(
                     typeof(EventBean[]), "events",
-                    typeof(IDictionary<object, EventBean>[]), "eventPerKey",
+                    typeof(IDictionary<object, EventBean[]>[]), "eventPerKey",
                     typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,

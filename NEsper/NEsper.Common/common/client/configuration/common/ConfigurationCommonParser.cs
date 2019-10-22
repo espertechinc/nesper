@@ -292,7 +292,7 @@ namespace com.espertech.esper.common.client.configuration.common
                             sqlTypeInt = Int32.Parse(sqlType);
                         }
                         catch (NumberFormatException ex) {
-                            throw new ConfigurationException("Error converting sql type '" + sqlType + "' to integer java.sql.Types constant");
+                            throw new ConfigurationException("Error converting sql type '" + sqlType + "' to integer SqlTypes constant");
                         }
 
                         configDBRef.AddSqlTypesBinding(sqlTypeInt, javaType);

@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             Assert.AreEqual(typeof(object[]), env.Statement("s0").EventType.UnderlyingType);
 
             var bean = new SupportBean("E1", 1);
-            env.SendEventObjectArray(new object[] {bean, "abc", Collections.SingletonMap("key", "value")}, "MyOAType");
+            env.SendEventObjectArray(new object[] {bean, "abc", Collections.SingletonDataMap("key", "value")}, "MyOAType");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNew(),
                 new [] { "bean","TheString","map('key')","bean.TheString" },

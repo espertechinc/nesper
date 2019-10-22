@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             SupportCompileDeployUtil.ThreadSleep(2000);
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
             var result = listener.GetNewDataListFlattened();

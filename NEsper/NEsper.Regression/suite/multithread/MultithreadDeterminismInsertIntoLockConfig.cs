@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             AssertFutures(future);
 
             // assert result

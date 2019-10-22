@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -54,7 +55,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenSymbolProvider OptionalSymbolProvider { get; }
 
-        public IList<CodegenMethod> Children { get; private set; } = Collections.GetEmptyList<CodegenMethod>();
+        public IList<CodegenMethod> Children { get; private set; } =
+            Collections.GetEmptyList<CodegenMethod>();
 
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
@@ -72,7 +74,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public IList<CodegenNamedParam> LocalParams { get; private set; } =
             Collections.GetEmptyList<CodegenNamedParam>();
 
-        public IList<Type> Thrown { get; private set; } = Collections.GetEmptyList<Type>();
+        public IList<Type> Thrown { get; private set; } =
+            Collections.GetEmptyList<Type>();
 
         public ISet<string> DeepParameters { get; set; }
 
@@ -340,6 +343,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
             Children.Add(methodNode);
             return methodNode;
+        }
+
+        public ICollection<CodegenExpressionLambda> GetLambdas()
+        {
+            return Block.Statements.OfType<CodegenExpressionLambda>().ToList();
         }
     }
 } // end of namespace

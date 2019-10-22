@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -34,25 +36,40 @@ namespace com.espertech.esper.regressionlib.support.client
             }
         }
 
-        public static void ThreadpoolAwait(
-            IExecutorService threadPool,
+        public static void ExecutorAwait(
+            IExecutorService executor,
             int num,
             TimeUnit unit)
         {
             try {
-                threadPool.AwaitTermination(TimeUnitHelper.ToTimeSpan(num, unit));
+                executor.AwaitTermination(TimeUnitHelper.ToTimeSpan(num, unit));
             }
             catch (ThreadInterruptedException e) {
                 throw new EPException(e);
             }
         }
 
-        public static void AssertFutures<T>(IFuture<T>[] futures)
+        public static void ExecutorAwait(
+            IExecutorService executor,
+            TimeSpan timeout)
         {
             try {
-                foreach (var future in futures) {
-                    Assert.AreEqual(true, future.GetValueOrDefault());
-                }
+                executor.AwaitTermination(timeout);
+            }
+            catch (ThreadInterruptedException e) {
+                throw new EPException(e);
+            }
+        }
+
+        public static void AssertFutures<T>(IList<IFuture<T>> futures)
+        {
+            try {
+                futures.ForEach(
+                    future => {
+                        Assert.That(
+                            future.GetValue(TimeSpan.FromSeconds(10)),
+                            Is.True);
+                    });
             }
             catch (Exception t) {
                 throw new EPException(t);

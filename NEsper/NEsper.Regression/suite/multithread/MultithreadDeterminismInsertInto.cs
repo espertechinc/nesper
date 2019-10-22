@@ -50,11 +50,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             var insertIntoStmts = new EPStatement[numStatements];
             for (var i = 0; i < numStatements; i++) {
-                var epl = $"@Name('s{i}') insert into MyStream select {i} as Ident,count(*) as cnt from SupportBean";
+                var epl = $"@Name('s{i}') insert into MyStream select {i} as ident,count(*) as cnt from SupportBean";
                 insertIntoStmts[i] = env.CompileDeploy(epl, path).Statement("s" + i);
             }
 
-            env.CompileDeploy("@Name('final') select Ident, sum(cnt) as mysum from MyStream group by Ident", path);
+            env.CompileDeploy("@Name('final') select ident, sum(cnt) as mysum from MyStream group by ident", path);
             var listener = new SupportMTUpdateListener();
             env.Statement("final").AddListener(listener);
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
 
             SupportCompileDeployUtil.AssertFutures(future);
 
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
             // assert result

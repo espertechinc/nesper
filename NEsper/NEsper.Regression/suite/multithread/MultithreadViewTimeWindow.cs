@@ -34,15 +34,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var numEvents = 10000;
             var numStmt = 25;
 
-            log.Info(
-                "Processing " + numEvents + " events for " + numThreads + " threads and " + numStmt + " statements");
+            log.Info($"Processing {numEvents} events for {numThreads} threads and {numStmt} statements");
             var listeners = new SupportCountListener[numStmt];
             for (var i = 0; i < numStmt; i++) {
                 listeners[i] = new SupportCountListener();
                 var stmtName = "stmt" + i;
                 var nameAnnotation = "@Name('" + stmtName + "')";
-                var epl = nameAnnotation +
-                          "select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
+                var epl = $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
                 env.CompileDeploy(epl).Statement(stmtName).AddListener(listeners[i]);
             }
 
@@ -63,21 +61,21 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numStmts,
             SupportCountListener[] listeners)
         {
-            var threadPool = Executors.NewFixedThreadPool(
+            var executor = Executors.NewFixedThreadPool(
                 numThreads,
                 new SupportThreadFactory(typeof(MultithreadViewTimeWindow)).ThreadFactory);
             var future = new IFuture<bool>[numThreads];
             for (var i = 0; i < numThreads; i++) {
                 var callable = new SendEventCallable(i, env.Runtime, new GeneratorEnumerator(numRepeats));
-                future[i] = threadPool.Submit(callable);
+                future[i] = executor.Submit(callable);
             }
 
             log.Info("Waiting for threadpool shutdown");
-            threadPool.Shutdown();
-            threadPool.AwaitTermination(TimeSpan.FromSeconds(30));
+            executor.Shutdown();
+            executor.AwaitTermination(TimeSpan.FromSeconds(30));
 
             for (var i = 0; i < numThreads; i++) {
-                Assert.IsTrue(future[i].Get());
+                Assert.IsTrue(future[i].GetValue(TimeSpan.FromSeconds(5)));
             }
 
             // set time to a large value

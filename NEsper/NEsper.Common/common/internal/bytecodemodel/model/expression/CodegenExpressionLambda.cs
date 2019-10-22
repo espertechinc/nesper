@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return this;
         }
 
-        public CodegenExpressionLambda WithBody(Action<CodegenBlock> blockHandler)
+        public CodegenExpressionLambda WithBody(Consumer<CodegenBlock> blockHandler)
         {
             blockHandler.Invoke(Block);
             return this;

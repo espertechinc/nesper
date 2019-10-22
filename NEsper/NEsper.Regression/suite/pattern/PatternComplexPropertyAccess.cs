@@ -53,70 +53,66 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var events = EventCollectionFactory.GetSetSixComplexProperties();
-                var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Mapped('keyOne') = 'valueOne')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Indexed[1] = 2)");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Indexed[0] = 2)");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] = 20)");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] in (10:30))");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[2] = 20)");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Nested.NestedValue = 'NestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(Nested.NestedValue = 'dummy')");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanComplexProps(Nested.NestedNested.NestedNestedValue = 'nestedNestedValue')");
+                    "s=SupportBeanComplexProps(Nested.NestedNested.NestedNestedValue = 'NestedNestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase(
                     "s=SupportBeanComplexProps(Nested.NestedNested.NestedNestedValue = 'x')");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase(
                     "s=SupportBeanCombinedProps(Indexed[1].Mapped('1mb').Value = '1ma1')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Indexed[0].Mapped('1ma').Value = 'x')");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[0].Mapped('0ma').Value = '0ma0')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[2].Mapped('x').Value = 'x')");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[879787].Mapped('x').Value = 'x')");
-                testCaseList.AddTest(testCase);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
 
                 testCase = new EventExpressionCase("s=SupportBeanCombinedProps(Array[0].Mapped('xxx').Value = 'x')");
-                testCaseList.AddTest(testCase);
-
-                var util = new PatternTestHarness(events, testCaseList, GetType());
-                util.RunTest(env);
+                PatternTestHarness.RunSingle(env, events, testCase, GetType());
             }
         }
 

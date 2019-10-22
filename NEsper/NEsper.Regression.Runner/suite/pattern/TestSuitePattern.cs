@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternOperatorEveryDistinct.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternObserverTimerAt()
         {
             RegressionRunner.Run(session, PatternObserverTimerAt.Executions());
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternStartStop.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternSuperAndInterfaces()
         {
             RegressionRunner.Run(session, new PatternSuperAndInterfaces());
@@ -266,10 +266,10 @@ namespace com.espertech.esper.regressionrun.suite.pattern
                 "computeISO8601String",
                 "getThe1980Calendar",
                 "getThe1980Date",
+                "getThe1980DateTime",
+                "getThe1980DateTimeOffset",
                 "getThe1980Long",
-                "getTheSeconds",
-                "getThe1980LocalDateTime",
-                "getThe1980ZonedDateTime"))
+                "getTheSeconds"))
             {
                 configuration.Compiler.AddPlugInSingleRowFunction(name, typeof(PatternObserverTimerSchedule), char.ToUpper(name[0]) + name.Substring(1));
             }
@@ -279,10 +279,10 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             common.AddVariable("upper", typeof(int), null);
             common.AddVariable("VMIN", typeof(int), 0);
             common.AddVariable("VHOUR", typeof(int), 8);
-            common.AddVariable("D", typeof(double), 1);
-            common.AddVariable("H", typeof(double), 2);
-            common.AddVariable("M", typeof(double), 3);
-            common.AddVariable("S", typeof(double), 4);
+            common.AddVariable("DD", typeof(double), 1);
+            common.AddVariable("HH", typeof(double), 2);
+            common.AddVariable("MM", typeof(double), 3);
+            common.AddVariable("SS", typeof(double), 4);
             common.AddVariable("MS", typeof(double), 5);
 
             configuration.Runtime.ConditionHandling.AddClass(typeof(SupportConditionHandlerFactory));

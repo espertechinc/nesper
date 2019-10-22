@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 // try variable
                 env.CompileDeploy(
-                    "create constant variable java.util.concurrent.atomic.AtomicLong cnt = new java.util.concurrent.atomic.AtomicLong(1)");
+                    $"create constant variable {typeof(AtomicLong).FullName} cnt = new {typeof(AtomicLong).FullName}(1)");
 
                 // try shallow invalid cases
                 SupportMessageAssertUtil.TryInvalidCompile(

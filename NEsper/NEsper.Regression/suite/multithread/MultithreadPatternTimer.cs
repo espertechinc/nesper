@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // submit events
-            var startTime = PerformanceObserver.MilliTime;
+            var startTime = DateTimeHelper.CurrentTimeMillis;
             log.Info("Submitting " + numEvents + " events to queue");
             var random = new Random();
             for (var i = 0; i < numEvents; i++) {
@@ -89,12 +89,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 log.Info("Queue size is " + queue.Count);
             }
 
-            var endTime = PerformanceObserver.MilliTime;
+            var endTime = DateTimeHelper.CurrentTimeMillis;
             log.Info("Time to complete: " + (endTime - startTime) / 1000 + " sec");
 
             // wait for completion
             log.Info("Waiting for remaining callbacks");
-            var startWaitTime = PerformanceObserver.MilliTime;
+            var startWaitTime = DateTimeHelper.CurrentTimeMillis;
             while (true) {
                 try {
                     Thread.Sleep(1000);
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     break;
                 }
 
-                if (PerformanceObserver.MilliTime - startWaitTime > 20000) {
+                if (DateTimeHelper.CurrentTimeMillis - startWaitTime > 20000) {
                     Assert.Fail();
                 }
 

@@ -27,10 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             RegressionPath path)
         {
             var statementText = "@Name('s0') select" +
-                                " nested as a," +
-                                " nested.n1 as b," +
-                                " nested.n2 as c," +
-                                " nested.n2.n1n1 as d " +
+                                " Nested as a," +
+                                " Nested.n1 as b," +
+                                " Nested.n2 as c," +
+                                " Nested.n2.n1n1 as d " +
                                 " from NestedMapWithSimpleProps#length(5)";
             env.CompileDeploy(statementText, path).AddListener("s0");
 

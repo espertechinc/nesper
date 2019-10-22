@@ -53,15 +53,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             var path = new RegressionPath();
             env.CompileDeploy("@Name('type') create schema ItemEvent(Id string)", path);
 
+            var collections = typeof(Collections).FullName;
             var script =
                 "@Name('script') create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
                 "myScriptReturnsEvents();" +
                 "function myScriptReturnsEvents() {" +
                 "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
                 "  var events = new EventBeanArray(3);\n" +
-                "  events[0] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
-                "  events[1] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id2\"), \"ItemEvent\");\n" +
-                "  events[2] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
+                $"  events[0] = epl.EventBeanService.AdapterForMap({collections}.SingletonDataMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
+                $"  events[1] = epl.EventBeanService.AdapterForMap({collections}.SingletonDataMap(\"id\", \"id2\"), \"ItemEvent\");\n" +
+                $"  events[2] = epl.EventBeanService.AdapterForMap({collections}.SingletonDataMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
                 "  return events;\n" +
                 "}]";
             env.CompileDeploy(soda, script, path);
@@ -636,8 +637,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
 
+                var compatExtensions = typeof(CompatExtensions).FullName;
+                
                 epl = "@Name('s0') expression js:printColors(colorEvent) [" +
-                      "print(java.util.Arrays.toString(colorEvent.getColors()));" +
+                      $"print({compatExtensions}.RenderAny(colorEvent.getColors()));" +
                       "]" +
                       "select printColors(colorEvent) from SupportColorEvent as colorEvent";
 

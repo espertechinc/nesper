@@ -60,6 +60,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
+                .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(classes);
             assembly = compiler.Compile();
 

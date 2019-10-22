@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 var getter = mapGetterChain[i];
 
                 if (i == mapGetterChain.Length - 1) {
-                    block.IfNotInstanceOf("result", typeof(IDictionary<object, object>))
+                    block.IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                         .IfInstanceOf("result", typeof(EventBean))
                         .AssignRef(
                             "result",
@@ -218,12 +218,12 @@ namespace com.espertech.esper.common.@internal.@event.map
                         .IfElse()
                         .BlockReturn(
                             getter.UnderlyingExistsCodegen(
-                                CastRef(typeof(IDictionary<object, object>), "result"),
+                                CastRef(typeof(IDictionary<string, object>), "result"),
                                 codegenMethodScope,
                                 codegenClassScope));
                 }
 
-                block.IfNotInstanceOf("result", typeof(IDictionary<object, object>))
+                block.IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                     .IfInstanceOf("result", typeof(EventBean))
                     .AssignRef(
                         "result",
@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                     .AssignRef(
                         "result",
                         getter.UnderlyingGetCodegen(
-                            CastRef(typeof(IDictionary<object, object>), "result"),
+                            CastRef(typeof(IDictionary<string, object>), "result"),
                             codegenMethodScope,
                             codegenClassScope))
                     .BlockEnd();
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             for (var i = 1; i < mapGetterChain.Length; i++) {
                 block.IfRefNullReturnNull("result");
                 var getter = mapGetterChain[i];
-                block.IfNotInstanceOf("result", typeof(IDictionary<object, object>))
+                block.IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                     .IfInstanceOf("result", typeof(EventBean))
                     .AssignRef(
                         "result",
@@ -294,7 +294,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                     .AssignRef(
                         "result",
                         getter.UnderlyingGetCodegen(
-                            CastRef(typeof(IDictionary<object, object>), "result"),
+                            CastRef(typeof(IDictionary<string, object>), "result"),
                             codegenMethodScope,
                             codegenClassScope))
                     .BlockEnd();

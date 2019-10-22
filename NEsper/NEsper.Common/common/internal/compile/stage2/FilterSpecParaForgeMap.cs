@@ -29,8 +29,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// </summary>
         public FilterSpecParaForgeMap()
         {
+#if false
             exprNodes = new LinkedHashMap<ExprNode, FilterSpecParamForge>();
             specParams = new LinkedHashMap<FilterSpecParamForge, ExprNode>();
+#else
+            exprNodes = new HashMap<ExprNode, FilterSpecParamForge>();
+            specParams = new HashMap<FilterSpecParamForge, ExprNode>();
+#endif
         }
 
         /// <summary>

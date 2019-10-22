@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             RegressionRunner.Run(session, new RowRecogEmptyPartition());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestRowRecogEnumMethod()
         {
             RegressionRunner.Run(session, new RowRecogEnumMethod());

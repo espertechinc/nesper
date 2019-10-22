@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientCompileOutput.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientCompileVisibility()
         {
             RegressionRunner.Run(_session, ClientCompileVisibility.Executions());

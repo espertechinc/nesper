@@ -110,7 +110,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 {
                     tokens.Fill();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Log.Debug("Token-fill produced exception: " + e.Message, e);
                 }

@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;
@@ -48,6 +49,18 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
+                var stackTraceText = ex.StackTrace.ToString();
+                var innerTraceText = ex.InnerException.StackTrace.ToString();
+
+                lock (Console.Out) {
+                    Console.WriteLine("> OuterException: " + ex.GetType().CleanName());
+                    Console.WriteLine(stackTraceText);
+                    Console.WriteLine();
+                    Console.WriteLine("> InnerException: " + ex.InnerException.GetType().CleanName());
+                    Console.WriteLine(innerTraceText);
+                    Console.WriteLine();
+                }
+
                 log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }

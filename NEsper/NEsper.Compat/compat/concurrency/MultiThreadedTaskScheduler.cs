@@ -178,8 +178,7 @@ namespace com.espertech.esper.compat.concurrency
                 var thread = _threads[ii];
                 if (thread != null) {
                     _threads[ii] = null;
-                    thread.Join(TimeSpan.FromSeconds(10));
-                    if (thread.IsAlive) {
+                    if (!thread.Join(TimeSpan.FromSeconds(10))) {
                         thread.Interrupt();
                         thread.Join(TimeSpan.FromSeconds(10));
                     }

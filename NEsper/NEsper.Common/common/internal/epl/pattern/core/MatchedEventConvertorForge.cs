@@ -124,9 +124,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             //                Parameter(Identifier("events")))))
             //    .WithBody();
 
+            var subMethod = LocalMethod(Make(method, classScope), Ref("events"));
             var convert = new CodegenExpressionLambda(method.Block)
-                .WithParam<MatchedEventMap>("events");
-            var clazz = NewInstance<MatchedEventConvertor>(convert);
+                .WithParam<MatchedEventMap>("events")
+                .WithBody(block => block.BlockReturn(subMethod));
 
             //var clazz = NewAnonymousClass(method.Block, typeof(MatchedEventConvertor));
             //var convert = CodegenMethod.MakeMethod(typeof(EventBean[]), GetType(), classScope)
@@ -134,8 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             //clazz.AddMethod("Convert", convert);
             //convert.Block.MethodReturn(LocalMethod(Make(convert, classScope), Ref("events")));
 
-            convert.Block.BlockReturn(LocalMethod(Make(method, classScope), Ref("events")));
-            return clazz;
+            return NewInstance<MatchedEventConvertor>(convert);
         }
     }
 } // end of namespace

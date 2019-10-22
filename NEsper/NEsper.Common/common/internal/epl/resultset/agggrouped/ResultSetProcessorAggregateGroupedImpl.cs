@@ -1177,13 +1177,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             }
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<object>>(
-                        "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
-                        "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "newData", ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "oldData", ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1318,13 +1316,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             if (forge.OptionalHavingNode == null) {
                 {
-                    var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
-                    forEach.DeclareVar<ISet<object>>(
-                            "newData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                        .DeclareVar<ISet<object>>(
-                            "oldData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                    var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                            "newData", ExprDotName(Ref("pair"), "First"))
+                        .DeclareVar<ISet<MultiKey<EventBean>>>(
+                            "oldData", ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1415,13 +1411,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             else {
                 // having clause present, having clause evaluates at the level of individual posts
                 {
-                    var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
-                    forEach.DeclareVar<ISet<object>>(
-                            "newData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                        .DeclareVar<ISet<object>>(
-                            "oldData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                    var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                            "newData", ExprDotName(Ref("pair"), "First"))
+                        .DeclareVar<ISet<MultiKey<EventBean>>>(
+                            "oldData", ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1604,13 +1598,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NewInstance(typeof(LinkedHashMap<object, object>)));
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<object>>(
-                        "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
-                        "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "newData", ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "oldData", ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1727,13 +1719,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<object>>(
-                        "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
-                        "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "newData", ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        "oldData", ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -2477,7 +2467,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedAddToList",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>), "keysAndEvents",
+                    typeof(IDictionary<object, EventBean>), "keysAndEvents",
                     typeof(bool), NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IList<EventBean>), "resultEvents",

@@ -51,6 +51,26 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             this.testClass = testClass;
         }
 
+        public PatternTestHarness(
+            EventCollection sendEventCollection,
+            EventExpressionCase testCase,
+            Type testClass)
+        {
+            this.sendEventCollection = sendEventCollection;
+            this.caseList = new CaseList();
+            this.caseList.AddTest(testCase);
+            this.testClass = testClass;
+        }
+
+        public static void RunSingle(
+            RegressionEnvironment env,
+            EventCollection sendEventCollection,
+            EventExpressionCase testCase,
+            Type testClass)
+        {
+            (new PatternTestHarness(sendEventCollection, testCase, testClass)).RunTest(env);
+        }
+
         public void RunTest(RegressionEnvironment env)
         {
             var milestone = new AtomicLong();

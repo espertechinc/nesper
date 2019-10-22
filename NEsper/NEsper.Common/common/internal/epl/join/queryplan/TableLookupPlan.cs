@@ -45,13 +45,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public TableLookupIndexReqKey[] IndexNum => indexNum;
 
-        public ExprEvaluator[] VirtualDWHashEvals { get; private set; }
+        public ExprEvaluator[] VirtualDWHashEvals { get; set; }
 
-        public Type[] VirtualDWHashTypes { get; private set; }
+        public Type[] VirtualDWHashTypes { get; set; }
 
-        public QueryGraphValueEntryRange[] VirtualDWRangeEvals { get; private set; }
+        public QueryGraphValueEntryRange[] VirtualDWRangeEvals { get; set; }
 
-        public Type[] VirtualDWRangeTypes { get; private set; }
+        public Type[] VirtualDWRangeTypes { get; set; }
 
         protected abstract JoinExecTableLookupStrategy MakeStrategyInternal(
             EventTable[] eventTables,

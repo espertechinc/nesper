@@ -118,7 +118,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// </summary>
         /// <param name="metricName">the name of the metric</param>
         /// <returns>an opened <seealso cref="TextWriter" /> specific to {@code metricName}</returns>
-        /// <throws>java.io.IOException if there is an error opening the stream</throws>
+        /// <throws>IOException if there is an error opening the stream</throws>
         protected TextWriter CreateStreamForMetric(MetricName metricName)
         {
             var newFile = new FileInfo(Path.Combine(outputDir.ToString(), metricName.Name + ".csv"));

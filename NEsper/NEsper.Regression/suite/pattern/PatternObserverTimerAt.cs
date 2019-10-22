@@ -27,11 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-#if false
             execs.Add(new PatternTimerAtSimple());
             execs.Add(new PatternOp());
             execs.Add(new PatternCronParameter());
-#endif
             execs.Add(new PatternAtWeekdays());
             execs.Add(new PatternAtWeekdaysPrepared());
             execs.Add(new PatternAtWeekdaysVariable());
@@ -82,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
             dateTimeEx.SetMillis(0);
-            dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
+            dateTimeEx.Set(2008, 8, 3, 10); // start on a Sunday at 6am, August 3 2008
 
             var invocations = new List<string>();
             for (var i = 0; i < 24 * 60 * 7; i++) { // run for 1 week
@@ -96,16 +94,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
 
             var expectedResult = new string[5];
-            dateTimeEx.Set(2008, 7, 4, 8); //"Mon Aug 04 08:00:00 EDT 2008"
+            dateTimeEx.Set(2008, 8, 4, 8); //"Mon Aug 04 08:00:00 EDT 2008"
             expectedResult[0] = dateTimeEx.ToString();
-            dateTimeEx.Set(2008, 7, 5, 8); //"Tue Aug 05 08:00:00 EDT 2008"
+            dateTimeEx.Set(2008, 8, 5, 8); //"Tue Aug 05 08:00:00 EDT 2008"
             expectedResult[1] = dateTimeEx.ToString();
-            dateTimeEx.Set(2008, 7, 6, 8); //"Wed Aug 06 08:00:00 EDT 2008"
+            dateTimeEx.Set(2008, 8, 6, 8); //"Wed Aug 06 08:00:00 EDT 2008"
             expectedResult[2] = dateTimeEx.ToString();
-            dateTimeEx.Set(2008, 7, 7, 8); //"Thu Aug 07 08:00:00 EDT 2008"
+            dateTimeEx.Set(2008, 8, 7, 8); //"Thu Aug 07 08:00:00 EDT 2008"
             expectedResult[3] = dateTimeEx.ToString();
-            dateTimeEx.Set(2008, 7, 8, 8); //"Fri Aug 08 08:00:00 EDT 2008"
+            dateTimeEx.Set(2008, 8, 8, 8); //"Fri Aug 08 08:00:00 EDT 2008"
             expectedResult[4] = dateTimeEx.ToString();
+
             EPAssertionUtil.AssertEqualsExactOrder(expectedResult, invocations.ToArray());
         }
 
@@ -343,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
-                dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
+                dateTimeEx.Set(2008, 8, 3, 10); // start on a Sunday at 6am, August 3 2008
                 SendTimer(dateTimeEx.UtcMillis, env);
 
                 env.CompileDeploy(expression);
@@ -363,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
-                dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
+                dateTimeEx.Set(2008, 8, 3, 10); // start on a Sunday at 6am, August 3 2008
                 SendTimer(dateTimeEx.UtcMillis, env);
 
                 var compiled = env.Compile(expression);
@@ -390,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
-                dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
+                dateTimeEx.Set(2008, 8, 3, 10); // start on a Sunday at 6am, August 3 2008
                 SendTimer(dateTimeEx.UtcMillis, env);
 
                 var compiled = env.Compile(expression);
@@ -409,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
-                dateTimeEx.Set(2008, 7, 3, 10); // start on a Sunday at 6am, August 3 2008
+                dateTimeEx.Set(2008, 8, 3, 10); // start on a Sunday at 6am, August 3 2008
                 SendTimer(dateTimeEx.UtcMillis, env);
 
                 env.CompileDeploy(expression).AddListener("s0");

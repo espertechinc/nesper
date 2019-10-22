@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         // test ObjectArray event with Map, Map[], MapType and MapType[] properties
         private void RunAssertionObjectArrayWithMap(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select P0 as c0, P1.im as c1, P2[0].im as c2, P3.om as c3 from OAType");
+            env.CompileDeploy("@Name('s0') select p0 as c0, p1.im as c1, p2[0].im as c2, p3.om as c3 from OAType");
             env.AddListener("s0");
 
             env.SendEventObjectArray(
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.UndeployAll();
 
             // test inserting from array to map
-            env.CompileDeploy("@Name('s0') insert into MapType(im) select P0 from OAType").AddListener("s0");
+            env.CompileDeploy("@Name('s0') insert into MapType(im) select p0 from OAType").AddListener("s0");
             env.SendEventObjectArray(new object[] {"E1", null, null, null}, "OAType");
             Assert.IsTrue(env.Listener("s0").AssertOneGetNew() is MappedEventBean);
             Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("im"));
@@ -58,12 +58,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         private void RunAssertionMapWithObjectArray(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var schema = "create objectarray schema OATypeInMap(P0 string, P1 int);\n" +
+            var schema = "create objectarray schema OATypeInMap(p0 string, p1 int);\n" +
                          "create map schema MapTypeWOA(oa1 OATypeInMap, oa2 OATypeInMap[]);\n";
             env.CompileDeployWBusPublicType(schema, path);
 
             env.CompileDeploy(
-                "@Name('s0') select oa1.P0 as c0, oa1.P1 as c1, oa2[0].P0 as c2, oa2[1].P1 as c3 from MapTypeWOA",
+                "@Name('s0') select oa1.p0 as c0, oa1.p1 as c1, oa2[0].p0 as c2, oa2[1].p1 as c3 from MapTypeWOA",
                 path);
             env.AddListener("s0");
 
@@ -84,12 +84,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.UndeployModuleContaining("s0");
 
             // test inserting from map to array
-            env.CompileDeploy("@Name('s0') insert into OATypeInMap select 'a' as P0, 1 as p1 from MapTypeWOA", path)
+            env.CompileDeploy("@Name('s0') insert into OATypeInMap select 'a' as p0, 1 as p1 from MapTypeWOA", path)
                 .AddListener("s0");
             env.SendEventMap(data, "MapTypeWOA");
             Assert.IsTrue(env.Listener("s0").AssertOneGetNew() is ObjectArrayBackedEventBean);
-            Assert.AreEqual("a", env.Listener("s0").AssertOneGetNew().Get("P0"));
-            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
+            Assert.AreEqual("a", env.Listener("s0").AssertOneGetNew().Get("p0"));
+            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
 
             env.UndeployAll();
         }

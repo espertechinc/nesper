@@ -11,6 +11,7 @@ using System.Linq;
 using System.Numerics;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.support
         private decimal _decimalPrimitive;
         private decimal? _decimalBoxed;
 
-        private BigInteger _bigInteger;
+        private BigInteger? _bigInteger;
 
         private int? _intBoxed;
         private int _intPrimitive;
@@ -156,7 +157,7 @@ namespace com.espertech.esper.common.@internal.support
             set => _decimalPrimitive = value;
         }
 
-        public BigInteger BigInteger {
+        public BigInteger? BigInteger {
             get => _bigInteger;
             set => _bigInteger = value;
         }
@@ -223,7 +224,7 @@ namespace com.espertech.esper.common.@internal.support
             return string.Format(
                 "{0}({1}, {2})",
                 GetType().Name,
-                _theString,
+                _theString.RenderAny(),
                 _intPrimitive);
         }
 

@@ -243,6 +243,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 XmlElement subElement = nodeEnumerator.Current;
                 if (subElement.Name == "code") {
                     ParseRequiredBoolean(subElement, "enabled", b => compiler.Logging.EnableCode = b);
+                } else if (subElement.Name == "audit-directory") {
+                    compiler.Logging.AuditDirectory = DOMExtensions.GetRequiredAttribute(subElement, "value");
                 }
             }
         }

@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             sendTickEventRunnable.Shutdown = true;
 
             executorService.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(executorService, 1, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(executorService, 1, TimeUnit.SECONDS);
             runtime.Destroy();
         }
 

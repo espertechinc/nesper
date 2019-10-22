@@ -56,39 +56,39 @@ namespace com.espertech.esper.common.@internal.util
                 return CoercerNull.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(decimal?)) {
+            if (trueBoxedType == typeof(decimal?)) {
                 return CoercerDecimal.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(double?)) {
+            if (trueBoxedType == typeof(double?)) {
                 return CoercerDouble.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(long?)) {
+            if (trueBoxedType == typeof(long?)) {
                 return CoercerLong.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(float?)) {
+            if (trueBoxedType == typeof(float?)) {
                 return CoercerFloat.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(int?)) {
+            if (trueBoxedType == typeof(int?)) {
                 return CoercerInt.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(short?)) {
+            if (trueBoxedType == typeof(short?)) {
                 return CoercerShort.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(byte?)) {
+            if (trueBoxedType == typeof(byte?)) {
                 return CoercerByte.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(BigInteger?)) {
+            if (trueBoxedType == typeof(BigInteger?)) {
                 return CoercerBigInt.INSTANCE;
             }
 
-            if (resultBoxedType == typeof(object)) {
+            if (trueBoxedType == typeof(object)) {
                 return CoercerNull.INSTANCE;
             }
 

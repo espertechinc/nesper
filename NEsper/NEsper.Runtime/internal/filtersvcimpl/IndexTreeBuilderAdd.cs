@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
 using System.Threading;
 
@@ -51,7 +52,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 AddToNode(new ArrayDeque<FilterValueSetParam>(1), filterCallback, topNode, lockFactory);
             }
             else {
-                var remainingParameters = new ArrayDeque<FilterValueSetParam>(4);
+                var remainingParameters = new ArrayDeque<FilterValueSetParam>();
                 for (var i = 0; i < valueSet.Length; i++) {
                     remainingParameters.Clear();
                     remainingParameters.AddAll(valueSet[i]);

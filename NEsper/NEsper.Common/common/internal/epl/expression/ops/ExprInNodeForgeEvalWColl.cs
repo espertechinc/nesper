@@ -196,29 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                if (reftype.IsGenericCollection()) {
-                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
-                    {
-                        if (!leftTypeUncoerced.IsPrimitive) {
-                            ifRightNotNull.IfRefNullReturnNull("left");
-                        }
-
-                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "Contains", Ref("left")))
-                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
-                    }
-                }
-                else if (reftype.IsGenericDictionary()) {
-                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
-                    {
-                        if (!leftTypeUncoerced.IsPrimitive) {
-                            ifRightNotNull.IfRefNullReturnNull("left");
-                        }
-
-                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "ContainsKey", Ref("left")))
-                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
-                    }
-                }
-                else if (reftype.IsArray) {
+                if (reftype.IsArray) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         if (!leftTypeUncoerced.IsPrimitive) {
@@ -264,6 +242,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 }
                             }
                         }
+                    }
+                }
+                else if (reftype.IsGenericCollection()) {
+                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                    {
+                        if (!leftTypeUncoerced.IsPrimitive) {
+                            ifRightNotNull.IfRefNullReturnNull("left");
+                        }
+
+                        var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
+                            Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
+                        
+                        ifRightNotNull
+                            .IfCondition(ExprDotMethod(Ref(refname), "Contains", leftWithBoxing))
+                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
+                    }
+                }
+                else if (reftype.IsGenericDictionary()) {
+                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                    {
+                        if (!leftTypeUncoerced.IsPrimitive) {
+                            ifRightNotNull.IfRefNullReturnNull("left");
+                        }
+
+                        var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
+                            Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
+                        
+                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing))
+                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }
                 else {

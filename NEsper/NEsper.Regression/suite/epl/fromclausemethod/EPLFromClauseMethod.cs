@@ -396,14 +396,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType("create schema ItemEvent(Id string)", path);
 
+                var collections = typeof(Collections);
                 var script =
                     "@Name('script') create expression EventBean[] @type(ItemEvent) js:myItemProducerScript() [\n" +
                     "myItemProducerScript();" +
                     "function myItemProducerScript() {" +
                     "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
                     "  var events = new EventBeanArray(2);\n" +
-                    "  events[0] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
-                    "  events[1] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
+                    $"  events[0] = epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
+                    $"  events[1] = epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
                     "  return events;\n" +
                     "}]";
                 env.CompileDeploy(script, path);

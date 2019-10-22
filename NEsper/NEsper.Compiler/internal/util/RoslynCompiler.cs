@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -78,6 +79,11 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public bool IsCodeLogging { get; set; }
 
+        /// <summary>
+        /// Gets or sets the location for code source to be written.
+        /// </summary>
+        public string CodeAuditDirectory { get; set; }
+        
         public RoslynCompiler WithCodegenClasses(IEnumerable<CodegenClass> codegenClasses)
         {
             CodegenClasses = new List<CodegenClass>(codegenClasses);
@@ -96,6 +102,12 @@ namespace com.espertech.esper.compiler.@internal.util
             return this;
         }
 
+        public RoslynCompiler WithCodeAuditDirectory(string targetDirectory)
+        {
+            CodeAuditDirectory = targetDirectory;
+            return this;
+        }
+        
         internal bool IsGeneratedAssembly(Assembly assembly)
         {
             var generatedAttributesCount = assembly
@@ -112,8 +124,12 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             if (_metadataReferences == null) {
                 var metadataReferences = new List<MetadataReference>();
+
                 lock (AssemblyCacheBindings) {
-                    metadataReferences.AddRange(AssemblyCacheBindings.Values.Select(pair => pair.MetadataReference));
+                    foreach (var assemblyBinding in AssemblyCacheBindings) {
+                        //Console.WriteLine("metadataReferences[0]: {0}", assemblyBinding.Value.Assembly.FullName);
+                        metadataReferences.Add(assemblyBinding.Value.MetadataReference);
+                    }
                 }
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
@@ -128,6 +144,7 @@ namespace com.espertech.esper.compiler.@internal.util
                                 PortableExecutionReferenceCache[assembly] = portableExecutableReference;
                             }
 
+                            //Console.WriteLine("metadataReferences[1]: {0}", assembly.FullName);
                             metadataReferences.Add(portableExecutableReference);
                         }
                     }
@@ -141,8 +158,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private Pair<CodegenClass, SyntaxTree> Compile(CodegenClass codegenClass)
         {
-            Console.WriteLine(codegenClass.ClassName);
-
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
             // Convert the codegen to source
             var source = CodegenSyntaxGenerator.Compile(codegenClass);
@@ -154,7 +169,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private SyntaxTree CompileAssemblyBindings()
         {
-            Console.WriteLine("Creating assembly bindings");
+            //Console.WriteLine("Creating assembly bindings");
 
             CompilationUnitSyntax assemblyBindingsCompilationUnit = CompilationUnit()
                 .WithUsings(
@@ -180,8 +195,6 @@ namespace com.espertech.esper.compiler.@internal.util
                                     Token(SyntaxKind.AssemblyKeyword)))))
                 .NormalizeWhitespace();
 
-            Console.WriteLine("assemblyBinding: " + assemblyBindingsCompilationUnit);
-
             return SyntaxTree(assemblyBindingsCompilationUnit);
         }
 
@@ -205,24 +218,35 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithOptimizationLevel(OptimizationLevel.Debug)
                 .WithAllowUnsafe(true);
 
+            var metadataReferences = GetCurrentMetadataReferences();
+
             var assemblyId = Guid.NewGuid().ToString().Replace("-", "");
             var assemblyName = $"NEsper_{assemblyId}";
             var compilation = CSharpCompilation
                 .Create(assemblyName, options: options)
-                .AddReferences(GetCurrentMetadataReferences())
+                .AddReferences(metadataReferences)
                 .AddSyntaxTrees(syntaxTrees);
 
-            foreach (var syntaxTreePair in syntaxTreePairs) {
-                string tempClassName = syntaxTreePair.First.ClassName;
-                string tempClassPath =
-                    $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review\{tempClassName}.cs";
-                File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
+            if (CodeAuditDirectory != null) {
+                foreach (var syntaxTreePair in syntaxTreePairs) {
+                    string tempClassName = syntaxTreePair.First.ClassName;
+                    string tempClassPath = Path.Combine(CodeAuditDirectory, $"{tempClassName}.cs");
+                    try {
+                        File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
+                    }
+                    catch (Exception e) {
+                        // Not fatal, but we need to log the failure
+                        Log.Warn($"Unable to write audit file for {tempClassName} to \"{tempClassPath}\"");
+                    }
+                }
             }
 
+#if DIAGNOSTICS
             Console.WriteLine("EmitToImage: {0}", assemblyName);
             foreach (var syntaxTreePair in syntaxTreePairs) {
                 Console.WriteLine("\t- {0}", syntaxTreePair.First.ClassName);
             }
+#endif
 
             var assemblyData = EmitToImage(compilation);
 

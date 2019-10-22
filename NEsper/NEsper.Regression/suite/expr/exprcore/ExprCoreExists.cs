@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -89,17 +90,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select exists(item?.Id) as t0, " +
-                          " exists(item?.Id?) as t1, " +
-                          " exists(item?.item.IntBoxed) as t2, " +
-                          " exists(item?.Indexed[0]?) as t3, " +
-                          " exists(item?.Mapped('keyOne')?) as t4, " +
-                          " exists(item?.Nested?) as t5, " +
-                          " exists(item?.Nested.NestedValue?) as t6, " +
-                          " exists(item?.Nested.NestedNested?) as t7, " +
-                          " exists(item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
-                          " exists(item?.Nested.NestedNested.NestedNestedValue.dummy?) as t9, " +
-                          " exists(item?.Nested.NestedNested.dummy?) as t10 " +
+                var epl = "@Name('s0') select " +
+                          " exists(Item?.Id) as t0, " +
+                          " exists(Item?.Id?) as t1, " +
+                          " exists(Item?.Item.IntBoxed) as t2, " +
+                          " exists(Item?.Indexed[0]?) as t3, " +
+                          " exists(Item?.Mapped('keyOne')?) as t4, " +
+                          " exists(Item?.Nested?) as t5, " +
+                          " exists(Item?.Nested.NestedValue?) as t6, " +
+                          " exists(Item?.Nested.NestedNested?) as t7, " +
+                          " exists(Item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
+                          " exists(Item?.Nested.NestedNested.NestedNestedValue.Dummy?) as t9, " +
+                          " exists(Item?.Nested.NestedNested.Dummy?) as t10 " +
                           " from SupportMarkerInterface";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -145,13 +147,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
+                var stmtText = "select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.IntBoxed"), "t0");
+                model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("Item?.IntBoxed"), "t0");
                 model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).FullName));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                Assert.That(
+                    model.ToEPL(),
+                    Is.EqualTo(
+                        $"select exists(Item?.IntBoxed) as t0 from {typeof(SupportMarkerInterface).CleanName()}")); 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");

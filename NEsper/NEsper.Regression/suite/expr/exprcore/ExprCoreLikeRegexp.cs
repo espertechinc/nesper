@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 TryInvalidCompile(
                     env,
                     "select TheString regexp \"*any*\" from SupportBean",
-                    "Failed to validate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': Dangling meta character '*' near index 0");
+                    "Failed to validate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': parsing \"*any*\" - Quantifier {x,y} following nothing.");
             }
         }
 
@@ -345,10 +345,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select IntBoxed like '%01%' as r1, " +
-                          " DoubleBoxed regexp '[0-9][0-9].[0-9]' as r2 " +
-                          " from " +
-                          typeof(SupportBean).Name;
+                var epl = "@Name('s0') select" +
+                          " IntBoxed like '%01%' as r1, " +
+                          " DoubleBoxed regexp '[0-9][0-9]\\.[0-9]' as r2 " +
+                          " from " + typeof(SupportBean).Name;
 
                 env.CompileDeploy(epl).AddListener("s0");
 

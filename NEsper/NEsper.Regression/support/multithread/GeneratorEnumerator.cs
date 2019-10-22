@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
         public object Current {
             get {
-                if (numEvents >= maxNumEvents) {
+                if (numEvents > maxNumEvents) {
                     throw new InvalidOperationException();
                 }
 

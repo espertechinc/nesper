@@ -92,5 +92,22 @@ namespace com.espertech.esper.compat.collections
         {
             return array;
         }
+
+        public static bool Contains<T>(
+            this T[] values,
+            Nullable<T> valueWrapped)
+            where T : struct
+        {
+            if (valueWrapped.HasValue) {
+                var unwrapped = valueWrapped.Value;
+                for (int ii = 0; ii < values.Length; ii++) {
+                    if (Equals(values[ii], unwrapped)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

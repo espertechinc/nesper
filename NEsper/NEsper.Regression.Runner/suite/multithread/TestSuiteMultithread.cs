@@ -181,7 +181,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtJoin());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadStmtListenerCreateStmt()
         {
             RegressionRunner.Run(session, new MultithreadStmtListenerCreateStmt());
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtNamedWindowMultiple());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadStmtNamedWindowSubqueryAgg()
         {
             RegressionRunner.Run(session, new MultithreadStmtNamedWindowSubqueryAgg());
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtSubquery());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadStmtTimeWindow()
         {
             RegressionRunner.Run(session, new MultithreadStmtTimeWindow());
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadVariables());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadViewTimeWindow()
         {
             RegressionRunner.Run(session, new MultithreadViewTimeWindow());

@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var stmtText =
-                    "@Name('s0') select * from pattern [(every SupportBean) where timer:within(D days H hours M minutes S seconds MS milliseconds)]";
+                    "@Name('s0') select * from pattern [(every SupportBean) where timer:within(DD days HH hours MM minutes SS seconds MS milliseconds)]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertion(env);

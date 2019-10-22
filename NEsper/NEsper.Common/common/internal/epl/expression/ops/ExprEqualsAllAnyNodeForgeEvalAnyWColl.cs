@@ -160,34 +160,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return false;
         }
 
-        public static CodegenExpression ItemToCollectionUnboxing(
-            CodegenExpression itemExpression,
-            Type itemType,
-            Type collectionType)
-        {
-            // We need to determine if the item needs to be unboxed in order to be checked in a container.
-            // We cannot call "Contains" on a collection of unboxed (value-types) with a boxed value.
-
-            if (ReferenceEquals(collectionType, itemType)) {
-                // collectionType is same as itemType
-                // - nothing to do
-                return itemExpression;
-            } else if (collectionType.IsNullable()) {
-                // Let's make some assumptions that we've done sufficient type checking and that
-                // the underlying data type for item is the same as the collection, but is just
-                // a boxed or unboxed form.  If this is a reasonable assumption, then the type
-                // for item is the unboxed value and this will implicitly upcast.
-                // - nothing to do
-                return itemExpression;
-            }
-            else {
-                // As with the previous block, this section means that the collection is a value
-                // type and the item is a boxed type (which it should be).  In this case, we
-                // need to unbox the item value prior to calling contains.
-                return Unbox(itemExpression, itemType);
-            }
-        }
-        
         public static CodegenExpression Codegen(
             ExprEqualsAllAnyNodeForge forge,
             CodegenMethodScope codegenMethodScope,
@@ -266,7 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         exprSymbol,
                         codegenClassScope);
                     
-                    var leftWithBoxing = ItemToCollectionUnboxing(
+                    var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
                         Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
                     
                     block.IfRefNullReturnNull("left")
@@ -279,7 +251,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .BlockReturn(ConstantTrue());
                 }
                 else if (reftype != null && reftype.IsGenericDictionary()) {
-                    var leftWithBoxing = ItemToCollectionUnboxing(
+                    var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
                         Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
                     
                     block.IfRefNullReturnNull("left")

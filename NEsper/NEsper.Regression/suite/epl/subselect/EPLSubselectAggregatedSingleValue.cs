@@ -23,6 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new EPLSubselectUngroupedUncorrelatedInSelect());
             execs.Add(new EPLSubselectUngroupedUncorrelatedTwoAggStopStart());
             execs.Add(new EPLSubselectUngroupedUncorrelatedNoDataWindow());
@@ -34,6 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             execs.Add(new EPLSubselectUngroupedCorrelated());
             execs.Add(new EPLSubselectUngroupedCorrelatedSceneTwo());
             execs.Add(new EPLSubselectUngroupedCorrelatedInWhereClause());
+            #endif
             execs.Add(new EPLSubselectUngroupedCorrelatedWHaving());
             execs.Add(new EPLSubselectUngroupedJoin3StreamKeyRangeCoercion());
             execs.Add(new EPLSubselectUngroupedJoin2StreamRangeCoercion());
@@ -508,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') @Name('s0')select (select sum(IntPrimitive) from SupportBean#keepall where TheString = S0.P00 having sum(IntPrimitive) > 10) as c0 from SupportBean_S0 as S0";
+                    "@Name('s0') select (select sum(IntPrimitive) from SupportBean#keepall where TheString = S0.P00 having sum(IntPrimitive) > 10) as c0 from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0Assert(env, "G1", null);

@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block
-                .SetProperty(saiff, "MergeHelper", mergeHelperForge.Make(method, symbols, classScope));
+            method.Block.SetProperty(saiff, "MergeHelper", mergeHelperForge.Make(method, symbols, classScope));
         }
     }
 } // end of namespace

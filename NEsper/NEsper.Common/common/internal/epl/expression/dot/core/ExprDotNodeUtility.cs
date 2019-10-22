@@ -618,12 +618,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprValidationContext validationContext)
         {
             ExprNodeUtilResolveExceptionHandler exceptionHandler = new ProxyExprNodeUtilResolveExceptionHandler(
-                e => new ExprValidationException("Failed to resolve method '" + methodName + "': " + e.Message, e));
+                e => new ExprValidationException("Failed to resolve method or property '" + methodName + "': " + e.Message, e));
             var wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1
                 ? null
                 : validationContext.StreamTypeService.EventTypes[0];
             return ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                methodTarget.Name,
+                methodTarget.FullName,
                 methodTarget,
                 methodName,
                 parameters,

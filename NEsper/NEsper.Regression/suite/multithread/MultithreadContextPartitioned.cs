@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var delta = PerformanceObserver.MilliTime - startTime;
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
 
             // print those events not received
             foreach (var eventList in events) {

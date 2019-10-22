@@ -66,7 +66,7 @@ namespace com.espertech.esper.compat.concurrency
         /// <exception cref="InvalidOperationException"></exception>
         public T Get()
         {
-            return Value;
+            return GetValue(TimeSpan.FromSeconds(60));
         }
 
         /// <summary>
@@ -77,16 +77,8 @@ namespace com.espertech.esper.compat.concurrency
         /// <returns></returns>
         public T GetValue(TimeSpan timeOut)
         {
-            var timeCur = PerformanceObserver.MilliTime;
-            var timeEnd = timeCur + timeOut.TotalMilliseconds;
-
-            for (var ii = 0; !HasValue; ii++) {
-                timeCur = PerformanceObserver.MilliTime;
-                if (timeCur > timeEnd) {
-                    throw new TimeoutException();
-                }
-
-                SlimLock.SmartWait(ii);
+            if (!Wait(timeOut)) {
+                throw new TimeoutException();
             }
 
             return Value;
@@ -110,6 +102,28 @@ namespace com.espertech.esper.compat.concurrency
             }
 
             return Value;
+        }
+
+        /// <summary>
+        /// Waits for completion of the future.
+        /// </summary>
+        /// <param name="timeOut"></param>
+        /// <returns></returns>
+        public bool Wait(TimeSpan timeOut)
+        {
+            var timeCur = PerformanceObserver.MilliTime;
+            var timeEnd = timeCur + timeOut.TotalMilliseconds;
+
+            for (var ii = 0; !HasValue; ii++) {
+                timeCur = PerformanceObserver.MilliTime;
+                if (timeCur > timeEnd) {
+                    return false;
+                }
+
+                SlimLock.SmartWait(ii);
+            }
+
+            return true;
         }
 
         /// <summary>

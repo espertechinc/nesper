@@ -39,7 +39,17 @@ namespace com.espertech.esper.common.@internal.util
                 func.Invoke(b);
             }
         }
-
+        public static void ParseRequiredAttribute(
+            XmlElement element,
+            string name,
+            Consumer<string> func)
+        {
+            var str = GetRequiredAttribute(element, name);
+            if (str != null) {
+                func.Invoke(str);
+            }
+        }
+        
         public static string GetRequiredAttribute(
             XmlNode node,
             string key)

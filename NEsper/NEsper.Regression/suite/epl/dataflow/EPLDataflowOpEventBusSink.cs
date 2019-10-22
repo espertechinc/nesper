@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -95,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                                "EventBusSink(instream) {\n" +
                                "collector : {\n" +
                                "class : '" +
-                               typeof(MyTransformToEventBus).FullName +
+                               typeof(MyTransformToEventBus).MaskTypeName() +
                                "'\n" +
                                "}\n" +
                                "}";

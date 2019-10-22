@@ -150,10 +150,10 @@ namespace com.espertech.esper.compiler.@internal.parse
             this.defaultStreamSelector = defaultStreamSelector;
             this.scriptBodies = scriptBodies;
 
-            if (defaultStreamSelector == null)
-            {
-                throw ASTWalkException.From("Default stream selector is null");
-            }
+            //if (defaultStreamSelector == null)
+            //{
+            //    throw ASTWalkException.From("Default stream selector is null");
+            //}
 
             StatementSpec = new StatementSpecRaw(defaultStreamSelector);
 

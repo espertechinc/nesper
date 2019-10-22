@@ -128,8 +128,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     new object[] {3, "some string", SupportBeanComplexProps.MakeDefaultBean()},
                     "MyObjectArrayEvent");
                 Assert.AreEqual("NestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
-                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("Indexed"));
-                Assert.AreEqual("nestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
+                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("indexed"));
+                Assert.AreEqual("NestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
 
                 env.UndeployAll();
             }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@Name('s0') select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
+                    "@Name('s0') select MyInt + 2 as intVal, 'x' || MyString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event

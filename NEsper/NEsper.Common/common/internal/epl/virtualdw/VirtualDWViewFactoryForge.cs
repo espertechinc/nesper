@@ -95,9 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                         viewForgeEnv,
                         _customConfigs));
             }
-            catch (EPException) {
-                throw;
-            }
+            //catch (EPException) {
+            //    throw;
+            //}
             catch (Exception ex) {
                 throw new ViewParameterException(
                     "Validation exception initializing virtual data window '" + _namedWindowName + "': " + ex.Message,

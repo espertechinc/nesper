@@ -60,6 +60,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
 
             // invalid key
+#if NOT_VALID
             IDictionary<string, object> invalid = EventMapCore.MakeMap(
                 new object[][] {
                     new object[] {new int?(5), null}
@@ -67,6 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             TryInvalidConfigure(
                 config => { config.Common.AddEventType("InvalidMap", invalid); },
                 GetCastMessage(typeof(int?), typeof(string)));
+#endif
 
             IDictionary<string, object> invalidTwo = EventMapCore.MakeMap(
                 new object[][] {

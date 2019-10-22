@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 ISet<SupportEnum> types = new HashSet<SupportEnum>();
                 types.Add(SupportEnum.ENUM_VALUE_2);
                 var compiled = env.Compile(
-                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::java.util.Collection)");
+                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::System.Collections.ICollection)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(

@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.concurrency
     /// <summary>
     /// Base class for all future implementations
     /// </summary>
-    abstract internal class FutureBase
+    internal abstract class FutureBase
     {
         public const int STATE_PENDING = 1;
         public const int STATE_RUNNING = 2;

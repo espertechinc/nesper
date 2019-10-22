@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoDiff.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprFilterPlanTwoFilterNestedTwoSame()
         {
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoSame.Executions());

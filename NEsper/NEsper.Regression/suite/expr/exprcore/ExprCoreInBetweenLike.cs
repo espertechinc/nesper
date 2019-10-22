@@ -397,7 +397,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "resOne"," resTwo" };
                 var epl =
-                    "@Name('s0') select 1 in (IntCol, LongCol) as resOne, 1 not in (LongCol, IntCol) as resTwo from SupportBeanArrayCollMap";
+                    "@Name('s0') select " + 
+                    " 1 in (IntCol, LongCol) as resOne," +
+                    " 1 not in (LongCol, IntCol) as resTwo" +
+                    " from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new[] {10, 20, 30}, null));

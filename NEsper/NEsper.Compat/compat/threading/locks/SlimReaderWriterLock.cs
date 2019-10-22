@@ -15,6 +15,7 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
+        private readonly Guid _id;
         private readonly int _lockTimeout;
 
 #if MONO
@@ -28,6 +29,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout)
         {
+            _id = Guid.NewGuid();
             _lockTimeout = lockTimeout;
 #if MONO
             throw new NotSupportedException(ExceptionText);
@@ -68,9 +70,19 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterReadLock(_lockTimeout))
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireReadLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
+            if (_rwLock.TryEnterReadLock(_lockTimeout)) {
+#if DIAGNOSTICS
+                Console.WriteLine("{0}:AcquireReadLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
                 return _rDisposable;
+            }
 
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireReadLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
@@ -80,9 +92,19 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterWriteLock(_lockTimeout))
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
+            if (_rwLock.TryEnterWriteLock(_lockTimeout)) {
+#if DIAGNOSTICS
+                Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
                 return _wDisposable;
+            }
 
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, _lockTimeout);
+#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
@@ -92,9 +114,19 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterWriteLock(lockWaitDuration))
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriteLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
+#endif
+            if (_rwLock.TryEnterWriteLock(lockWaitDuration)) {
+#if DIAGNOSTICS
+                Console.WriteLine("{0}:AcquireWriteLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
+#endif
                 return _wDisposable;
+            }
 
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriteLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, lockWaitDuration);
+#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
@@ -135,9 +167,20 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterReadLock((int) timeout))
+            
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireReaderLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
+            if (_rwLock.TryEnterReadLock((int) timeout)) {
+#if DIAGNOSTICS
+                Console.WriteLine("{0}:AcquireReaderLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
                 return;
+            }
 
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireReaderLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
@@ -151,9 +194,19 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterWriteLock((int) timeout))
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriterLock:IN:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
+            if (_rwLock.TryEnterWriteLock((int) timeout)) {
+#if DIAGNOSTICS
+                Console.WriteLine("{0}:AcquireWriterLock:OUT:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
                 return;
+            }
 
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:AcquireWriterLock:ERR:{1}: {2}", Thread.CurrentThread.ManagedThreadId, _id, timeout);
+#endif
             throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
@@ -166,7 +219,13 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:ReleaseReaderLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
+#endif
             _rwLock.ExitReadLock();
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:ReleaseReaderLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
+#endif
 #endif
         }
 
@@ -178,7 +237,13 @@ namespace com.espertech.esper.compat.threading.locks
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:ReleaseWriterLock:IN:{1}", Thread.CurrentThread.ManagedThreadId, _id);
+#endif
             _rwLock.ExitWriteLock();
+#if DIAGNOSTICS
+            Console.WriteLine("{0}:ReleaseWriterLock:OUT:{1}", Thread.CurrentThread.ManagedThreadId, _id);
+#endif
 #endif
         }
     }

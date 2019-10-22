@@ -106,7 +106,7 @@ namespace com.espertech.esper.compat.concurrency
             };
         }
 
-        internal class MyScheduledFuture : FutureBase
+        private class MyScheduledFuture : FutureBase
             , IScheduledFuture
             , IDisposable
         {
@@ -269,6 +269,15 @@ namespace com.espertech.esper.compat.concurrency
             /// <returns></returns>
             /// <exception cref="NotSupportedException"></exception>
             public object GetValueOrDefault()
+            {
+                throw new NotSupportedException();
+            }
+            
+            /// <summary>
+            /// Waits for execution of the future to complete up to the allotted amount of time.
+            /// </summary>
+            /// <param name="timeOut"></param>
+            public bool Wait(TimeSpan timeOut)
             {
                 throw new NotSupportedException();
             }

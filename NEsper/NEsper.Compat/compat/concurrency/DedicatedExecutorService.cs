@@ -40,7 +40,9 @@ namespace com.espertech.esper.compat.concurrency
         /// </summary>
         /// <param name="label">The label.</param>
         /// <param name="numThreads">The num threads.</param>
-        public DedicatedExecutorService(string label, int numThreads)
+        public DedicatedExecutorService(
+            string label,
+            int numThreads)
             : this(label, numThreads, new LinkedBlockingQueue<Runnable>())
         {
         }
@@ -51,7 +53,10 @@ namespace com.espertech.esper.compat.concurrency
         /// <param name="label">The label.</param>
         /// <param name="numThreads">The num threads.</param>
         /// <param name="taskQueue">The task queue.</param>
-        public DedicatedExecutorService(string label, int numThreads, IBlockingQueue<Runnable> taskQueue)
+        public DedicatedExecutorService(
+            string label,
+            int numThreads,
+            IBlockingQueue<Runnable> taskQueue)
         {
             _id = Guid.NewGuid();
             _numThreads = numThreads;
@@ -61,7 +66,7 @@ namespace com.espertech.esper.compat.concurrency
             _liveMode = LiveMode.RUN;
             _numExecuted = 0L;
 
-            for( int ii = 0 ; ii < _numThreads ; ii++) {
+            for (int ii = 0; ii < _numThreads; ii++) {
                 _threads[ii] = new Thread(HandleTasksInQueue);
                 _threads[ii].Name = "DE:" + label + ":" + _id + ":" + ii;
                 _threads[ii].IsBackground = true;
@@ -82,49 +87,48 @@ namespace com.espertech.esper.compat.concurrency
         {
             bool isDebugEnabled = Log.IsDebugEnabled;
 
-            Log.Debug("HandleTasksInQueue: Instance {0} thread {1} starting with {2}", _id, Thread.CurrentThread.Name, _taskQueue.GetType().Name);
+            Log.Debug(
+                "HandleTasksInQueue: Instance {0} thread {1} starting with {2}",
+                _id,
+                Thread.CurrentThread.Name,
+                _taskQueue.GetType().Name);
 
             using (ScopedInstance<IBlockingQueue<Runnable>>.Set(_taskQueue)) // introduces the queue into scope
             {
-                while (_liveMode != LiveMode.STOPPED)
-                {
+                while (_liveMode != LiveMode.STOPPED) {
                     Runnable task;
 
                     Interlocked.Increment(ref _tasksRunning);
-                    try
-                    {
-                        if (_taskQueue.Pop(500, out task))
-                        {
-                            try
-                            {
+                    try {
+                        if (_taskQueue.Pop(500, out task)) {
+                            try {
                                 task.Invoke();
                             }
-                            catch (Exception e)
-                            {
+                            catch (Exception e) {
                                 Log.Warn("HandleTasksInQueue: Instance {0} finished with abnormal termination", _id, e);
 
                                 TaskError?.Invoke(this, new ThreadExceptionEventArgs(e));
                             }
-                            finally
-                            {
+                            finally {
                                 Interlocked.Increment(ref _numExecuted);
                             }
                         }
-                        else if (_liveMode == LiveMode.STOPPING)
-                        {
-                            if (isDebugEnabled)
-                            {
-                                Log.Debug("HandleTasksInQueue: Instance {0} no items detected in queue, terminating", _id);
+                        else if (_liveMode == LiveMode.STOPPING) {
+                            if (isDebugEnabled) {
+                                Log.Debug(
+                                    "HandleTasksInQueue: Instance {0} no items detected in queue, terminating",
+                                    _id);
                             }
+
                             break;
                         }
-                        else if (isDebugEnabled)
-                        {
-                            Log.Debug("HandleTasksInQueue: Instance {0} no items detected in queue, start loop again", _id);
+                        else if (isDebugEnabled) {
+                            Log.Debug(
+                                "HandleTasksInQueue: Instance {0} no items detected in queue, start loop again",
+                                _id);
                         }
                     }
-                    finally
-                    {
+                    finally {
                         Interlocked.Decrement(ref _tasksRunning);
                     }
                 }
@@ -172,10 +176,7 @@ namespace com.espertech.esper.compat.concurrency
             var future = new FutureImpl<T>();
             Log.Debug("Submit: Instance {0} - enqueuing function", _id);
             _taskQueue.Push(
-                delegate
-                {
-                    future.Value = callable.Invoke();
-                });
+                delegate { future.Value = callable.Invoke(); });
             return future;
         }
 
@@ -205,7 +206,7 @@ namespace com.espertech.esper.compat.concurrency
         {
             _liveMode = LiveMode.STOPPING;
 
-            long endTime = DateTime.Now.Ticks + ((long) timeout.TotalMilliseconds)*10000;
+            long endTime = DateTime.Now.Ticks + ((long) timeout.TotalMilliseconds) * 10000;
             long nowTime;
 
             long taskCount;
@@ -221,13 +222,14 @@ namespace com.espertech.esper.compat.concurrency
                 nowTime = DateTime.Now.Ticks;
             } while (nowTime < endTime);
 
-            _liveMode = LiveMode.STOPPED ;
+            _liveMode = LiveMode.STOPPED;
 
             Log.Debug(".AwaitTermination - Instance {0} ending for {1} tasks to complete", _id, taskCount);
         }
 
         #endregion
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

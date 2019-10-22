@@ -374,7 +374,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             set => _unmatchedListener = value;
         }
 
-        public long CurrentTime => Services.SchedulingService.Time;
+        public long CurrentTime {
+            get {
+                return Services.SchedulingService.Time;
+            }
+        }
 
         public void RouteEventMap(
             IDictionary<string, object> map,

@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .MethodReturn(
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortPlain",
+                            "SortPlain",
                             Ref("arr"),
                             Ref("gen"),
                             ExprForgeCodegenNames.REF_ISNEWDATA,
@@ -809,7 +809,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .MethodReturn(
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "sortPlain",
+                            "SortPlain",
                             Ref("arr"),
                             Ref("gen"),
                             ExprForgeCodegenNames.REF_ISNEWDATA,

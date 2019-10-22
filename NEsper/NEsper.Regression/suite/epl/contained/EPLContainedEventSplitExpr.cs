@@ -107,12 +107,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             // test script
             if (eventRepresentationEnum.IsMapEvent()) {
-                stmtText = "@Name('s0') expression Collection js:splitSentenceJS(sentence) [" +
-                           "  var CollectionsClazz = Java.type('java.util.Collections');" +
-                           "  var words = new java.util.ArrayList();" +
-                           "  words.Add(CollectionsClazz.singletonMap('word', 'wordOne'));" +
-                           "  words.Add(CollectionsClazz.singletonMap('word', 'wordTwo'));" +
-                           "  words;" +
+                stmtText = "@Name('s0') expression System.Collection js:splitSentenceJS(sentence) [" +
+                           "  debug.Debug('test');" +
+                           "  var listType = host.type('System.Collections.ArrayList');" +
+                           "  var words = host.newObj(listType);" +
+                           "  debug.Debug(words);" +
+                           "  words.Add(Collections.SingletonDataMap('word', 'wordOne'));" +
+                           "  words.Add(Collections.SingletonDataMap('word', 'wordTwo'));" +
+                           "  return words;" +
                            "]" +
                            "select * from MySentenceEvent[splitSentenceJS(sentence)@type(WordEvent)]";
 
@@ -478,6 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
+                var collections = typeof(Collections).FullName;
                 var path = new RegressionPath();
                 var script = "create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
                              "mySplitScriptReturnEventBeanArray(value);" +
@@ -488,10 +491,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                              "  for (var i = 0; i < split.Length; i++) {\n" +
                              "    var pvalue = split[i].substring(1);\n" +
                              "    if (split[i].startsWith(\"A\")) {\n" +
-                             "      events[i] =  epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"p0\", pvalue), \"AEvent\");\n" +
+                             $"      events[i] =  epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"p0\", pvalue), \"AEvent\");\n" +
                              "    }\n" +
                              "    else if (split[i].startsWith(\"B\")) {\n" +
-                             "      events[i] =  epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"p1\", pvalue), \"BEvent\");\n" +
+                             $"      events[i] =  epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"p1\", pvalue), \"BEvent\");\n" +
                              "    }\n" +
                              "    else {\n" +
                              "      throw new UnsupportedOperationException(\"Unrecognized type\");\n" +

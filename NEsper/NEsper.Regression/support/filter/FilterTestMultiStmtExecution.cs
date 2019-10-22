@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             // create statements
             for (var i = 0; i < theCase.Filters.Length; i++) {
                 var filter = theCase.Filters[i];
-                var stmtName = "S" + i;
+                var stmtName = "s" + i;
                 var epl = "@Name('" + stmtName + "') select * from SupportBean(" + filter + ")";
                 env.CompileDeploy(epl).AddListener(stmtName);
                 existingStatements[i] = true;
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 
             // stop statements
             for (var i = 0; i < theCase.Filters.Length; i++) {
-                var stmtName = "S" + i;
+                var stmtName = "s" + i;
                 env.UndeployModuleContaining(stmtName);
                 startedStatements[i] = false;
 
@@ -141,24 +141,23 @@ namespace com.espertech.esper.regressionlib.support.filter
                 }
 
                 for (var i = 0; i < startedStatements.Length; i++) {
-                    var stmtName = "S" + i;
+                    var stmtName = "s" + i;
                     if (!existingStatements[i]) {
                         Assert.IsNull(env.Statement(stmtName), message);
                     }
+                    else if (!startedStatements[i]) {
+                        Assert.IsNull(env.Statement(stmtName));
+                        Assert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
+                    }
+                    else if (!item.ExpectedPerStmt[i]) {
+                        var listener = env.Listener(stmtName);
+                        var isInvoked = listener.GetAndClearIsInvoked();
+                        Assert.IsFalse(isInvoked, message);
+                    }
                     else {
-                        if (!startedStatements[i]) {
-                            Assert.IsNull(env.Statement(stmtName));
-                            Assert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
-                        }
-                        else if (!item.ExpectedPerStmt[i]) {
-                            var listener = env.Listener(stmtName);
-                            Assert.IsFalse(listener.GetAndClearIsInvoked(), message);
-                        }
-                        else {
-                            var listener = env.Listener(stmtName);
-                            Assert.IsTrue(listener.IsInvoked, message);
-                            Assert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
-                        }
+                        var listener = env.Listener(stmtName);
+                        Assert.IsTrue(listener.IsInvoked, message);
+                        Assert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
                     }
                 }
             }

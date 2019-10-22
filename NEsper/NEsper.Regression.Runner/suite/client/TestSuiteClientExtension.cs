@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration;
@@ -170,9 +171,9 @@ namespace com.espertech.esper.regressionrun.suite.client
             configurationCompiler.AddPlugInAggregationFunctionForge(
                 "concatWCodegen",
                 typeof(SupportConcatWCodegenAggregationFunctionForge));
-            configurationCompiler.AddPlugInAggregationFunctionForge("invalidAggFuncForge", typeof(string));
+            configurationCompiler.AddPlugInAggregationFunctionForge("invalidAggFuncForge", typeof(TimeSpan));
             configurationCompiler.AddPlugInAggregationFunctionForge("nonExistAggFuncForge", "com.NoSuchClass");
-
+            
             var configGeneral = new ConfigurationCompilerPlugInAggregationMultiFunction(
                 new [] { "ss","sa","sc","se1","se2","ee" },
                 typeof(SupportAggMFMultiRTForge));
@@ -247,7 +248,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientExtendAggregationFunction()
         {
             RegressionRunner.Run(_session, new ClientExtendAggregationFunction());
@@ -289,7 +290,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, new ClientExtendView());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientExtendVirtualDataWindow()
         {
             RegressionRunner.Run(_session, new ClientExtendVirtualDataWindow());

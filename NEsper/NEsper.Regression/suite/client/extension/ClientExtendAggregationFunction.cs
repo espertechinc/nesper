@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select * from SupportBean group by invalidAggFuncForge(1)",
-                "Error resolving aggregation: Class by name 'System.String' does not implement the AggregationFunctionForge interface");
+                "Error resolving aggregation: Class by name 'System.TimeSpan' does not implement the AggregationFunctionForge interface");
 
             TryInvalidCompile(
                 env,

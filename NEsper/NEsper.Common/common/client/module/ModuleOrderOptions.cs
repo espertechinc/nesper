@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.common.client.module
 {
     /// <summary>
-    ///     Options class passed to #getModuleOrder(java.util.Collection, ModuleOrderOptions)} for controlling the behavior of
+    ///     Options class passed to #GetModuleOrder(ICollection, ModuleOrderOptions)} for controlling the behavior of
     ///     ordering and dependency checking logic.
     /// </summary>
     [Serializable]

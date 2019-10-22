@@ -128,11 +128,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public object[] Get()
         {
-            if (!HasValue) {
-                throw new InvalidOperationException();
-            }
+            return GetValue(TimeSpan.FromSeconds(60));
+        }
 
-            return Current;
+        public bool Wait(TimeSpan timeOut)
+        {
+            return _numRowLatch.Await(timeOut);
         }
 
         public object[] GetValueOrDefault()
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public object[] GetValue(TimeSpan timeOut)
         {
-            bool result = _numRowLatch.Await(timeOut);
+            var result = Wait(timeOut);
             if (!result) {
                 throw new TimeoutException("latch timed out");
             }

@@ -236,6 +236,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             reftype.GetGenericArguments()[0],
                             reftype.GetGenericArguments()[1]);
 
+                    var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
+                        Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
+
+                    
                     block.IfRefNullReturnNull("left")
                         .DeclareVar(
                             dictionaryType,
@@ -249,13 +253,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "ContainsKey", 
-                            ExprDotName(Ref("left"), "Value"))))
+                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing))) 
                         .BlockReturn(ConstantFalse());
                 }
                 else if (reftype.IsGenericCollection()) {
                     var collectionType = typeof(ICollection<>)
                         .MakeGenericType(reftype.GetGenericArguments()[0]);
+                    
+                    var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
+                        Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
 
                     block.IfRefNullReturnNull("left")
                         .DeclareVar(
@@ -270,8 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "Contains",
-                            ExprDotName(Ref("left"), "Value"))))
+                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "Contains", leftWithBoxing)))
                         .BlockReturn(ConstantFalse());
                 }
                 else

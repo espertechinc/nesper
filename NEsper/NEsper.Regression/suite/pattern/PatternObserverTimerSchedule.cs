@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(date:1 seconds)]",
-                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
+                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,DateTimeEx,DateTimeOffset,DateTime,long");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(repetitions:1)]",
@@ -512,6 +512,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static DateTimeOffset GetThe1980Date()
         {
             return GetThe1980Calendar().DateTime;
+        }
+
+        public static DateTimeOffset GetThe1980DateTimeOffset()
+        {
+            return GetThe1980Calendar().DateTime;
+        }
+
+        public static DateTime GetThe1980DateTime()
+        {
+            return GetThe1980Calendar().DateTime.DateTime;
         }
 
         public static long GetThe1980Long()

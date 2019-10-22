@@ -6,6 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
@@ -34,18 +39,21 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numRepeats,
             EPStatement stmt)
         {
-            var threadPool = Executors.NewFixedThreadPool(
+            var executor = Executors.NewFixedThreadPool(
                 numThreads,
                 new SupportThreadFactory(typeof(MultithreadStmtListenerCreateStmt)).ThreadFactory);
-            var future = new IFuture<object>[numThreads];
+            var futures = new List<IFuture<object>>();
             for (var i = 0; i < numThreads; i++) {
                 var callable = new StmtListenerRouteCallable(i, env, stmt, numRepeats);
-                future[i] = threadPool.Submit(callable);
+                futures.Add(executor.Submit(callable));
             }
 
-            threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
-            SupportCompileDeployUtil.AssertFutures(future);
+            // Give the futures 10 seconds to complete the futures...
+            futures.AsParallel().ForAll(future => future.Wait(TimeSpan.FromSeconds(10)));
+
+            executor.Shutdown();
+            SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
+            SupportCompileDeployUtil.AssertFutures(futures);
         }
     }
 } // end of namespace

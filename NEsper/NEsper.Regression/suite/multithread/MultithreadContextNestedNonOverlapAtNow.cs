@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Deploy(compiledContext, runtime);
 
             var eplStmt = "context theContext " +
-                          "select sum(Value) as thesum, count(*) as thecnt, context.PerPartition.Key1 as thekey " +
+                          "select sum(Value) as thesum, count(*) as thecnt, context.perPartition.key1 as thekey " +
                           "from TestEvent output snapshot when terminated";
             var compiledStmt = Compile(eplStmt, configuration, path);
             var listener = new SupportUpdateListener();

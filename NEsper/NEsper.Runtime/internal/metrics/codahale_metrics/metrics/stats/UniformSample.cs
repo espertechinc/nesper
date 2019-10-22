@@ -82,8 +82,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         }
 
         /// <summary>
-        ///     Get a pseudo-random long uniformly between 0 and n-1. Stolen from
-        ///     {@link java.util.Random#nextInt()}.
+        ///     Get a pseudo-random long uniformly between 0 and n-1.
         /// </summary>
         /// <param name="n">the bound</param>
         /// <returns>a value select randomly from the range {@code [0..n)}.</returns>

@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         private readonly string @ref;
         private readonly CodegenExpression target;
         private readonly Type type;
+        private readonly bool useVar;
 
         public CodegenStatementForEach(
             CodegenBlock parent,
@@ -32,7 +33,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression target)
             : base(parent)
         {
+            this.useVar = false;
             this.type = type;
+            this.@ref = @ref;
+            this.target = target;
+        }
+
+        public CodegenStatementForEach(
+            CodegenBlock parent,
+            string @ref,
+            CodegenExpression target)
+            : base(parent)
+        {
+            this.useVar = true;
+            this.type = null;
             this.@ref = @ref;
             this.target = target;
         }
@@ -46,7 +60,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("foreach (");
-            AppendClassName(builder, type);
+            if (useVar) {
+                builder.Append("var");
+            }
+            else {
+                AppendClassName(builder, type);
+            }
+
             builder.Append(" ").Append(@ref).Append(" in ");
             target.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
@@ -57,7 +77,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(type);
+            if (!useVar) {
+                classes.AddToSet(type);
+            }
+
             Block.MergeClasses(classes);
             target.MergeClasses(classes);
         }

@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             if (forge.IsNumericValue) {
-                value = value.ToString();
+                value = value.RenderAny();
             }
 
             var stringValue = (string) value;
@@ -77,12 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .MethodReturn(GetRegexpCode(forge, mPattern, Ref("value")));
             }
             else {
+                var valueRender = StaticMethod(typeof(CompatExtensions), "RenderAny", Ref("value"));
                 methodNode.Block
                     .DeclareVar<object>(
                         "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
-                    .MethodReturn(GetRegexpCode(forge, mPattern, ExprDotMethod(Ref("value"), "ToString")));
+                    .MethodReturn(GetRegexpCode(forge, mPattern, valueRender));
             }
 
             return methodNode;

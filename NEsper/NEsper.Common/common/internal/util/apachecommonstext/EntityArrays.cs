@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
     /// <summary>
     /// Class holding various entity data for HTML and XML - generally for use with
     /// the LookupTranslator.
-    /// All Maps are generated using <code>java.util.Collections.unmodifiableMap()</code>.
     /// </summary>
     /// <unknown>@since 1.0</unknown>
     public class EntityArrays

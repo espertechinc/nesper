@@ -35,7 +35,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         private readonly CodegenStatementWBlockBase parentWBlock;
         private bool closed;
 
-        protected IList<CodegenStatement> statements = new List<CodegenStatement>(4);
+        private IList<CodegenStatement> statements = new List<CodegenStatement>(4);
+
+        /// <summary>
+        /// Returns the current set of statements.
+        /// </summary>
+        public IList<CodegenStatement> Statements => statements;
 
         //private BlockSyntax blockSyntax;
 
@@ -213,6 +218,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             CheckClosed();
             var forStmt = new CodegenStatementForEach(this, type, name, target);
+            var block = new CodegenBlock(forStmt);
+            forStmt.Block = block;
+            statements.Add(forStmt);
+            return block;
+        }
+
+        public CodegenBlock ForEachVar(
+            string name,
+            CodegenExpression target)
+        {
+            CheckClosed();
+            var forStmt = new CodegenStatementForEach(this, name, target);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
             statements.Add(forStmt);
@@ -799,6 +816,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock Lambda(
+            Supplier<CodegenNamedParam[]> argNamesProvider,
+            Consumer<CodegenBlock> bodyProvider)
+        {
+            CheckClosed();
+            statements.Add(
+                new CodegenExpressionLambda(this)
+                    .WithParams(argNamesProvider.Invoke())
+                    .WithBody(bodyProvider));
+            return this;
+        }
+        
         public BlockSyntax CodegenSyntax()
         {
             throw new NotImplementedException();

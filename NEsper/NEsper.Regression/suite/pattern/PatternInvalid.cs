@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
@@ -20,6 +21,7 @@ using NUnit.Framework;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -190,13 +192,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 exception = GetStatementExceptionPattern(env, "SupportBean_N(IntPrimitive='s')");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'IntPrimitive=\"s\"': Implicit conversion from datatype 'String' to 'Integer' is not allowed [");
+                    $"Failed to validate filter expression 'IntPrimitive=\"s\"': Implicit conversion from datatype '{typeof(string).CleanName()}' to '{typeof(int?).CleanName()}' is not allowed [");
 
                 // property not a primitive type
-                exception = GetStatementExceptionPattern(env, "SupportBeanComplexProps(nested=1)");
+                exception = GetStatementExceptionPattern(env, "SupportBeanComplexProps(Nested=1)");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'nested=1': Implicit conversion from datatype 'Integer' to 'SupportBeanSpecialGetterNested' is not allowed [");
+                    $"Failed to validate filter expression 'Nested=1': Implicit conversion from datatype '{typeof(int?).CleanName()}' to '{typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested).CleanName()}' is not allowed [");
 
                 // no tag matches prior use
                 exception = GetStatementExceptionPattern(env, "SupportBean_N(DoublePrimitive=x.abc)");
@@ -208,27 +210,25 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 exception = GetStatementExceptionPattern(env, "SupportBean(TheString in [1:2])");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'TheString between 1 and 2': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                    $"Failed to validate filter expression 'TheString between 1 and 2': Implicit conversion from datatype '{typeof(string).CleanName()}' to numeric is not allowed [");
 
                 // range does not allow string params
                 exception = GetStatementExceptionPattern(env, "SupportBean(DoubleBoxed in ['a':2])");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'DoubleBoxed between \"a\" and 2': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                    $"Failed to validate filter expression 'DoubleBoxed between \"a\" and 2': Implicit conversion from datatype '{typeof(string).CleanName()}' to numeric is not allowed [");
 
                 // invalid observer arg
                 exception = GetStatementExceptionPattern(env, "timer:at(9l)");
                 AssertMessage(
                     exception,
-                    "Invalid parameter for pattern observer 'timer:at(9)': Invalid number of parameters for timer:at");
+                    "Invalid parameter for pattern observer 'timer:at(9L)': Invalid number of parameters for timer:at");
 
                 // invalid guard arg
                 exception = GetStatementExceptionPattern(env, "SupportBean where timer:within('s')");
                 AssertMessage(
                     exception,
-                    "Invalid parameter for pattern guard '" +
-                    typeof(SupportBean).Name +
-                    " where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
+                    $"Invalid parameter for pattern guard '{typeof(SupportBean).Name} where timer:within(\"s\")': Timer-within guard requires a single numeric or time period parameter [");
 
                 // use-result property is wrong type
                 exception = GetStatementExceptionPattern(
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "x=SupportBean -> SupportBean(DoublePrimitive=x.BoolBoxed)");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'DoublePrimitive=x.BoolBoxed': Implicit conversion from datatype 'Boolean' to 'Double' is not allowed [");
+                    $"Failed to validate filter expression 'DoublePrimitive=x.BoolBoxed': Implicit conversion from datatype '{typeof(bool?).CleanName()}' to '{typeof(double?).CleanName()}' is not allowed [");
 
                 // named-parameter for timer:at or timer:interval
                 exception = GetStatementExceptionPattern(env, "timer:interval(interval:10)");
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var @event = typeof(SupportBean_N).FullName;
+                var @event = typeof(SupportBean_N).Name;
 
                 TryValid(env, $"na={@event} -> nb={@event}(DoublePrimitive = na.DoublePrimitive)");
                 TryInvalid(env, $"xx={@event} -> nb={@event}(DoublePrimitive = na.DoublePrimitive)");

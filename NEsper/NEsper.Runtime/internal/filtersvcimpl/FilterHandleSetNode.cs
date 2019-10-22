@@ -25,6 +25,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public sealed class FilterHandleSetNode : EventEvaluator
     {
+        private static int _gid;
+        private readonly int _id = ++_gid;
+        
+        
         private readonly IReaderWriterLock _nodeRwLock;
         private readonly LinkedHashSet<FilterHandle> _callbackSet;
         private readonly List<FilterParamIndexBase> _indizes;

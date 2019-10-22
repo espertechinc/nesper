@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create insert into (not does insert if key already exists)
                 var stmtTextInsertOne =
                     "insert into MyInfraSSS select TheString as key, IntBoxed as value from SupportBean as S0" +
-                    " where not exists (select * from MyInfraSSS as win where win.Key = S0.TheString)";
+                    " where not exists (select * from MyInfraSSS as win where win.key = S0.TheString)";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendSupportBean(env, "E1", 1);

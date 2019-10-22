@@ -79,7 +79,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             unchecked {
-                return ((_max != null ? _max.GetHashCode() : 0) * 397) ^ (_min != null ? _min.GetHashCode() : 0);
+                int result = base.GetHashCode();
+                result = result * 31 + (_min != null ? _min.GetHashCode() : 0);
+                result = result * 31 + (_max != null ? _max.GetHashCode() : 0);
+                return result;
             }
         }
 

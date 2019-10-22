@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             threadPool.Submit(runnableOne.Run);
             threadPool.Submit(runnableTwo.Run);
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 1, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 1, TimeUnit.SECONDS);
 
             Assert.IsNull(runnableOne.LastException);
             Assert.IsNull(runnableTwo.LastException);

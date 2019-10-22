@@ -55,10 +55,14 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (AssertionException ex) {
+                Console.Error.WriteLine("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Console.Error.WriteLine(ex.StackTrace);
                 log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
+                Console.Error.WriteLine("Error in thread " + Thread.CurrentThread.ManagedThreadId);
+                Console.Error.WriteLine(ex.StackTrace);
                 log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }

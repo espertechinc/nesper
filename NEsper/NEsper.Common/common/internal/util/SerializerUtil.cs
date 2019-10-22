@@ -41,6 +41,12 @@ namespace com.espertech.esper.common.@internal.util
                 new[] {SerializerFactory.OBJECT_SERIALIZER})[0];
         }
 
+        public static object ByteArrBase64ToObject(string s)
+        {
+            byte[] bytes = Convert.FromBase64String(s);
+            return ByteArrToObject(bytes);
+        }
+        
         public static string ObjectToByteArrBase64(object userObject)
         {
             byte[] bytes = ObjectToByteArr(userObject);

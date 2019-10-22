@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -51,14 +53,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numEvents)
         {
             var sendLock = new object();
-            var threadPool = Executors.NewFixedThreadPool(
-                numThreads,
-                new SupportThreadFactory(typeof(MultithreadStmtPattern)).ThreadFactory);
-            var future = new IFuture<object>[numThreads];
+            var executor = Executors.NewMultiThreadedExecutor(numThreads);
+            // new SupportThreadFactory(typeof(MultithreadStmtPattern)).ThreadFactory);
+            var futures = new List<IFuture<object>>();
             var callables = new SendEventWaitCallable[numThreads];
             for (var i = 0; i < numThreads; i++) {
                 callables[i] = new SendEventWaitCallable(i, env.Runtime, sendLock, new GeneratorEnumerator(numEvents));
-                future[i] = threadPool.Submit(callables[i]);
+                futures.Add(executor.Submit(callables[i]));
             }
 
             var listener = new SupportMTUpdateListener[numEvents];
@@ -84,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 Monitor.PulseAll(sendLock);
             }
 
-            threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            executor.Shutdown();
+            SupportCompileDeployUtil.ExecutorAwait(executor, 10, TimeUnit.SECONDS);
 
             for (var i = 0; i < numEvents; i++) {
                 Assert.IsTrue(listener[i].AssertOneGetNewAndReset().Get("a") is SupportBean);

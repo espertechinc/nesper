@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string METHOD_HANDLEEXPRNUMBERSETLISTADD = "handleExprNumberSetListAdd";
-        private const string METHOD_HANDLEEXPRNUMBERSETLISTEMPTY = "handleExprNumberSetListEmpty";
+        private const string METHOD_HANDLEEXPRNUMBERSETLISTADD = "HandleExprNumberSetListAdd";
+        private const string METHOD_HANDLEEXPRNUMBERSETLISTEMPTY = "HandleExprNumberSetListEmpty";
 
         [NonSerialized] private ExprEvaluator[] evaluators;
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 typeof(ExprNumberSetList),
                 codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar<IList<object>>("parameters", NewInstance(typeof(List<object>)));
+                .DeclareVar<IList<NumberSetParameter>>("parameters", NewInstance(typeof(List<NumberSetParameter>)));
             var count = -1;
             foreach (var node in ChildNodes) {
                 count++;

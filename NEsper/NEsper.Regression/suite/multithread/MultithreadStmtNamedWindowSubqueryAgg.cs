@@ -6,6 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
@@ -61,22 +65,24 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
 
             // execute
-            var threadPool = Executors.NewFixedThreadPool(
-                numThreads,
-                new SupportThreadFactory(typeof(MultithreadStmtNamedWindowSubqueryAgg)).ThreadFactory);
-            var future = new IFuture<bool?>[numThreads];
+            var executor = Executors.NewMultiThreadedExecutor(numThreads);
+            // new SupportThreadFactory(typeof(MultithreadStmtNamedWindowSubqueryAgg)).ThreadFactory)
+            var futures = new List<IFuture<bool?>>();
             for (var i = 0; i < numThreads; i++) {
-                future[i] = threadPool.Submit(
+                futures.Add(executor.Submit(
                     new StmtNamedWindowSubqueryAggCallable(
                         i,
                         env.Runtime,
                         numEventsPerThread,
-                        env.Statement("target")));
+                        env.Statement("target"))));
             }
+            
+            // Give the futures 10 seconds to complete the futures...
+            futures.AsParallel().ForAll(future => future.Wait(TimeSpan.FromSeconds(10)));
 
-            threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
-            SupportCompileDeployUtil.AssertFutures(future);
+            executor.Shutdown();
+            SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
+            SupportCompileDeployUtil.AssertFutures(futures);
 
             var events = EPAssertionUtil.EnumeratorToArray(env.Statement("namedWindow").GetEnumerator());
             Assert.AreEqual(0, events.Length);

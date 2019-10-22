@@ -223,7 +223,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             REF_ISSYNTHESIZE));
             }
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, object>>(
                     "keysAndEvents",
                     NewInstance(typeof(Dictionary<object, object>)))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
@@ -366,14 +367,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(EventBean[]),
                 "GenerateOutputEventsView",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>),
-                    "keysAndEvents",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(EventBean[]),
-                    ExprForgeCodegenNames.NAME_EPS),
+                    typeof(IDictionary<object, object>), "keysAndEvents",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -444,19 +441,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(void),
                 "GenerateOutputBatchedRowFromMap",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>),
-                    "keysAndEvents",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys",
-                    typeof(AgentInstanceContext),
-                    NAME_AGENTINSTANCECONTEXT),
-                typeof(ResultSetProcessorRowPerGroupImpl),
+                    typeof(IDictionary<object, object>), "keysAndEvents",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<object>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys",
+                    typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT),
+                typeof(ResultSetProcessorRowPerGroupImpl), 
                 classScope,
                 code);
         }
@@ -786,7 +777,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 "GenerateGroupKeyArrayJoinTakingMapCodegen",
                 CodegenNamedParam.From(
                     typeof(ISet<MultiKey<EventBean>>), "resultSet",
-                    typeof(IDictionary<object, object>), "eventPerKey",
+                    typeof(IDictionary<object, EventBean>), "eventPerKey",
                     typeof(bool), NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
@@ -1261,7 +1252,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         var ifNotFound = forNew.IfCondition(
                             EqualsNull(
-                                ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                         if (forge.IsSelectRStream) {
                             ifNotFound.InstanceMethod(
                                 generateOutputBatchedRowAddToList,
@@ -1298,7 +1289,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                         var ifNotFound = forOld.IfCondition(
                             EqualsNull(
-                                ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                         if (forge.IsSelectRStream) {
                             ifNotFound.InstanceMethod(
                                 generateOutputBatchedRowAddToList,
@@ -1380,9 +1371,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<object, EventBean>>(
                 "groupRepsView",
-                NewInstance(typeof(LinkedHashMap<object, object>)));
+                NewInstance(typeof(LinkedHashMap<object, EventBean>)));
 
             if (forge.OptionalHavingNode == null) {
                 {
@@ -1428,7 +1419,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -1480,7 +1471,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -1580,7 +1571,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -1645,7 +1636,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -1757,7 +1748,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             EqualsNull(
                                 ExprDotMethod(
                                     Ref(NAME_OUTPUTALLGROUPREPS),
-                                    "Put",
+                                    "Push",
                                     Ref("mk"),
                                     Ref("eventsPerStream"))));
                         if (forge.IsSelectRStream) {
@@ -1798,7 +1789,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             EqualsNull(
                                 ExprDotMethod(
                                     Ref(NAME_OUTPUTALLGROUPREPS),
-                                    "Put",
+                                    "Push",
                                     Ref("mk"),
                                     Ref("eventsPerStream"))));
                         if (forge.IsSelectRStream) {
@@ -1945,9 +1936,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<object, EventBean[]>>(
                 "groupRepsView",
-                NewInstance(typeof(Dictionary<object, object>)));
+                NewInstance(typeof(Dictionary<object, EventBean[]>)));
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
@@ -1969,7 +1960,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         var ifNotFound = forNew.IfCondition(
                             EqualsNull(
-                                ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                         if (forge.IsSelectRStream) {
                             ifNotFound.InstanceMethod(
                                 generateOutputBatchedRowAddToList,
@@ -2005,7 +1996,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             EqualsNull(
                                 ExprDotMethod(
                                     Ref("groupRepsView"),
-                                    "Put",
+                                    "Push",
                                     Ref("mk"),
                                     NewArrayWithInit(typeof(EventBean), Ref("anOldData")))));
                         if (forge.IsSelectRStream) {
@@ -2089,9 +2080,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<object, EventBean[]>>(
                 "groupRepsView",
-                NewInstance(typeof(LinkedHashMap<object, object>)));
+                NewInstance(typeof(LinkedHashMap<object, EventBean[]>)));
 
             if (forge.OptionalHavingNode == null) {
                 {
@@ -2134,7 +2125,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -2183,7 +2174,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -2285,7 +2276,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                     NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("newData"), Ref("i"))));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -2345,7 +2336,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                     NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("oldData"), Ref("i"))));
                             var ifExists = ifPass.IfCondition(
                                 EqualsNull(
-                                    ExprDotMethod(Ref("groupRepsView"), "Put", Ref("mk"), Ref("eventsPerStream"))));
+                                    ExprDotMethod(Ref("groupRepsView"), "Push", Ref("mk"), Ref("eventsPerStream"))));
                             if (forge.IsSelectRStream) {
                                 ifExists.InstanceMethod(
                                     generateOutputBatchedRowAddToList,
@@ -2449,7 +2440,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             EqualsNull(
                                 ExprDotMethod(
                                     Ref(NAME_OUTPUTALLGROUPREPS),
-                                    "Put",
+                                    "Push",
                                     Ref("mk"),
                                     NewArrayWithInit(typeof(EventBean), Ref("aNewData")))));
                         if (forge.IsSelectRStream) {
@@ -2485,7 +2476,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             EqualsNull(
                                 ExprDotMethod(
                                     Ref(NAME_OUTPUTALLGROUPREPS),
-                                    "Put",
+                                    "Push",
                                     Ref("mk"),
                                     NewArrayWithInit(typeof(EventBean), Ref("anOldData")))));
                         if (forge.IsSelectRStream) {
@@ -2541,7 +2532,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, object>>(
                     "keysAndEvents",
                     NewInstance(typeof(Dictionary<object, object>)))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));

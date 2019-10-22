@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             es.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(es, 20, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(es, 20, TimeUnit.SECONDS);
 
             foreach (var runnable in runnables) {
                 Assert.IsNull(runnable.Exception);

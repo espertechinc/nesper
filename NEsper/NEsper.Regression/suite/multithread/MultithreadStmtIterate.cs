@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 5, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 5, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
         }
     }

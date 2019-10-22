@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
-                Assert.AreEqual(23, type.PropertyNames.Length);
+                Assert.AreEqual(24, type.PropertyNames.Length);
                 Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
                 Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
                 Assert.AreEqual(typeof(int), type.GetPropertyType("b"));

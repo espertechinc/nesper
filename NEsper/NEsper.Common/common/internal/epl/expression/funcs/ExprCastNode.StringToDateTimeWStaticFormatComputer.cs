@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToDateTimeWStaticFormatComputer),
-                    "StringDateTimeWStaticFormatParse",
+                    "StringToDateTimeWStaticFormatParse",
                     input,
                     CodegenFormatter(codegenClassScope));
             }

@@ -10,8 +10,18 @@ using System;
 
 namespace com.espertech.esper.compat.concurrency
 {
+    /// <summary>
+    /// TBD: Replace with .NET Task Model
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IFuture<T>
     {
+        /// <summary>
+        /// Waits for execution of the future to complete up to the allotted amount of time.
+        /// </summary>
+        /// <param name="timeOut"></param>
+        bool Wait(TimeSpan timeOut);
+        
         /// <summary>
         /// Gets a value indicating whether this instance has value.
         /// </summary>

@@ -52,10 +52,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var threadPool = Executors.NewFixedThreadPool(
                 numThreads,
                 new SupportThreadFactory(typeof(MultithreadStmtTimeWindow)).ThreadFactory);
-            var future = new IFuture<bool>[numThreads];
+            var futures = new List<IFuture<bool>>();
             for (var i = 0; i < numThreads; i++) {
                 var callable = new SendEventCallable(i, env.Runtime, new GeneratorEnumerator(numRepeats));
-                future[i] = threadPool.Submit(callable);
+                futures.Add(threadPool.Submit(callable));
             }
 
             // Advance time window every 100 milliseconds for 1 second
@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
-            SupportCompileDeployUtil.AssertFutures(future);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.AssertFutures(futures);
 
             // set time to a large value
             env.AdvanceTime(10000000000L);

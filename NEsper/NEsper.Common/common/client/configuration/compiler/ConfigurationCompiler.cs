@@ -20,9 +20,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
     public class ConfigurationCompiler
     {
         /// <summary>
-        ///     Constructs an empty configuration. The auto import values
-        ///     are set by default to java.lang, java.math, java.text and
-        ///     java.util.
+        ///     Constructs an empty configuration.
         /// </summary>
         public ConfigurationCompiler()
         {

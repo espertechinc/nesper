@@ -164,7 +164,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics
         /// Writes the values of the sample to the given file.
         /// </summary>
         /// <param name="output">the file to which the values will be written</param>
-        /// <throws>java.io.IOException if there is an error writing the values</throws>
+        /// <throws>IOException if there is an error writing the values</throws>
         public void Dump(FileInfo output)
         {
             using (TextWriter writer = output.CreateText()) {

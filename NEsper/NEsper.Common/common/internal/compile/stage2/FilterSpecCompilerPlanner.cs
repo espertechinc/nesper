@@ -181,9 +181,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     constituent,
                     args.arrayEventTypes,
                     args.statementRawInfo.StatementName);
-                filterParamExprMap.Put(
-                    constituent,
-                    param); // accepts null values as the expression may not be optimized
+                filterParamExprMap.Put(constituent, param); // accepts null values as the expression may not be optimized
             }
 
             // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))

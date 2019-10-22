@@ -29,6 +29,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>indicator</value>
         public bool IsEnableCode { get; private set; }
+        
+        /// <summary>
+        /// Gets or sets the location for audit code to be written.
+        /// </summary>
+        public string AuditDirectory { get; set; }
 
         /// <summary>
         ///     Set indicator whether code generation logging is enabled, by default it is disabled.

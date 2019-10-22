@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.virtualdw;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.directory;
@@ -292,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "@Name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0 where vdw.TheString = st0.Id",
                     path)
                 .AddListener("s0");
-            AssertIndexSpec(window.RequestedLookups[1], "TheString=(String)", "");
+            AssertIndexSpec(window.RequestedLookups[1], "TheString=(System.String)", "");
 
             env.SendEventBean(new SupportBean_ST0("E1", 0));
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1"}, window.LastAccessKeys);
@@ -308,13 +309,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test multi-criteria join
             env.CompileDeploy(
                 "@Name('s0') select vdw.TheString from MyVDW vdw, SupportBeanRange#lastevent st0 " +
-                "where vdw.TheString = st0.Id and LongPrimitive = keyLong and IntPrimitive between RangeStart and RangeEnd",
+                "where vdw.TheString = st0.Id and LongPrimitive = KeyLong and IntPrimitive between RangeStart and RangeEnd",
                 path);
             env.AddListener("s0");
             AssertIndexSpec(
                 window.RequestedLookups[1],
-                "TheString=(String)|LongPrimitive=(Long)",
-                "IntPrimitive[,](Integer)");
+                "TheString=(System.String)|LongPrimitive=(System.Nullable<System.Int64>)",
+                "IntPrimitive[,](System.Nullable<System.Int32>)");
 
             env.SendEventBean(SupportBeanRange.MakeKeyLong("S1", 50L, 80, 120));
             EPAssertionUtil.AssertProps(
@@ -356,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "@Name('s0') select (select col1 from MyVDW vdw where col1=st0.Id) as val0 from SupportBean_ST0 st0",
                     path)
                 .AddListener("s0");
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)", "");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "");
 
             env.SendEventBean(new SupportBean_ST0("E1", 0));
             EPAssertionUtil.AssertProps(
@@ -379,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "from SupportBeanRange r",
                     path)
                 .AddListener("s0");
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)|col2=(String)", "col3[,](Integer)");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)|col2=(System.String)", "col3[,](System.Nullable<System.Int32>)");
 
             env.SendEventBean(new SupportBeanRange("key1", "key2", 5, 10));
             EPAssertionUtil.AssertProps(
@@ -500,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test single-criteria FAF
             result = env.CompileExecuteFAF("select col1 from MyVDW vdw where col1='key1'", path);
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)", "");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "");
             EPAssertionUtil.AssertProps(
                 result.Array[0],
                 new [] { "col1" },
@@ -511,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             result = env.CompileExecuteFAF(
                 "select col1 from MyVDW vdw where col1='key1' and col2='key2' and col3 between 5 and 15",
                 path);
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)|col2=(String)", "col3[,](Double)");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)|col2=(System.String)", "col3[,](System.Double)");
             EPAssertionUtil.AssertProps(
                 result.Array[0],
                 new [] { "col1" },
@@ -524,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             result = env.CompileExecuteFAF(
                 "select col1 from MyVDW vdw where col1='key1' and col2>'Key0' and col3 between 5 and 15",
                 path);
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)", "col3[,](Double)|col2>(String)");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "col3[,](System.Double)|col2>(System.String)");
             EPAssertionUtil.AssertProps(
                 result.Array[0],
                 new [] { "col1" },
@@ -556,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test single-criteria on-delete
             env.CompileDeploy("@Name('s0') on SupportBean_ST0 st0 delete from MyVDW vdw where col1=st0.Id", path)
                 .AddListener("s0");
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)", "");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "");
 
             env.SendEventBean(new SupportBean_ST0("E1", 0));
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1"}, window.LastAccessKeys);
@@ -575,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "from MyVDW vdw where col1=r.Id and col2=r.Key and col3 between r.RangeStart and r.RangeEnd",
                     path)
                 .AddListener("s0");
-            AssertIndexSpec(window.LastRequestedLookup, "col1=(String)|col2=(String)", "col3[,](Integer)");
+            AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)|col2=(System.String)", "col3[,](System.Nullable<System.Int32>)");
             Assert.AreEqual("MyVDW", window.LastRequestedLookup.NamedWindowName);
             Assert.IsNotNull(window.LastRequestedLookup.StatementId);
             Assert.AreEqual("s0", window.LastRequestedLookup.StatementName);
@@ -626,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // create-index event
             vdw.Events.Clear();
-            env.CompileDeploy("@Name('Idx') create index IndexOne on MyVDW (col3, col2 btree)", path);
+            env.CompileDeploy("@Name('idx') create index IndexOne on MyVDW (col3, col2 btree)", path);
             var startEvent = (VirtualDataWindowEventStartIndex) vdw.Events[0];
             Assert.AreEqual("MyVDW", startEvent.NamedWindowName);
             Assert.AreEqual("IndexOne", startEvent.IndexName);
@@ -655,7 +656,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             // test no where clause with unique on multiple props, exact specification of where-clause
             IndexAssertionEventSend assertSendEvents = () => {
-                var fields = new [] { "vdw.TheString","vdw.IntPrimitive","ssb1.i1" };
+                var fields = new [] { "vdw.TheString","vdw.IntPrimitive","ssb1.I1" };
                 env.SendEventBean(new SupportSimpleBeanOne("S1", 1, 102, 103));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -671,7 +672,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "where vdw.TheString = ssb1.S1",
                     true,
                     assertSendEvents);
-                TryAssertionVirtualDW(env, caseEnum, "i1", "where vdw.TheString = ssb1.S1", false, assertSendEvents);
+                TryAssertionVirtualDW(
+                    env,
+                    caseEnum,
+                    "I1",
+                    "where vdw.TheString = ssb1.S1",
+                    false,
+                    assertSendEvents);
                 TryAssertionVirtualDW(
                     env,
                     caseEnum,
@@ -683,14 +690,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     env,
                     caseEnum,
                     "LongPrimitive",
-                    "where vdw.LongPrimitive = ssb1.l1",
+                    "where vdw.LongPrimitive = ssb1.L1",
                     true,
                     assertSendEvents);
                 TryAssertionVirtualDW(
                     env,
                     caseEnum,
                     "LongPrimitive,TheString",
-                    "where vdw.TheString = ssb1.S1 and vdw.LongPrimitive = ssb1.l1",
+                    "where vdw.TheString = ssb1.S1 and vdw.LongPrimitive = ssb1.L1",
                     true,
                     assertSendEvents);
             }
@@ -787,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             IList<string> found = new List<string>();
             for (var i = 0; i < split.Length; i++) {
                 var field = fields[i];
-                var result = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.Name + ")";
+                var result = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.CleanName() + ")";
                 found.Add(result);
             }
 

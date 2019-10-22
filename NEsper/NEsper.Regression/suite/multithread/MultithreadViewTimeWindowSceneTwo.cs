@@ -107,14 +107,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var symbols = new string[numSymbols];
             listeners = new ResultUpdateListener[symbols.Length];
             for (var i = 0; i < symbols.Length; i++) {
-                var annotation = string.Format("@Name('%s')", "stmt_" + i);
+                var annotation = $"@Name('stmt_{i}')";
                 symbols[i] = "S" + i;
                 var epl = annotation +
-                          "select Symbol, sum(Volume) as sumVol from SupportMarketDataBean(Symbol='" +
-                          symbols[i] +
-                          "')#time(" +
-                          timeWindowSize +
-                          ")";
+                          "select Symbol, sum(Volume) as sumVol " + 
+                          " from SupportMarketDataBean" +
+                          "(Symbol='" + symbols[i] + "')" +
+                          "#time(" + timeWindowSize + ")";
                 env.CompileDeploy(epl);
                 var testStmt = env.Statement("stmt_" + i);
                 listeners[i] = new ResultUpdateListener();
@@ -126,8 +125,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             ILockable @lock = new MonitorSlimLock();
             for (var i = 0; i < threads.Length; i++) {
                 runnables[i] = new TimeWinRunnable(i, env, @lock, symbols, numEvents);
-                threads[i] = new Thread(runnables[i].Run);
-                threads[i].Name = typeof(MultithreadViewTimeWindowSceneTwo).Name;
+                threads[i] = new Thread(runnables[i].Run) {
+                    Name = typeof(MultithreadViewTimeWindowSceneTwo).Name
+                };
             }
         }
 
@@ -155,15 +155,25 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                for (var i = 0; i < numberOfEvents; i++) {
-                    var symbolNum = (threadNum + numberOfEvents) % symbols.Length;
-                    var symbol = symbols[symbolNum];
-                    long volume = 1;
+                try {
+                    for (var i = 0; i < numberOfEvents; i++) {
+                        var symbolNum = (threadNum + numberOfEvents) % symbols.Length;
+                        var symbol = symbols[symbolNum];
+                        long volume = 1;
 
-                    object theEvent = new SupportMarketDataBean(symbol, -1, volume, null);
+                        object theEvent = new SupportMarketDataBean(symbol, -1, volume, null);
 
-                    using (sharedLock.Acquire()) {
-                        env.SendEventBean(theEvent);
+                        using (sharedLock.Acquire()) {
+                            env.SendEventBean(theEvent);
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    while (e != null) {
+                        Console.WriteLine($"Exception: {e.GetType().Name}");
+                        Console.WriteLine(e.StackTrace);
+                        Console.WriteLine("----------------------------------------");
+                        e = e.InnerException;
                     }
                 }
             }

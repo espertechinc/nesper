@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             threadPool.Shutdown();
-            SupportCompileDeployUtil.ThreadpoolAwait(threadPool, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
 
             var events = EPAssertionUtil.EnumeratorToArray(stmtWindow.GetEnumerator());
             Assert.AreEqual(numThreads * numRepeats, events.Length);

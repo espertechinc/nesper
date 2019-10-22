@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.util;
 
 namespace com.espertech.esper.common.@internal.epl.join.hint
 {
@@ -127,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             var indexOpen = text.IndexOf('(');
             var indexClosed = text.LastIndexOf(')');
             if (indexOpen != -1) {
-                var value = text.Substring(indexOpen + 1, indexClosed).Trim();
+                var value = text.Substring(indexOpen + 1, indexClosed - indexOpen).Trim();
                 try {
                     return int.Parse(value);
                 }
@@ -143,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
         {
             var value = ExtractValueEquals(text);
             try {
-                return int.Parse(value);
+                return SimpleTypeParserFunctions.ParseInt32(value);
             }
             catch (Exception) {
                 return value;

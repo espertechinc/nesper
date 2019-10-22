@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, EventMapNested.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventMapProperties()
         {
             RegressionRunner.Run(session, EventMapProperties.Executions());
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[] {typeof(SupportBean)}) {
-                configuration.Common.AddEventType(clazz);
+                configuration.Common.AddEventType(clazz.Name, clazz);
             }
 
             Properties myMapEvent = new Properties();

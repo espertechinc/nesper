@@ -159,7 +159,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                     //     return ({underlyingType}) @event.Underlying;
                     // }
 
-
                     var methodNode = parent
                         .MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
                         .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);
