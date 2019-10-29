@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MyMapTypeUO", myMapTypeUO);
 
             var legacy = new ConfigurationCommonEventTypeBean();
-            legacy.CopyMethod = "myCopyMethod";
+            legacy.CopyMethod = "MyCopyMethod";
             configuration.Common.AddEventType("SupportBeanCopyMethod", typeof(SupportBeanCopyMethod), legacy);
 
             IDictionary<string, object> defMapTypeKVDistinct = new Dictionary<string, object>();
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherCreateIndex.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLOtherCreateSchema()
         {
             RegressionRunner.Run(session, EPLOtherCreateSchema.Executions());
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherPatternQueries.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLOtherPlanExcludeHint()
         {
             RegressionRunner.Run(session, EPLOtherPlanExcludeHint.Executions());
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLOtherUnaryMinus());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLOtherUpdateIStream()
         {
             RegressionRunner.Run(session, EPLOtherUpdateIStream.Executions());

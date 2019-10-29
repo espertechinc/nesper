@@ -515,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"P0", "P1"};
+                string[] fields = {"p0", "p1"};
                 var path = new RegressionPath();
                 var stmtTextCreateOne = namedWindow
                     ? "@Name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
@@ -554,7 +554,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 // There is no guarantee whether the delete or the update wins
-                string[] fields = {"P0", "P1"};
+                string[] fields = {"p0", "p1"};
                 var path = new RegressionPath();
 
                 // create window
@@ -604,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"P0", "P1"};
+                string[] fields = {"p0", "p1"};
                 var path = new RegressionPath();
 
                 // create window
@@ -791,7 +791,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     fields,
                     new[] {new object[] {"E1", 1}});
                 var onEvent = env.Listener("on").AssertOneGetNewAndReset();
-                Assert.AreEqual("E1", onEvent.Get("P0"));
+                Assert.AreEqual("E1", onEvent.Get("p0"));
                 Assert.AreSame(onEvent.EventType, onType);
 
                 env.Milestone(0);
@@ -801,7 +801,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.GetEnumerator("Window"),
                     fields,
                     new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
-                Assert.AreEqual("E2", env.Listener("on").AssertOneGetNewAndReset().Get("P0"));
+                Assert.AreEqual("E2", env.Listener("on").AssertOneGetNewAndReset().Get("p0"));
 
                 env.UndeployAll();
             }
@@ -1367,15 +1367,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    new [] { "id","Key0" },
+                    new [] { "Id","Key0" },
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
-                    new [] { "id","Key0" },
+                    new [] { "Id","Key0" },
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s3").AssertOneGetNewAndReset(),
-                    new [] { "id","Key0" },
+                    new [] { "Id","Key0" },
                     new object[] {"ID1", "K1"});
                 Assert.IsFalse(env.Listener("s4").IsInvoked);
 
@@ -1384,7 +1384,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s4").AssertOneGetNewAndReset(),
-                    new [] { "id","Key0" },
+                    new [] { "Id","Key0" },
                     new object[] {"ID1", "K2"});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("Create"),
@@ -1612,7 +1612,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "on MyEvent as eme\n" +
                           "  merge MyInfraIOS as MyInfraIOS where MyInfraIOS.name = eme.name\n" +
                           "   when matched then\n" +
-                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.Value as status\n" +
+                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.value as status\n" +
                           "   when not matched then\n" +
                           "      insert into OtherStreamOne select eme.name as event_name, 0d as status;\n" +
                           "@Name('s0') select * from OtherStreamOne;\n";

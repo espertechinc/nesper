@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(ICollection<EventBean>),
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -433,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(ExprDeclaredForgeBase),
                     scope,
                     codegenClassScope)
@@ -462,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotName(Ref("entry"), "Result"))
-                    .DeclareVar<ICollection<object>>("result", innerValue)
+                    .DeclareVar<ICollection<EventBean>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
@@ -472,7 +472,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             Ref("result")));
             }
             else {
-                block.DeclareVar<ICollection<object>>("result", innerValue);
+                block.DeclareVar<ICollection<EventBean>>("result", innerValue);
             }
 
             block.MethodReturn(Ref("result"));

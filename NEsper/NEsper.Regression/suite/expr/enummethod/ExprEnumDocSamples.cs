@@ -291,7 +291,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-#if false
                 AssertStmt(env, path, "select Items.firstof().AssetId as firstcenter from LocationReport");
                 AssertStmt(env, path, "select Items.where(p -> p.Type=\"P\") from LocationReport");
                 AssertStmt(env, path, "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
@@ -358,7 +357,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.toMap(k -> k.AssetId,v -> distance(v.Location.X,v.Location.Y,0,0)) as assetDistance from LocationReport");
-#endif
                 AssertStmt(
                     env,
                     path,

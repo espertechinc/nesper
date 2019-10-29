@@ -157,7 +157,11 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null collection component type");
             }
 
-            return new ClassMultiValuedEPType(typeof(ICollection<object>), collectionComponentType);
+            var collectionType = collectionComponentType == typeof(object[]) 
+                ? typeof(ICollection<object[]>)
+                : typeof(ICollection<object>);
+            
+            return new ClassMultiValuedEPType(collectionType, collectionComponentType);
         }
 
         /// <summary>
@@ -288,17 +292,16 @@ namespace com.espertech.esper.common.@internal.rettype
                 return typeof(ICollection<EventBean>);
             }
 
-            if (theType is ClassMultiValuedEPType) {
-                return ((ClassMultiValuedEPType) theType).Container;
+            if (theType is ClassMultiValuedEPType classMultiValuedEpType) {
+                return classMultiValuedEpType.Container;
             }
 
             if (theType is EventEPType) {
                 return typeof(EventBean);
             }
 
-            if (theType is ClassEPType) {
-                var type = (ClassEPType) theType;
-                return type.Clazz.GetBoxedType();
+            if (theType is ClassEPType classEPType) {
+                return classEPType.Clazz.GetBoxedType();
             }
 
             if (theType is NullEPType) {

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -161,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.aggregate(0,)': Error validating enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed [select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container]");
+                $"Failed to validate select-clause expression 'Contained.aggregate(0,)': Error validating enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype '{typeof(int?).CleanName()}' to System.String is not allowed [select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.average(x -> x.Id) from SupportBean_ST0_Container";
@@ -176,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env,
                 epl,
                 "Failed to validate select-clause expression 'Contained.firstof().dummy()': Failed to resolve method 'dummy': Could not find enumeration method, date-time method or instance method named 'dummy' in class '" +
-                typeof(SupportBean_ST0).Name +
+                typeof(SupportBean_ST0).CleanName() +
                 "' taking no parameters [select Contained.firstof().dummy from SupportBean_ST0_Container]");
         }
     }

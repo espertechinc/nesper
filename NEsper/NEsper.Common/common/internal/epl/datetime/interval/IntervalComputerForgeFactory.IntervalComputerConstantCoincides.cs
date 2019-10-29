@@ -84,16 +84,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="startThreshold">start th</param>
             /// <param name="endThreshold">end th</param>
             /// <returns>flag</returns>
-            public static bool ComputeIntervalCoincides(
-                long left,
-                long leftEnd,
-                long right,
-                long rightEnd,
-                long startThreshold,
-                long endThreshold)
+            public static bool? ComputeIntervalCoincides(
+                long? left,
+                long? leftEnd,
+                long? right,
+                long? rightEnd,
+                long? startThreshold,
+                long? endThreshold)
             {
-                return Math.Abs(left - right) <= startThreshold &&
-                       Math.Abs(leftEnd - rightEnd) <= endThreshold;
+                var diff = left - right;
+                if (diff != null) {
+                    diff = Math.Abs(diff.Value);
+                }
+                
+                var diffEnd = leftEnd - rightEnd;
+                if (diffEnd != null) {
+                    diffEnd = Math.Abs(diffEnd.Value);
+                }
+                
+                return diff <= startThreshold &&
+                       diffEnd <= endThreshold;
             }
         }
     }

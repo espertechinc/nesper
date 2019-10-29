@@ -32,9 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ClientInstrumentAuditDocSample());
-#endif
             execs.Add(new ClientInstrumentAuditAudit());
             return execs;
         }

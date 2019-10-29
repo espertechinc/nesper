@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             AssertEvent(env.Listener("create").AssertOneGetNewAndReset(), "MyWindowBB");
             AssertEvent(env.Listener("s0").AssertOneGetNewAndReset(), "MyWindowBB");
 
-            env.CompileDeploy("@Name('Update') on SupportBean_A update MyWindowBB set TheString='s'", path)
+            env.CompileDeploy("@Name('update') on SupportBean_A update MyWindowBB set TheString='s'", path)
                 .AddListener("update");
             env.SendEventBean(new SupportBean_A("A1"));
             AssertEvent(env.Listener("update").LastNewData[0], "MyWindowBB");

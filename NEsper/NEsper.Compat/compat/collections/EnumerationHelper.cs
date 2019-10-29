@@ -39,6 +39,16 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
+        public static IEnumerable<T> For<T>(T item)
+        {
+            yield return item;
+        }
+        
+        /// <summary>
+        /// Creates the singleton enumerator.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns></returns>
         public static IEnumerator<T> SingletonNullable<T>(T item)
             where T : class
         {
@@ -47,6 +57,19 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        /// <summary>
+        /// Creates the singleton enumerator.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> ForNullable<T>(T item)
+            where T : class
+        {
+            if (item != null) {
+                yield return item;
+            }
+        }
+        
         /// <summary>
         /// Prepends the specified item.
         /// </summary>

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -1741,7 +1742,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "select * from SupportBeanWithEnum(TheString=" +
                     typeof(SupportEnum).FullName +
                     ".ENUM_VALUE_1)",
-                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [");
+                    $"Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '{typeof(SupportEnum).CleanName()}' to ')' to '{typeof(string).CleanName()}' is not allowed [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

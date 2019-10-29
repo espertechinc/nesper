@@ -10,7 +10,7 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
 {
-    public class PointRegionQuadTreeNodeLeaf<TL> : PointRegionQuadTreeNode
+    public class PointRegionQuadTreeNodeLeaf<TL> : PointRegionQuadTreeNodeLeafOpaque
     {
         public PointRegionQuadTreeNodeLeaf(
             BoundingBox bb,
@@ -22,6 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
             Points = points;
             Count = count;
         }
+
+        public override object OpaquePoints => Points;
 
         public TL Points { get; set; }
 

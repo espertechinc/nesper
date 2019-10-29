@@ -23,7 +23,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ResultSetAggregateFirstAggSODA(false));
             execs.Add(new ResultSetAggregateFirstAggSODA(true));
             execs.Add(new ResultSetAggregateMethodAggSQLAll());
@@ -47,7 +46,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             execs.Add(new ResultSetAggregateFilterNamedParamInvalid());
             execs.Add(new ResultSetAggregateMethodPlugIn());
             execs.Add(new ResultSetAggregateAccessAggPlugIn());
-#endif
             execs.Add(new ResultSetAggregateIntoTable(false));
             execs.Add(new ResultSetAggregateIntoTable(true));
             execs.Add(new ResultSetAggregateIntoTableCountMinSketch());
@@ -194,9 +192,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssertEventsAsList(env, "X1", "[]");
-                SendEventAssertEventsAsList(env, "A1", "[SupportBean(A1, 0)]");
-                SendEventAssertEventsAsList(env, "A2", "[SupportBean(A1, 0), SupportBean(A2, 0)]");
-                SendEventAssertEventsAsList(env, "X2", "[SupportBean(A1, 0), SupportBean(A2, 0)]");
+                SendEventAssertEventsAsList(env, "A1", "[SupportBean(\"A1\", 0)]");
+                SendEventAssertEventsAsList(env, "A2", "[SupportBean(\"A1\", 0), SupportBean(\"A2\", 0)]");
+                SendEventAssertEventsAsList(env, "X2", "[SupportBean(\"A1\", 0), SupportBean(\"A2\", 0)]");
 
                 env.UndeployAll();
             }

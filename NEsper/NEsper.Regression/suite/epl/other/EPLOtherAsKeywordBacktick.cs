@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "on OrderBean insert into ABC select * " +
-                               "insert into DEF select `order`.ReviewId from [books][reviews] `order`";
+                               "insert into DEF select `order`.ReviewId from [Books][Reviews] `order`";
                 env.CompileDeploy(stmtText);
                 env.UndeployAll();
             }

@@ -66,6 +66,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             var method = CodegenMethod
                 .MakeMethod(returnType, generator, symbolProvider, classScope)
                 .AddParam(@params);
+            method.Block.DebugStack();
             _methods.Put(methodName, method);
             code.Invoke(method);
             return method;

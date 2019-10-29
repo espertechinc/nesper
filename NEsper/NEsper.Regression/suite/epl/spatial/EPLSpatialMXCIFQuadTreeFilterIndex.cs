@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     new[] {
                         new[] {
                             new FilterItem(
-                                "x,y,width,height/myindex/mxcifquadtree/0.0,0.0,100.0,100.0,4.0,20.0",
+                                "X,Y,Width,Height/myindex/mxcifquadtree/0.0d,0.0d,100.0d,100.0d,4,20",
                                 FilterOperator.ADVANCED_INDEX)
                         }
                     });

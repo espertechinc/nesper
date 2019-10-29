@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
     {
         private const string JOIN_KEY = "KEY";
         private const string CATEGORY = "Aggregated and Un-grouped";
-        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).FullName;
+        private static readonly string EVENT_NAME = typeof(SupportMarketDataBean).Name;
 
         public static IList<RegressionExecution> Executions()
         {
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendEvent(env, "SYM1", 9);
 
             SendTimer(env, 1000);
-            var fields = new [] { "symbol","avgPrice" };
+            var fields = new [] { "Symbol","avgPrice" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -985,7 +985,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"ABC", 50d}, new object[] {"IBM", 50d}, new object[] {"MSFT", 50d}});
+                    new[] {
+                        new object[] {"ABC", 50d},
+                        new object[] {"IBM", 50d},
+                        new object[] {"MSFT", 50d}
+                    });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -998,8 +1002,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     env.Listener("s0").LastNewData,
                     fields,
                     new[] {
-                        new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d},
-                        new object[] {"YAH", 98d}, new object[] {"s4", 98d}
+                        new object[] {"ABC", 98d},
+                        new object[] {"IBM", 98d}, 
+                        new object[] {"MSFT", 98d},
+                        new object[] {"s4", 98d},
+                        new object[] {"YAH", 98d}
                     });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1008,7 +1015,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
+                    new[] {
+                        new object[] {"s4", 48d},
+                        new object[] {"YAH", 48d}
+                    });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -1070,8 +1080,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     env.Listener("s0").LastNewData,
                     fields,
                     new[] {
-                        new object[] {"ABC", 98d}, new object[] {"IBM", 98d}, new object[] {"MSFT", 98d},
-                        new object[] {"YAH", 98d}, new object[] {"s4", 98d}
+                        new object[] {"ABC", 98d}, 
+                        new object[] {"IBM", 98d},
+                        new object[] {"MSFT", 98d},
+                        new object[] {"s4", 98d},
+                        new object[] {"YAH", 98d}
                     });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1081,7 +1094,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
-                    new[] {new object[] {"YAH", 48d}, new object[] {"s4", 48d}});
+                    new[] {
+                        new object[] {"s4", 48d},
+                        new object[] {"YAH", 48d}
+                    });
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 

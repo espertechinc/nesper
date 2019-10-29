@@ -95,7 +95,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         private readonly IList<string> scriptBodies;
         private readonly IList<ExpressionScriptProvided> scriptExpressions;
-        private readonly Stack<StatementStackItem> statementItemStack = new Stack<StatementStackItem>();
+        private readonly LinkedList<StatementStackItem> statementItemStack = new LinkedList<StatementStackItem>();
 
         private readonly CommonTokenStream tokenStream;
 
@@ -1735,20 +1735,24 @@ namespace com.espertech.esper.compiler.@internal.parse
                     }
 
                     // on the statement spec, the deepest spec is the outermost
-                    IList<OnTriggerSplitStream> splitStreams = new List<OnTriggerSplitStream>();
-                    var statementSpecList = statementItemStack.Reverse().ToArray();
+                    var splitStreams = new List<OnTriggerSplitStream>();
+                    var statementSpecList = Enumerable.Reverse(statementItemStack).ToArray();
                     for (var ii = 1; ii < statementSpecList.Length ; ii++)
                     {
-                        StatementSpecRaw raw = statementSpecList[ii].StatementSpec;
-                        var fromClauseInner = onTriggerSplitPropertyEvals == null ? null : onTriggerSplitPropertyEvals.Get(raw);
+                        var raw = statementSpecList[ii].StatementSpec;
+                        var fromClauseInner = onTriggerSplitPropertyEvals?.Get(raw);
                         splitStreams.Add(new OnTriggerSplitStream(raw.InsertIntoDesc, raw.SelectClauseSpec, fromClauseInner, raw.WhereClause));
                     }
 
-                    var fromClause = onTriggerSplitPropertyEvals == null ? null : onTriggerSplitPropertyEvals.Get(StatementSpec);
+                    var fromClause = onTriggerSplitPropertyEvals?.Get(StatementSpec);
                     splitStreams.Add(new OnTriggerSplitStream(StatementSpec.InsertIntoDesc, StatementSpec.SelectClauseSpec, fromClause, StatementSpec.WhereClause));
                     if (!statementSpecList.IsEmpty())
                     {
-                        StatementSpec = statementItemStack.Peek().StatementSpec;
+                        // The last item in the stack is the "first" item, unfortunately, the Java source is not
+                        // very clear about this, instead they reference index 0, which is heavily dependent on
+                        // how the stack is implemented.
+                        
+                        StatementSpec = statementItemStack.Last.Value.StatementSpec;
                     }
                     var isFirst = ctx.outputClauseInsert() == null || ctx.outputClauseInsert().ALL() == null;
 
@@ -3973,7 +3977,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         /// </summary>
         private void PushStatementContext()
         {
-            statementItemStack.Push(new StatementStackItem(StatementSpec, astExprNodeMap, viewSpecs));
+            statementItemStack.AddFirst(new StatementStackItem(StatementSpec, astExprNodeMap, viewSpecs));
 
             StatementSpec = new StatementSpecRaw(defaultStreamSelector);
             astExprNodeMap = new Dictionary<ITree, ExprNode>();
@@ -3983,7 +3987,9 @@ namespace com.espertech.esper.compiler.@internal.parse
         private void PopStatementContext(IParseTree ctx)
         {
             var currentSpec = StatementSpec;
-            var stackItem = statementItemStack.Pop();
+            var stackItemNode = statementItemStack.First;
+            var stackItem = stackItemNode.Value;
+            statementItemStack.Remove(stackItemNode);
 
             StatementSpec = stackItem.StatementSpec;
             StatementSpec.TableExpressions.AddAll(currentSpec.TableExpressions);
@@ -4130,7 +4136,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
 
             // detect insert-into fire-and-forget query
-            if (StatementSpec.InsertIntoDesc != null && StatementSpec.StreamSpecs.IsEmpty() && StatementSpec.FireAndForgetSpec == null)
+            if (StatementSpec.InsertIntoDesc != null && 
+                StatementSpec.StreamSpecs.IsEmpty() &&
+                StatementSpec.FireAndForgetSpec == null)
             {
                 StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(false);
             }

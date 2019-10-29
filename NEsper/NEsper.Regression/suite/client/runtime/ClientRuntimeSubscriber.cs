@@ -833,7 +833,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // test on-delete
             var subscriberDelete = new SubscriberMap();
             var stmtTextDelete =
-                "@Name('ondelete') on SupportMarketDataBean S0 delete from MyWindow s1 where S0.Symbol = S1.Key";
+                "@Name('ondelete') on SupportMarketDataBean S0 delete from MyWindow S1 where S0.Symbol = S1.key";
             stmt = env.CompileDeploy(stmtTextDelete, path).Statement("ondelete");
             stmt.SetSubscriber(subscriberDelete);
 

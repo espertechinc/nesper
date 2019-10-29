@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     subselect.subselectMultirowType,
                     EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(ICollection<object>), GetType(), classScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
@@ -151,9 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<ICollection<EventBean>>(
                     "result",
-                    NewInstance<ArrayDeque<object>>(ExprDotName(Ref("groupKeys"), "Count")));
+                    NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("groupKeys"), "Count")));
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
                     .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
-                    .DeclareVar<IDictionary<object, object>>(
+                    .DeclareVar<IDictionary<string, object>>(
                         "row",
                         LocalMethod(
                             subselect.EvaluateRowCodegen(method, classScope),

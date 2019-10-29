@@ -71,11 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="start">start</param>
             /// <param name="end">end</param>
             /// <returns>flag</returns>
-            public static bool ComputeIntervalBefore(
-                long leftEnd,
-                long right,
-                long start,
-                long end)
+            public static bool? ComputeIntervalBefore(
+                long? leftEnd,
+                long? right,
+                long? start,
+                long? end)
             {
                 var delta = right - leftEnd;
                 return start <= delta && delta <= end;

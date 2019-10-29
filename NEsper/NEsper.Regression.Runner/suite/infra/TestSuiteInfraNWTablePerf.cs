@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             session = null;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableFAFIndexPerfWNoQueryPlanLog()
         {
             RegressionRunner.Run(session, InfraNWTableFAFIndexPerfWNoQueryPlanLog.Executions());

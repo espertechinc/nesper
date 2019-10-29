@@ -83,12 +83,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerTypeBoxed = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
-
+            var innerType = forge.innerExpression.EvaluationType;
+            var innerTypeBoxed = Boxing.GetBoxedType(innerType);
+            var paramTypes = EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(EventBean), typeof(EnumMinMaxByEventsForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(paramTypes);
 
             var block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())

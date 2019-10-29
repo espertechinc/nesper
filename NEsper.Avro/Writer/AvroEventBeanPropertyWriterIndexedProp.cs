@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro;
@@ -13,6 +14,8 @@ using Avro.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Extensions;
 
@@ -67,8 +70,18 @@ namespace NEsper.Avro.Writer
             int indexTarget)
         {
             var val = record.Get(index);
-            if (val != null && val is IList<object>) {
-                var list = (IList<object>) val;
+            if (val is Array valuesArray) {
+                if (valuesArray.Length > indexTarget) {
+                    valuesArray.SetValue(value, indexTarget);
+                }
+            }
+            else if (val is IList<object> list) {
+                if (list.Count > indexTarget) {
+                    list[indexTarget] = value;
+                }
+            }
+            else if (val.GetType().IsGenericList()) {
+                list = MagicMarker.SingletonInstance.GetList(val);
                 if (list.Count > indexTarget) {
                     list[indexTarget] = value;
                 }

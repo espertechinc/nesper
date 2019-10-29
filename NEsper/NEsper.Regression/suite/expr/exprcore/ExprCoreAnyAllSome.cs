@@ -25,13 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
-#if false
             executions.Add(new ExprCoreAnyAllSomeEqualsAll());
             executions.Add(new ExprCoreEqualsAllArray());
             executions.Add(new ExprCoreEqualsAny());
             executions.Add(new ExprCoreEqualsAnyBigInt());
             executions.Add(new ExprCoreEqualsAnyArray());
-#endif
             executions.Add(new ExprCoreRelationalOpAllArray());
             executions.Add(new ExprCoreRelationalOpNullOrNoRows());
             executions.Add(new ExprCoreRelationalOpAnyArray());
@@ -39,8 +37,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             executions.Add(new ExprCoreRelationalOpAny());
             executions.Add(new ExprCoreEqualsInNullOrNoRows());
             executions.Add(new ExprCoreAnyAllSomeInvalid());
-#if false
-#endif
             return executions;
         }
 

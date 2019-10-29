@@ -82,6 +82,28 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                     collector.CollectInto(eventBean, rectangleWValue.Value, target);
                 }
             }
+            else if (rectangles is List<XYWHRectangleWValue> listWithType) {
+                // Using the enumerable structure has some overhead when called a lot.  So, when
+                // we know the value is a list (which it should be), then we attempt to use a
+                // traditional loop to avoid the overhead.  Need to measure this against the time
+                // cost for List.ForEach()
+
+                var listWithTypeCount = listWithType.Count;
+                for (var ii = 0; ii < listWithTypeCount; ii++) {
+                    var rectangle = listWithType[ii];
+                    if (BoundingBox.IntersectsBoxIncludingEnd(
+                        x,
+                        y,
+                        x + width,
+                        y + height,
+                        rectangle.X,
+                        rectangle.Y,
+                        rectangle.W,
+                        rectangle.H)) {
+                        collector.CollectInto(eventBean, rectangle.Value, target);
+                    }
+                }
+            }
             else if (rectangles is IEnumerable<XYWHRectangleWValue> enumerableWithType) {
                 foreach (var rectangle in enumerableWithType) {
                     if (BoundingBox.IntersectsBoxIncludingEnd(
@@ -100,6 +122,6 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             else {
                 throw new IllegalStateException("unknown type for rectangles");
             }
-        }
+            }
     }
 } // end of namespace

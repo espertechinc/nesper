@@ -111,20 +111,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetIteratorViewCodegen(
+        public void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.GetIteratorViewCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
         }
 
-        public void GetIteratorJoinCodegen(
+        public void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(

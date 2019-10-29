@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("selectOldEvents")));
         }
 
-        protected internal static void GetIteratorViewUnboundCodegen(
+        public static void GetEnumeratorViewUnboundCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,

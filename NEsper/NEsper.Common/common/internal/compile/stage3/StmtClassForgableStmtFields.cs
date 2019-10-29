@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -25,6 +24,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StmtClassForgableStmtFields : StmtClassForgable
     {
+        private static int _gid;
+        
+        private readonly int _id = ++_gid;
         private readonly string _className;
         private readonly int _numStreams;
         private readonly CodegenNamespaceScope _namespaceScope;
@@ -161,26 +163,24 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     continue;
                 }
 
-                if (name is CodegenFieldNamePrevious) {
-                    var previous = (CodegenFieldNamePrevious) name;
+                if (name is CodegenFieldNamePrevious codegenFieldNamePrevious) {
                     Generate(
                         ArrayAtIndex(
                             ExprDotName(Ref("assignments"), "PreviousStrategies"),
-                            Constant(previous.StreamNumber)),
-                        name,
+                            Constant(codegenFieldNamePrevious.StreamNumber)),
+                        codegenFieldNamePrevious,
                         assign,
                         unassign,
                         true);
                     continue;
                 }
 
-                if (name is CodegenFieldNamePrior) {
-                    var prior = (CodegenFieldNamePrior) name;
+                if (name is CodegenFieldNamePrior codegenFieldNamePrior) {
                     Generate(
                         ArrayAtIndex(
                             ExprDotName(Ref("assignments"), "PriorStrategies"),
-                            Constant(prior.StreamNumber)),
-                        name,
+                            Constant(codegenFieldNamePrior.StreamNumber)),
+                        codegenFieldNamePrior,
                         assign,
                         unassign,
                         true);
@@ -197,48 +197,43 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryResult) {
-                    var subq = (CodegenFieldNameSubqueryResult) name;
+                if (name is CodegenFieldNameSubqueryResult codegenFieldNameSubqueryResult) {
                     var subqueryLookupStrategy = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryLookup",
-                        Constant(subq.SubqueryNumber));
-                    Generate(subqueryLookupStrategy, name, assign, unassign, true);
+                        Constant(codegenFieldNameSubqueryResult.SubqueryNumber));
+                    Generate(subqueryLookupStrategy, codegenFieldNameSubqueryResult, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryPrior) {
-                    var subq = (CodegenFieldNameSubqueryPrior) name;
-                    var prior = ExprDotMethod(Ref("assignments"), "GetSubqueryPrior", Constant(subq.SubqueryNumber));
-                    Generate(prior, name, assign, unassign, true);
+                if (name is CodegenFieldNameSubqueryPrior codegenFieldNameSubqueryPrior) {
+                    var prior = ExprDotMethod(Ref("assignments"), "GetSubqueryPrior", Constant(codegenFieldNameSubqueryPrior.SubqueryNumber));
+                    Generate(prior, codegenFieldNameSubqueryPrior, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryPrevious) {
-                    var subq = (CodegenFieldNameSubqueryPrevious) name;
-                    var prev = ExprDotMethod(Ref("assignments"), "GetSubqueryPrevious", Constant(subq.SubqueryNumber));
-                    Generate(prev, name, assign, unassign, true);
+                if (name is CodegenFieldNameSubqueryPrevious codegenFieldNameSubqueryPrevious) {
+                    var prev = ExprDotMethod(Ref("assignments"), "GetSubqueryPrevious", Constant(codegenFieldNameSubqueryPrevious.SubqueryNumber));
+                    Generate(prev, codegenFieldNameSubqueryPrevious, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameSubqueryAgg) {
-                    var subq = (CodegenFieldNameSubqueryAgg) name;
+                if (name is CodegenFieldNameSubqueryAgg codegenFieldNameSubqueryAgg) {
                     var agg = ExprDotMethod(
                         Ref("assignments"),
                         "GetSubqueryAggregation",
-                        Constant(subq.SubqueryNumber));
-                    Generate(agg, name, assign, unassign, true);
+                        Constant(codegenFieldNameSubqueryAgg.SubqueryNumber));
+                    Generate(agg, codegenFieldNameSubqueryAgg, assign, unassign, true);
                     continue;
                 }
 
-                if (name is CodegenFieldNameTableAccess) {
-                    var tableAccess = (CodegenFieldNameTableAccess) name;
+                if (name is CodegenFieldNameTableAccess tableAccess) {
                     var tableAccessLookupStrategy = ExprDotMethod(
                         Ref("assignments"),
                         "GetTableAccess",
                         Constant(tableAccess.TableAccessNumber));
                     // Table strategies don't get unassigned as they don't hold on to table instance
-                    Generate(tableAccessLookupStrategy, name, assign, unassign, false);
+                    Generate(tableAccessLookupStrategy, tableAccess, assign, unassign, false);
                     continue;
                 }
 
@@ -282,7 +277,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenBlock enclosingBlock,
             CodegenClassScope classScope)
         {
-            var assignMethod = new CodegenExpressionLambda(enclosingBlock)
+            var assignLambda = new CodegenExpressionLambda(enclosingBlock)
                 .WithParam<StatementAIFactoryAssignments>("assignments");
 
             //var assignMethod = CodegenMethod
@@ -290,7 +285,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //    .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             //assignerSetterClass.AddMethod("Assign", assignMethod);
 
-            assignMethod.Block.ExprDotMethod(Ref("statementFields"), "Assign", @Ref("assignments"));
+            assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", @Ref("assignments"));
             //assignMethod.Block.StaticMethod(packageScope.FieldsClassName, "Assign", Ref("assignments"));
 
             var setValueMethod = new CodegenExpressionLambda(enclosingBlock)
@@ -299,7 +294,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //assignerSetterClass.AddMethod("SetValue", setValueMethod);
 
             var assignerSetterClass = NewInstance<ProxyFAFQueryMethodAssignerSetter>(
-                assignMethod, setValueMethod);
+                assignLambda, setValueMethod);
 
             //var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
             enclosingBlock.ReturnMethodOrBlock(assignerSetterClass);

@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     .Add(Expressions.Count("Volume"), "countVol");
                 model.FromClause = FromClause
                     .Create(
-                        FilterStream.Create(typeof(SupportMarketDataBean).FullName)
+                        FilterStream.Create(typeof(SupportMarketDataBean).Name)
                             .AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
                     .Add(Expressions.Eq("Symbol", "DELL"))
@@ -314,10 +314,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
-                          " from " + typeof(SupportMarketDataBean).CleanName() + "#length(3) " +
+                          " from " + typeof(SupportMarketDataBean).Name + "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
+                Assert.That(model.ToEPL(), Is.EqualTo(epl));
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -341,37 +341,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SendEvent(env, SYMBOL_DELL, 50L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"DELL", 1L, 1d});
 
                 SendEvent(env, SYMBOL_DELL, 51L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"DELL", 2L, 1.5d});
 
                 SendEvent(env, SYMBOL_DELL, 52L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"DELL", 3L, 2d});
 
                 SendEvent(env, "IBM", 52L);
                 var events = env.Listener("s0").LastNewData;
                 EPAssertionUtil.AssertProps(
                     events[0],
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"DELL", 2L, 2d});
                 EPAssertionUtil.AssertProps(
                     events[1],
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"IBM", 1L, 1d});
                 env.Listener("s0").Reset();
 
                 SendEvent(env, SYMBOL_DELL, 53L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "symbol","cnt","val" },
+                    new [] { "Symbol","cnt","val" },
                     new object[] {"DELL", 2L, 2.5d});
 
                 env.UndeployAll();

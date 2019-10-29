@@ -529,7 +529,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .MakeChild(lastType, typeof(ExprDotNodeUtility), codegenClassScope)
                 .AddParam(innerType, "inner");
 
-            var block = methodNode.Block;
+            var block = methodNode.Block.DebugStack();
+
             var currentTarget = "wrapped";
             Type currentTargetType;
             if (optionalResultWrapLambda != null) {
@@ -618,7 +619,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprValidationContext validationContext)
         {
             ExprNodeUtilResolveExceptionHandler exceptionHandler = new ProxyExprNodeUtilResolveExceptionHandler(
-                e => new ExprValidationException("Failed to resolve method or property '" + methodName + "': " + e.Message, e));
+                e => new ExprValidationException("Failed to resolve method '" + methodName + "': " + e.Message, e));
             var wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1
                 ? null
                 : validationContext.StreamTypeService.EventTypes[0];

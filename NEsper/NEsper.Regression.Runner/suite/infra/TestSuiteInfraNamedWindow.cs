@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Common.AddEventType("MyMapAB", dataType);
 
             var legacy = new ConfigurationCommonEventTypeBean();
-            legacy.CopyMethod = "myCopyMethod";
+            legacy.CopyMethod = "MyCopyMethod";
             configuration.Common.AddEventType("SupportBeanCopyMethod", typeof(SupportBeanCopyMethod), legacy);
 
             configuration.Compiler.AddPlugInSingleRowFunction(
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowOnSelect.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNamedWindowOnUpdate()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnUpdate.Executions());
@@ -224,13 +224,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowSubquery.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNamedWindowTypes()
         {
             RegressionRunner.Run(session, InfraNamedWindowTypes.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNamedWindowViews()
         {
             RegressionRunner.Run(session, InfraNamedWindowViews.Executions());

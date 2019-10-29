@@ -84,8 +84,8 @@ namespace com.espertech.esper.common.@internal.util
             TypeWidenerCustomizer customizer,
             string statementName)
         {
-            var columnClassBoxed = columnType.GetBoxedType();
-            var targetClassBoxed = writeablePropertyType.GetBoxedType();
+            var columnTypeBoxed = columnType.GetBoxedType();
+            var targetTypeBoxed = writeablePropertyType.GetBoxedType();
 
             if (customizer != null) {
                 var custom = customizer.WidenerFor(
@@ -111,20 +111,28 @@ namespace com.espertech.esper.common.@internal.util
                     throw new TypeWidenerException(message);
                 }
             }
-            else if (columnClassBoxed != targetClassBoxed) {
-                if (columnClassBoxed == typeof(string) && targetClassBoxed == typeof(char?)) {
+            else if (columnTypeBoxed != targetTypeBoxed) {
+                if (columnTypeBoxed == typeof(string) && targetTypeBoxed == typeof(char?)) {
                     return STRING_TO_CHAR_COERCER;
                 }
 
                 if (allowObjectArrayToCollectionConversion &&
-                    columnClassBoxed.IsArray &&
-                    !columnClassBoxed.GetElementType().IsPrimitive &&
-                    targetClassBoxed.IsImplementsInterface(typeof(ICollection<object>))) {
+                    columnTypeBoxed.IsArray &&
+                    !columnTypeBoxed.GetElementType().IsPrimitive &&
+                    targetTypeBoxed.IsImplementsInterface(typeof(ICollection<object>))) {
                     return OBJECT_ARRAY_TO_COLLECTION_COERCER;
                 }
+                
+                // Boxed types tend to be incompatible from an assignment perspective.  We have both
+                // the boxed and unboxed values.  The problem is that the boxed values will always
+                // be unboxed prior to assignment, so looking for assignment of boxed types is not
+                // a winning approach.
+
+                var columnTypeUnboxed = columnType.GetUnboxedType();
+                var targetTypeUnboxed = targetTypeBoxed.GetUnboxedType();
 
                 if (!columnType.IsAssignmentCompatible(writeablePropertyType) && 
-                    !columnClassBoxed.IsAssignmentCompatible(targetClassBoxed)) {
+                    !columnTypeUnboxed.IsAssignmentCompatible(targetTypeUnboxed)) {
                     var writablePropName = writeablePropertyType.CleanName();
                     if (writeablePropertyType.IsArray) {
                         writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
@@ -149,7 +157,7 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (writeablePropertyType.IsNumeric()) {
                     return new TypeWidenerBoxedNumeric(
-                        SimpleNumberCoercerFactory.GetCoercer(columnClassBoxed, targetClassBoxed));
+                        SimpleNumberCoercerFactory.GetCoercer(columnTypeBoxed, targetTypeBoxed));
                 }
             }
 

@@ -52,7 +52,7 @@ namespace NEsper.Avro.Getter
         public object GetFragment(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = (ICollection<object>) record.Get(_posTop);
+            var values = record.Get(_posTop);
             var value = AvroEventBeanGetterIndexed.GetAvroIndexedValue(values, _index);
             if (value == null || !(value is GenericRecord)) {
                 return null;
@@ -132,7 +132,7 @@ namespace NEsper.Avro.Getter
             Field posTop,
             int index)
         {
-            var values = (ICollection<object>) record.Get(posTop);
+            var values = record.Get(posTop);
             var value = AvroEventBeanGetterIndexed.GetAvroIndexedValue(values, index);
             if (value == null || !(value is GenericRecord)) {
                 return null;
@@ -171,14 +171,12 @@ namespace NEsper.Avro.Getter
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(GenericRecord), "record")
                 .Block
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<object>(
                     "values",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(ICollection<object>),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
-                            "Get",
-                            CodegenExpressionBuilder.Constant(_posTop))))
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("record"),
+                        "Get",
+                        CodegenExpressionBuilder.Constant(_posTop)))
                 .DeclareVar<object>(
                     "value",
                     CodegenExpressionBuilder.StaticMethod(

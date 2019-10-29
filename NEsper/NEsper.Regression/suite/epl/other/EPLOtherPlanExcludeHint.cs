@@ -66,11 +66,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(schema, path);
 
                 string[] hints = {
-                    "@hint('exclude_plan(true)')",
-                    "@hint('exclude_plan(opname=\"equals\")')",
-                    "@hint('exclude_plan(opname=\"equals\" and from_streamname=\"a\")')",
-                    "@hint('exclude_plan(opname=\"equals\" and from_streamname=\"b\")')",
-                    "@hint('exclude_plan(exprs[0]=\"aprop\")')"
+                    "@Hint('exclude_plan(true)')",
+                    "@Hint('exclude_plan(opname=\"equals\")')",
+                    "@Hint('exclude_plan(opname=\"equals\" and from_streamname=\"a\")')",
+                    "@Hint('exclude_plan(opname=\"equals\" and from_streamname=\"b\")')",
+                    "@Hint('exclude_plan(exprs[0]=\"aprop\")')"
                 };
                 foreach (var hint in hints) {
                     env.CompileDeploy(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as S0 where S1.P10 = P00) from SupportBean_S1 as S1",
+                    "@Hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as S0 where S1.P10 = P00) from SupportBean_S1 as S1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
                 Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subq.TableLookupStrategy);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') on SupportBean_S1 as S1 select * from S0Window as S0 where S1.P10 = S0.P00",
+                    "@Hint('exclude_plan(true)') on SupportBean_S1 as S1 select * from S0Window as S0 where S1.P10 = S0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
                 Assert.AreEqual(typeof(SubordWMatchExprLookupStrategyAllFilteredForge).Name, onExpr.StrategyName);
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     .Get();
 
                 // test "any"
-                var excludeAny = "@hint('exclude_plan(true)')";
+                var excludeAny = "@Hint('exclude_plan(true)')";
                 TryAssertionJoin(env, epl, planFullTableScan);
                 TryAssertionJoin(env, excludeAny + epl + " where P00 = P10", planFullTableScan);
                 TryAssertionJoin(env, excludeAny + epl + " where P00 = 'abc'", planFullTableScan);
@@ -157,44 +157,44 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             null))
                     .Get();
                 var eplWithWhereEquals = epl + " where P00 = P10";
-                TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereEquals, planEquals);
-                TryAssertionJoin(env, "@hint('exclude_plan(from_streamname=\"s0\")')" + eplWithWhereEquals, planEquals);
+                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamnum=0)')" + eplWithWhereEquals, planEquals);
+                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamname=\"s0\")')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(from_streamname=\"s0\")') @hint('exclude_plan(from_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(from_streamname=\"s0\")') @Hint('exclude_plan(from_streamname=\"s1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(from_streamname=\"s0\")') @hint('exclude_plan(from_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(from_streamname=\"s0\")') @Hint('exclude_plan(from_streamname=\"s1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
-                TryAssertionJoin(env, "@hint('exclude_plan(to_streamname=\"s1\")')" + eplWithWhereEquals, planEquals);
+                TryAssertionJoin(env, "@Hint('exclude_plan(to_streamname=\"s1\")')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(to_streamname=\"s0\")') @hint('exclude_plan(to_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(to_streamname=\"s0\")') @Hint('exclude_plan(to_streamname=\"s1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(from_streamnum=0 and to_streamnum =  1)')" + eplWithWhereEquals,
+                    "@Hint('exclude_plan(from_streamnum=0 and to_streamnum =  1)')" + eplWithWhereEquals,
                     planEquals);
-                TryAssertionJoin(env, "@hint('exclude_plan(to_streamnum=1)')" + eplWithWhereEquals, planEquals);
+                TryAssertionJoin(env, "@Hint('exclude_plan(to_streamnum=1)')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(to_streamnum = 1, from_streamnum = 0)')" + eplWithWhereEquals,
+                    "@Hint('exclude_plan(to_streamnum = 1, from_streamnum = 0)')" + eplWithWhereEquals,
                     planEquals);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(opname=\"equals\")')" + eplWithWhereEquals,
+                    "@Hint('exclude_plan(opname=\"equals\")')" + eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(exprs.anyOf(v-> v=\"P00\"))')" + eplWithWhereEquals,
+                    "@Hint('exclude_plan(exprs.anyOf(v-> v=\"P00\"))')" + eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(\"P10\" in (exprs))')" + eplWithWhereEquals,
+                    "@Hint('exclude_plan(\"P10\" in (exprs))')" + eplWithWhereEquals,
                     planFullTableScan);
 
                 // test greater (relop)
@@ -214,10 +214,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             null))
                     .Get();
                 var eplWithWhereGreater = epl + " where P00 > P10";
-                TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereGreater, planGreater);
+                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamnum=0)')" + eplWithWhereGreater, planGreater);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(opname=\"relop\")')" + eplWithWhereGreater,
+                    "@Hint('exclude_plan(opname=\"relop\")')" + eplWithWhereGreater,
                     planFullTableScan);
 
                 // test range (relop)
@@ -237,8 +237,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             null))
                     .Get();
                 var eplWithWhereRange = epl + " where P00 between P10 and P11";
-                TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereRange, planRange);
-                TryAssertionJoin(env, "@hint('exclude_plan(opname=\"relop\")')" + eplWithWhereRange, planFullTableScan);
+                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamnum=0)')" + eplWithWhereRange, planRange);
+                TryAssertionJoin(env, "@Hint('exclude_plan(opname=\"relop\")')" + eplWithWhereRange, planFullTableScan);
 
                 // test in (relop)
                 var planIn = SupportQueryPlanBuilder.Start(2)
@@ -256,8 +256,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             SupportExprNodeFactory.MakeIdentExprNodes("P10", "P11")))
                     .Get();
                 var eplWithIn = epl + " where P00 in (P10, P11)";
-                TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithIn, planIn);
-                TryAssertionJoin(env, "@hint('exclude_plan(opname=\"inkw\")')" + eplWithIn, planFullTableScan);
+                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamnum=0)')" + eplWithIn, planIn);
+                TryAssertionJoin(env, "@Hint('exclude_plan(opname=\"inkw\")')" + eplWithIn, planFullTableScan);
 
                 env.UndeployAll();
             }
@@ -271,23 +271,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // no params
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "@hint('exclude_plan') " + epl,
+                    "@Hint('exclude_plan') " + epl,
                     "Failed to process statement annotations: Hint 'EXCLUDE_PLAN' requires additional parameters in parentheses");
 
                 // empty parameter allowed, to be filled in
-                env.CompileDeploy("@hint('exclude_plan()') " + epl);
+                env.CompileDeploy("@Hint('exclude_plan()') " + epl);
                 env.SendEventBean(new SupportBean_S0(1));
 
                 // invalid return type
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "@hint('exclude_plan(1)') " + epl,
+                    "@Hint('exclude_plan(1)') " + epl,
                     "Expression provided for hint EXCLUDE_PLAN must return a boolean value");
 
                 // invalid expression
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "@hint('exclude_plan(dummy = 1)') " + epl,
+                    "@Hint('exclude_plan(dummy = 1)') " + epl,
                     "Failed to validate hint expression 'dummy=1': Property named 'dummy' is not valid in any stream");
 
                 env.UndeployAll();

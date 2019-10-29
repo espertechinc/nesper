@@ -31,7 +31,6 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ContextNestedWithFilterUDF());
             execs.Add(new ContextNestedIterateTargetedCP());
             execs.Add(new ContextNestedInvalid());
@@ -40,7 +39,6 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextNestedPartitionedWithFilterNonOverlap());
             execs.Add(new ContextNestedNestingFilterCorrectness());
             execs.Add(new ContextNestedCategoryOverPatternInitiated());
-#endif
             execs.Add(new ContextNestedSingleEventTriggerNested());
             execs.Add(new ContextNestedFourContextsNested());
             execs.Add(new ContextNestedTemporalOverCategoryOverPartition());

@@ -271,7 +271,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                         statement, subscriber, subscriptionMethod, parameterTypes[0].GetElementType(), importService);
             }
 
-            // Try to find the "start", "end" and "updateRStream" methods
+            // Try to find the "Start", "End" and "UpdateRStream" methods
             MethodInfo startMethod = null;
             MethodInfo endMethod = null;
             MethodInfo rStreamMethod = null;
@@ -290,7 +290,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             rStreamMethod = subscriberType.GetMethod("UpdateRStream", subscriptionMethod.GetParameterTypes());
             if (rStreamMethod == null)
             {
-                // we don't have an "updateRStream" expected, make sure there isn't one with/without EPStatement
+                // we don't have an "UpdateRStream" expected, make sure there isn't one with/without EPStatement
                 if (IsFirstParameterEPStatement(subscriptionMethod)) {
                     var classes = updateMethods.Get(subscriptionMethod);
                     ValidateNonMatchUpdateRStream(subscriber, classes);
@@ -399,7 +399,7 @@ namespace com.espertech.esper.runtime.@internal.subscriber
             object subscriber,
             Type[] classes)
         {
-            var m = subscriber.GetType().GetMethod("updateRStream", classes);
+            var m = subscriber.GetType().GetMethod("UpdateRStream", classes);
             if (m != null) {
                 throw new ResultDeliveryStrategyInvalidException(
                     "Subscriber 'UpdateRStream' method footprint must match 'Update' method footprint");

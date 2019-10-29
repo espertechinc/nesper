@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -14,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     /// The insert-into clause holds the named window name and column names. The select-clause
     /// list holds the values to be inserted.
     /// </summary>
+    [Serializable]
     public class FireAndForgetInsert : FireAndForgetClause
     {
         private bool _useValuesKeyword = true;

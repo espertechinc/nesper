@@ -132,9 +132,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 namespaceScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(fieldsForgable);
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
+            forgables.Add(fieldsForgable);
 
             // compiled filter spec list
             IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();

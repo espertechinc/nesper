@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 .MethodReturn(NewInstance<UniformPair<EventBean[]>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
-        internal static void GetIteratorViewCodegen(CodegenMethod methodNode)
+        internal static void GetEnumeratorViewCodegen(CodegenMethod methodNode)
         {
             methodNode.Block.MethodReturn(
                 NewInstance<TransformEventEnumerator>(
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     NewInstance<ResultSetProcessorHandtruTransform>(Ref("this"))));
         }
 
-        internal static void GetIteratorJoinCodegen(CodegenMethod method)
+        internal static void GetEnumeratorJoinCodegen(CodegenMethod method)
         {
             method.Block
                 .DeclareVar<UniformPair<EventBean[]>>(

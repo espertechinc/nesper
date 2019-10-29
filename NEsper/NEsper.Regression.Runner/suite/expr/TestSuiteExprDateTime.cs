@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTDocSamples());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprDTFormat()
         {
             RegressionRunner.Run(session, ExprDTFormat.Executions());
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTPerfBetween());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprDTPerfIntervalOps()
         {
             RegressionRunner.Run(session, new ExprDTPerfIntervalOps());

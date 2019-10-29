@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumTakeWhileLastIndexScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
             var innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
             var block = methodNode.Block

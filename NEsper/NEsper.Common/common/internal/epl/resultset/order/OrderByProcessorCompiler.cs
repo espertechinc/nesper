@@ -65,18 +65,38 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     classScope)
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
             forge.InstantiateCodegen(instantiateMethod, classScope);
-
+            
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(OrderByProcessorCompiler), classScope, ctorParams);
 
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
+            
+            // --------------------------------------------------------------------------------
+            // Add statementFields
+            // --------------------------------------------------------------------------------
+
+            var members = new List<CodegenTypedParam> {
+                new CodegenTypedParam(
+                    classScope.NamespaceScope.FieldsClassName,
+                    null,
+                    "statementFields",
+                    false,
+                    false)
+            };
+            
+            ctor.Block.AssignRef(
+                Ref("this.statementFields"),
+                Ref("o.statementFields"));
+
+            // --------------------------------------------------------------------------------
+
             CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods, properties);
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_ORDERBYPROCESSORFACTORY,
                 typeof(OrderByProcessorFactory),
                 ctor,
-                Collections.GetEmptyList<CodegenTypedParam>(),
+                members,
                 methods,
                 properties);
             innerClasses.Add(innerClass);

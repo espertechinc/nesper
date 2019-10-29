@@ -27,10 +27,14 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance(typeof(DefaultSupportCaptureOpStaticFactory<object>));
+            return NewInstance(typeof(DefaultSupportCaptureOpStaticFactory<T>));
         }
     }
 
+    /// <summary>
+    /// An implementation of the default support capture op static forge that is specific and
+    /// generic for objects.  This **sadly** mirrors some of the mechanics of type erasure.
+    /// </summary>
     public class DefaultSupportCaptureOpStaticForge : DefaultSupportCaptureOpStaticForge<object>
     {
     }

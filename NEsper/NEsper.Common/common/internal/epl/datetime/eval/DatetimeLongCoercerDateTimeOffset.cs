@@ -46,9 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         /// <summary>NOTE: Code-generation-invoked method, method name and parameter order matters</summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>millis</returns>
-        public static long CoerceToMillis(DateTimeOffset dateTime)
+        public static long CoerceToMillis(DateTimeOffset? dateTime)
         {
-            return dateTime.InMillis();
+            if (dateTime == null) {
+                throw new ArgumentNullException(nameof(dateTime));
+            }
+            return dateTime.Value.InMillis();
         }
     }
 } // end of namespace

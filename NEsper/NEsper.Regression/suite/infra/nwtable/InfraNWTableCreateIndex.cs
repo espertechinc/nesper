@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 catch (Exception ex) {
                     var text = namedWindow
                         ? "Unexpected exception in statement 'create': Unique index violation, index 'I1' is a unique index and key 'E1' already exists"
-                        : "System.Exception: Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
+                        : "Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
                     Assert.AreEqual(text, ex.Message);
                 }
 

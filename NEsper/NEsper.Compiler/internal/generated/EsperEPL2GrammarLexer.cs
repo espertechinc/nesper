@@ -323,7 +323,7 @@ public partial class EsperEPL2GrammarLexer : Lexer {
 					parserTokenParaphrases[VALUE_NULL] = "'null'";
 					parserTokenParaphrases[ROW_LIMIT_EXPR] = "'limit'";
 					parserTokenParaphrases[OFFSET] = "'offset'";
-					parserTokenParaphrases[UPDATE] = "'Update'";
+					parserTokenParaphrases[UPDATE] = "'update'";
 					parserTokenParaphrases[MATCH_RECOGNIZE] = "'match_recognize'";
 					parserTokenParaphrases[MEASURES] = "'measures'";
 					parserTokenParaphrases[DEFINE] = "'define'";
@@ -403,7 +403,7 @@ public partial class EsperEPL2GrammarLexer : Lexer {
 		"'weeks'", "'day'", "'days'", "'hour'", "'hours'", "'minute'", "'minutes'", 
 		"'sec'", "'second'", "'seconds'", "'msec'", "'millisecond'", "'milliseconds'", 
 		"'usec'", "'microsecond'", "'microseconds'", "'true'", "'false'", "'null'", 
-		"'limit'", "'offset'", "'Update'", "'match_recognize'", "'match_recognize_permute'", 
+		"'limit'", "'offset'", "'update'", "'match_recognize'", "'match_recognize_permute'", 
 		"'measures'", "'define'", "'partition'", "'matches'", "'after'", "'for'", 
 		"'while'", "'using'", "'merge'", "'matched'", "'expression'", "'new'", 
 		"'start'", "'context'", "'initiated'", "'terminated'", "'dataflow'", "'cube'", 

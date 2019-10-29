@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             if (invocation.Method == TARGET_EVALUATECODEGEN) {
                 var args = invocation.Arguments;
-                var evaluationType = forge.EvaluationType.GetBoxedType();
+                var evaluationType = forge.EvaluationType;
                 var requiredType = (Type) args[args.Length - 4];
                 var parent = (CodegenMethodScope) args[args.Length - 3];
                 var symbols = (ExprForgeCodegenSymbol) args[args.Length - 2];
@@ -64,9 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return;
                 }
 
-                var method = parent.MakeChild(evaluationType, typeof(ExprForgeProxy), codegenClassScope);
+                var evaluationTypeBoxed = evaluationType.GetBoxedType();
+                var method = parent.MakeChild(evaluationTypeBoxed, typeof(ExprForgeProxy), codegenClassScope);
                 if (evaluationType == typeof(void)) {
-                    method.Block.Expression(forge.EvaluateCodegen(requiredType, method, symbols, codegenClassScope))
+                    method.Block
+                        .Expression(forge.EvaluateCodegen(requiredType, method, symbols, codegenClassScope))
+                        .DebugStack()
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")
@@ -74,10 +77,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .MethodEnd();
                 }
                 else {
-                    method.Block.DeclareVar(
-                            evaluationType,
+                    method.Block
+                        .DebugStack()
+                        .DeclareVar(
+                            evaluationTypeBoxed,
                             "result",
-                            forge.EvaluateCodegen(evaluationType, method, symbols, codegenClassScope))
+                            forge.EvaluateCodegen(evaluationTypeBoxed, method, symbols, codegenClassScope))
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")

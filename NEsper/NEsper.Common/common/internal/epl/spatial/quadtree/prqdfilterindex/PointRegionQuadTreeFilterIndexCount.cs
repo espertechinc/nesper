@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.common.@internal.filtersvc;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
@@ -22,9 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static int Count(PointRegionQuadTreeNode node)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object>) {
-                var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
-                return CountLeaf(leaf);
+            if (node is PointRegionQuadTreeNodeLeaf<object> treeNodeLeaf) {
+                return CountLeaf(treeNodeLeaf);
             }
 
             var branch = (PointRegionQuadTreeNodeBranch) node;
@@ -35,13 +35,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         {
             if (leaf.Points == null)
                 return 0;
-            if (leaf.Points is XYPointWValue<object>)
+            if (leaf.Points is XYPointWOpaqueValue)
                 return CountCallbacks(leaf.Points);
 
-            var coll = (ICollection<XYPointWValue<object>>) leaf.Points;
+            var coll = leaf.Points.Unwrap<XYPointWOpaqueValue>();
             var count = 0;
-            foreach (var p in coll)
-                count += CountCallbacks(p.Value);
+            foreach (var p in coll) {
+                count += CountCallbacks(p.OpaqueValue);
+            }
+
             return count;
         }
 

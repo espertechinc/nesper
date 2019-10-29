@@ -54,11 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(EnumTakeForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var sizeType = forge.sizeEval.EvaluationType;
             var block = methodNode.Block.DeclareVar(

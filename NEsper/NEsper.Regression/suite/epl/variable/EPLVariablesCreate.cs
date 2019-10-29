@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -93,7 +94,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new[] {1, 2},
                     (
                         expected,
-                        received) => EPAssertionUtil.AssertEqualsExactOrder((int[]) expected, (int[]) received));
+                        received) => CollectionAssert.AreEqual(
+                        (IEnumerable) expected,
+                        (IEnumerable) received));
                 RunAssertionGetSetInvalid(env, id, "int_prim", new string[0]);
 
                 RunAssertionSetGet(
@@ -103,17 +106,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new int?[] {1, 2},
                     (
                         expected,
-                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
+                        received) => CollectionAssert.AreEqual(
+                        (IEnumerable) expected,
+                        (IEnumerable) received));
                 RunAssertionGetSetInvalid(env, id, "int_boxed", new int[0]);
 
                 RunAssertionSetGet(
                     env,
                     id,
                     "objectarray",
-                    new int?[] {1, 2},
+                    new object[] {1, 2},
                     (
                         expected,
-                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
+                        received) => CollectionAssert.AreEqual(
+                        (IEnumerable) expected,
+                        (IEnumerable) received));
                 RunAssertionGetSetInvalid(env, id, "objectarray", new int[0]);
 
                 RunAssertionSetGet(
@@ -123,7 +130,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new[] {new object[] {1, 2}},
                     (
                         expected,
-                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
+                        received) => CollectionAssert.AreEqual(
+                        (IEnumerable) expected,
+                        (IEnumerable) received));
                 RunAssertionGetSetInvalid(env, id, "objectarray_2dim", new int[0]);
 
                 env.UndeployAll();
@@ -229,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var typeCreateOne = env.Statement("create-one").EventType;
                 Assert.AreEqual(typeof(long?), typeCreateOne.GetPropertyType("var1SAI"));
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
-                Assert.IsTrue(Equals(typeCreateOne.PropertyNames, new[] {"var1SAI"}));
+                CollectionAssert.AreEquivalent(new[] {"var1SAI"}, typeCreateOne.PropertyNames);
 
                 var stmtCreateTextTwo = "@Name('create-two') create variable long var2SAI = 20";
                 env.CompileDeploy(stmtCreateTextTwo, path).AddListener("create-two");

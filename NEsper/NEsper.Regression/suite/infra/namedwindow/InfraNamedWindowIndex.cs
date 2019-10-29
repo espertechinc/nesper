@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var epl = "@Name('window') create window MyWindowOne#unique(TheString) as SupportBean;\n" +
                       "insert into MyWindowOne select * from SupportBean;\n" +
-                      "@Name('Idx') create unique index I1 on MyWindowOne(TheString);\n";
+                      "@Name('idx') create unique index I1 on MyWindowOne(TheString);\n";
             env.CompileDeploy(epl);
             Assert.AreEqual(
                 StatementType.CREATE_INDEX,

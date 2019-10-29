@@ -59,7 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test property hosts a method
                 env.CompileDeploy(
-                        "@Name('s0') select Inside.GetMyString() as val," +
+                        "@Name('s0') select " +
+                        "Inside.GetMyString() as val," +
                         "Inside.InsideTwo.GetMyOtherString() as val2 " +
                         "from SupportBeanStaticOuter")
                     .AddListener("s0");

@@ -445,9 +445,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 try {
                     stmt = DeployerStatement.DeployStatement(recovery, lightweight, services, epRuntime);
                 }
-                catch (EPException) {
-                    throw;
-                }
                 catch (Exception ex) {
                     ReverseDeployment(deploymentId, deploymentTypes, lightweights, statements, provider, services);
                     throw new EPDeployException("Failed to deploy: " + ex.Message, ex);

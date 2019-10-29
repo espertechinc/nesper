@@ -261,17 +261,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             Assert.IsFalse(env.GetEnumerator("tbl").MoveNext());
 
             env.SendEventBean(new SupportBean());
-            AssertIteratorUnkeyedSimple(env, 1);
+            AssertEnumeratorUnkeyedSimple(env, 1);
 
             env.Milestone(0);
 
-            AssertIteratorUnkeyedSimple(env, 1);
+            AssertEnumeratorUnkeyedSimple(env, 1);
 
             env.SendEventBean(new SupportBean());
-            AssertIteratorUnkeyedSimple(env, 2);
+            AssertEnumeratorUnkeyedSimple(env, 2);
         }
 
-        private static void AssertIteratorUnkeyedSimple(
+        private static void AssertEnumeratorUnkeyedSimple(
             RegressionEnvironment env,
             long expected)
         {

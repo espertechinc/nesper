@@ -33,12 +33,15 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             CodegenExpression map;
             if (operations.IsEmpty()) {
-                map = StaticMethod(typeof(Collections), "GetEmptyMap", new [] { typeof(string), typeof(object) });
+                map = StaticMethod(typeof(Collections), "GetEmptyMap", new [] {
+                    typeof(QueryGraphValueEntryCustomKey),
+                    typeof(QueryGraphValueEntryCustomOperation)
+                });
             }
             else {
-                method.Block.DeclareVar<IDictionary<string, object>>(
+                method.Block.DeclareVar<IDictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>>(
                     "map",
-                    NewInstance(typeof(LinkedHashMap<string, object>)));
+                    NewInstance(typeof(HashMap<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>)));
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
                         Ref("map"),

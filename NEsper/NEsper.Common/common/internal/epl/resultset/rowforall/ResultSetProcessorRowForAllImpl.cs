@@ -111,13 +111,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     NewInstance<UniformPair<EventBean[]>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
-        protected internal static void GetIteratorViewCodegen(
+        internal static void GetEnumeratorViewCodegen(
             ResultSetProcessorRowForAllForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var obtainMethod = ObtainIteratorCodegen(forge, classScope, method, instance);
+            var obtainMethod = ObtainEnumeratorCodegen(forge, classScope, method, instance);
             if (!forge.IsHistoricalOnly) {
                 method.Block.MethodReturn(LocalMethod(obtainMethod));
                 return;
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 .MethodReturn(Ref("iterator"));
         }
 
-        public static void GetIteratorJoinCodegen(
+        public static void GetEnumeratorJoinCodegen(
             ResultSetProcessorRowForAllForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -401,11 +401,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         {
             var getSelectListEventSingle = GetSelectListEventSingleCodegen(forge, classScope, instance);
 
-            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+            method.Block
+                .DeclareVar<EventBean>("lastOldEvent", ConstantNull())
                 .DeclareVar<EventBean>("lastNewEvent", ConstantNull());
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
+                var forEach = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                // var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
@@ -605,7 +607,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 .MethodReturn(NewInstance<UniformPair<EventBean[]>>(Ref("lastNew"), Ref("lastOld")));
         }
 
-        protected internal static CodegenMethod ObtainIteratorCodegen(
+        protected internal static CodegenMethod ObtainEnumeratorCodegen(
             ResultSetProcessorRowForAllForge forge,
             CodegenClassScope classScope,
             CodegenMethod parent,

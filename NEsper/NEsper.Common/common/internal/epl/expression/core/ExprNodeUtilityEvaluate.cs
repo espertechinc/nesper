@@ -38,15 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static void ApplyFilterExpressionIterable(
-            IEnumerator<EventBean> iterator,
+            IEnumerator<EventBean> enumerator,
             ExprEvaluator filterExpression,
             ExprEvaluatorContext exprEvaluatorContext,
             ICollection<EventBean> eventsInWindow)
         {
             EventBean[] events = new EventBean[1];
-            while (iterator.MoveNext()) {
-                events[0] = iterator.Current;
-                object result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
+            while (enumerator.MoveNext()) {
+                events[0] = enumerator.Current;
+                var result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
                 if ((result == null) || (!((bool) result))) {
                     continue;
                 }

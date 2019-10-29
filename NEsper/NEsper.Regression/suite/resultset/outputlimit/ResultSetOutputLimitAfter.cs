@@ -26,13 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ResultSetAfterWithOutputLast());
             execs.Add(new ResultSetEveryPolicy());
             execs.Add(new ResultSetMonthScoped());
             execs.Add(new ResultSetDirectNumberOfEvents());
             execs.Add(new ResultSetDirectTimePeriod());
-#endif
             execs.Add(new ResultSetSnapshotVariable());
             execs.Add(new ResultSetOutputWhenThen());
             return execs;

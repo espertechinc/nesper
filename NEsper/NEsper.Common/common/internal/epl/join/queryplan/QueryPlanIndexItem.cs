@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
@@ -69,13 +70,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                    "unique=" +
                    IsUnique +
                    ", hashProps=" +
-                   Arrays.AsList(HashProps) +
+                   HashProps.RenderAny() +
                    ", rangeProps=" +
-                   Arrays.AsList(RangeProps) +
+                   RangeProps.RenderAny() +
                    ", hashPropTypes=" +
-                   Arrays.AsList(HashPropTypes) +
+                   HashPropTypes.RenderAny() +
                    ", rangePropTypes=" +
-                   Arrays.AsList(RangePropTypes) +
+                   RangePropTypes.RenderAny() +
                    ", advanced=" +
                    AdvancedIndexProvisionDesc +
                    "}";

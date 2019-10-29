@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public string[] StringArray { get; set; }
 
-        [DefaultValue("XYZ")]
+        [DefaultValue(new string[] { "XYZ" })]
         public string[] StringArrayDef { get; set; }
     }
 } // end of namespace

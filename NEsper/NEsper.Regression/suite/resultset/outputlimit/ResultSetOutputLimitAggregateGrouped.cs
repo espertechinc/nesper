@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "IBM", 3, -3);
-            var fields = new [] { "symbol","Volume","sumPrice" };
+            var fields = new [] { "Symbol","Volume","sumPrice" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 
             SendEvent(env, SYMBOL_DELL, 10000, 51);
-            var fields = new [] { "symbol","Volume","mySum" };
+            var fields = new [] { "Symbol","Volume","mySum" };
             var events = env.Listener("s0").DataListsFlattened;
             if (events.First[0].Get("Symbol").Equals(SYMBOL_IBM)) {
                 EPAssertionUtil.AssertPropsPerRow(
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 
             SendEvent(env, SYMBOL_DELL, 10000, 51);
-            var fields = new [] { "symbol","Volume","mySum" };
+            var fields = new [] { "Symbol","Volume","mySum" };
             var events = env.Listener("s0").DataListsFlattened;
             if (events.First[0].Get("Symbol").Equals(SYMBOL_IBM)) {
                 EPAssertionUtil.AssertPropsPerRow(
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertionLast(RegressionEnvironment env)
         {
-            var fields = new [] { "symbol","Volume","mySum" };
+            var fields = new [] { "Symbol","Volume","mySum" };
             SendEvent(env, SYMBOL_DELL, 10000, 51);
             Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
 

@@ -34,7 +34,7 @@ namespace NEsper.Avro.Getter
             int index)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = (ICollection<object>) record.Get(_pos);
+            var values = record.Get(_pos);
             return AvroEventBeanGetterIndexed.GetAvroIndexedValue(values, index);
         }
 
@@ -56,14 +56,12 @@ namespace NEsper.Avro.Getter
                     CodegenExpressionBuilder.CastUnderlying(
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.Ref("event")))
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<object>(
                     "values",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(ICollection<object>),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
-                            "Get",
-                            CodegenExpressionBuilder.Constant(_pos))))
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("record"),
+                        "Get",
+                        CodegenExpressionBuilder.Constant(_pos)))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterIndexed),

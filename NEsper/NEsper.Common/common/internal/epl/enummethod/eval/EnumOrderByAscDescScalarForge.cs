@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(ICollection<object>),
                     typeof(EnumOrderByAscDescScalarForge),
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
                 .Block
                 .IfCondition(
                     Or(

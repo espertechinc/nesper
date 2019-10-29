@@ -15,6 +15,7 @@ using System.Reflection.Metadata;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -198,10 +199,42 @@ namespace com.espertech.esper.compiler.@internal.util
             return SyntaxTree(assemblyBindingsCompilationUnit);
         }
 
+        private static long totalMicroTime = 0L;
+        private static long totalInvocations = 0L;
+        private static long minMicroTime = long.MaxValue;
+        private static long maxMicroTime = 0L;
+        
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
         public Assembly Compile()
+        {
+            var startMicro = PerformanceObserver.MicroTime;
+            try {
+                return CompileInternal();
+            }
+            finally {
+                var deltaMicro = PerformanceObserver.MicroTime - startMicro;
+                totalMicroTime += deltaMicro;
+                totalInvocations++;
+                if (deltaMicro > maxMicroTime) maxMicroTime = deltaMicro;
+                if (deltaMicro < minMicroTime) minMicroTime = deltaMicro;
+                
+                var averageMicroTime = totalMicroTime / totalInvocations;
+                Console.WriteLine(
+                    "Invocations: {0}, Time: {1}, Average: {2}, Min: {3}, Max: {4}",
+                    totalInvocations,
+                    totalMicroTime / 1000,
+                    averageMicroTime / 1000,
+                    minMicroTime / 1000,
+                    maxMicroTime / 1000);
+            }
+        }
+
+        /// <summary>
+        /// Compiles the specified code generation class into an assembly.
+        /// </summary>
+        private Assembly CompileInternal()
         {
             // Convert the codegen class into it's source representation.
             var syntaxTreePairs = CodegenClasses

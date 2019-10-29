@@ -80,31 +80,31 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoin2StreamSimplePerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin2StreamRangePerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamRangePerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin2StreamSimpleCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin2StreamSimpleCoercionPerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin3StreamRangePerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamRangePerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin5StreamPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin5StreamPerformance());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin2StreamExprPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin2StreamExprPerformance());
@@ -266,19 +266,19 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoinUnidirectionalStream.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin3StreamAndPropertyPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamAndPropertyPerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin3StreamCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamCoercionPerformance.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoin3StreamOuterJoinCoercionPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamOuterJoinCoercionPerformance.Executions());

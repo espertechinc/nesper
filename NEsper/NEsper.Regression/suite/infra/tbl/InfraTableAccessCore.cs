@@ -207,12 +207,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         private static void AssertTopLevelTypeInfo(EPStatement stmt)
         {
-            Assert.AreEqual(typeof(IDictionary<string, object>), stmt.EventType.GetPropertyType("val0"));
-            var fragType = stmt.EventType.GetFragmentType("val0");
+            Assert.AreEqual(typeof(IDictionary<string, object>), stmt.EventType.GetPropertyType("Val0"));
+            var fragType = stmt.EventType.GetFragmentType("Val0");
             Assert.IsFalse(fragType.IsIndexed);
             Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("thewindow"));
-            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("thetotal"));
+            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("Thewindow"));
+            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("Thetotal"));
         }
 
         private static void AssertIntegerIndexed(
@@ -477,17 +477,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     soda,
                     "create table windowAndTotalTLP2K (" +
-                    "keyi int primary key, keys string primary key, thewindow window(*) @type('MyEventOA'), thetotal sum(int))",
+                    "keyi int primary key, keys string primary key, Thewindow window(*) @type('MyEventOA'), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     soda,
                     "into table windowAndTotalTLP2K " +
-                    "select window(*) as thewindow, sum(c2) as thetotal from MyEventOA#length(2) group by c0, c1",
+                    "select window(*) as Thewindow, sum(c2) as Thetotal from MyEventOA#length(2) group by c0, c1",
                     path);
 
                 env.CompileDeploy(
                         soda,
-                        "@Name('s0') select windowAndTotalTLP2K[Id,P00] as val0 from SupportBean_S0",
+                        "@Name('s0') select windowAndTotalTLP2K[Id,P00] as Val0 from SupportBean_S0",
                         path)
                     .AddListener("s0");
                 AssertTopLevelTypeInfo(env.Statement("s0"));
@@ -495,10 +495,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[] e1 = {10, "G1", 100};
                 env.SendEventObjectArray(e1, "MyEventOA");
 
-                var fieldsInner = new [] { "thewindow","thetotal" };
+                var fieldsInner = new [] { "Thewindow","Thetotal" };
                 env.SendEventBean(new SupportBean_S0(10, "G1"));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e1},
                     100);
@@ -510,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(20, "G2"));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e2},
                     200);
@@ -520,13 +520,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(10, "G1"));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     null,
                     null);
                 env.SendEventBean(new SupportBean_S0(20, "G2"));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e2, e3},
                     500);
@@ -534,14 +534,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // test typable output
                 env.UndeployModuleContaining("s0");
                 env.CompileDeploy(
-                    "@Name('i1') insert into OutStream select windowAndTotalTLP2K[20, 'G2'] as val0 from SupportBean_S0",
+                    "@Name('i1') insert into OutStream select windowAndTotalTLP2K[20, 'G2'] as Val0 from SupportBean_S0",
                     path);
                 env.AddListener("i1");
 
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("i1").AssertOneGetNewAndReset(),
-                    new [] { "val0.thewindow","val0.thetotal" },
+                    new [] { "Val0.Thewindow","Val0.Thetotal" },
                     new object[] {new[] {e2, e3}, 500});
 
                 env.UndeployAll();
@@ -569,22 +569,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "create table windowAndTotalTLRUG (" +
-                    "thewindow window(*) @type(MyEventOATLRU), thetotal sum(int))",
+                    "Thewindow window(*) @type(MyEventOATLRU), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table windowAndTotalTLRUG " +
-                    "select window(*) as thewindow, sum(c0) as thetotal from MyEventOATLRU#length(2)",
+                    "select window(*) as Thewindow, sum(c0) as Thetotal from MyEventOATLRU#length(2)",
                     path);
 
-                env.CompileDeploy("@Name('s0') select windowAndTotalTLRUG as val0 from SupportBean_S0", path);
+                env.CompileDeploy("@Name('s0') select windowAndTotalTLRUG as Val0 from SupportBean_S0", path);
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(e1, "MyEventOATLRU");
 
-                var fieldsInner = new [] { "thewindow","thetotal" };
+                var fieldsInner = new [] { "Thewindow","Thetotal" };
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e1},
                     10);
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e1, e2},
                     30);
@@ -604,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(2));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e2, e3},
                     50);
@@ -615,7 +615,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                         string.Format(
                             "create schema AggBean as {0};\n" +
-                            "@Name('s0') insert into AggBean select windowAndTotalTLRUG as val0 from SupportBean_S0;\n",
+                            "@Name('s0') insert into AggBean select windowAndTotalTLRUG as Val0 from SupportBean_S0;\n",
                             TypeHelper.MaskTypeName<AggBean>()),
                         path)
                     .AddListener("s0");
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "val0.thewindow","val0.thetotal" },
+                    new [] { "Val0.Thewindow","Val0.Thetotal" },
                     new object[] {new[] {e2, e3}, 50});
 
                 env.UndeployAll();
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create expression getMyValue{o -> (select MyTableTwo[o.P00].IntPrimitive from SupportBean_S1#lastevent)}",
                     path);
                 env.CompileDeploy("insert into MyTableTwo select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as S0", path)
+                env.CompileDeploy("@Name('s0') select getMyValue(S0) as c0 from SupportBean_S0 as S0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S1(1000));
@@ -678,7 +678,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create table MyTableOne(TheString string primary key, IntPrimitive int)", path);
                 env.CompileDeploy("create expression getMyValue{o -> MyTableOne[o.P00].IntPrimitive}", path);
                 env.CompileDeploy("insert into MyTableOne select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as S0", path)
+                env.CompileDeploy("@Name('s0') select getMyValue(S0) as c0 from SupportBean_S0 as S0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -967,13 +967,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fieldsOne = new [] { "s0sum","s0cnt","s0win" };
                 var eplBindOne =
-                    "@Name('s1') into table varaggMSC select sum(Id) as S0sum, count(*) as S0cnt, window(*) as S0win from SupportBean_S0#length(2) " +
+                    "@Name('s1') into table varaggMSC select sum(Id) as s0sum, count(*) as s0cnt, window(*) as s0win from SupportBean_S0#length(2) " +
                     (grouped ? "group by P00" : "");
                 env.CompileDeploy(eplBindOne, path).AddListener("s1");
 
                 var fieldsTwo = new [] { "s1sum","s1cnt","s1win" };
                 var eplBindTwo =
-                    "@Name('s2') into table varaggMSC select sum(Id) as S1sum, count(*) as S1cnt, window(*) as S1win from SupportBean_S1#length(2) " +
+                    "@Name('s2') into table varaggMSC select sum(Id) as s1sum, count(*) as s1cnt, window(*) as s1win from SupportBean_S1#length(2) " +
                     (grouped ? "group by P10" : "");
                 env.CompileDeploy(eplBindTwo, path).AddListener("s2");
 
@@ -1176,11 +1176,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S0 as S0 " +
                     "merge the_table as tt " +
-                    "where S0.P00 = tt.Key " +
+                    "where S0.P00 = tt.key " +
                     "when matched and the_table[S0.P00].total > 0" +
                     "  then update set value = 1",
                     path);
-                env.CompileDeploy("@Name('s0') select the_table[P10].Value as c0 from SupportBean_S1", path)
+                env.CompileDeploy("@Name('s0') select the_table[P10].value as c0 from SupportBean_S1", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", -1));
@@ -1233,14 +1233,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "create table windowAndTotal (" +
-                    "thewindow window(*) @type(MyEvent), thetotal sum(int))",
+                    "Thewindow window(*) @type(MyEvent), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table windowAndTotal " +
-                    "select window(*) as thewindow, sum(c0) as thetotal from MyEvent#length(2)",
+                    "select window(*) as Thewindow, sum(c0) as Thetotal from MyEvent#length(2)",
                     path);
 
-                env.CompileDeploy("@Name('s0') select windowAndTotal as val0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select windowAndTotal as Val0 from SupportBean_S0", path)
                     .AddListener("s0");
 
                 object[] e1 = {10};
@@ -1248,10 +1248,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.Milestone(0);
 
-                var fieldsInner = new [] { "thewindow","thetotal" };
+                var fieldsInner = new [] { "Thewindow","Thetotal" };
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e1},
                     10);
@@ -1265,7 +1265,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e1, e2},
                     30);
@@ -1279,7 +1279,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S0(2));
                 EPAssertionUtil.AssertPropsMap(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
+                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
                     fieldsInner,
                     new[] {e2, e3},
                     50);
@@ -1294,7 +1294,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             public object[][] Thewindow { get; set; }
 
-            public void SetThetotal(int thetotal)
+#if false
+            public void SetThetotal(int Thetotal)
             {
                 Thetotal = thetotal;
             }
@@ -1303,6 +1304,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 Thewindow = thewindow;
             }
+#endif
         }
 
         public class AggBean

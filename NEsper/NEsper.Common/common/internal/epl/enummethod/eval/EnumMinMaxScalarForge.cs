@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = codegenMethodScope
                 .MakeChild(innerTypeBoxed, typeof(EnumMinMaxEventsForgeEval), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
                 .Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull());
 

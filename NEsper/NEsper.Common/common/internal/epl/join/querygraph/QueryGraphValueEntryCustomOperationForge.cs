@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomOperation), GetType(), classScope);
-            method.Block.DeclareVar<IDictionary<int, ExprNode>>(
+            method.Block.DeclareVar<IDictionary<int, ExprEvaluator>>(
                 "map",
-                NewInstance(typeof(Dictionary<int, ExprNode>)));
+                NewInstance(typeof(Dictionary<int, ExprEvaluator>)));
             foreach (var entry in PositionalExpressions) {
                 method.Block.ExprDotMethod(
                     Ref("map"),

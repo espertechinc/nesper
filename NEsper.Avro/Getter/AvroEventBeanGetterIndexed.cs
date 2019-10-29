@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +18,10 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -45,14 +50,22 @@ namespace NEsper.Avro.Getter
         public object Get(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = (ICollection<object>) record.Get(_key);
-            return GetAvroIndexedValue(values, _index);
+            var values = record.Get(_key);
+            if (IsIndexableValue(values)) {
+                return GetAvroIndexedValue(values, _index);
+            }
+
+            throw new ArgumentException("eventBean contains incorrect array", nameof(eventBean));
         }
 
         public object GetAvroFieldValue(GenericRecord record)
         {
-            var values = (ICollection<object>) record.Get(_key);
-            return GetAvroIndexedValue(values, _index);
+            var values = record.Get(_key);
+            if (IsIndexableValue(values)) {
+                return GetAvroIndexedValue(values, _index);
+            }
+
+            throw new ArgumentException("eventBean contains incorrect array", nameof(record));
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -162,19 +175,30 @@ namespace NEsper.Avro.Getter
         /// <param name="index">index</param>
         /// <returns>value</returns>
         public static object GetAvroIndexedValue(
-            ICollection<object> values,
+            object values,
             int index)
         {
-            if (values == null) {
-                return null;
+            switch (values) {
+                case null:
+                    return null;
+
+                case Array valuesArray:
+                    return valuesArray.Length > index ? valuesArray.GetValue(index) : null;
             }
 
-            if (values is IList<object>) {
-                var list = (IList<object>) values;
-                return list.Count > index ? list[index] : null;
+            IList<object> list;
+
+            if (values is IList<object> listRecast) {
+                list = listRecast;
+            }
+            else if (values.GetType().IsGenericList()) {
+                list = MagicMarker.SingletonInstance.GetList(values);
+            }
+            else {
+                list = CompatExtensions.UnwrapIntoList<object>(values);
             }
 
-            return values.ToArray()[index];
+            return list.Count > index ? list[index] : null;
         }
 
         private CodegenMethod GetAvroFragmentCodegen(
@@ -198,6 +222,27 @@ namespace NEsper.Avro.Getter
                         "AdapterForTypedAvro",
                         CodegenExpressionBuilder.Ref("value"),
                         eventType));
+        }
+        
+        /// <summary>
+        /// Returns true if the value being presented can be used as an indexable value.
+        /// </summary>
+        /// <param name="values">the value(s) being presented.</param>
+        /// <returns></returns>
+        public static bool IsIndexableValue(object values)
+        {
+            switch (values) {
+                case null:
+                case Array _:
+                case IList<object> _:
+                    return true;
+            }
+
+            if (values.GetType().IsGenericList()) {
+                return true;
+            }
+
+            return false;
         }
     }
 } // end of namespace

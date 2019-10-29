@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedNoSortWMapCodegen(this, classScope, instance);
-            ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedArrFromIteratorCodegen(this, classScope, instance);
+            ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedArrFromEnumeratorCodegen(this, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
             if (unboundedProcessor) {
@@ -203,29 +203,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             ResultSetProcessorRowPerGroupImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetIteratorViewCodegen(
+        public void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
             if (unboundedProcessor) {
-                ResultSetProcessorRowPerGroupUnbound.GetIteratorViewUnboundedCodegen(
+                ResultSetProcessorRowPerGroupUnbound.GetEnumeratorViewUnboundedCodegen(
                     this,
                     classScope,
                     method,
                     instance);
             }
             else {
-                ResultSetProcessorRowPerGroupImpl.GetIteratorViewCodegen(this, classScope, method, instance);
+                ResultSetProcessorRowPerGroupImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
             }
         }
 
-        public void GetIteratorJoinCodegen(
+        public void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorRowPerGroupImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
+            ResultSetProcessorRowPerGroupImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(

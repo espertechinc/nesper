@@ -83,9 +83,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             ifShortcut.IfCondition(Or(EqualsNull(REF_OLDDATA), EqualsIdentity(ArrayLength(REF_OLDDATA), Constant(0))))
                 .BlockReturn(LocalMethod(processViewResultNewDepthOneUnbound, REF_NEWDATA, REF_ISSYNTHESIZE));
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, EventBean>>(
                     "keysAndEvents",
-                    NewInstance(typeof(Dictionary<object, object>)))
+                    NewInstance(typeof(Dictionary<object, EventBean>)))
                 .DeclareVar<EventBean[]>(NAME_EPS, NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar<object[]>(
                     "newDataMultiKey",
@@ -163,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         @Ref("selectOldEvents")));
         }
 
-        public static void GetIteratorViewUnboundedCodegen(
+        public static void GetEnumeratorViewUnboundedCodegen(
             ResultSetProcessorRowPerGroupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,

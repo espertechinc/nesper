@@ -139,11 +139,9 @@ namespace NEsper.Avro.Getter
             int index)
         {
             var value = record.Get(propertyName);
-            if (value == null || !(value is ICollection<object>)) {
-                return null;
-            }
-
-            return AvroEventBeanGetterIndexed.GetAvroIndexedValue((ICollection<object>) value, index);
+            return AvroEventBeanGetterIndexed.IsIndexableValue(value)
+                ? AvroEventBeanGetterIndexed.GetAvroIndexedValue((ICollection<object>) value, index)
+                : null;
         }
 
         /// <summary>
@@ -162,7 +160,7 @@ namespace NEsper.Avro.Getter
             }
 
             var value = record.Get(propertyName);
-            return value == null || value is ICollection<object>;
+            return AvroEventBeanGetterIndexed.IsIndexableValue(value);
         }
     }
 } // end of namespace

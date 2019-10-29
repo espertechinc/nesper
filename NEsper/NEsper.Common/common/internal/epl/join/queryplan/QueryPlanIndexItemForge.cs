@@ -115,21 +115,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public override string ToString()
         {
-            return "QueryPlanIndexItem{" +
+            return "QueryPlanIndexItemForge{" +
                    "unique=" +
                    IsUnique +
                    ", hashProps=" +
-                   Arrays.AsList(HashProps) +
+                   HashProps.RenderAny() +
                    ", rangeProps=" +
-                   Arrays.AsList(RangeProps) +
+                   RangeProps.RenderAny() +
                    ", hashTypes=" +
-                   Arrays.AsList(HashTypes) +
+                   HashTypes.RenderAny() +
                    ", rangeTypes=" +
-                   Arrays.AsList(RangeTypes) +
+                   RangeTypes.RenderAny() +
                    ", advanced=" +
-                   (AdvancedIndexProvisionDesc == null
-                       ? null
-                       : AdvancedIndexProvisionDesc.IndexDesc.IndexTypeName) +
+                   AdvancedIndexProvisionDesc?.IndexDesc.IndexTypeName +
                    "}";
         }
 

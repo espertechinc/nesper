@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_ROWLIMITPROCESSOR,
-                    "determineApplyLimit2Events",
+                    "DetermineApplyLimit2Events",
                     REF_ORDERFIRSTEVENT,
                     REF_ORDERSECONDEVENT));
         }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         private static void DetermineLimitAndApplyCodegen(CodegenMethod method)
         {
             method.Block.MethodReturn(
-                ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", REF_OUTGOINGEVENTS));
+                ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", REF_OUTGOINGEVENTS));
         }
     }
 } // end of namespace

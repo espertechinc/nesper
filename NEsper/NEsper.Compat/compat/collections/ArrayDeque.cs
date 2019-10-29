@@ -388,11 +388,12 @@ namespace com.espertech.esper.compat.collections
             }
             else
             {
-                var nl = _head;
                 var nr = _array.Length - _head;
 
                 System.Array.Copy(_array, _head, array, 0, nr);
-                System.Array.Copy(_array, 0, array, nr, nl);
+                if (_tail != 0) {
+                    System.Array.Copy(_array, 0, array, nr, _tail);
+                }
             }
         }
 

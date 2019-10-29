@@ -355,7 +355,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 object finalValue;
                 if (arrayValue is AnnotationDesc annotationDesc) {
                     var inner = CreateAttributeInstance(annotationDesc, importService);
-                    if (inner.GetType() != componentType) {
+                    if (!componentType.IsInstanceOfType(inner)) {
                         throw MakeArrayMismatchException(
                             annotationClass,
                             componentType,
@@ -392,7 +392,9 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 // We should probably do some type assignment checking.
                 return defaultValueAttribute.Value;
             }
-            return GetDefaultValue(propertyInfo.PropertyType);
+
+            return null;
+            //return GetDefaultValue(propertyInfo.PropertyType);
         }
 
         public static object GetDefaultValue(Type t)

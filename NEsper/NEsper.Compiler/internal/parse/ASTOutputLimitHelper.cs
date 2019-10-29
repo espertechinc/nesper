@@ -195,7 +195,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                offsetInt = offset.AsInt();
+                offsetInt = offset.AsBoxedInt();
             }
 
             return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);

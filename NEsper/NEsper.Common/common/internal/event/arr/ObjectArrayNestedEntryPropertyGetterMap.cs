@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 CodegenLegoPropertyBeanOrUnd.From(
                     codegenMethodScope,
                     codegenClassScope,
-                    typeof(IDictionary<object, object>),
+                    typeof(IDictionary<string, object>),
                     mapGetter,
                     CodegenLegoPropertyBeanOrUnd.AccessType.GET,
                     GetType()),

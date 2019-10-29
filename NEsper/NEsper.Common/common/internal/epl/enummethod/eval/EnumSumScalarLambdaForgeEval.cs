@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumSumEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var block = methodNode.Block;
             forge.sumMethodFactory.CodegenDeclare(block);

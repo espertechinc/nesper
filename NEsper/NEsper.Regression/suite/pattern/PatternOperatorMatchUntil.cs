@@ -687,8 +687,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 // Test range-optimization
-                stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') -> c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
+                stmt = "@Name('s0') select * from pattern [" +
+                       " a=SupportBean(TheString like 'A%') until " + 
+                       " b=SupportBean(TheString like 'B%') -> " +
+                       " c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)" +
+                       "]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 5));

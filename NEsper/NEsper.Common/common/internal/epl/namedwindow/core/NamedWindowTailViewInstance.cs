@@ -351,18 +351,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             // fall back to window operator if snapshot doesn't resolve successfully
             using (var enumerator = parent.GetEnumerator()) {
-                if (!enumerator.MoveNext()) {
-                    return Collections.GetEmptyList<EventBean>();
-                }
-
                 var list = new ArrayDeque<EventBean>();
                 if (filterExpr != null) {
                     ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(enumerator, filterExpr, AgentInstanceContext, list);
                 }
                 else {
-                    do {
+                    while (enumerator.MoveNext()) {
                         list.Add(enumerator.Current);
-                    } while (enumerator.MoveNext());
+                    }
                 }
 
                 return list;

@@ -96,8 +96,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Validate(env, "A, B, C, D", "grouping sets(A, B, C), grouping sets(D)", new[] {"A,D", "B,D", "C,D"});
             Validate(
                 env,
-                "A, B, C, D, e",
-                "grouping sets(A, B, C), grouping sets(D, e)",
+                "A, B, C, D, E",
+                "grouping sets(A, B, C), grouping sets(D, E)",
                 new[] {"A,D", "A,E", "B,D", "B,E", "C,D", "C,E"});
 
             // multiple rollups

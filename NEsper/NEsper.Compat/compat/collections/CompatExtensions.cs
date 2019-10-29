@@ -22,6 +22,9 @@ namespace com.espertech.esper.compat.collections
 {
     public static class CompatExtensions
     {
+        public static readonly IValueRenderer RENDER_DEFAULT = new DefaultValueRenderer(true);
+        public static readonly IValueRenderer RENDER_NO_QUOTES = new DefaultValueRenderer(false);
+
         public static LookaheadEnumerator<T> WithLookahead<T>(this IEnumerator<T> en)
         {
             return new LookaheadEnumerator<T>(en);
@@ -376,6 +379,12 @@ namespace com.espertech.esper.compat.collections
             this T[] arrayThis,
             T[] arrayThat)
         {
+            if (arrayThis == null && arrayThat == null) {
+                return true;
+            } else if (arrayThis == null || arrayThat == null) {
+                return false;
+            }
+            
             var arrayThisLength = arrayThis.Length;
             var arrayThatLength = arrayThat.Length;
             if (arrayThisLength != arrayThatLength) {
@@ -1264,186 +1273,16 @@ namespace com.espertech.esper.compat.collections
             this object value,
             TextWriter textWriter)
         {
-            if (value == null) {
-                textWriter.Write("null");
-                return;
-            }
-
-            if (value is char asChar) {
-                textWriter.Write('\'');
-                textWriter.Write(asChar);
-                textWriter.Write('\'');
-                return;
-            }
-
-            if (value is string s) {
-                textWriter.Write('"');
-                textWriter.Write(s);
-                textWriter.Write('"');
-                return;
-            }
-
-            if (value is decimal) {
-                var text = value.ToString();
-                if (text.IndexOf('.') == -1) {
-                    text += ".0";
-                }
-
-                textWriter.Write(text);
-                textWriter.Write('m');
-                return;
-            }
-
-            if (value is double) {
-                var text = value.ToString();
-                if (text.IndexOf('.') == -1) {
-                    text += ".0";
-                }
-
-                textWriter.Write(text);
-                textWriter.Write('d');
-                return; // + 'd'
-            }
-
-            if (value is float) {
-                var text = value.ToString();
-                if (text.IndexOf('.') == -1) {
-                    text += ".0";
-                }
-
-                textWriter.Write(text);
-                textWriter.Write('f');
-                return;
-            }
-
-            if (value is long) {
-                textWriter.Write(value.ToString());
-                textWriter.Write('L');
-                return;
-            }
-
-            if (value is int) {
-                textWriter.Write(value.ToString());
-                return;
-            }
-
-            if (value is DateTimeOffset dateTimeOffset) {
-                var dateOnly = dateTimeOffset.Date;
-                if (dateTimeOffset == dateOnly) {
-                    textWriter.Write(dateTimeOffset.ToString("yyyy-MM-dd z"));
-                    return;
-                }
-
-                if (dateTimeOffset.Millisecond == 0) {
-                    textWriter.Write(dateTimeOffset.ToString("yyyy-MM-dd hh:mm:ss z"));
-                    return;
-                }
-
-                textWriter.Write(dateTimeOffset.ToString("yyyy-MM-dd hh:mm:ss.ffff z"));
-                return;
-            }
-
-            if (value is DateTime dateTime) {
-                var dateOnly = dateTime.Date;
-                if (dateTime == dateOnly) {
-                    textWriter.Write(dateTime.ToString("yyyy-MM-dd"));
-                    return;
-                }
-
-                if (dateTime.Millisecond == 0) {
-                    textWriter.Write(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
-                    return;
-                }
-
-                textWriter.Write(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
-                return;
-            }
-
-            if (value is bool asBool) {
-                textWriter.Write(asBool ? "true" : "false");
-                return;
-            }
-
-            if (value is Array array) {
-                Render(array, textWriter);
-                return;
-            }
-
-            if (value.GetType().GetCustomAttributes(typeof(RenderWithToStringAttribute), true).Length > 0) {
-                textWriter.Write(value.ToString());
-                return;
-            }
-
-            if (value is IEnumerable enumerable) {
-                Render(enumerable, textWriter);
-                return;
-            }
-
-            textWriter.Write(value.ToString());
+            RENDER_DEFAULT.RenderAny(value, textWriter);
         }
-
         public static string RenderAny(this object value)
         {
-            using (var writer = new StringWriter()) {
-                RenderAny(value, writer);
-                return writer.ToString();
-            }
+            return RENDER_DEFAULT.RenderAny(value);
         }
 
-        /// <summary>
-        ///     Renders the array as a string.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <returns></returns>
         public static string Render(this Array array)
         {
-            using (var stringWriter = new StringWriter()) {
-                Render(array, stringWriter, ", ", "[]");
-                return stringWriter.ToString();
-            }
-        }
-
-        /// <summary>
-        ///     Renders the array as a string.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="textWriter">the destination to write to.</param>
-        /// <returns></returns>
-        public static void Render(
-            this Array array,
-            TextWriter textWriter)
-        {
-            Render(array, textWriter, ", ", "[]");
-        }
-
-        /// <summary>
-        ///     Renders the array as a string
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="textWriter">Destination for the content.</param>
-        /// <param name="itemSeparator">The item separator.</param>
-        /// <param name="firstAndLast">The first and last.</param>
-        /// <returns></returns>
-        public static void Render(
-            this Array array,
-            TextWriter textWriter,
-            string itemSeparator,
-            string firstAndLast)
-        {
-            var fieldDelimiter = string.Empty;
-
-            textWriter.Write(firstAndLast[0]);
-
-            if (array != null) {
-                var length = array.Length;
-                for (var ii = 0; ii < length; ii++) {
-                    textWriter.Write(fieldDelimiter);
-                    textWriter.Write(RenderAny(array.GetValue(ii)));
-                    fieldDelimiter = itemSeparator;
-                }
-            }
-
-            textWriter.Write(firstAndLast[1]);
+            return RENDER_DEFAULT.Render(array);
         }
 
         /// <summary>
@@ -1458,10 +1297,7 @@ namespace com.espertech.esper.compat.collections
             string itemSeparator,
             string firstAndLast)
         {
-            using (var stringWriter = new StringWriter()) {
-                Render(array, stringWriter, itemSeparator, firstAndLast);
-                return stringWriter.ToString();
-            }
+            return RENDER_DEFAULT.Render(array, itemSeparator, firstAndLast);
         }
 
         public static string FormatInt(this int? value)

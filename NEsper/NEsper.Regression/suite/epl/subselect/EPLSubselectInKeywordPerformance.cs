@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
 
-            Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
         }
 
         internal class EPLSubselectPerformanceInKeywordAsPartOfSubquery : RegressionExecution
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.That(delta, Is.LessThan(2000), "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(4000), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }

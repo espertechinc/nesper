@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -62,15 +63,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             // test update-istream with bean
             var path = new RegressionPath();
-            env.CompileDeployWBusPublicType("create schema MyMapPropEvent as " + typeof(MyMapPropEvent).Name, path);
+            env.CompileDeployWBusPublicType("create schema MyMapPropEvent as " + typeof(MyMapPropEvent).MaskTypeName(), path);
             env.CompileDeploy("insert into MyStream select * from MyMapPropEvent", path);
-            env.CompileDeploy("@Name('s0') update istream MyStream set props('abc') = 1, array[2] = 10", path)
+            env.CompileDeploy("@Name('s0') update istream MyStream set Props('abc') = 1, Array[2] = 10", path)
                 .AddListener("s0");
 
             env.SendEventBean(new MyMapPropEvent());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertPairGetIRAndReset(),
-                new [] { "props('abc')","array[2]" },
+                new [] { "Props('abc')","Array[2]" },
                 new object[] {1, 10},
                 new object[] {null, null});
 
@@ -84,11 +85,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test update-istream with map
             var path = new RegressionPath();
             var eplType = eventRepresentationEnum.GetAnnotationText() +
-                          " @Name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap IDictionary)";
+                          " @Name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap map)";
             env.CompileDeployWBusPublicType(eplType, path);
 
             env.CompileDeploy(
-                    "@Name('Update') update istream MyInfraTypeWithMapProp set simple='A', mymap('abc') = 1, myarray[2] = 10",
+                    "@Name('update') update istream MyInfraTypeWithMapProp set simple='A', mymap('abc') = 1, myarray[2] = 10",
                     path)
                 .AddListener("update");
 
@@ -131,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test named-window update
             var path = new RegressionPath();
             var eplTypes = eventRepresentationEnum.GetAnnotationText() +
-                           " @Name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap IDictionary)";
+                           " @Name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap map)";
             env.CompileDeployWBusPublicType(eplTypes, path);
 
             env.CompileDeploy(
@@ -174,7 +175,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             EPAssertionUtil.AssertPropsPerRow(
                 env.GetEnumerator("window"),
                 new [] { "simple","mymap('abc')","myarray[2]" },
-                new[] {new object[] {"A", 10, 10}});
+                new[] {
+                    new object[] {"A", 10, 10}
+                });
 
             // test null and array too small
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
@@ -388,67 +391,67 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var text = "@Name('Insert') insert into MyStream select * from SupportBean";
-                env.CompileDeploy(text, path).AddListener("Insert");
+                var text = "@Name('insert') insert into MyStream select * from SupportBean";
+                env.CompileDeploy(text, path).AddListener("insert");
 
                 text =
-                    "@Name('Update') update istream MyStream set IntPrimitive=10, TheString='O_' || TheString where IntPrimitive=1";
-                env.CompileDeploy(text, path).AddListener("Update");
+                    "@Name('update') update istream MyStream set IntPrimitive=10, TheString='O_' || TheString where IntPrimitive=1";
+                env.CompileDeploy(text, path).AddListener("update");
 
-                text = "@Name('Select') select * from MyStream";
-                env.CompileDeploy(text, path).AddListener("Select");
+                text = "@Name('select') select * from MyStream";
+                env.CompileDeploy(text, path).AddListener("select");
 
                 var fields = new [] { "TheString","IntPrimitive" };
                 env.SendEventBean(new SupportBean("E1", 9));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E1", 9});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Insert").AssertOneGetNewAndReset(),
+                    env.Listener("insert").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E1", 9});
-                Assert.IsFalse(env.Listener("Update").IsInvoked);
+                Assert.IsFalse(env.Listener("update").IsInvoked);
 
                 env.SendEventBean(new SupportBean("E2", 1));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"O_E2", 10});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Insert").AssertOneGetNewAndReset(),
+                    env.Listener("insert").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E2", 1});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Update").LastOldData[0],
+                    env.Listener("update").LastOldData[0],
                     fields,
                     new object[] {"E2", 1});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Update").LastNewData[0],
+                    env.Listener("update").LastNewData[0],
                     fields,
                     new object[] {"O_E2", 10});
-                env.Listener("Update").Reset();
+                env.Listener("update").Reset();
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E3", 1));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"O_E3", 10});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Insert").AssertOneGetNewAndReset(),
+                    env.Listener("insert").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E3", 1});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Update").LastOldData[0],
+                    env.Listener("update").LastOldData[0],
                     fields,
                     new object[] {"E3", 1});
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Update").LastNewData[0],
+                    env.Listener("update").LastNewData[0],
                     fields,
                     new object[] {"O_E3", 10});
-                env.Listener("Update").Reset();
+                env.Listener("update").Reset();
 
                 env.UndeployAll();
             }
@@ -459,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('Update') update istream SupportBean " +
+                    "@Name('update') update istream SupportBean " +
                     "set IntPrimitive=myvar, IntBoxed=IntPrimitive");
                 Assert.AreEqual(
                     StatementType.UPDATE,
@@ -493,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                    "Invalid assignment of column 'LongPrimitive' of type 'System.Long' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                    "Invalid assignment of column 'LongPrimitive' of type 'System.Int64' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -537,13 +540,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     path,
-                    "update istream SupportBeanErrorTestingOne set value='1'",
-                    "The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set value='1']");
+                    "update istream SupportBeanErrorTestingOne set Value='1'",
+                    "The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set Value='1']");
                 TryInvalidCompile(
                     env,
                     path,
-                    "update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)",
-                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)]");
+                    "update istream SupportBean set LongPrimitive=(select P0 from MyMapTypeInv#lastevent where TheString=p3)",
+                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select P0 from MyMapTypeInv#lastevent where TheString=p3)]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -756,12 +759,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('insert') insert into MyStreamII select * from MyMapTypeII", path)
                     .AddListener("insert");
 
-                var update = env.Compile("@Name('Update') update istream MyStreamII set p0=p1, p1=p0", path);
+                var update = env.Compile("@Name('update') update istream MyStreamII set P0=P1, P1=P0", path);
                 env.Deploy(update);
 
                 env.CompileDeploy("@Name('s0') select * from MyStreamII", path).AddListener("s0");
 
-                var fields = new [] { "p0","p1","p2" };
+                var fields = new [] { "P0","P1","P2" };
                 env.SendEventMap(MakeMap("P0", 10L, "P1", 1L, "P2", 100L), "MyMapTypeII");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -817,31 +820,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create schema BaseInterface as " +
-                    typeof(BaseInterface).Name +
-                    ";\n" +
-                    "create schema BaseOne as " +
-                    typeof(BaseOne).Name +
-                    ";\n" +
-                    "create schema BaseOneA as " +
-                    typeof(BaseOneA).Name +
-                    ";\n" +
-                    "create schema BaseOneB as " +
-                    typeof(BaseOneB).Name +
-                    ";\n" +
-                    "create schema BaseTwo as " +
-                    typeof(BaseTwo).Name +
-                    ";\n";
+                    "create schema BaseInterface as " + typeof(BaseInterface).MaskTypeName() + ";\n" +
+                    "create schema BaseOne as " + typeof(BaseOne).MaskTypeName() + ";\n" +
+                    "create schema BaseOneA as " + typeof(BaseOneA).MaskTypeName() + ";\n" +
+                    "create schema BaseOneB as " + typeof(BaseOneB).MaskTypeName() + ";\n" +
+                    "create schema BaseTwo as " + typeof(BaseTwo).MaskTypeName() + ";\n";
                 env.CompileDeploy(epl, path);
 
                 // test update applies to child types via interface
                 env.CompileDeploy(
-                    "@Name('insert') insert into BaseOne select p0 as i, p1 as p from MyMapTypeIDB",
+                    "@Name('insert') insert into BaseOne select P0 as I, P1 as P from MyMapTypeIDB",
                     path);
-                env.CompileDeploy("@Name('a') update istream BaseInterface set i='XYZ' where i like 'E%'", path);
+                env.CompileDeploy("@Name('a') update istream BaseInterface set I='XYZ' where I like 'E%'", path);
                 env.CompileDeploy("@Name('s0') select * from BaseOne", path).AddListener("s0");
 
-                var fields = new [] { "i","p" };
+                var fields = new [] { "I","P" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -854,7 +847,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     fields,
                     new object[] {"F1", "E2"});
 
-                env.CompileDeploy("@Priority(2) @Name('b') update istream BaseOne set i='BLANK'", path);
+                env.CompileDeploy("@Priority(2) @Name('b') update istream BaseOne set I='BLANK'", path);
 
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E3"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
@@ -862,7 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     fields,
                     new object[] {"BLANK", "E3"});
 
-                env.CompileDeploy("@Priority(3) @Name('c') update istream BaseOneA set i='FINAL'", path);
+                env.CompileDeploy("@Priority(3) @Name('c') update istream BaseOneA set I='FINAL'", path);
 
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E4"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
@@ -872,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@Name('insert') insert into BaseOneA select p0 as i, p1 as p, 'a' as pa from MyMapTypeIDB",
+                    "@Name('insert') insert into BaseOneA select P0 as I, P1 as P, 'a' as Pa from MyMapTypeIDB",
                     path);
 
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E5"), "MyMapTypeIDB");
@@ -883,7 +876,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@Name('insert') insert into BaseOneB select p0 as i, p1 as p, 'b' as pb from MyMapTypeIDB",
+                    "@Name('insert') insert into BaseOneB select P0 as I, P1 as P, 'b' as Pb from MyMapTypeIDB",
                     path);
 
                 env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E6"), "MyMapTypeIDB");
@@ -894,7 +887,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@Name('insert') insert into BaseTwo select p0 as i, p1 as p from MyMapTypeIDB",
+                    "@Name('insert') insert into BaseTwo select P0 as I, P1 as P from MyMapTypeIDB",
                     path);
 
                 env.UndeployModuleContaining("s0");
@@ -903,7 +896,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(MakeMap("P0", "E2", "P1", "E7"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"i"},
+                    new[] {"I"},
                     new object[] {"XYZ"});
 
                 env.UndeployAll();
@@ -914,7 +907,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "p0","p1" };
+                var fields = new [] { "P0","P1" };
                 var path = new RegressionPath();
 
                 env.CompileDeploy("@Name('window') create window AWindow#keepall select * from MyMapTypeNW", path)
@@ -922,7 +915,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('insert') insert into AWindow select * from MyMapTypeNW", path)
                     .AddListener("insert");
                 env.CompileDeploy("@Name('select') select * from AWindow", path).AddListener("select");
-                env.CompileDeploy("update istream AWindow set p1='newvalue'", path);
+                env.CompileDeploy("update istream AWindow set P1='newvalue'", path);
 
                 env.Milestone(0);
 
@@ -964,7 +957,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.Milestone(2);
 
-                env.CompileDeploy("update istream MyOtherStream set p0='a', p1='b'", path);
+                env.CompileDeploy("update istream MyOtherStream set P0='a', P1='b'", path);
                 env.CompileDeploy("@Name('s0') select * from MyOtherStream", path).AddListener("s0");
                 env.SendEventBean(new SupportBean("B", 1));
                 EPAssertionUtil.AssertProps(
@@ -1010,9 +1003,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 // test map
                 env.CompileDeploy("@Name('s0') select * from MyMapTypeSR").AddListener("s0");
-                env.CompileDeploy("update istream MyMapTypeSR set p0='a'");
+                env.CompileDeploy("update istream MyMapTypeSR set P0='a'");
 
-                var fields = new [] { "p0","p1" };
+                var fields = new [] { "P0","P1" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSR");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1037,7 +1030,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     fields,
                     new object[] {"a", "E3"});
 
-                env.CompileDeploy("@Drop @Name('drop') update istream MyMapTypeSR set p0='a'");
+                env.CompileDeploy("@Drop @Name('drop') update istream MyMapTypeSR set P0='a'");
                 env.SendEventMap(MakeMap("P0", "E4", "P1", "E4"), "MyMapTypeSR");
                 env.SendEventMap(MakeMap("P0", "E5", "P1", "E5"), "MyMapTypeSR");
                 env.SendEventBean(new SupportBean());
@@ -1096,14 +1089,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.UpdateClause.OptionalAsClauseStreamName = "mytype";
                 model.UpdateClause.OptionalWhereClause = Expressions.Eq("P0", "E1");
                 Assert.AreEqual(
-                    "update istream MyMapTypeSODA as mytype set p1=\"newvalue\" where p0=\"E1\"",
+                    "update istream MyMapTypeSODA as mytype set P1=\"newvalue\" where P0=\"E1\"",
                     model.ToEPL());
 
                 // test map
                 env.CompileDeploy("@Name('s0') select * from MyMapTypeSODA").AddListener("s0");
                 env.CompileDeploy(model);
 
-                var fields = new [] { "p0","p1" };
+                var fields = new [] { "P0","P1" };
                 env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSODA");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1111,7 +1104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {"E1", "newvalue"});
 
                 // test unmap
-                var text = "update istream MyMapTypeSODA as mytype set p1=\"newvalue\" where p0=\"E1\"";
+                var text = "update istream MyMapTypeSODA as mytype set P1=\"newvalue\" where P0=\"E1\"";
                 env.EplToModelCompileDeploy(text);
 
                 env.UndeployAll();
@@ -1148,7 +1141,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into ABCStreamWO select 1 as valOne, 2 as valTwo, * from SupportBean", path);
-                env.CompileDeploy("@Name('Update') update istream ABCStreamWO set valOne = 987, valTwo=123", path);
+                env.CompileDeploy("@Name('update') update istream ABCStreamWO set valOne = 987, valTwo=123", path);
                 env.CompileDeploy("@Name('s0') select * from ABCStreamWO", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -1158,7 +1151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {987, 123, "E1"});
 
                 env.UndeployModuleContaining("update");
-                env.CompileDeploy("@Name('Update') update istream ABCStreamWO set TheString = 'A'", path);
+                env.CompileDeploy("@Name('update') update istream ABCStreamWO set TheString = 'A'", path);
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertProps(
@@ -1185,13 +1178,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into ABCStreamCM select * from SupportBeanCopyMethod", path);
-                env.CompileDeploy("update istream ABCStreamCM set valOne = 'x', valTwo='y'", path);
+                env.CompileDeploy("update istream ABCStreamCM set ValOne = 'x', ValTwo='y'", path);
                 env.CompileDeploy("@Name('s0') select * from ABCStreamCM", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanCopyMethod("1", "2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "valOne","valTwo" },
+                    new [] { "ValOne","ValTwo" },
                     new object[] {"x", "y"});
 
                 env.UndeployAll();
@@ -1206,7 +1199,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var fields = new [] { "TheString","IntPrimitive" };
                 env.CompileDeploy("insert into ABCStreamSQ select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('Update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
+                    "@Name('update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
                     path);
                 env.CompileDeploy("@Name('s0') select * from ABCStreamSQ", path).AddListener("s0");
 
@@ -1246,7 +1239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated subquery
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@Name('Update') update istream ABCStreamSQ set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.TheString)",
+                    "@Name('update') update istream ABCStreamSQ set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
@@ -1266,7 +1259,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated with as-clause
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@Name('Update') update istream ABCStreamSQ as mystream set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.TheString)",
+                    "@Name('update') update istream ABCStreamSQ as mystream set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
@@ -1548,9 +1541,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public interface BaseInterface
         {
-            string I { get; }
-
-            void SetI(string i);
+            string I { get; set; }
         }
 
         [Serializable]
@@ -1569,24 +1560,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 P = p;
             }
 
-            public string P { get; private set; }
+            public string P { get; set; }
 
-            public string I { get; private set; }
-
-            public void SetI(string i)
-            {
-                I = i;
-            }
-
-            public void SetP(string p)
-            {
-                P = p;
-            }
+            public string I { get; set; }
         }
 
         [Serializable]
         public class BaseTwo : BaseInterface
-
         {
             public BaseTwo()
             {
@@ -1597,21 +1577,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 P = p;
             }
 
-            public string P { get; private set; }
+            public string P { get; set; }
 
-            public string I { get; private set; }
-
-            public void SetI(string i)
-            {
-                I = i;
-            }
-
-            public void SetP(string p)
-            {
-                P = p;
-            }
+            public string I { get; set; }
         }
 
+        [Serializable]
         public class BaseOneA : BaseOne
         {
             public BaseOneA()
@@ -1626,14 +1597,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Pa = pa;
             }
 
-            public string Pa { get; private set; }
-
-            public void SetPa(string pa)
-            {
-                Pa = pa;
-            }
+            public string Pa { get; set; }
         }
 
+        [Serializable]
         public class BaseOneB : BaseOne
         {
             public BaseOneB()
@@ -1648,20 +1615,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Pb = pb;
             }
 
-            public string Pb { get; private set; }
-
-            public void SetPb(string pb)
-            {
-                Pb = pb;
-            }
+            public string Pb { get; set; }
         }
 
         [Serializable]
         public class MyMapPropEvent
         {
-            public IDictionary<string, object> Props { get; private set; } = new Dictionary<string, object>();
+            public IDictionary<string, object> Props { get; set; } = new Dictionary<string, object>();
 
-            public object[] Array { get; private set; } = new object[10];
+            public object[] Array { get; set; } = new object[10];
 
             public void SetProps(
                 string name,

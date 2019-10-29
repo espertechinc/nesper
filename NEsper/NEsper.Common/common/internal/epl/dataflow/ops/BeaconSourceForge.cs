@@ -87,13 +87,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     parent,
                     symbols,
                     classScope)
-                .Exprnode("iterations", iterations)
-                .Exprnode("initialDelay", initialDelay)
-                .Exprnode("interval", interval)
+                .Exprnode("Iterations", iterations)
+                .Exprnode("InitialDelay", initialDelay)
+                .Exprnode("Interval", interval)
                 .Constant("IsProduceEventBean", produceEventBean)
-                .Eventtype("outputEventType", outputEventType)
-                .Forges("propertyEvaluators", evaluatorForges)
-                .Manufacturer("manufacturer", eventBeanManufacturer)
+                .Eventtype("OutputEventType", outputEventType)
+                .Forges("PropertyEvaluators", evaluatorForges)
+                .Manufacturer("Manufacturer", eventBeanManufacturer)
                 .Build();
         }
 

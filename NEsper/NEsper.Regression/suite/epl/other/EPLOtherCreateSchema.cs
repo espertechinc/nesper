@@ -152,22 +152,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var schema =
-                "@Name('innerType') " +
-                eventRepresentationEnum.GetAnnotationText() +
+                "@Name('innerType') " + eventRepresentationEnum.GetAnnotationText() + 
                 " create schema MyInnerType as (inn1 string[], inn2 int[]);\n" +
-                "@Name('outerType') " +
-                eventRepresentationEnum.GetAnnotationText() +
+                "@Name('outerType') " + eventRepresentationEnum.GetAnnotationText() +
                 " create schema MyOuterType as (col1 MyInnerType, col2 MyInnerType[]);\n";
             env.CompileDeployWBusPublicType(schema, path);
 
             var innerType = env.Statement("innerType").EventType;
-            Assert.AreEqual(
-                eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(string[]),
-                innerType.GetPropertyType("inn1"));
+            Assert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
             Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
-            Assert.AreEqual(
-                eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(int?[]),
-                innerType.GetPropertyType("inn2"));
+            Assert.AreEqual(typeof(int?[]), innerType.GetPropertyType("inn2"));
             Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
             Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
 
@@ -286,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 catch (Exception t) {
                     Assert.AreEqual(
-                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+                        "Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         t.Message);
                 }
             }
@@ -419,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     stmtSchemaType.GetPropertyDescriptor("beanarray"));
 
                 env.CompileDeploy(
-                        "@Name('s0') insert into MySchema select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+                        "@Name('s0') insert into MySchema select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
@@ -451,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     stmtWindowType.GetPropertyDescriptor("beanarray"));
 
                 env.CompileDeploy(
-                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent",
+                    "@Name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent",
                     path);
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
@@ -462,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
+                    "@Name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from pattern [Sb=SupportBean -> S0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -476,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test configured Map type
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+                        "@Name('s0') insert into MyConfiguredMap select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
                 EPAssertionUtil.AssertProps(
@@ -672,7 +666,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EventRepresentationChoice eventRepresentationEnum)
             {
                 var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Class or IDictionary or the name of a previously-declared Map or ObjectArray type ["
+                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type ["
                     : "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
                 TryInvalidCompile(
                     env,
@@ -705,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     eventRepresentationEnum.GetAnnotationText() + " create schema MyEventTypeT3 as () inherits",
-                    "Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
+                    "Incorrect syntax near end-of-input expecting an identifier but found EOF at line 1 column ");
 
                 env.UndeployAll();
             }
@@ -718,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Schema schema = SchemaBuilder.Union(
                     TypeBuilder.IntType(),
                     TypeBuilder.StringType());
-                var epl = $"@AvroSchemaField(name='carId',schema='{schema}') create avro schema MyEvent(carId object)";
+                var epl = $"@AvroSchemaField(Name='carId',Schema='{schema}') create avro schema MyEvent(carId object)";
                 env.CompileDeploy(epl);
                 env.UndeployAll();
             }
@@ -739,8 +733,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     path);
 
                 var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("create"), "MySchema");
-                Assert.AreEqual(typeof(TimeSpan), eventType.GetPropertyType("f1"));
-                Assert.AreEqual(typeof(PointF), eventType.GetPropertyType("f2"));
+                Assert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
+                Assert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
                 Assert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
                 Assert.AreEqual(null, eventType.GetPropertyType("f4"));
 
@@ -753,12 +747,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var schema = "@Name('c1') create schema SupportBeanOne as " +
-                             typeof(SupportBean_ST0).Name +
-                             ";\n" +
-                             "@Name('c2') create schema SupportBeanTwo as " +
-                             typeof(SupportBean_ST0).Name +
-                             ";\n";
+                var schema = "@Name('c1') create schema SupportBeanOne as " + typeof(SupportBean_ST0).FullName + ";\n" +
+                             "@Name('c2') create schema SupportBeanTwo as " + typeof(SupportBean_ST0).FullName + ";\n";
                 env.CompileDeployWBusPublicType(schema, path);
 
                 Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("c1").EventType.UnderlyingType);
@@ -773,14 +763,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "id","P00" },
+                    new [] { "Id","P00" },
                     new object[] {"E1", 2});
                 Assert.IsFalse(env.Listener("s1").IsInvoked);
 
                 env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    new [] { "id","P00" },
+                    new [] { "Id","P00" },
                     new object[] {"E2", 3});
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 

@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAverageDecimalScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var block = methodNode.Block;
             block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(

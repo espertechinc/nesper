@@ -47,10 +47,18 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static Type GetUnboxedType(this Type type)
         {
-            var unboxed = Nullable.GetUnderlyingType(type);
-            if (unboxed == null)
-                return type;
-            return unboxed;
+            if (type == null) {
+                return null;
+            }
+
+            if (type.IsNullable()) {
+                var unboxed = Nullable.GetUnderlyingType(type);
+                if (unboxed == null)
+                    return type;
+                return unboxed;
+            }
+
+            return type;
         }
 
         /// <summary>

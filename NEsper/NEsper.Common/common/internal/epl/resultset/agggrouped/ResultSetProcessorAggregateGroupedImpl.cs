@@ -491,7 +491,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 code);
         }
 
-        public static void GetIteratorViewCodegen(
+        public static void GetEnumeratorViewCodegen(
             ResultSetProcessorAggregateGroupedForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -499,7 +499,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         {
             if (!forge.IsHistoricalOnly) {
                 method.Block.MethodReturn(
-                    LocalMethod(ObtainIteratorCodegen(forge, method, classScope, instance), REF_VIEWABLE));
+                    LocalMethod(ObtainEnumeratorCodegen(forge, method, classScope, instance), REF_VIEWABLE));
                 return;
             }
 
@@ -535,12 +535,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     StaticMethod(
                         typeof(ResultSetProcessorUtil),
                         METHOD_ITERATORTODEQUE,
-                        LocalMethod(ObtainIteratorCodegen(forge, method, classScope, instance), REF_VIEWABLE)))
+                        LocalMethod(ObtainEnumeratorCodegen(forge, method, classScope, instance), REF_VIEWABLE)))
                 .ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
-        private static CodegenMethod ObtainIteratorCodegen(
+        private static CodegenMethod ObtainEnumeratorCodegen(
             ResultSetProcessorAggregateGroupedForge forge,
             CodegenMethod parent,
             CodegenClassScope classScope,
@@ -630,7 +630,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             return iterator;
         }
 
-        public static void GetIteratorJoinCodegen(
+        public static void GetEnumeratorJoinCodegen(
             ResultSetProcessorAggregateGroupedForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -1310,9 +1310,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 method.Block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)));
             }
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block.DeclareVar<IDictionary<object, EventBean[]>>(
                 "workCollection",
-                NewInstance(typeof(LinkedHashMap<object, object>)));
+                NewInstance(typeof(LinkedHashMap<object, EventBean[]>)));
 
             if (forge.OptionalHavingNode == null) {
                 {
@@ -1619,11 +1619,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         .DeclareVar<int>("count", Constant(0));
 
                     {
-                        ifNewData.ForEach(typeof(MultiKey<object>), "aNewData", Ref("newData"))
-                            .DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
+                        ifNewData.ForEach(typeof(MultiKey<EventBean>), "aNewData", Ref("newData"))
+                            .DeclareVar<object>(
+                                "mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                             .DeclareVar<EventBean[]>(
-                                "eventsPerStream",
-                                Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
+                                "eventsPerStream", ExprDotName(Ref("aNewData"), "Array"))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
                                 "ApplyEnter",
@@ -1949,10 +1949,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 method.Block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)));
             }
 
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            method.Block
+                .DeclareVar<IDictionary<object, EventBean[]>>(
                     "workCollection",
-                    NewInstance(typeof(LinkedHashMap<object, object>)))
-                .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+                    NewInstance(typeof(LinkedHashMap<object, EventBean[]>)))
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStream",
+                    NewArrayByLength(typeof(EventBean), Constant(1)));
 
             if (forge.OptionalHavingNode == null) {
                 {
@@ -2467,7 +2470,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedAddToList",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, EventBean>), "keysAndEvents",
+                    typeof(IDictionary<object, EventBean[]>), "keysAndEvents",
                     typeof(bool), NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
                     typeof(IList<EventBean>), "resultEvents",

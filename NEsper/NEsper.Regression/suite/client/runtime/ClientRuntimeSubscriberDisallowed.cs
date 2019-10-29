@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             var stmt = env.Statement("s0");
             TryInvalid(() => stmt.SetSubscriber(new SupportSubscriberMRD()));
-            TryInvalid(() => stmt.SetSubscriber(new SupportSubscriberMRD(), "update"));
+            TryInvalid(() => stmt.SetSubscriber(new SupportSubscriberMRD(), "Update"));
 
             env.UndeployAll();
         }

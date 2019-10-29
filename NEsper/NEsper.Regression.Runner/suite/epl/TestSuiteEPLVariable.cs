@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLVariablesPerf()
         {
             RegressionRunner.Run(session, new EPLVariablesPerf());

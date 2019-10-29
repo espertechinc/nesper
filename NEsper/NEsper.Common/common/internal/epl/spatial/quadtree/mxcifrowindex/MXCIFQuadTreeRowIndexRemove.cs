@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return branch;
             }
 
-            var collection = new LinkedList<XYWHRectangleMultiType>();
+            var collection = new List<XYWHRectangleMultiType>();
             var count = MergeChildNodes(collection, branch.Data);
             count += MergeChildNodes(collection, nwLeaf.Data);
             count += MergeChildNodes(collection, neLeaf.Data);

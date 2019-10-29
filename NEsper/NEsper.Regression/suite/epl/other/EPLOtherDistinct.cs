@@ -402,7 +402,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1", 1}});
+                    new[] {
+                        new object[] {"E1", 1}
+                    });
 
                 env.Milestone(0);
 
@@ -410,13 +412,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+                    new[] {
+                        new object[] {"E1", 1},
+                        new object[] {"E2", 2}
+                    });
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+                    new[] {
+                        new object[] {"E1", 1},
+                        new object[] {"E2", 2}
+                    });
 
                 env.UndeployAll();
             }

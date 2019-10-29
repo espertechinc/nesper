@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     {
         CodegenExpression SizeCodegen();
 
-        CodegenExpression IteratorCodegen(
+        CodegenExpression EnumeratorCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenNamedMethods namedMethods);

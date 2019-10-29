@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
@@ -60,9 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var type = EPTypeHelper.GetCodegenReturnType(resultType);
+            var paramTypes = (type == typeof(EventBean))
+                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
+                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            
             var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumFirstOfNoPredicateForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(paramTypes)
                 .Block
                 .IfCondition(
                     Or(

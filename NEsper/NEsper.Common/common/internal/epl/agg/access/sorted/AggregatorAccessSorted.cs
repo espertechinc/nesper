@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         CodegenExpression SizeCodegen();
 
-        CodegenExpression ReverseIteratorCodegen { get; }
+        CodegenExpression ReverseEnumeratorCodegen { get; }
 
-        CodegenExpression IteratorCodegen();
+        CodegenExpression EnumeratorCodegen();
 
         CodegenExpression CollectionReadOnlyCodegen();
     }

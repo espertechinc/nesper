@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public bool IsSupported(Type type)
         {
-            return type.IsSerializable;
+            return type.IsSerializable || type.IsInterface;
         }
 
         /// <summary>

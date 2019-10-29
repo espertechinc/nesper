@@ -25,11 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-#if false
             execs.Add(new EPLVariableOutputRateEventsAll());
             execs.Add(new EPLVariableOutputRateEventsAllOM());
             execs.Add(new EPLVariableOutputRateEventsAllCompile());
-#endif
             execs.Add(new EPLVariableOutputRateTimeAll());
             return execs;
         }

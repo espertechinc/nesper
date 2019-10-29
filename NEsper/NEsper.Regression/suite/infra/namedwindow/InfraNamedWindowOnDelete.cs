@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 IList<string> deleteStatements = new List<string>();
                 var stmtTextDelete =
-                    "@Name('d0') on SupportBeanTwo delete from MyWindowCKR where TheString = stringTwo and IntPrimitive between DoublePrimitiveTwo and DoubleBoxedTwo";
+                    "@Name('d0') on SupportBeanTwo delete from MyWindowCKR where TheString = StringTwo and IntPrimitive between DoublePrimitiveTwo and DoubleBoxedTwo";
                 env.CompileDeploy(stmtTextDelete, path);
                 deleteStatements.Add("d0");
                 Assert.AreEqual(1, GetIndexCount(env, "createOne", "MyWindowCKR"));
@@ -589,7 +589,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new object[] {"E1"});
 
                 stmtTextDelete =
-                    "@Name('d1') on SupportBeanTwo delete from MyWindowCKR where TheString = stringTwo and IntPrimitive = IntPrimitiveTwo and IntBoxed between DoublePrimitiveTwo and DoubleBoxedTwo";
+                    "@Name('d1') on SupportBeanTwo delete from MyWindowCKR where TheString = StringTwo and IntPrimitive = IntPrimitiveTwo and IntBoxed between DoublePrimitiveTwo and DoubleBoxedTwo";
                 env.CompileDeploy(stmtTextDelete, path);
                 deleteStatements.Add("d1");
                 Assert.AreEqual(2, GetIndexCount(env, "createOne", "MyWindowCKR"));
@@ -601,7 +601,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new object[] {"E2"});
 
                 stmtTextDelete =
-                    "@Name('d2') on SupportBeanTwo delete from MyWindowCKR where IntBoxed between DoubleBoxedTwo and DoublePrimitiveTwo and IntPrimitive = IntPrimitiveTwo and TheString = stringTwo ";
+                    "@Name('d2') on SupportBeanTwo delete from MyWindowCKR where IntBoxed between DoubleBoxedTwo and DoublePrimitiveTwo and IntPrimitive = IntPrimitiveTwo and TheString = StringTwo ";
                 env.CompileDeploy(stmtTextDelete, path);
                 deleteStatements.Add("d2");
                 Assert.AreEqual(3, GetIndexCount(env, "createOne", "MyWindowCKR"));
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new object[] {"E3"});
 
                 stmtTextDelete =
-                    "@Name('d3') on SupportBeanTwo delete from MyWindowCKR where IntBoxed between IntBoxedTwo and IntBoxedTwo and IntPrimitive = IntPrimitiveTwo and TheString = stringTwo ";
+                    "@Name('d3') on SupportBeanTwo delete from MyWindowCKR where IntBoxed between IntBoxedTwo and IntBoxedTwo and IntPrimitive = IntPrimitiveTwo and TheString = StringTwo ";
                 env.CompileDeploy(stmtTextDelete, path);
                 deleteStatements.Add("d3");
                 Assert.AreEqual(4, GetIndexCount(env, "createOne", "MyWindowCKR"));

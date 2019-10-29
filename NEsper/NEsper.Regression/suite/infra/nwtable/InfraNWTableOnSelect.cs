@@ -34,13 +34,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-
+            
             execs.Add(new InfraOnSelectIndexSimple(true));
             execs.Add(new InfraOnSelectIndexSimple(false));
 
             execs.Add(new InfraOnSelectIndexChoice(true));
             execs.Add(new InfraOnSelectIndexChoice(false));
-
+            
             execs.Add(new InfraWindowAgg(true));
             execs.Add(new InfraWindowAgg(false));
 
@@ -881,7 +881,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtCount, path);
 
                 var stmtTextOnSelect =
-                    "@Name('select') on pattern [every timer:interval(10 sec)] select TheString from MyInfraPTS having count(TheString) > 0";
+                    "@Name('select') on pattern [every timer:interval(10 sec)] " +
+                    "select TheString from MyInfraPTS having count(TheString) > 0";
                 env.CompileDeploy(stmtTextOnSelect, path).AddListener("select");
 
                 var stmtTextInsertOne = namedWindow

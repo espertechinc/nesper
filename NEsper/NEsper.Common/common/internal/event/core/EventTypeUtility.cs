@@ -309,7 +309,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator,
             CodegenClassScope classScope)
         {
-            evaluationType = evaluationType.GetBoxedType();
+            //evaluationType = evaluationType.GetBoxedType();
 
             var write = new CodegenExpressionLambda(method.Block)
                 .WithParam<object>("value")
@@ -320,13 +320,17 @@ namespace com.espertech.esper.common.@internal.@event.core
                             eventType.UnderlyingType,
                             "und",
                             Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
-                        .DeclareVar(evaluationType, "eval", Cast(evaluationType, Ref("value")))
-                        .Expression(writer.WriteCodegen(
-                            Ref("eval"), 
-                            Ref("und"), 
-                            Ref("bean"),
-                            method, 
-                            classScope)));
+                        .DeclareVar(
+                            evaluationType,
+                            "eval",
+                            Cast(evaluationType, Ref("value")))
+                        .Expression(
+                            writer.WriteCodegen(
+                                Ref("eval"),
+                                Ref("und"),
+                                Ref("bean"),
+                                method,
+                                classScope)));
 
             return NewInstance<ProxyEventPropertyWriter>(write);
 

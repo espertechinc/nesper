@@ -92,9 +92,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<int> statementIds)
         {
             var evaluatorStack = new ArrayDeque<FilterItem>();
-            IDictionary<int, IList<FilterItem[]>> filters = new Dictionary<int, IList<FilterItem[]>>();
-            IDictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>> filtersPerType =
-                new Dictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>>();
+            var filters = new Dictionary<int, IList<FilterItem[]>>();
+            var filtersPerType = new Dictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>>();
 
             EventTypeIndexTraverse traverse = (
                 stack,

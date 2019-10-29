@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro;
@@ -13,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 using NEsper.Avro.Extensions;
 
@@ -38,12 +40,21 @@ namespace NEsper.Avro.Core
         {
             var original = (GenericRecord) theEvent.Underlying;
             var copy = new GenericRecord(_avroEventType.SchemaAvro.AsRecordSchema());
-            var fields = _avroEventType.SchemaAvro.AsArraySchema().GetFields();
+            var fields = _avroEventType.SchemaAvro.GetFields();
             foreach (var field in fields) {
                 if (field.Schema.Tag == Schema.Type.Array) {
-                    var originalColl = (ICollection<object>) original.Get(field);
-                    if (originalColl != null) {
-                        copy.Put(field, new List<object>(originalColl));
+                    var originalValue = original.Get(field);
+                    if (originalValue == null) {
+                    } else if (originalValue is Array originalArray) {
+                        var copyArray = Array.CreateInstance(
+                            originalArray.GetType().GetElementType(),
+                            originalArray.Length);
+                        Array.Copy(originalArray, 0, copyArray, 0, copyArray.Length);
+                        copy.Put(field, copyArray);
+                    } else if (originalValue.GetType().IsGenericCollection()) {
+                        var elementType = originalValue.GetType().GetCollectionItemType();
+                        var copyList = Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+                        throw new NotImplementedException();
                     }
                 }
                 else if (field.Schema.Tag == Schema.Type.Map) {

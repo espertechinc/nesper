@@ -20,6 +20,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class StatementSpecRaw
     {
+        private static int _gid = 0;
+        private int _id = ++_gid;
+        
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -170,7 +173,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public CreateExpressionDesc CreateExpressionDesc { get; set; }
 
-        public FireAndForgetSpec FireAndForgetSpec { get; set; }
+        public FireAndForgetSpec FireAndForgetSpec {
+            get;
+            set;
+        }
 
         public IntoTableSpec IntoTableSpec { get; set; }
 

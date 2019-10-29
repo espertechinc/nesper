@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return LocalMethod(method);
         }
 
-        public CodegenExpression IteratorCodegen(
+        public CodegenExpression EnumeratorCodegen(
             CodegenClassScope classScope,
             CodegenMethod parentMethod,
             CodegenNamedMethods namedMethods)

@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAggregateEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var initType = forge.initialization.EvaluationType;
             var initTypeBoxed = initType.GetBoxedType();

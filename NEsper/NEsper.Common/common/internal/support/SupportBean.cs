@@ -207,17 +207,50 @@ namespace com.espertech.esper.common.@internal.support
             return _theString;
         }
 
-#if false
-        public void SetIntBoxed(int? value) { _intBoxed = value; }
-        public void SetIntPrimitive(int value) { _intPrimitive = value; }
-        public void SetLongBoxed(long? value) { _longBoxed = value; }
-        public void SetLongPrimitive(long value) { _longPrimitive = value; }
-        public void SetDoubleBoxed(double? value) { _doubleBoxed = value; }
-        public void SetDoublePrimitive(double value) { _doublePrimitive = value; }
-        public void SetFloatBoxed(float? value) { _floatBoxed = value; }
-        public void SetFloatPrimitive(float value) { _floatPrimitive = value; }
-        public void SetTheString(string value) { _theString = value; }
-#endif
+        public void SetIntBoxed(int? value)
+        {
+            _intBoxed = value;
+        }
+
+        public void SetIntPrimitive(int value)
+        {
+            _intPrimitive = value;
+        }
+
+        public void SetLongBoxed(long? value)
+        {
+            _longBoxed = value;
+        }
+
+        public void SetLongPrimitive(long value)
+        {
+            _longPrimitive = value;
+        }
+
+        public void SetDoubleBoxed(double? value)
+        {
+            _doubleBoxed = value;
+        }
+
+        public void SetDoublePrimitive(double value)
+        {
+            _doublePrimitive = value;
+        }
+
+        public void SetFloatBoxed(float? value)
+        {
+            _floatBoxed = value;
+        }
+
+        public void SetFloatPrimitive(float value)
+        {
+            _floatPrimitive = value;
+        }
+
+        public void SetTheString(string value)
+        {
+            _theString = value;
+        }
 
         public override string ToString()
         {
@@ -226,6 +259,76 @@ namespace com.espertech.esper.common.@internal.support
                 GetType().Name,
                 _theString.RenderAny(),
                 _intPrimitive);
+        }
+
+        protected bool Equals(SupportBean other)
+        {
+            return _boolBoxed == other._boolBoxed &&
+                   _boolPrimitive == other._boolPrimitive &&
+                   _byteBoxed == other._byteBoxed &&
+                   _bytePrimitive == other._bytePrimitive &&
+                   _charBoxed == other._charBoxed &&
+                   _charPrimitive == other._charPrimitive &&
+                   Nullable.Equals(_doubleBoxed, other._doubleBoxed) &&
+                   _doublePrimitive.Equals(other._doublePrimitive) &&
+                   _enumValue == other._enumValue &&
+                   Nullable.Equals(_floatBoxed, other._floatBoxed) &&
+                   _floatPrimitive.Equals(other._floatPrimitive) &&
+                   _decimalPrimitive == other._decimalPrimitive &&
+                   _decimalBoxed == other._decimalBoxed &&
+                   Nullable.Equals(_bigInteger, other._bigInteger) &&
+                   _intBoxed == other._intBoxed &&
+                   _intPrimitive == other._intPrimitive &&
+                   _longBoxed == other._longBoxed &&
+                   _longPrimitive == other._longPrimitive &&
+                   _shortBoxed == other._shortBoxed &&
+                   _shortPrimitive == other._shortPrimitive &&
+                   _theString == other._theString;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType()) {
+                return false;
+            }
+
+            return Equals((SupportBean) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked {
+                var hashCode = _boolBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _boolPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _byteBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _bytePrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _charBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _charPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _doubleBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _doublePrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) _enumValue;
+                hashCode = (hashCode * 397) ^ _floatBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _floatPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _decimalPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _decimalBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _bigInteger.GetHashCode();
+                hashCode = (hashCode * 397) ^ _intBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _intPrimitive;
+                hashCode = (hashCode * 397) ^ _longBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _longPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ _shortBoxed.GetHashCode();
+                hashCode = (hashCode * 397) ^ _shortPrimitive.GetHashCode();
+                hashCode = (hashCode * 397) ^ (_theString != null ? _theString.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
         public static SupportBean[] GetBeansPerIndex(

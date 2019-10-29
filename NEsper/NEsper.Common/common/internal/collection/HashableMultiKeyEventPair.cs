@@ -86,8 +86,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (other is HashableMultiKeyEventPair) {
-                var otherKeys = (HashableMultiKeyEventPair) other;
+            if (other is HashableMultiKeyEventPair otherKeys) {
                 return CompatExtensions.AreEqual(keys, otherKeys.keys);
             }
 
@@ -101,7 +100,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public override string ToString()
         {
-            return "MultiKeyUntyped" + Arrays.AsList(keys);
+            return "MultiKeyUntyped" + keys.RenderAny();
         }
     }
 } // end of namespace

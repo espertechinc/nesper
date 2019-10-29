@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "on SupportBean_S0 arrival set vars0_A = 1",
                     "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                     typeof(SupportBean_S0).Name +
-                    "' cannot be assigned a value of type 'int'");
+                    "' cannot be assigned a value of type 'Int32'");
             }
         }
 
@@ -98,12 +98,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
                 var stmtSelectText =
-                    "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
-                env.CompileDeploy(stmtSelectText, path).AddListener("Select");
+                    "@Name('select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
+                env.CompileDeploy(stmtSelectText, path).AddListener("select");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {null, null, null, null, null, null, null});
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 env.SendEventBean(new SupportBean_A("A2"));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E1", -1, 1, "S01", 101L, null, null});
 
@@ -124,23 +124,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // update properties via on-set
                 var stmtUpdateText =
-                    "@Name('Update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
+                    "@Name('update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
                 env.CompileDeploy(stmtUpdateText, path);
                 Assert.AreEqual(
                     StatementType.ON_SET,
-                    env.Statement("Update").GetProperty(StatementProperty.STATEMENTTYPE));
+                    env.Statement("update").GetProperty(StatementProperty.STATEMENTTYPE));
                 env.SendEventBean(new SupportBean_B("B1"));
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean_A("A3"));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"EX", -999, 1, "S01", 101L, null, null});
 
                 // update full bean via on-set
-                stmtUpdateText = "@Name('Update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
+                stmtUpdateText = "@Name('update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
                 env.CompileDeploy(stmtUpdateText, path);
 
                 var bean = new SupportBean("E2", 0);
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 env.SendEventBean(new SupportBean_A("A4"));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Select").AssertOneGetNewAndReset(),
+                    env.Listener("select").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"E2", 0, 1, "S01", 101L, null, null});
 

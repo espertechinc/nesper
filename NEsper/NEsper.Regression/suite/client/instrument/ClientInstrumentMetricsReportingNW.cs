@@ -47,13 +47,13 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.CompileDeploy(appModuleTwo, path);
 
             env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
-            var fields = new [] { "statementName","numInput" };
+            var fields = new [] { "StatementName","NumInput" };
 
             env.SendEventBean(new SupportBean("E1", 1));
             env.AdvanceTime(1000);
-            var received = ArrayHandlingUtil.Reorder("statementName", env.Listener("X").NewDataListFlattened);
+            var received = ArrayHandlingUtil.Reorder("StatementName", env.Listener("X").NewDataListFlattened);
             foreach (var theEvent in received) {
-                Log.Info(theEvent.Get("statementName") + " = " + theEvent.Get("numInput"));
+                Log.Info(theEvent.Get("StatementName") + " = " + theEvent.Get("NumInput"));
             }
 
             EPAssertionUtil.AssertPropsPerRow(

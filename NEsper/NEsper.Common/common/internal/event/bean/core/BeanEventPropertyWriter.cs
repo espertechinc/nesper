@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -84,10 +85,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             try {
                 var writeMember = _writerMember;
                 if (writeMember is MethodInfo writeMethod) {
-                    writeMethod.Invoke(target, values);
+                    var parameter = writeMethod.GetParameters()[0].ParameterType;
+                    var isClass = parameter.IsClass;
+                    var isNullable = parameter.IsNullable();
+                    if (values[0] != null) {
+                        writeMethod.Invoke(target, values);
+                    }
+                    else if (isClass || isNullable) {
+                        writeMethod.Invoke(target, values);
+                    }
                 }
                 else if (writeMember is PropertyInfo writeProperty) {
-                    writeProperty.SetValue(target, values[0]);
+                    var isClass = writeProperty.PropertyType.IsClass;
+                    var isNullable = writeProperty.PropertyType.IsNullable();
+                    if (values[0] != null) {
+                        writeProperty.SetValue(target, values[0]);
+                    }
+                    else if (isClass || isNullable) {
+                        writeProperty.SetValue(target, values[0]);
+                    }
                 }
                 else {
                     throw new IllegalStateException("writeMember of invalid type");

@@ -303,7 +303,6 @@ namespace com.espertech.esper.compiler.@internal.util
                     classes.Add(clazz);
                 }
 
-
                 // Stage 5 - compile "fields" class first and all the rest later
                 var sorted = SortClasses(classes);
 

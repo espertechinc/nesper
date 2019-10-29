@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var block = codegenMethodScope
                 .MakeChild(returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
                 .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())

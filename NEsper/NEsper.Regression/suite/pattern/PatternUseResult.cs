@@ -30,13 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-#if false
             execs.Add(new PatternNumeric());
             execs.Add(new PatternObjectId());
             execs.Add(new PatternFollowedByFilter());
             execs.Add(new PatternPatternTypeCacheForRepeat());
             execs.Add(new PatternBooleanExprRemoveConsiderTag());
-#endif
             execs.Add(new PatternBooleanExprRemoveConsiderArrayTag());
             return execs;
         }

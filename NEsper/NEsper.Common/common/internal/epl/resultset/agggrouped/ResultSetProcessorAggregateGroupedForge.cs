@@ -171,20 +171,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetIteratorViewCodegen(
+        public void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorAggregateGroupedImpl.GetIteratorViewCodegen(this, classScope, method, instance);
+            ResultSetProcessorAggregateGroupedImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
         }
 
-        public void GetIteratorJoinCodegen(
+        public void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorAggregateGroupedImpl.GetIteratorJoinCodegen(this, classScope, method, instance);
+            ResultSetProcessorAggregateGroupedImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
         public void ProcessOutputLimitedViewCodegen(

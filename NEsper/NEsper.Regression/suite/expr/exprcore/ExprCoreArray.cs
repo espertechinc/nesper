@@ -246,15 +246,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var nullArraySchema = SchemaBuilder.Array(TypeBuilder.NullType());
 
                 var stmtText =
-                    "@Name('s0') @AvroSchemaField(name='emptyArray', schema='" +
-                    intArraySchema +
-                    "')" +
-                    "@AvroSchemaField(name='mixedArray', schema='" +
-                    mixedArraySchema +
-                    "')" +
-                    "@AvroSchemaField(name='nullArray', schema='" +
-                    nullArraySchema +
-                    "')" +
+                    "@Name('s0') " +
+                    "@AvroSchemaField(Name='emptyArray', Schema='" + intArraySchema + "')" +
+                    "@AvroSchemaField(Name='mixedArray', Schema='" + mixedArraySchema + "')" +
+                    "@AvroSchemaField(Name='nullArray', Schema='" + nullArraySchema + "')" +
                     EventRepresentationChoice.AVRO.GetAnnotationText() +
                     "select {'a', 'b'} as stringArray," +
                     "{} as emptyArray," +

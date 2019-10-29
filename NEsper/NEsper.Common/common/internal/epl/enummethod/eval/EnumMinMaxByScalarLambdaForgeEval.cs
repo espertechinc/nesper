@@ -91,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerTypeBoxed = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerType = forge.innerExpression.EvaluationType;
+            var innerTypeBoxed = Boxing.GetBoxedType(innerType);
             var resultTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
             var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumMinMaxByScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
             var block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())

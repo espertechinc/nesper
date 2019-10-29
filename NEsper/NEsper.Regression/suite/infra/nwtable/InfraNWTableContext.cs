@@ -60,12 +60,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("create context ContextOne start SupportBean_S0 end SupportBean_S1", path);
 
                 var eplCreate = namedWindow
-                    ? "context ContextOne create window MyInfra#keepall as (pKey0 string, pkey1 int, c0 long)"
-                    : "context ContextOne create table MyInfra as (pKey0 string primary key, pkey1 int primary key, c0 long)";
+                    ? "context ContextOne create window MyInfra#keepall as (pkey0 string, pkey1 int, c0 long)"
+                    : "context ContextOne create table MyInfra as (pkey0 string primary key, pkey1 int primary key, c0 long)";
                 env.CompileDeploy(eplCreate, path);
 
                 env.CompileDeploy(
-                    "context ContextOne insert into MyInfra select TheString as pKey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
+                    "context ContextOne insert into MyInfra select " +
+                    " TheString as pkey0," +
+                    " IntPrimitive as pkey1," +
+                    " LongPrimitive as c0" +
+                    " from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(0)); // start
@@ -73,7 +77,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 MakeSendSupportBean(env, "E1", 10, 100);
                 MakeSendSupportBean(env, "E2", 20, 200);
 
-                Register(env, path, 1, "context ContextOne select * from MyInfra output snapshot when terminated");
+                Register(
+                    env,
+                    path,
+                    1,
+                    "context ContextOne select * from MyInfra output snapshot when terminated");
                 Register(
                     env,
                     path,
@@ -83,22 +91,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     3,
-                    "context ContextOne select pKey0, count(*) as thecnt from MyInfra output snapshot when terminated");
+                    "context ContextOne select pkey0, count(*) as thecnt from MyInfra output snapshot when terminated");
                 Register(
                     env,
                     path,
                     4,
-                    "context ContextOne select pKey0, count(*) as thecnt from MyInfra group by pKey0 output snapshot when terminated");
+                    "context ContextOne select pkey0, count(*) as thecnt from MyInfra group by pkey0 output snapshot when terminated");
                 Register(
                     env,
                     path,
                     5,
-                    "context ContextOne select pKey0, pkey1, count(*) as thecnt from MyInfra group by pKey0 output snapshot when terminated");
+                    "context ContextOne select pkey0, pkey1, count(*) as thecnt from MyInfra group by pkey0 output snapshot when terminated");
                 Register(
                     env,
                     path,
                     6,
-                    "context ContextOne select pKey0, pkey1, count(*) as thecnt from MyInfra group by rollup (pKey0, pkey1) output snapshot when terminated");
+                    "context ContextOne select pkey0, pkey1, count(*) as thecnt from MyInfra group by rollup (pkey0, pkey1) output snapshot when terminated");
 
                 env.Milestone(0);
 
@@ -106,27 +114,37 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s1").GetAndResetLastNewData(),
-                    new [] { "pKey0","pkey1","c0" },
-                    new[] {new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
+                    new[] {"pkey0", "pkey1", "c0"},
+                    new[] {
+                        new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}
+                    });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
-                    new [] { "thecnt" },
-                    new object[] {2L});
+                    new[] {"thecnt"},
+                    new object[] {
+                        2L
+                    });
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s3").GetAndResetLastNewData(),
-                    new [] { "pKey0","thecnt" },
-                    new[] {new object[] {"E1", 2L}, new object[] {"E2", 2L}});
+                    new[] {"pkey0", "thecnt"},
+                    new[] {
+                        new object[] {"E1", 2L}, new object[] {"E2", 2L}
+                    });
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s4").GetAndResetLastNewData(),
-                    new [] { "pKey0","thecnt" },
-                    new[] {new object[] {"E1", 1L}, new object[] {"E2", 1L}});
+                    new[] {"pkey0", "thecnt"},
+                    new[] {
+                        new object[] {"E1", 1L}, new object[] {"E2", 1L}
+                    });
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s5").GetAndResetLastNewData(),
-                    new [] { "pKey0","pkey1","thecnt" },
-                    new[] {new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
+                    new[] {"pkey0", "pkey1", "thecnt"},
+                    new[] {
+                        new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}
+                    });
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s6").GetAndResetLastNewData(),
-                    new [] { "pKey0","pkey1","thecnt" },
+                    new[] {"pkey0", "pkey1", "thecnt"},
                     new[] {
                         new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}, new object[] {"E1", null, 1L},
                         new object[] {"E2", null, 1L}, new object[] {null, null, 2L}

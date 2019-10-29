@@ -384,6 +384,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
+
+            processJoinResultMethod.Block.DebugStack();
+            
             if (!spec.IsJoin) {
                 processJoinResultMethod.Block.MethodThrowUnsupported();
             }
@@ -396,7 +399,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
             forge.ClearMethodCodegen(classScope, clearMethod);
 
-            // Get-Iterator-View
+            // Get-Enumerator-View
             var getEnumeratorMethodView = CodegenMethod
                 .MakeMethod(
                     typeof(IEnumerator<EventBean>),
@@ -405,13 +408,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     classScope)
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!spec.IsJoin) {
-                forge.GetIteratorViewCodegen(classScope, getEnumeratorMethodView, instance);
+                forge.GetEnumeratorViewCodegen(classScope, getEnumeratorMethodView, instance);
             }
             else {
                 getEnumeratorMethodView.Block.MethodThrowUnsupported();
             }
 
-            // Get-Iterator-Join
+            // Get-Enumerator-Join
             var getEnumeratorMethodJoin = CodegenMethod
                 .MakeMethod(
                     typeof(IEnumerator<EventBean>),
@@ -423,7 +426,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 getEnumeratorMethodJoin.Block.MethodThrowUnsupported();
             }
             else {
-                forge.GetIteratorJoinCodegen(classScope, getEnumeratorMethodJoin, instance);
+                forge.GetEnumeratorJoinCodegen(classScope, getEnumeratorMethodJoin, instance);
             }
 
             // Process-output-rate-buffered-view
@@ -729,6 +732,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             forge.ProcessViewResultCodegen(classScope, instrumented, instance);
 
             method.Block
+                .DebugStack()
                 .Apply(InstrumentationCode.Instblock(classScope, "q" + forge.InstrumentedQName))
                 .DeclareVar<UniformPair<EventBean[]>>(
                     "pair",

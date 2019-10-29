@@ -6,10 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
+using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
@@ -62,11 +65,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
             if (data is XYWHRectangleMultiType point) {
                 return Visit(point, x, y, width, height, result);
+            } else if (data is IList<XYWHRectangleMultiType> listData) {
+                var listDataCount = listData.Count;
+                for (var ii = 0; ii < listDataCount; ii++) {
+                    result = Visit(listData[ii], x, y, width, height, result);
+                }
+            } else if (data is IEnumerable<XYWHRectangleMultiType> enumData) {
+                foreach (var rectangle in enumData) {
+                    result = Visit(rectangle, x, y, width, height, result);
+                }
             }
-
-            var collection = (ICollection<XYWHRectangleMultiType>) data;
-            foreach (var rectangle in collection) {
-                result = Visit(rectangle, x, y, width, height, result);
+            else {
+                throw new IllegalStateException("type-erasure failure");
             }
 
             return result;

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(optionalMathContext));
             var method = codegenMethodScope
                 .MakeChild(typeof(decimal?), typeof(EnumAverageScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
                 .Block
                 .DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
                     "agg",

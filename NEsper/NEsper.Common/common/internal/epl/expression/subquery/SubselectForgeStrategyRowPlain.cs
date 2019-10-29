@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddMatchingEvents(methodX));
                     {
                         foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"))
-                            .DeclareVar<IDictionary<object, object>>(
+                            .DeclareVar<IDictionary<string, object>>(
                                 "row",
                                 LocalMethod(
                                     subselect.EvaluateRowCodegen(methodX, classScope),
@@ -311,7 +311,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             typeof(EventBeanUtility),
                             "GetNonemptyFirstEvent",
                             symbols.GetAddMatchingEvents(method)))
-                    .DeclareVar<IDictionary<object, object>>(
+                    .DeclareVar<IDictionary<string, object>>(
                         "row",
                         LocalMethod(
                             subselect.EvaluateRowCodegen(method, classScope),
@@ -343,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddExprEvalCtx(method),
                         filter))
                 .IfRefNullReturnNull("subselectResult")
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar<IDictionary<string, object>>(
                     "row",
                     LocalMethod(
                         subselect.EvaluateRowCodegen(method, classScope),

@@ -1470,7 +1470,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var fields = new [] { "symbol","maxVol" };
+                var fields = new [] { "Symbol","maxVol" };
                 var epl = "@Name('s0') select irstream Symbol, max(Price) as maxVol" +
                           " from SupportMarketDataBean#sort(1, Volume desc) as S0," +
                           "SupportBean#keepall as S1 " +
@@ -1624,7 +1624,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "symbol","sum(Price)" };
+                var fields = new [] { "Symbol","sum(Price)" };
                 var statementString =
                     "@Name('s0') select irstream Symbol, sum(Price) from SupportMarketDataBean#length(5) group by Symbol output all every 5 events";
                 env.CompileDeploy(statementString).AddListener("s0");
@@ -1662,7 +1662,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "symbol","sum(Price)" };
+                var fields = new [] { "Symbol","sum(Price)" };
                 var epl =
                     "@Name('s0') select irstream Symbol, sum(Price) from SupportMarketDataBean#length(5) group by Symbol output every 5 events";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1705,7 +1705,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var fields = new [] { "symbol","maxVol" };
+                var fields = new [] { "Symbol","maxVol" };
                 var epl = "@Name('s0') select irstream Symbol, max(Price) as maxVol" +
                           " from SupportMarketDataBean#time(1 sec) " +
                           "group by Symbol output every 1 seconds";

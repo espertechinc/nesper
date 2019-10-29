@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.client.annotation
         /// </summary>
         public static readonly Type[] VALUES = new Type[] {
             typeof(AuditAttribute),
+            typeof(AvroSchemaFieldAttribute),
             typeof(DescriptionAttribute),
             typeof(DropAttribute),
             typeof(EventRepresentationAttribute),

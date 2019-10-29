@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(
                 env,
                 EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(name='myId',schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
+                "@AvroSchemaField(Name='myId',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
             RunAssertion(env, EventRepresentationChoice.DEFAULT, "");
         }
 

@@ -37,15 +37,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy("@Name('s0') select varagg[P00, Id].p0 as value from SupportBean_S0", path)
                 .AddListener("s0");
             env.CompileDeploy(
-                    "@Name('Update') on SupportTwoKeyEvent update varagg set p0 = newValue " +
-                    "where k1 = keyOne and k2 = keyTwo",
+                    "@Name('update') on SupportTwoKeyEvent update varagg set p0 = NewValue " +
+                    "where K1 = keyOne and K2 = keyTwo",
                     path)
                 .AddListener("update");
 
             object[][] expectedType = {
                 new object[] {"keyOne", typeof(string)},
                 new object[] {"keyTwo", typeof(int?)},
-                new object[] {"P0", typeof(long?)}
+                new object[] {"p0", typeof(long?)}
             };
             var updateStmtEventType = env.Statement("update").EventType;
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // try property method invocation
             env.CompileDeploy("create table MyTableSuppBean as (sb SupportBean)", path);
-            env.CompileDeploy("on SupportBean_S0 update MyTableSuppBean sb set sb.setLongPrimitive(10)", path);
+            env.CompileDeploy("on SupportBean_S0 update MyTableSuppBean sb set sb.SetLongPrimitive(10)", path);
             env.UndeployAll();
         }
 

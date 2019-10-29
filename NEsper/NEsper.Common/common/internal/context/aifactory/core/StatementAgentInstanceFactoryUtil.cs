@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
             OrderByProcessor orderByProcessor = null;
             if (resultSetProcessorPrototype.OrderByProcessorFactory != null) {
-                orderByProcessor =
-                    resultSetProcessorPrototype.OrderByProcessorFactory.Instantiate(agentInstanceContext);
+                orderByProcessor = resultSetProcessorPrototype.OrderByProcessorFactory
+                    .Instantiate(agentInstanceContext);
             }
 
             var resultSetProcessor = resultSetProcessorPrototype.ResultSetProcessorFactory.Instantiate(

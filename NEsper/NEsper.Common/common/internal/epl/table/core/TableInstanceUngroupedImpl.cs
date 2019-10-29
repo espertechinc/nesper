@@ -8,8 +8,6 @@
 
 using System.Collections.Generic;
 
-using Antlr4.Runtime.Sharpen;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -22,14 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableInstanceUngroupedImpl : TableInstanceUngroupedBase
     {
-        private readonly AtomicReference<ObjectArrayBackedEventBean> eventReference;
+        private readonly Atomic<ObjectArrayBackedEventBean> eventReference;
 
         public TableInstanceUngroupedImpl(
             Table table,
             AgentInstanceContext agentInstanceContext)
             : base(table, agentInstanceContext)
         {
-            eventReference = new AtomicReference<ObjectArrayBackedEventBean>(null);
+            eventReference = new Atomic<ObjectArrayBackedEventBean>(null);
         }
 
         public override ICollection<EventBean> EventCollection {
@@ -46,10 +44,15 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public override ObjectArrayBackedEventBean EventUngrouped => eventReference.Get();
 
         public override IEnumerable<EventBean> IterableTableScan {
-            get { yield return eventReference.Get(); }
+            get {
+                var currentValue = eventReference.Get();
+                if (currentValue != null) {
+                    yield return currentValue;
+                }
+            }
         }
 
-        public override void AddEvent(EventBean @event)
+    public override void AddEvent(EventBean @event)
         {
             if (@event.EventType != table.MetaData.InternalEventType) {
                 throw new IllegalStateException("Unexpected event type for add: " + @event.EventType.Name);

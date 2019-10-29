@@ -29,7 +29,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
     {
         public void Run(RegressionEnvironment env)
         {
-#if false
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 RunAssertionCreateStream(env, rep);
             }
@@ -37,7 +36,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 RunAssertionCreateStreamTwo(env, rep);
             }
-#endif
 
             foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                 RunAssertPopulateFromNamedWindow(env, rep);

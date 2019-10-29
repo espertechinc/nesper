@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            #if false
+
             execs.Add(new EPLSubselectUngroupedUncorrelatedInSelect());
             execs.Add(new EPLSubselectUngroupedUncorrelatedTwoAggStopStart());
             execs.Add(new EPLSubselectUngroupedUncorrelatedNoDataWindow());
@@ -35,7 +35,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             execs.Add(new EPLSubselectUngroupedCorrelated());
             execs.Add(new EPLSubselectUngroupedCorrelatedSceneTwo());
             execs.Add(new EPLSubselectUngroupedCorrelatedInWhereClause());
-            #endif
             execs.Add(new EPLSubselectUngroupedCorrelatedWHaving());
             execs.Add(new EPLSubselectUngroupedJoin3StreamKeyRangeCoercion());
             execs.Add(new EPLSubselectUngroupedJoin2StreamRangeCoercion());

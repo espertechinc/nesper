@@ -24,10 +24,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window W1#unique(s1) as SupportSimpleBeanOne", path);
+            env.CompileDeploy("create window W1#unique(S1) as SupportSimpleBeanOne", path);
             env.CompileDeploy("insert into W1 select * from SupportSimpleBeanOne", path);
 
-            env.CompileDeploy("create window W2#unique(s2) as SupportSimpleBeanTwo", path);
+            env.CompileDeploy("create window W2#unique(S2) as SupportSimpleBeanTwo", path);
             env.CompileDeploy("insert into W2 select * from SupportSimpleBeanTwo", path);
 
             for (var i = 0; i < 1000; i++) {
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
 
             var start = PerformanceObserver.MilliTime;
-            var compiled = env.CompileFAF("select * from W1 as w1, W2 as w2 where w1.S1 = w2.s2", path);
+            var compiled = env.CompileFAF("select * from W1 as w1, W2 as w2 where w1.S1 = w2.S2", path);
             var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
             for (var i = 0; i < 100; i++) {
                 var result = prepared.Execute();

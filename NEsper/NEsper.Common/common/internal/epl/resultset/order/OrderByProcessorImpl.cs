@@ -397,7 +397,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "CompareTo", Ref("localMinMax"), Ref("sortKey")),
+                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("sortKey")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("sortKey"))
@@ -441,7 +441,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "CompareTo", Ref("localMinMax"), Ref("valuesMk")),
+                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("valuesMk")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("valuesMk"))

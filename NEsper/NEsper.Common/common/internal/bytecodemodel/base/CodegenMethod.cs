@@ -287,6 +287,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenMethod AddParam(CodegenNamedParam param)
+        {
+            if (LocalParams.IsEmpty()) {
+                LocalParams = new List<CodegenNamedParam>();
+            }
+
+            LocalParams.Add(param);
+            return this;
+        }
+
         public CodegenMethod AddThrown(Type throwableClass)
         {
             if (Thrown.IsEmpty()) {

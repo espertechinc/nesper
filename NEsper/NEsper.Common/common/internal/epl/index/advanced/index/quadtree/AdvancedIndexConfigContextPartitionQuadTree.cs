@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.lookup;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -60,17 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public void ToConfiguration(TextWriter builder)
         {
-            builder.Write(Convert.ToString(X, CultureInfo.InvariantCulture));
+            builder.Write(X.RenderAny());
             builder.Write(",");
-            builder.Write(Convert.ToString(Y, CultureInfo.InvariantCulture));
+            builder.Write(Y.RenderAny());
             builder.Write(",");
-            builder.Write(Convert.ToString(Width, CultureInfo.InvariantCulture));
+            builder.Write(Width.RenderAny());
             builder.Write(",");
-            builder.Write(Convert.ToString(Height, CultureInfo.InvariantCulture));
+            builder.Write(Height.RenderAny());
             builder.Write(",");
-            builder.Write(Convert.ToString(LeafCapacity));
+            builder.Write(LeafCapacity.RenderAny());
             builder.Write(",");
-            builder.Write(Convert.ToString(MaxTreeHeight));
+            builder.Write(MaxTreeHeight.RenderAny());
         }
     }
 } // end of namespace

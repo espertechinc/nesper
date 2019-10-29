@@ -11,6 +11,7 @@ using System.IO;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -47,12 +48,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var childType = ChildNodes[i].Forge.EvaluationType;
-                var childTypeName = childType == null ? "null" : childType.Name;
+                var childTypeName = childType == null ? "null" : childType.CleanName();
                 if (childType != typeof(string)) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
                         childTypeName +
-                        "' to string is not allowed");
+                        "' to System.String is not allowed");
                 }
             }
 

@@ -87,6 +87,11 @@ namespace com.espertech.esper.common.@internal.support
 
         public string P03 { get; set; }
 
+        public string GetP00()
+        {
+            return P00;
+        }
+        
         public override string ToString()
         {
             return "SupportBean_S0{" +

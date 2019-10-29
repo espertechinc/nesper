@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.type;
-
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
-    public class XYPointWValue<TL> : XYPoint
+    public class XYPointWValue<TL> : XYPointWOpaqueValue
     {
         public XYPointWValue(
             double x,
@@ -22,5 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         public TL Value { get; set; }
+
+        public override object OpaqueValue {
+            get => Value;
+        }
     }
 } // end of namespace

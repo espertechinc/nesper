@@ -124,9 +124,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     DefaultSupportGraphEventUtil.EVENTTYPENAME,
                     DefaultSupportGraphEventUtil.GetPONOEvents());
-                RunAssertionAllTypes(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents());
-                RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEvents());
-                RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents());
+                RunAssertionAllTypes(
+                    env,
+                    "MyXMLEvent",
+                    DefaultSupportGraphEventUtil.GetXMLEvents());
+                RunAssertionAllTypes(
+                    env,
+                    "MyOAEvent",
+                    DefaultSupportGraphEventUtil.GetOAEvents());
+                RunAssertionAllTypes(
+                    env,
+                    "MyMapEvent",
+                    DefaultSupportGraphEventUtil.GetMapEvents());
 
                 // test doc sample
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
@@ -147,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.UndeployAll();
 
                 // test two streams
-                DefaultSupportCaptureOpStatic<SupportBean>.GetInstances().Clear();
+                DefaultSupportCaptureOpStatic<object>.GetInstances().Clear();
                 var graph = "@Name('flow') create dataflow MyFilter\n" +
                             "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
                             "filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
@@ -160,15 +169,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 captive.Emitters.Get("e1").Submit(new SupportBean("x", 10));
                 captive.Emitters.Get("e1").Submit(new SupportBean("y", 11));
-                Assert.AreEqual(
-                    10,
-                    ((SupportBean) DefaultSupportCaptureOpStatic<SupportBean>.GetInstances()[0].Current[0])
-                    .IntPrimitive);
-                Assert.AreEqual(
-                    11,
-                    ((SupportBean) DefaultSupportCaptureOpStatic<SupportBean>.GetInstances()[1]
-                        .Current[0]).IntPrimitive);
-                DefaultSupportCaptureOpStatic<SupportBean>.GetInstances().Clear();
+
+                var instances = DefaultSupportCaptureOpStatic<object>.GetInstances();
+                Assert.That(instances, Has.Count.EqualTo(2));
+                
+                Assert.AreEqual(10, ((SupportBean) instances[0].Current[0]).IntPrimitive);
+                Assert.AreEqual(11, ((SupportBean) instances[1].Current[0]).IntPrimitive);
+                DefaultSupportCaptureOpStatic<object>.GetInstances().Clear();
 
                 env.UndeployAll();
             }

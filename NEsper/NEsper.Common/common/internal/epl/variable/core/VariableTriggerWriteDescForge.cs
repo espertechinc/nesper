@@ -59,7 +59,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     Ref("desc"),
                     "Type",
                     EventTypeUtility.ResolveTypeCodegen(Type, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("desc"), "VariableName", Constant(VariableName))
+                .SetProperty(
+                    Ref("desc"),
+                    "VariableName",
+                    Constant(VariableName))
                 .SetProperty(
                     Ref("desc"),
                     "Writer",
@@ -74,7 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 .SetProperty(
                     Ref("desc"),
                     "Getter",
-                    EventTypeUtility.CodegenGetterWCoerce(getter, getterType, null, method, GetType(), classScope))
+                    EventTypeUtility.CodegenGetterWCoerce(
+                        getter,
+                        getterType,
+                        null,
+                        method,
+                        GetType(),
+                        classScope))
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method);
         }

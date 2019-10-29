@@ -1570,7 +1570,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean(IntPrimitive=?:p0:long)",
-                    "Implicit conversion from datatype 'Long' to 'Integer' for property 'IntPrimitive' is not allowed");
+                    "Implicit conversion from datatype 'System.Int64' to 'System.Int32' for property 'IntPrimitive' is not allowed");
 
                 RunAssertionRelOpWSubs(env, "select * from SupportBean(IntPrimitive>?:p0:int)");
                 RunAssertionRelOpWSubs(env, "select * from SupportBean(?:p0:int<IntPrimitive)");

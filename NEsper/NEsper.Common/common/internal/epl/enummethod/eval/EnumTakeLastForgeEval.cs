@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumTakeLastForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var block = methodNode.Block.DeclareVar(
                 sizeType,

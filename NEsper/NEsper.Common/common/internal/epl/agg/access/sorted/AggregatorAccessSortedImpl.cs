@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             }
         }
 
-        public CodegenExpression ReverseIteratorCodegen => NewInstance<AggregationStateSortedEnumerator>(
+        public CodegenExpression ReverseEnumeratorCodegen => NewInstance<AggregationStateSortedEnumerator>(
             sorted,
             ConstantTrue());
 
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             return LocalMethod(method);
         }
 
-        public CodegenExpression IteratorCodegen()
+        public CodegenExpression EnumeratorCodegen()
         {
             return NewInstance<AggregationStateSortedEnumerator>(sorted, ConstantFalse());
         }

@@ -51,7 +51,7 @@ namespace NEsper.Avro.Getter
                 return null;
             }
 
-            var collection = (ICollection<object>) inner.Get(_pos);
+            var collection = inner.Get(_pos);
             return AvroEventBeanGetterIndexed.GetAvroIndexedValue(collection, _index);
         }
 
@@ -152,14 +152,12 @@ namespace NEsper.Avro.Getter
                             "Get",
                             CodegenExpressionBuilder.Constant(_top))))
                 .IfRefNullReturnNull("inner")
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<object>(
                     "collection",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(ICollection<object>),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("inner"),
-                            "Get",
-                            CodegenExpressionBuilder.Constant(_pos))))
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("inner"),
+                        "Get",
+                        CodegenExpressionBuilder.Constant(_pos)))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterIndexed),

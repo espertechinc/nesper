@@ -1685,14 +1685,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"a", 1}});
 
                 // try enum-value insert
-                var epl = "create schema MyMode (mode " +
-                          typeof(SupportEnum).Name +
-                          ");\n" +
+                var epl = "create schema MyMode (Mode " + typeof(SupportEnum).Name + ");\n" +
                           (namedWindow
-                              ? "@Name('enumwin') create window MyInfraTwo#unique(mode) as MyMode"
-                              : "@Name('enumwin') create table MyInfraTwo as (mode " +
-                                typeof(SupportEnum).Name +
-                                ");\n");
+                              ? "@Name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
+                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +
@@ -1703,7 +1699,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     path);
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("enumwin").Advance(),
-                    new [] { "mode" },
+                    new [] { "Mode" },
                     new object[] {SupportEnum.ENUM_VALUE_2});
 
                 // try insert-into with values-keyword and explicit column names

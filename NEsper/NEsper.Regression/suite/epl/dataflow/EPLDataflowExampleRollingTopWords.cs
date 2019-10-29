@@ -33,10 +33,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var epl = "@Name('flow') create dataflow RollingTopWords\n" +
                       "create objectarray schema WordEvent (word string),\n" +
                       "Emitter -> wordstream<WordEvent> {name:'a'} // Produces word stream\n" +
-                      "select(wordstream) -> wordcount { // Sliding time window count per word\n" +
+                      "Select(wordstream) -> wordcount { // Sliding time window count per word\n" +
                       "  select: (select word, count(*) as wordcount from wordstream#time(30) group by word)\n" +
                       "}\n" +
-                      "select(wordcount) -> wordranks { // Rank of words\n" +
+                      "Select(wordcount) -> wordranks { // Rank of words\n" +
                       "  select: (select window(*) as rankedWords from wordcount#sort(3, wordcount desc) output snapshot every 2 seconds)\n" +
                       "}\n" +
                       "DefaultSupportCaptureOp(wordranks) {}";
@@ -63,8 +63,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.AdvanceTime(2000);
             Assert.AreEqual(1, capture.Current.Length);
             var row = capture.Current[0].UnwrapIntoArray<object>();
-            var rows = row[0].UnwrapIntoArray<EventBean>();
+            var rows = row[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertPropsPerRow(
+                env.Container,
                 rows,
                 new[] {"word", "count"},
                 new[] {

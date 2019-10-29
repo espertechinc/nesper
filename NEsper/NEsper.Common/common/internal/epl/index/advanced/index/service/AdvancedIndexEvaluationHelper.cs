@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 {
@@ -72,9 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 "' parameter '" +
                 parameterName +
                 "' received " +
-                (value == null ? "null" : value.ToString()) +
+                CompatExtensions.RENDER_NO_QUOTES.RenderAny(value) +
                 " and expected " +
-                expected);
+                CompatExtensions.RENDER_NO_QUOTES.RenderAny(expected));
         }
 
         public static EPException InvalidColumnValue(
@@ -89,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 "' column '" +
                 parameterName +
                 "' received " +
-                (value == null ? "null" : value.ToString()) +
+                CompatExtensions.RENDER_NO_QUOTES.RenderAny(value) +
                 " and expected " +
-                expected);
+                CompatExtensions.RENDER_NO_QUOTES.RenderAny(expected));
         }
     }
 } // end of namespace

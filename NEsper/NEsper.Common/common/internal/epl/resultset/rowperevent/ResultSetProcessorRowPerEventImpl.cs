@@ -103,7 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
+            method.Block
+                .DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents")
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
@@ -125,13 +126,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 true);
         }
 
-        public static void GetIteratorViewCodegen(
+        public static void GetEnumeratorViewCodegen(
             ResultSetProcessorRowPerEventForge forge,
             CodegenClassScope classScope,
             CodegenMethod method)
         {
             if (!forge.IsHistoricalOnly) {
-                method.Block.MethodReturn(LocalMethod(ObtainIteratorCodegen(forge, classScope, method), REF_VIEWABLE));
+                method.Block.MethodReturn(LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method), REF_VIEWABLE));
                 return;
             }
 
@@ -144,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     REF_VIEWABLE)
                 .DeclareVar<IEnumerator<EventBean>>(
                     "iterator",
-                    LocalMethod(ObtainIteratorCodegen(forge, classScope, method), REF_VIEWABLE))
+                    LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method), REF_VIEWABLE))
                 .DeclareVar<ArrayDeque<EventBean>>(
                     "deque",
                     StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("iterator")))
@@ -152,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
-        private static CodegenMethod ObtainIteratorCodegen(
+        private static CodegenMethod ObtainEnumeratorCodegen(
             ResultSetProcessorRowPerEventForge forge,
             CodegenClassScope classScope,
             CodegenMethod parent)
@@ -226,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             return iterator;
         }
 
-        public static void GetIteratorJoinCodegen(
+        public static void GetEnumeratorJoinCodegen(
             ResultSetProcessorRowPerEventForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -580,10 +581,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .DeclareVar<EventBean>("lastNewEvent", ConstantNull());
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
+                var forEach = method.Block
+                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 forEach
-                    .DeclareVar<ISet<EventBean>>("newData",ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<EventBean>>("oldData",ExprDotName(Ref("pair"), "Second"));
+                    .DeclareVar<ISet<MultiKey<EventBean>>>("newData",ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>("oldData",ExprDotName(Ref("pair"), "Second"));
 
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");

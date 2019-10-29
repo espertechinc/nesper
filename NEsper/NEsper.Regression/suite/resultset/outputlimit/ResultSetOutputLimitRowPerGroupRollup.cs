@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -1596,6 +1597,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 var milestone = new AtomicLong();
                 foreach (var outputLimitOpt in EnumHelper.GetValues<SupportOutputLimitOpt>()) {
+                    Console.WriteLine("OutputLimitOpt: {0}", outputLimitOpt.GetName());
                     RunAssertionOutputLast(env, join, outputLimitOpt, milestone);
                 }
             }

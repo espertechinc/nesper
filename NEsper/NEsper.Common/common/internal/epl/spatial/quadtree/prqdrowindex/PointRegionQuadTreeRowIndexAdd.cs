@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
@@ -263,7 +264,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             double x,
             double y)
         {
-            return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(indexName, "(" + x + "," + y + ")");
+            return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(
+                indexName,
+                "(" + x.RenderAny() + "," + y.RenderAny() + ")");
         }
     }
 } // end of namespace

@@ -318,10 +318,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
                 var events = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("window"));
-                Assert.AreEqual("A1", events[0].Get("id?"));
+                Assert.AreEqual("A1", events[0].Get("Id?"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("window"),
-                    new [] { "id?" },
+                    new [] { "Id?" },
                     new[] {new object[] {"A1"}, new object[] {"B1"}});
 
                 env.UndeployAll();

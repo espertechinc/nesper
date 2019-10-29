@@ -10,10 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using Antlr4.Runtime.Sharpen;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
@@ -24,15 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
     public class SingleReferenceEventTable : EventTable,
         EventTableAsSet
     {
-        private readonly EventTableOrganization organization;
-        private readonly AtomicReference<ObjectArrayBackedEventBean> eventReference;
+        private readonly EventTableOrganization _organization;
+        private readonly Atomic<ObjectArrayBackedEventBean> _eventReference;
 
         public SingleReferenceEventTable(
             EventTableOrganization organization,
-            AtomicReference<ObjectArrayBackedEventBean> eventReference)
+            Atomic<ObjectArrayBackedEventBean> eventReference)
         {
-            this.organization = organization;
-            this.eventReference = eventReference;
+            this._organization = organization;
+            this._eventReference = eventReference;
         }
 
         public void AddRemove(
@@ -78,11 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            return EnumerationHelper.SingletonNullable(eventReference.Get());
+            return EnumerationHelper.SingletonNullable(_eventReference.Get());
         }
 
         public bool IsEmpty {
-            get => eventReference.Get() == null;
+            get => _eventReference.Get() == null;
         }
 
         public void Clear()
@@ -100,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         }
 
         public int? NumberOfEvents {
-            get => eventReference.Get() == null ? 0 : 1;
+            get => _eventReference.Get() == null ? 0 : 1;
         }
 
         public int NumKeys {
@@ -112,12 +109,12 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         }
 
         public EventTableOrganization Organization {
-            get => organization;
+            get => _organization;
         }
 
         public ISet<EventBean> AllValues()
         {
-            EventBean @event = eventReference.Get();
+            EventBean @event = _eventReference.Get();
             if (@event != null) {
                 return Collections.SingletonSet(@event);
             }

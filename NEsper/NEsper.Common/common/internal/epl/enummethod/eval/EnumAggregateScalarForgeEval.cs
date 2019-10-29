@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAggregateScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var initializationEvalType = forge.initialization.EvaluationType;
             var innerEvalType = forge.innerExpression.EvaluationType;

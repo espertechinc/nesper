@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(_session, InfraNWTableComparative.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableInfraContext()
         {
             RegressionRunner.Run(_session, InfraNWTableContext.Executions());
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(_session, InfraNWTableOnDelete.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableInfraOnMerge()
         {
             RegressionRunner.Run(_session, InfraNWTableOnMerge.Executions());
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(_session, InfraNWTableOnMergePerf.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableInfraOnSelect()
         {
             RegressionRunner.Run(_session, InfraNWTableOnSelect.Executions());

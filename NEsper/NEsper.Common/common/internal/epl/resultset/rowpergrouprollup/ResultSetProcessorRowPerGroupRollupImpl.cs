@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -49,13 +50,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         private const string NAME_GROUPREPSPERLEVELBUF = "groupRepsPerLevelBuf";
         private const string NAME_RSTREAMEVENTSORTARRAYBUF = "rstreamEventSortArrayBuf";
 
-        protected internal static void ProcessJoinResultCodegen(
+        internal static void ProcessJoinResultCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            AddEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFJOIN, forge, instance, method, classScope);
+            AddEventPerGroupBufCodegen(
+                NAME_EVENTPERGROUPBUFJOIN,
+                typeof(IDictionary<object, EventBean[]>[]),
+                typeof(LinkedHashMap<object, EventBean[]>),
+                forge,
+                instance,
+                method,
+                classScope);
+            
             var resetEventPerGroupJoinBuf =
                 ResetEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFJOIN, classScope, instance);
             var generateGroupKeysJoin = GenerateGroupKeysJoinCodegen(forge, classScope, instance);
@@ -105,19 +114,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("selectOldEvents")));
         }
 
-        protected internal static void ProcessViewResultCodegen(
+        internal static void ProcessViewResultCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            AddEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFVIEW, forge, instance, method, classScope);
-            var resetEventPerGroupBufView =
-                ResetEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFVIEW, classScope, instance);
+            AddEventPerGroupBufCodegen(
+                NAME_EVENTPERGROUPBUFVIEW,
+                typeof(IDictionary<object, EventBean>[]),
+                typeof(LinkedHashMap<object, EventBean>),
+                forge,
+                instance,
+                method,
+                classScope);
+
+            var resetEventPerGroupBufView = ResetEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFVIEW, classScope, instance);
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
 
-            method.Block.InstanceMethod(resetEventPerGroupBufView)
+            method.Block
+                .InstanceMethod(resetEventPerGroupBufView)
                 .DeclareVar<object[][]>(
                     "newDataMultiKey",
                     LocalMethod(generateGroupKeysView, REF_NEWDATA, Ref(NAME_EVENTPERGROUPBUFVIEW), ConstantTrue()))
@@ -161,6 +178,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         private static void AddEventPerGroupBufCodegen(
             string memberName,
+            Type eventPerGroupBufType,
+            Type eventPerGroupBufTypeElement,
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenInstanceAux instance,
             CodegenMethod method,
@@ -168,23 +187,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             if (!instance.HasMember(memberName)) {
                 var init = method.MakeChild(
-                    typeof(LinkedHashMap<object, EventBean[]>[]),
+                    eventPerGroupBufType,
                     typeof(ResultSetProcessorRowPerGroupRollupImpl),
                     classScope);
-                instance.AddMember(memberName, typeof(LinkedHashMap<object, EventBean[]>[]));
+                instance.AddMember(memberName, eventPerGroupBufType);
                 instance.ServiceCtor.Block.AssignRef(memberName, LocalMethod(init));
                 var levelCount = forge.GroupByRollupDesc.Levels.Length;
-                init.Block.DeclareVar<LinkedHashMap<object, EventBean[]>[]>(
+                init.Block
+                    .DebugStack()
+                    .DeclareVar(
+                        eventPerGroupBufType,
                         memberName,
-                        NewArrayByLength(typeof(LinkedHashMap<object, EventBean[]>), Constant(levelCount)))
+                        NewArrayByLength(eventPerGroupBufTypeElement, Constant(levelCount)))
                     .ForLoopIntSimple("i", Constant(levelCount))
-                    .AssignArrayElement(memberName, Ref("i"), NewInstance(typeof(LinkedHashMap<object, EventBean[]>)))
+                    .AssignArrayElement(memberName, Ref("i"), NewInstance(eventPerGroupBufTypeElement))
                     .BlockEnd()
                     .MethodReturn(Ref(memberName));
             }
         }
 
-        protected internal static CodegenMethod GenerateOutputEventsViewCodegen(
+        internal static CodegenMethod GenerateOutputEventsViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
@@ -193,7 +215,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 methodNode.Block.DeclareVar<EventBean[]>(
                         "eventsPerStream",
                         NewArrayByLength(typeof(EventBean), Constant(1)))
-                    .DeclareVar<List<EventBean>>("events", NewInstance<List<EventBean>>(Constant(1)))
+                    .DeclareVar<IList<EventBean>>("events", NewInstance<List<EventBean>>(Constant(1)))
                     .DeclareVar<IList<GroupByRollupKey>>(
                         "currentGenerators",
                         forge.IsSorting ? NewInstance<List<GroupByRollupKey>>(Constant(1)) : ConstantNull())
@@ -208,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("levels"));
                     {
                         var forEvents = forLevels.ForEach(
-                            typeof(KeyValuePair<object, EventBean[]>),
+                            typeof(KeyValuePair<object, EventBean>),
                             "entry",
                              ArrayAtIndex(Ref("keysAndEvents"), ExprDotName(Ref("level"), "LevelNumber")));
                         forEvents.DeclareVar<object>("groupKey", ExprDotName(Ref("entry"), "Key"))
@@ -221,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             .AssignArrayElement(
                                 Ref("eventsPerStream"),
                                 Constant(0),
-                                Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")));
+                                Cast(typeof(EventBean), ExprDotName(Ref("entry"), "Value")));
 
                         if (forge.PerLevelForges.OptionalHavingForges != null) {
                             var having = ArrayAtIndex(
@@ -293,7 +315,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 typeof(EventBean[]),
                 "GenerateOutputEventsView",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, EventBean[]>[]), "keysAndEvents",
+                    typeof(IDictionary<object, EventBean>[]), "keysAndEvents",
                     typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
@@ -335,8 +357,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                 Ref("level"))
                             .DeclareVar<EventBean[]>(
-                                "eventsPerStream",
-                                Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")));
+                                "eventsPerStream", ExprDotName(Ref("entry"), "Value"));
 
                         if (forge.PerLevelForges.OptionalHavingForges != null) {
                             var having = ArrayAtIndex(
@@ -412,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 code);
         }
 
-        protected internal static void GetIteratorViewCodegen(
+        internal static void GetEnumeratorViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -420,7 +441,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             if (!forge.IsHistoricalOnly) {
                 method.Block.MethodReturn(
-                    LocalMethod(ObtainIteratorCodegen(forge, classScope, method, instance), REF_VIEWABLE));
+                    LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method, instance), REF_VIEWABLE));
                 return;
             }
 
@@ -467,12 +488,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     StaticMethod(
                         typeof(ResultSetProcessorUtil),
                         METHOD_ITERATORTODEQUE,
-                        LocalMethod(ObtainIteratorCodegen(forge, classScope, method, instance), REF_VIEWABLE)))
+                        LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method, instance), REF_VIEWABLE)))
                 .ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
-        private static CodegenMethod ObtainIteratorCodegen(
+        private static CodegenMethod ObtainEnumeratorCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod parent,
@@ -508,7 +529,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             return iterator;
         }
 
-        protected internal static void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+        internal static void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -517,7 +538,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessView", classScope, method, instance);
         }
 
-        protected internal static void GetIteratorJoinCodegen(
+        internal static void GetEnumeratorJoinCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -526,7 +547,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateGroupKeysJoin = GenerateGroupKeysJoinCodegen(forge, classScope, instance);
             var generateOutputEventsJoin = GenerateOutputEventsJoinCodegen(forge, classScope, instance);
             var resetEventPerGroupBuf = ResetEventPerGroupBufCodegen(NAME_EVENTPERGROUPBUFJOIN, classScope, instance);
-            method.Block.InstanceMethod(resetEventPerGroupBuf)
+            method.Block
+                .InstanceMethod(resetEventPerGroupBuf)
                 .InstanceMethod(generateGroupKeysJoin, REF_JOINSET, Ref(NAME_EVENTPERGROUPBUFJOIN), ConstantTrue())
                 .DeclareVar<EventBean[]>(
                     "output",
@@ -541,7 +563,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         "GetEnumerator"));
         }
 
-        protected internal static void ClearMethodCodegen(CodegenMethod method)
+        internal static void ClearMethodCodegen(CodegenMethod method)
         {
             method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT);
         }
@@ -571,7 +593,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             HandleOutputLimitLastJoinCodegen(forge, classScope, method, instance);
         }
 
-        protected internal static void ProcessOutputLimitedViewCodegen(
+        internal static void ProcessOutputLimitedViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -596,7 +618,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             HandleOutputLimitLastViewCodegen(forge, classScope, method, instance);
         }
 
-        protected internal static void AcceptHelperVisitorCodegen(
+        internal static void AcceptHelperVisitorCodegen(
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
@@ -942,11 +964,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
             return instance.Methods.AddMethod(
                 typeof(int),
-                "handleOutputLimitFirstViewHaving",
+                "HandleOutputLimitFirstViewHaving",
                 CodegenNamedParam.From(
-                    typeof(IList<object>), "viewEventsList",
+                    typeof(IList<UniformPair<EventBean[]>>), "viewEventsList",
                     typeof(bool), NAME_ISSYNTHESIZE,
-                    typeof(IList<object>[]), "oldEventsPerLevel",
+                    typeof(IList<EventBean>[]), "oldEventsPerLevel",
                     typeof(IList<object>[]), "oldEventsSortKeyPerLevel"),
                 typeof(ResultSetProcessorUtil),
                 classScope,
@@ -978,13 +1000,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .DeclareVarNoInit(typeof(EventBean[]), "eventsPerStream");
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                    forEach.DeclareVar<ISet<object>>(
+                    var forEach = methodNode.Block
+                        .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    forEach
+                        .DeclareVar<ISet<MultiKey<EventBean>>>(
                             "newData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                        .DeclareVar<ISet<object>>(
+                            ExprDotName(Ref("pair"), "First"))
+                        .DeclareVar<ISet<MultiKey<EventBean>>>(
                             "oldData",
-                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                            ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
                             "groupKeysPerLevel",
                             NewArrayByLength(typeof(object), Constant(forge.GroupByRollupDesc.Levels.Length)));
@@ -992,10 +1016,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     {
                         var ifNewApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
-                            var forNew = ifNewApplyAgg.ForEach(typeof(MultiKey<object>), "aNewData", Ref("newData"))
+                            var forNew = ifNewApplyAgg.ForEach(typeof(MultiKey<EventBean>), "aNewData", Ref("newData"))
                                 .AssignRef(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
+                                    ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
                                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -1055,10 +1079,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
-                            var forOld = ifOldApplyAgg.ForEach(typeof(MultiKey<object>), "anOldData", Ref("oldData"))
+                            var forOld = ifOldApplyAgg.ForEach(typeof(MultiKey<EventBean>), "anOldData", Ref("oldData"))
                                 .AssignRef(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
+                                    ExprDotName(Ref("anOldData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
                                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
@@ -1123,16 +1147,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
             return instance.Methods.AddMethod(
                 typeof(int),
-                "handleOutputLimitFirstJoinNoHaving",
+                "HandleOutputLimitFirstJoinNoHaving",
                 CodegenNamedParam.From(
-                    typeof(IList<object>),
-                    NAME_JOINEVENTSSET,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>[]),
-                    "oldEventsPerLevel",
-                    typeof(IList<object>[]),
-                    "oldEventsSortKeyPerLevel"),
+                    typeof(IList<UniformPair<ISet<MultiKey<EventBean>>>>), NAME_JOINEVENTSSET,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>[]), "oldEventsPerLevel",
+                    typeof(IList<object>[]), "oldEventsSortKeyPerLevel"),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1163,11 +1183,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .DeclareVarNoInit(typeof(EventBean[]), "eventsPerStream");
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                    forEach.DeclareVar<ISet<EventBean>>(
+                    var forEach = methodNode.Block
+                        .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
                             "newData",
                             ExprDotName(Ref("pair"), "First"))
-                        .DeclareVar<ISet<EventBean>>(
+                        .DeclareVar<ISet<MultiKey<EventBean>>>(
                             "oldData",
                             ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
@@ -1179,7 +1200,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forNew = ifNewApplyAgg.ForEach(typeof(MultiKey<EventBean>), "aNewData", Ref("newData"))
                                 .AssignRef(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
+                                    ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
                                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -1206,7 +1227,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forOld = ifOldApplyAgg.ForEach(typeof(MultiKey<EventBean>), "anOldData", Ref("oldData"))
                                 .AssignRef(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
+                                    ExprDotName(Ref("anOldData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
                                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
@@ -1236,7 +1257,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     Ref("newData"))
                                 .AssignRef(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
+                                    ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
                                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -1387,16 +1408,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
             return instance.Methods.AddMethod(
                 typeof(int),
-                "handleOutputLimitFirstJoinHaving",
+                "HandleOutputLimitFirstJoinHaving",
                 CodegenNamedParam.From(
-                    typeof(IList<object>),
-                    NAME_JOINEVENTSSET,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>[]),
-                    "oldEventsPerLevel",
-                    typeof(IList<object>[]),
-                    "oldEventsSortKeyPerLevel"),
+                    typeof(IList<UniformPair<ISet<MultiKey<EventBean>>>>), NAME_JOINEVENTSSET,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>[]), "oldEventsPerLevel",
+                    typeof(IList<object>[]), "oldEventsSortKeyPerLevel"),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);
@@ -1571,11 +1588,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
             return instance.Methods.AddMethod(
                 typeof(int),
-                "handleOutputLimitFirstNoViewHaving",
+                "HandleOutputLimitFirstNoViewHaving",
                 CodegenNamedParam.From(
-                    typeof(IList<object>), "viewEventsList",
+                    typeof(IList<UniformPair<EventBean[]>>), "viewEventsList",
                     typeof(bool), NAME_ISSYNTHESIZE,
-                    typeof(IList<object>[]), "oldEventsPerLevel",
+                    typeof(IList<EventBean>[]), "oldEventsPerLevel",
                     typeof(IList<object>[]), "oldEventsSortKeyPerLevel"),
                 typeof(ResultSetProcessorUtil),
                 classScope,
@@ -1677,14 +1694,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
+                var forEach = method.Block.ForEach<UniformPair<ISet<MultiKey<EventBean>>>>("pair", REF_JOINEVENTSSET);
+
                 forEach
-                    .DeclareVar<ISet<object>>(
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
+                        ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .InstanceMethod(resetEventPerGroupBufJoin)
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
@@ -1739,7 +1757,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 forge.IsSorting);
         }
 
-        protected internal static void RemovedAggregationGroupKeyCodegen(
+        internal static void RemovedAggregationGroupKeyCodegen(
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
@@ -1793,7 +1811,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 code);
         }
 
-        protected internal static CodegenMethod GenerateOutputBatchedCodegen(
+        internal static CodegenMethod GenerateOutputBatchedCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenInstanceAux instance,
             CodegenClassScope classScope)
@@ -1863,7 +1881,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 code);
         }
 
-        protected internal static void GenerateOutputBatchedMapUnsortedCodegen(
+        internal static void GenerateOutputBatchedMapUnsortedCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenInstanceAux instance,
             CodegenClassScope classScope)
@@ -2083,17 +2101,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 method.Block.ExprDotMethod(Ref(NAME_RSTREAMEVENTSORTARRAYBUF), "Reset");
             }
 
-            method.Block.ForEach(typeof(IDictionary<object, EventBean[]>), "aGroupRepsView", Ref(NAME_GROUPREPSPERLEVELBUF))
+            method.Block
+                .ForEach(typeof(IDictionary<object, EventBean[]>), "aGroupRepsView", Ref(NAME_GROUPREPSPERLEVELBUF))
                 .ExprDotMethod(Ref("aGroupRepsView"), "Clear");
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<object>>(
+                var forEach = method.Block
+                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
+                        ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "groupKeysPerLevel",
                         NewArrayByLength(typeof(object), Constant(forge.GroupByRollupDesc.Levels.Length)))
@@ -2226,11 +2247,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(AggregationGroupByRollupLevel),
                         "level",
                         ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
-                    .DeclareVar<IDictionary<object, EventBean>>(
+                    .DeclareVar<IDictionary<object, EventBean[]>>(
                         "groupGenerators",
                         ArrayAtIndex(Ref(NAME_GROUPREPSPERLEVELBUF), ExprDotName(Ref("level"), "LevelNumber")))
                     .ForEach(
-                        typeof(KeyValuePair<object, EventBean>),
+                        typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("groupGenerators"))
                     .InstanceMethod(
@@ -2238,7 +2259,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ConstantFalse(),
                         ExprDotName(Ref("entry"), "Key"),
                         Ref("level"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
+                        ExprDotName(Ref("entry"), "Value"),
                         ConstantFalse(),
                         REF_ISSYNTHESIZE,
                         ExprDotName(Ref(NAME_RSTREAMEVENTSORTARRAYBUF), "EventsPerLevel"),
@@ -2382,11 +2403,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(AggregationGroupByRollupLevel),
                         "level",
                         ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
-                    .DeclareVar<IDictionary<object, object>>(
+                    .DeclareVar<IDictionary<object, EventBean[]>>(
                         "groupGenerators",
                         ArrayAtIndex(Ref(NAME_GROUPREPSPERLEVELBUF), ExprDotName(Ref("level"), "LevelNumber")))
                     .ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean[]>),
                         "entry",
                         Ref("groupGenerators"))
                     .InstanceMethod(
@@ -2394,7 +2415,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ConstantFalse(),
                         ExprDotName(Ref("entry"), "Key"),
                         Ref("level"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
+                        ExprDotName(Ref("entry"), "Value"),
                         ConstantFalse(),
                         REF_ISSYNTHESIZE,
                         ExprDotName(Ref(NAME_RSTREAMEVENTSORTARRAYBUF), "EventsPerLevel"),
@@ -2403,13 +2424,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
 
             {
-                var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<object>>(
+                var forEach = method.Block
+                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
-                    .DeclareVar<ISet<object>>(
+                        ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKey<EventBean>>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<object[]>(
                         "groupKeysPerLevel",
                         NewArrayByLength(typeof(object), Constant(forge.GroupByRollupDesc.Levels.Length)))
@@ -2531,7 +2554,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
                 {
                     var forEvents = forLevels.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "pair",
                         ArrayAtIndex(
                             Ref("eventPairs"),
@@ -2556,10 +2579,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 typeof(void),
                 "GenerateOutputBatchedCollectView",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>[]), "eventPairs",
+                    typeof(IDictionary<object, EventBean>[]), "eventPairs",
                     typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE, 
-                    typeof(IList<object>), "events",
+                    typeof(IList<EventBean>), "events",
                     typeof(IList<object>), "sortKey",
                     typeof(EventBean[]), "eventsPerStream"),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
@@ -2582,7 +2605,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
                 {
                     var forEvents = forLevels.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean[]>),
                         "pair",
                         ArrayAtIndex(
                             Ref("eventPairs"),
@@ -2591,7 +2614,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         generateOutputBatched,
                         ExprDotName(Ref("pair"), "Key"),
                         Ref("level"),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Value")),
+                        ExprDotName(Ref("pair"), "Value"),
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
                         Ref("events"),
@@ -2603,10 +2626,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 typeof(void),
                 "GenerateOutputBatchedCollectJoin",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>[]), "eventPairs",
+                    typeof(IDictionary<object, EventBean[]>[]), "eventPairs",
                     typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA,
                     typeof(bool), NAME_ISSYNTHESIZE,
-                    typeof(IList<object>), "events",
+                    typeof(IList<EventBean>), "events",
                     typeof(IList<object>), "sortKey"),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
@@ -2631,7 +2654,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 code);
         }
 
-        protected internal static CodegenMethod GenerateGroupKeysViewCodegen(
+        internal static CodegenMethod GenerateGroupKeysViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
@@ -2692,7 +2715,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "GenerateGroupKeysView",
                 CodegenNamedParam.From(
                     typeof(EventBean[]), "events",
-                    typeof(IDictionary<object, EventBean[]>[]), "eventPerKey",
+                    typeof(IDictionary<object, EventBean>[]), "eventPerKey",
                     typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupRollupImpl),
                 classScope,
@@ -2873,7 +2896,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 code);
         }
 
-        protected internal static void ApplyViewResultCodegen(
+        internal static void ApplyViewResultCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -3021,7 +3044,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessJoin", classScope, method, instance);
         }
 
-        protected internal static void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+        internal static void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenMethod method)
         {
@@ -3051,7 +3074,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
         }
 
-        protected internal static void StopMethodCodegenBound(
+        internal static void StopMethodCodegenBound(
             CodegenMethod method,
             CodegenInstanceAux instance)
         {

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -16,6 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use with on-merge clauses, updates rows in a named window if matching rows are found.
     /// </summary>
+    [Serializable]
     public class OnMergeMatchedUpdateAction : OnMergeMatchedAction
     {
         /// <summary>Ctor. </summary>

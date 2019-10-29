@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -139,12 +140,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             string[] names,
             object[][] values)
         {
-            var subq = (ICollection<IDictionary<string, object>>) @event.Get(fieldName);
+            var subq = (ICollection<object>) @event.Get(fieldName);
+            //var subq = (ICollection<IDictionary<string, object>>) @event.Get(fieldName);
             if (values == null && subq == null) {
                 return;
             }
 
-            var maps = subq.ToArray();
+            var maps = subq
+                .Select(v => (IDictionary<string, object>) v)
+                .ToArray();
+            
             Array.Sort(
                 maps,
                 (
@@ -177,12 +182,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env,
                 epl,
                 "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.Id) from SupportBean_S0 as S0]");
+            
             epl =
-                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.getP00()) from SupportBean_S0 as S0";
+                "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, S0.GetP00()) from SupportBean_S0 as S0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 'S0.getP00()' against stream 1 is not)");
+                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 'S0.GetP00()' against stream 1 is not)");
 
             // aggregations not allowed in group-by
             epl =

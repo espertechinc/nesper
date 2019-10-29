@@ -12,7 +12,7 @@ namespace com.espertech.esper.regressionlib.support.bean
     {
         public SupportBeanStaticInnerTwo InsideTwo => new SupportBeanStaticInnerTwo();
 
-        public static string GetMyString()
+        public string GetMyString()
         {
             return "hello";
         }

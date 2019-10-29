@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
             var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
-            var iterator = max ? sorted.ReverseIteratorCodegen : sorted.IteratorCodegen();
+            var iterator = max ? sorted.ReverseEnumeratorCodegen : sorted.EnumeratorCodegen();
 
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())

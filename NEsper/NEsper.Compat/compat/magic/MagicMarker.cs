@@ -135,6 +135,14 @@ namespace com.espertech.esper.compat.magic
         {
             return o == null ? null : new MagicList<TV>(o, typeCasterFactory.Get<TV>());
         }
+        
+        public IList<object> GetList(Object o)
+        {
+            if (o == null)
+                return null;
+
+            return GetListFactory(o.GetType())?.Invoke(o);
+        }
 
         /// <summary>
         /// Constructs the factory method for the given type.

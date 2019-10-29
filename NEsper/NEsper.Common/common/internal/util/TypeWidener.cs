@@ -30,5 +30,14 @@ namespace com.espertech.esper.common.@internal.util
     {
         public Func<object, object> ProcWiden;
         public object Widen(object input) => ProcWiden(input);
+
+        public ProxyTypeWidener()
+        {
+        }
+
+        public ProxyTypeWidener(Func<object, object> procWiden)
+        {
+            ProcWiden = procWiden;
+        }
     }
 } // end of namespace

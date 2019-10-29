@@ -148,11 +148,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             throw new UnsupportedOperationException("Not supported for this state");
         }
 
-        public CodegenExpression ReverseIteratorCodegen {
+        public CodegenExpression ReverseEnumeratorCodegen {
             get { throw new UnsupportedOperationException("Not supported for this state"); }
         }
 
-        public CodegenExpression IteratorCodegen()
+        public CodegenExpression EnumeratorCodegen()
         {
             throw new UnsupportedOperationException("Not supported for this state");
         }

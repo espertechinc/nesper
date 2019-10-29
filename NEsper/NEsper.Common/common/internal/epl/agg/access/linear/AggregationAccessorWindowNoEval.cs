@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorForgeGetCodegenContext context)
         {
             var size = accessStateFactory.AggregatorLinear.SizeCodegen();
-            var iterator = accessStateFactory.AggregatorLinear.IteratorCodegen(
+            var iterator = accessStateFactory.AggregatorLinear.EnumeratorCodegen(
                 context.ClassScope,
                 context.Method,
                 context.NamedMethods);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<IList<object>>("values", NewInstance<List<object>>(Ref("size")))
                 .DeclareVar<IEnumerator<EventBean>>(
                     "it",
-                    stateForge.AggregatorLinear.IteratorCodegen(
+                    stateForge.AggregatorLinear.EnumeratorCodegen(
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))

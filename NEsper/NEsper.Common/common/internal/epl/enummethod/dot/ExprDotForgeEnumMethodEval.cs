@@ -83,6 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .MakeChild(returnType.GetBoxedType(), typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
 
+            methodNode.Block.DebugStack();
+
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
@@ -94,14 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             //block.Debug("param: {0}", ExprDotMethod(Ref("param"), "RenderAny"));
 
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "coll",
-                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(object) }, Ref("param")));
+                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(EventBean) }, Ref("param")));
             }
-            else if (innerType.IsGenericEnumerable()) {
-                block.DeclareVar<ICollection<object>>(
-                    "coll",
-                    StaticMethod(typeof(CompatExtensions), "Unwrap", new Type[] {typeof(object)}, Ref("param")));
+            else if (innerType.IsGenericCollection()) {
+                block.DeclareVar(innerType, "coll", Ref("param"));
             }
             else {
                 throw new IllegalStateException("invalid type presented for unwrapping");

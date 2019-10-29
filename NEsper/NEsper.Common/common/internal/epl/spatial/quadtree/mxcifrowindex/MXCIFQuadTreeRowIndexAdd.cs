@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                         return rectangle.Count();
                     }
 
-                    ICollection<XYWHRectangleMultiType> collectionX = new LinkedList<XYWHRectangleMultiType>();
+                    ICollection<XYWHRectangleMultiType> collectionX = new List<XYWHRectangleMultiType>();
                     collectionX.Add(other);
                     collectionX.Add(rectangle);
                     node.Data = collectionX;
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                     return 1;
                 }
 
-                ICollection<XYWHRectangleMultiType> collectionZ = new LinkedList<XYWHRectangleMultiType>();
+                ICollection<XYWHRectangleMultiType> collectionZ = new List<XYWHRectangleMultiType>();
                 collectionZ.Add(other);
                 collectionZ.Add(new XYWHRectangleMultiType(x, y, width, height, value));
                 node.Data = collectionZ;

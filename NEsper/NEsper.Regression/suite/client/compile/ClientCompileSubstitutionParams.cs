@@ -35,7 +35,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ClientCompileSubstParamNamedParameter(false));
             execs.Add(new ClientCompileSubstParamNamedParameter(true));
             execs.Add(new ClientCompileSubstParamMethodInvocation());
@@ -56,7 +55,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             execs.Add(new ClientCompileSubstParamInvalidParametersTyped());
             execs.Add(new ClientCompileSubstParamResolverContext());
             execs.Add(new ClientCompileSubstParamMultiStmt());
-#endif
             execs.Add(new ClientCompileSubstParamArray(false));
             execs.Add(new ClientCompileSubstParamArray(true));
             return execs;

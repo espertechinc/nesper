@@ -49,9 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream<" +
-                        typeName +
-                        ">{}\n" +
+                        "DefaultSupportSourceOp -> instream<" + typeName + ">{}\n" +
                         "select(instream as ME) -> outstream {select: (select MyString, sum(MyInt) as total from ME)}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
@@ -68,7 +66,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             EPAssertionUtil.AssertPropsPerRow(
                 result,
                 new [] { "MyString","total" },
-                new[] {new object[] {"one", 1}, new object[] {"two", 3}});
+                new[] {
+                    new object[] {"one", 1}, 
+                    new object[] {"two", 3}
+                });
 
             instance.Cancel();
 

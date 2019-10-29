@@ -223,6 +223,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             statements.Add(forStmt);
             return block;
         }
+        
+        public CodegenBlock ForEach<T>(
+            string name,
+            CodegenExpression target)
+        {
+            CheckClosed();
+            var type = typeof(T);
+            var forStmt = new CodegenStatementForEach(this, type, name, target);
+            var block = new CodegenBlock(forStmt);
+            forStmt.Block = block;
+            statements.Add(forStmt);
+            return block;
+        }
 
         public CodegenBlock ForEachVar(
             string name,

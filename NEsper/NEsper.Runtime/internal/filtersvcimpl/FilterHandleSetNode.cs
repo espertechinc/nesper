@@ -23,12 +23,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// evaluation tree. Events are evaluated by asking each of the indizes to evaluate the event and by adding
     /// any filter callbacks in this node to the "matches" list of callbacks.
     /// </summary>
-    public sealed class FilterHandleSetNode : EventEvaluator
+    public sealed class FilterHandleSetNode : EventEvaluator, FilterHandleSize
     {
-        private static int _gid;
-        private readonly int _id = ++_gid;
-        
-        
         private readonly IReaderWriterLock _nodeRwLock;
         private readonly LinkedHashSet<FilterHandle> _callbackSet;
         private readonly List<FilterParamIndexBase> _indizes;

@@ -92,13 +92,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create infra
                 var stmtTextCreate = namedWindow
-                    ? "@Name('Create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('Create') create table MyInfra(TheString string primary key, IntPrimitive int)";
-                env.CompileDeploy(stmtTextCreate, path).AddListener("Create");
+                    ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
+                    : "@Name('create') create table MyInfra(TheString string primary key, IntPrimitive int)";
+                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@Name('Insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
+                    "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 env.SendEventBean(new SupportBean("A1", 1));
@@ -107,8 +107,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var stmtSubquery =
-                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = S0.P00) as c0 from SupportBean_S0 as S0";
-                env.CompileDeploy(stmtSubquery, path).AddListener("Subq");
+                    "@Name('subq') select (select IntPrimitive from MyInfra where TheString = S0.P00) as c0 from SupportBean_S0 as S0";
+                env.CompileDeploy(stmtSubquery, path).AddListener("subq");
 
                 env.Milestone(0);
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 env.SendEventBean(new SupportBean_S0(0, p00));
                 EPAssertionUtil.AssertProps(
-                    env.Listener("Subq").AssertOneGetNewAndReset(),
+                    env.Listener("subq").AssertOneGetNewAndReset(),
                     new [] { "c0" },
                     new object[] {expected});
             }

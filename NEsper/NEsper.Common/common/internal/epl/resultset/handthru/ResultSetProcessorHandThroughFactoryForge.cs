@@ -67,20 +67,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             ResultSetProcessorHandThrough.ProcessJoinResultCodegen(this, method);
         }
 
-        public void GetIteratorViewCodegen(
+        public void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetIteratorViewCodegen(method);
+            ResultSetProcessorHandThrough.GetEnumeratorViewCodegen(method);
         }
 
-        public void GetIteratorJoinCodegen(
+        public void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorHandThrough.GetIteratorJoinCodegen(method);
+            ResultSetProcessorHandThrough.GetEnumeratorJoinCodegen(method);
         }
 
         public void ProcessOutputLimitedViewCodegen(

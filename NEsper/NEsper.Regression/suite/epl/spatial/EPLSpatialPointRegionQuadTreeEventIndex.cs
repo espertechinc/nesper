@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                       IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                       hint +
                       "on SupportSpatialAABB as aabb select mpw.Id as c0 from MyPointWindow as mpw " +
-                      "where aabb.category = mpw.category and point(Px, Py).inside(rectangle(X, Y, Width, Height))\n";
+                      "where aabb.Category = mpw.Category and point(Px, Py).inside(rectangle(X, Y, Width, Height))\n";
             env.CompileDeploy(epl, path).AddListener("s0");
 
             var plan = SupportQueryPlanIndexHook.AssertOnExprAndReset();
@@ -143,9 +143,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@Name('win') create window MyPointWindow#keepall as (Id string, category string, Px double, Py double);\n" +
-                    "@Name('insert') insert into MyPointWindow select Id, category, Px, Py from SupportSpatialPoint;\n" +
-                    "@Name('Idx1') create index IdxHash on MyPointWindow(category);\n" +
+                    "@Name('win') create window MyPointWindow#keepall as (Id string, Category string, Px double, Py double);\n" +
+                    "@Name('insert') insert into MyPointWindow select Id, Category, Px, Py from SupportSpatialPoint;\n" +
+                    "@Name('Idx1') create index IdxHash on MyPointWindow(Category);\n" +
                     "@Name('Idx2') create index IdxQuadtree on MyPointWindow((Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl, path);
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) { // we have a handler
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0)' already exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0d,15.0d)' already exists");
                 }
 
                 env.UndeployAll();
@@ -313,30 +313,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl =
                     "create table MyPointTable(" +
                     " Id string primary key," +
-                    " x1 double, y1 double, \n" +
-                    " x2 double, y2 double);\n" +
-                    "create index Idx1 on MyPointTable( (x1, y1) pointregionquadtree(0, 0, 100, 100));\n" +
-                    "create index Idx2 on MyPointTable( (x2, y2) pointregionquadtree(0, 0, 100, 100));\n" +
-                    "on SupportSpatialDualPoint dp merge MyPointTable t where dp.Id = t.Id when not matched then insert select dp.Id as Id,x1,y1,x2,y2;\n";
+                    " X1 double, Y1 double, \n" +
+                    " X2 double, Y2 double);\n" +
+                    "create index Idx1 on MyPointTable( (X1, Y1) pointregionquadtree(0, 0, 100, 100));\n" +
+                    "create index Idx2 on MyPointTable( (X2, Y2) pointregionquadtree(0, 0, 100, 100));\n" +
+                    "on SupportSpatialDualPoint dp merge MyPointTable t where dp.Id = t.Id when not matched then insert select dp.Id as Id,X1,Y1,X2,Y2;\n";
                 env.CompileDeploy(epl, path);
 
                 var listener = new SupportUpdateListener();
                 var textOne = "@Name('s0') " +
                               IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                              "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(x1, y1).inside(rectangle(X, Y, Width, Height))";
+                              "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(X1, Y1).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(textOne, path).Statement("s0").AddListener(listener);
 
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
                     "Idx1",
-                    "non-unique hash={} btree={} advanced={pointregionquadtree(x1,y1)}");
+                    "non-unique hash={} btree={} advanced={pointregionquadtree(X1,Y1)}");
 
                 var textTwo = "@Name('s1') " +
                               IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                              "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(tbl.x2, y2).inside(rectangle(X, Y, Width, Height))";
+                              "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(tbl.X2, Y2).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(textTwo, path).Statement("s1").AddListener(listener);
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
                     "Idx2",
-                    "non-unique hash={} btree={} advanced={pointregionquadtree(x2,y2)}");
+                    "non-unique hash={} btree={} advanced={pointregionquadtree(X2,Y2)}");
 
                 env.SendEventBean(new SupportSpatialDualPoint("P1", 10, 10, 60, 60));
                 env.SendEventBean(new SupportSpatialDualPoint("P2", 55, 20, 4, 88));
@@ -485,8 +485,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create context CtxBox initiated by SupportEventRectangleWithOffset box;\n" +
                           "context CtxBox create window MyWindow#keepall as SupportSpatialPoint;\n" +
                           "context CtxBox create index MyIndex on MyWindow((Px+context.box.XOffset, Py+context.box.YOffset) pointregionquadtree(context.box.X, context.box.Y, context.box.Width, context.box.Height));\n" +
-                          "context CtxBox on SupportSpatialPoint(category = context.box.Id) merge MyWindow when not matched then insert select *;\n" +
-                          "@Name('s0') context CtxBox on SupportSpatialAABB(category = context.box.Id) aabb " +
+                          "context CtxBox on SupportSpatialPoint(Category = context.box.Id) merge MyWindow when not matched then insert select *;\n" +
+                          "@Name('s0') context CtxBox on SupportSpatialAABB(Category = context.box.Id) aabb " +
                           "  select points.Id as c0 from MyWindow points where point(Px, Py).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(epl).AddListener("s0");
 

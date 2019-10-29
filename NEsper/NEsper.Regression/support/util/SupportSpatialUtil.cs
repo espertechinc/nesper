@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
@@ -63,6 +65,18 @@ namespace com.espertech.esper.regressionlib.support.util
                 return;
             }
 
+            if (expected.Count != events.Length) {
+                var eventsNames = events
+                    .Select(v => v.Underlying.AsStringDictionary(MagicMarker.SingletonInstance))
+                    .SelectMany(v => v.Values)
+                    .Cast<string>()
+                    .ToList();
+                var expectedNames = expected
+                    .Select(v => v.Id)
+                    .ToList();
+                CollectionAssert.AreEquivalent(expectedNames, eventsNames);
+            }
+            
             Assert.AreEqual(expected.Count, events.Length);
             ISet<string> received = new HashSet<string>();
             foreach (var @event in events) {
@@ -280,7 +294,7 @@ namespace com.espertech.esper.regressionlib.support.util
                 var box = rectangles[i];
                 SendRectangle(env, "R" + box, box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
                 var c0 = listener.AssertOneGetNewAndReset().Get("c0").ToString();
-                Assert.AreEqual("for box " + i, matches[i], c0);
+                Assert.AreEqual(matches[i], c0, "for box " + i);
             }
         }
 

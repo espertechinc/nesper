@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternRepeatRouteEvent.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternExpressionText()
         {
             RegressionRunner.Run(session, new PatternExpressionText());

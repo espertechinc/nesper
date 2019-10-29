@@ -749,7 +749,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private IList<RowRecogNFAStateEntry> Step(
             bool skipTrackMaxState,
-            IEnumerator<RowRecogNFAStateEntry> currentStatesIterator,
+            IEnumerator<RowRecogNFAStateEntry> currentStatesEnumerator,
             EventBean theEvent,
             IList<RowRecogNFAStateEntry> nextStates,
             IList<RowRecogNFAStateEntry> endStates,
@@ -758,12 +758,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             object partitionKey)
         {
             var rowRecogDesc = _factory.Desc;
-            IList<RowRecogNFAStateEntry>
-                terminationStates = null; // always null or a list of entries (no singleton list)
+            IList<RowRecogNFAStateEntry> terminationStates = null; // always null or a list of entries (no singleton list)
 
             // handle current state matching
-            for (; currentStatesIterator.MoveNext();) {
-                var currentState = currentStatesIterator.Current;
+            while (currentStatesEnumerator.MoveNext()) {
+                var currentState = currentStatesEnumerator.Current;
                 _agentInstanceContext.InstrumentationProvider.QRegExState(
                     currentState,
                     _factory.Desc.VariableStreams,

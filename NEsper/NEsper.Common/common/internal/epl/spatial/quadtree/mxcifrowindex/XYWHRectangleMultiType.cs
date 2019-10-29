@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 

@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 CollectionAssert.AreEquivalent(
                     new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("MyString", typeof(string), null, false, false, false, false, false),
+                        new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
                         new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
                         new EventPropertyDescriptor("concat", typeof(string), null, false, false, false, false, false)
                     },
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                        "#length(5) as eventOne, " +
                        eventNameTwo +
                        "#length(5) as eventTwo " +
-                       "where eventOne.myString = eventTwo.Symbol";
+                       "where eventOne.MyString = eventTwo.Symbol";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertNoCommonProperties(env);

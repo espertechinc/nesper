@@ -10,6 +10,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
@@ -48,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return;
             }
 
-            if (!(data is ICollection<object>)) {
-                Visit(data, consumer);
-                return;
+            if (data.GetType().IsGenericCollection()) {
+                var dataAsCollection = data.AsObjectCollection();
+                foreach (var datapoint in dataAsCollection) {
+                    Visit(datapoint, consumer);
+                }
             }
-
-            ICollection<object> collection = (ICollection<object>) data;
-            foreach (var datapoint in collection) {
-                Visit(datapoint, consumer);
+            else {
+                Visit(data, consumer);
             }
         }
 
@@ -63,17 +66,20 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             object data,
             Consumer<object> consumer)
         {
-            if (data is XYPointWValue<object>) {
-                consumer.Invoke(((XYPointWValue<object>) data).Value);
+            if (data is XYPointWOpaqueValue pointWOpaqueValue) {
+                consumer.Invoke(pointWOpaqueValue.OpaqueValue);
             }
             else if (data is XYPointMultiType) {
                 var multiType = (XYPointMultiType) data;
-                if (multiType.Multityped is ICollection<object>) {
-                    ICollection<object> collection = (ICollection<object>) multiType.Multityped;
+                if (multiType.GetType().IsGenericCollection()) {
+                    var collection = multiType.Multityped.UnwrapEnumerable<object>();
                     foreach (var datapoint in collection) {
                         Visit(datapoint, consumer);
                     }
                 }
+            }
+            else {
+                throw new IllegalStateException("type-erasure failure");
             }
         }
     }

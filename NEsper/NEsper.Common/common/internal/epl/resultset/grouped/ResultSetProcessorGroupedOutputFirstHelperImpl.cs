@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
     public class ResultSetProcessorGroupedOutputFirstHelperImpl : ResultSetProcessorGroupedOutputFirstHelper
     {
         private readonly IDictionary<object, OutputConditionPolled> outputState =
-            new Dictionary<object, OutputConditionPolled>();
+            new HashMap<object, OutputConditionPolled>();
 
         public void Remove(object key)
         {

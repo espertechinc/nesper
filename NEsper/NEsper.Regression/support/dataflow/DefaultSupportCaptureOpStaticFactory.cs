@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
 
         public DataFlowOperator Operator(DataFlowOpInitializeContext context)
         {
-            return new DefaultSupportCaptureOpStatic<object>();
+            return new DefaultSupportCaptureOpStatic<T>();
         }
     }
 } // end of namespace

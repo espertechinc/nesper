@@ -162,8 +162,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             var manufacturer = classScope.AddDefaultFieldUnshared<EventBeanManufacturer>(
-                true,
-                forge.Make(method.Block, method, classScope));
+                true, forge.Make(method.Block, method, classScope));
             return SetValue(name, manufacturer);
         }
 

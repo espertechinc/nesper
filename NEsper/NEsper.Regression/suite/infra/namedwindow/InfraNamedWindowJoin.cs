@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new [] { "ssb2.s2","ssb1.S1","ssb1.i1" };
+                    var fields = new [] { "ssb2.S2","ssb1.S1","ssb1.I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -214,51 +214,51 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         new object[] {"E1", "E1", 10});
                 };
 
-                // no index, since this is "unique(s1)" we don't need one
+                // no index, since this is "unique(S1)" we don't need one
                 string[] noindexes = { };
                 assertIndexChoice(
                     env,
                     noindexes,
                     preloadedEventsOne,
-                    "std:unique(s1)",
-                    new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion));
+                    "std:unique(S1)",
+                    new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion));
 
-                // single index one field (duplicate in essence, since "unique(s1)"
-                string[] indexOneField = {"create unique index One on MyWindow (s1)"};
+                // single index one field (duplicate in essence, since "unique(S1)"
+                string[] indexOneField = {"create unique index One on MyWindow (S1)"};
                 assertIndexChoice(
                     env,
                     indexOneField,
                     preloadedEventsOne,
-                    "std:unique(s1)",
-                    new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion));
+                    "std:unique(S1)",
+                    new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and L1 = L1", true, eventSendAssertion));
 
-                // single index two field (includes "unique(s1)")
-                string[] indexTwoField = {"create unique index One on MyWindow (s1, l1)"};
+                // single index two field (includes "unique(S1)")
+                string[] indexTwoField = {"create unique index One on MyWindow (S1, L1)"};
                 assertIndexChoice(
                     env,
                     indexTwoField,
                     preloadedEventsOne,
-                    "std:unique(s1)",
-                    new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                    new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion));
+                    "std:unique(S1)",
+                    new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                    new IndexAssertion(null, "D1 = D1", false, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and L1 = L1", true, eventSendAssertion));
 
-                // two index one unique ("unique(s1)")
+                // two index one unique ("unique(S1)")
                 string[] indexSetTwo = {
-                    "create index One on MyWindow (s1)",
-                    "create unique index Two on MyWindow (s1, d1)"
+                    "create index One on MyWindow (S1)",
+                    "create unique index Two on MyWindow (S1, D1)"
                 };
                 assertIndexChoice(
                     env,
                     indexSetTwo,
                     preloadedEventsOne,
-                    "std:unique(s1)",
-                    new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and d1 = d2 and l1 = l2", true, eventSendAssertion));
+                    "std:unique(S1)",
+                    new IndexAssertion(null, "D1 = D1", false, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and L1 = L1", true, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and D1 = D1 and L1 = L1", true, eventSendAssertion));
 
                 // two index one unique ("win:keepall()")
                 assertIndexChoice(
@@ -266,11 +266,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     indexSetTwo,
                     preloadedEventsOne,
                     "win:keepall()",
-                    new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2", false, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and l1 = l2", false, eventSendAssertion),
-                    new IndexAssertion(null, "s1 = s2 and d1 = d2 and l1 = l2", true, eventSendAssertion),
-                    new IndexAssertion(null, "d1 = d2 and s1 = s2", true, eventSendAssertion));
+                    new IndexAssertion(null, "D1 = D1", false, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2", false, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and L1 = L1", false, eventSendAssertion),
+                    new IndexAssertion(null, "S1 = S2 and D1 = D1 and L1 = L1", true, eventSendAssertion),
+                    new IndexAssertion(null, "D1 = D1 and S1 = S2", true, eventSendAssertion));
             }
 
             private static void assertIndexChoice(

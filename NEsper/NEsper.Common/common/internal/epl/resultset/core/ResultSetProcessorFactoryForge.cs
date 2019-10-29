@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             CodegenMethod method,
             CodegenInstanceAux instance);
 
-        void GetIteratorViewCodegen(
+        void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance);
 
-        void GetIteratorJoinCodegen(
+        void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance);

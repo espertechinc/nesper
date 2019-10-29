@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "symbol","mysum" };
+            var fields = new [] { "Symbol","mysum" };
 
             SendEvent(env, "IBM", 3);
             SendEvent(env, "IBM", 4);
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "symbol","mysum" };
+            var fields = new [] { "Symbol","mysum" };
 
             SendEvent(env, "IBM", 3);
             SendEvent(env, "IBM", 4);
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "symbol","mysum" };
+            var fields = new [] { "Symbol","mysum" };
 
             SendEvent(env, "IBM", 3);
             SendEvent(env, "IBM", 4);

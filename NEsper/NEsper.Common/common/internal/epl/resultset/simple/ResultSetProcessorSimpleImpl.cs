@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 false);
         }
 
-        public static void GetIteratorViewCodegen(
+        public static void GetEnumeratorViewCodegen(
             ResultSetProcessorSimpleForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         "GetEnumerator"));
         }
 
-        public static void GetIteratorJoinCodegen(
+        public static void GetEnumeratorJoinCodegen(
             ResultSetProcessorSimpleForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,

@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("p_3"));
             Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("p_4"));
             Array.Sort(typeSet.PropertyNames);
-            Assert.IsTrue(Equals(typeSet.PropertyNames, fieldsVar));
+            CollectionAssert.AreEquivalent(fieldsVar, typeSet.PropertyNames);
 
             var bean = new SupportBean();
             bean.TheString = "text";
