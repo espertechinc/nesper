@@ -86,6 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
+                var exprCoreArray = typeof(ExprCoreArray).FullName;
                 var epl = "@Name('s0') select {'a', 'b'} as stringArray," +
                           "{} as emptyArray," +
                           "{1} as oneEleArray," +
@@ -95,9 +96,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "{'a',1, 1e20} as mixedArray," +
                           "{1, 1.1d, 1e20} as doubleArray," +
                           "{5, 6L} as intLongArray," +
-                          "{null} as nullArray," +
-                          typeof(ExprCoreArray).Name +
-                          ".doIt({'a'}, new object[] {1}, new object[] {1, 'd', null, true}) as func," +
+                          "{null} as nullArray," + 
+                          exprCoreArray + ".DoIt({'a'}, {1}, {1, 'd', null, true}) as func," +
                           "{true, false} as boolArray," +
                           "{IntPrimitive} as dynIntArr," +
                           "{IntPrimitive, LongPrimitive} as dynLongArr," +
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select {ArrayProperty, nested} as field from " +
+                var epl = "@Name('s0') select {ArrayProperty, Nested} as field from " +
                           typeof(SupportBeanComplexProps).Name;
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -254,9 +254,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "select {'a', 'b'} as stringArray," +
                     "{} as emptyArray," +
                     "{1} as oneEleArray," +
-                    "{1,2,3} as IntArray," +
+                    "{1,2,3} as intArray," +
                     "{1,null} as intNullArray," +
-                    "{1L,10L} as LongArray," +
+                    "{1L,10L} as longArray," +
                     "{'a',1, 1e20} as mixedArray," +
                     "{1, 1.1d, 1e20} as doubleArray," +
                     "{5, 6L} as intLongArray," +
@@ -270,23 +270,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 SupportAvroUtil.AvroToJson(theEvent);
 
-                CompareColl(theEvent, "StringArray", new[] {"a", "b"});
-                CompareColl(theEvent, "EmptyArray", new object[0]);
-                CompareColl(theEvent, "OneEleArray", new int?[] {1});
-                CompareColl(theEvent, "IntArray", new int?[] {1, 2, 3});
-                CompareColl(theEvent, "IntNullArray", new int?[] {1, null});
-                CompareColl(theEvent, "LongArray", new long?[] {1L, 10L});
-                CompareColl(
-                    theEvent,
-                    "MixedArray",
-                    new object[] {"a", 1, 1e20});
-                CompareColl(theEvent, "DoubleArray", new double?[] {1d, 1.1, 1e20});
-                CompareColl(theEvent, "IntLongArray", new long?[] {5L, 6L});
-                CompareColl(
-                    theEvent,
-                    "NullArray",
-                    new object[] {null});
-                CompareColl(theEvent, "BoolArray", new bool?[] {true, false});
+                CompareColl(theEvent, "stringArray", new[] {"a", "b"});
+                CompareColl(theEvent, "emptyArray", new object[0]);
+                CompareColl(theEvent, "oneEleArray", new int?[] {1});
+                CompareColl(theEvent, "intArray", new int?[] {1, 2, 3});
+                CompareColl(theEvent, "intNullArray", new int?[] {1, null});
+                CompareColl(theEvent, "longArray", new long?[] {1L, 10L});
+                CompareColl(theEvent, "mixedArray", new object[] {"a", 1, 1e20});
+                CompareColl(theEvent, "doubleArray", new double?[] {1d, 1.1, 1e20});
+                CompareColl(theEvent, "intLongArray", new long?[] {5L, 6L});
+                CompareColl(theEvent, "nullArray", new object[] {null});
+                CompareColl(theEvent, "boolArray", new bool?[] {true, false});
 
                 env.UndeployAll();
             }

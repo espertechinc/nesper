@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -53,11 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     .AddParam(typeof(string), "input");
                 CodegenExpression format;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
-                    format = FormatFieldExpr(typeof(DateTimeFormat), dateFormatForge, codegenClassScope);
+                    format = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);
                 }
                 else {
                     methodNode.Block
-                        .DeclareVar<DateTimeFormat>(
+                        .DeclareVar<DateFormat>(
                             "formatter",
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(ExprCastNode),

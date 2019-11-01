@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -96,6 +97,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else if (targetType == typeof(DateTimeOffset?)) {
                 return ExprDotMethod(value, "AsBoxedDateTimeOffset");
+            }
+            else if (targetType == typeof(ICollection<object>)) {
+                return StaticMethod(typeof(TypeHelper), "AsObjectCollection", value);
+            }
+            else if (targetType.IsArray()) {
+                var elementType = targetType.GetElementType();
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoArray", new[] {elementType}, value);
+            }
+            else if (targetType.IsGenericList()) {
+                var elementType = GenericExtensions.GetCollectionItemType(targetType);
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] {elementType}, value);
+            }
+            else if (targetType.IsGenericSet()) {
+                var elementType = GenericExtensions.GetCollectionItemType(targetType);
+                return StaticMethod(typeof(CompatExtensions), "UnwrapIntoSet", new [] {elementType}, value);
+            }
+            else if (targetType.IsGenericCollection()) {
+                var elementType = GenericExtensions.GetCollectionItemType(targetType);
+                return StaticMethod(typeof(CompatExtensions), "Unwrap", new [] {elementType}, value);
             }
 
             return Cast(targetType, value);

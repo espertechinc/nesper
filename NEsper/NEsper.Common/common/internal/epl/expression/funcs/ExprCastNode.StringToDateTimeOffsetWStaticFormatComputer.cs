@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             /// <returns>ldt</returns>
             public static DateTimeOffset StringToDateTimeOffsetWStaticFormatParse(
                 string input,
-                DateTimeFormat format)
+                DateFormat format)
             {
                 var dateTimeEx = format.Parse(input);
                 return dateTimeEx.DateTime;

@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeForge : EnumForge
     {
-        internal ExprForge sizeEval;
-        internal int numStreams;
+        private ExprForge sizeEval;
+        private int numStreams;
 
         public EnumTakeForge(
             ExprForge sizeEval,
@@ -30,9 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             this.numStreams = numStreams;
         }
 
-        public int StreamNumSize {
-            get => numStreams;
-        }
+        public ExprForge SizeEval => sizeEval;
+
+        public int StreamNumSize => numStreams;
 
         public virtual EnumEval EnumEvaluator {
             get => new EnumTakeForgeEval(sizeEval.ExprEvaluator);
@@ -43,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return EnumTakeForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+            bool isEventBeanCollection = true;
+            return EnumTakeForgeEval.Codegen(
+                this, premade, codegenMethodScope, codegenClassScope, isEventBeanCollection);
         }
     }
 } // end of namespace

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Runtime.Serialization;
+
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -78,13 +80,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 "Failed to validate select-clause expression 'DateTimeOffset.between(DateTime,Dat...(48 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received System.Int32");
 
             // mismatch parameter to input
-            epl = "select DateTimeOffset.format(java.time.format.DateTimeFormatter.ISO_ORDINAL_DATE) from SupportDateTime";
+            var dateTimeFormat = typeof(DateTimeFormat).FullName;
+            epl = $"select DateTimeOffset.format({dateTimeFormat}.ISO_ORDINAL_DATE) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.format(ParseCaseSensitive(...(114 chars)': Date-time enumeration method 'format' invalid format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
+                $"Failed to validate select-clause expression 'DateTimeOffset.format(ParseCaseSensitive(...(114 chars)': Date-time enumeration method 'format' invalid format, expected string-format or DateFormat but received {dateTimeFormat}");
 
-            epl = "select DateTimeEx.format(SimpleDateFormat.getInstance()) from SupportDateTime";
+            epl = "select DateTimeEx.format(SimpleDateFormat.GetInstance()) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,

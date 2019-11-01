@@ -64,11 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var block = codegenMethodScope.MakeChild(
                     typeof(ICollection<object>),
                     typeof(EnumOrderByAscDescScalarForge),
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
+                .AddParam(paramTypes)
                 .Block
                 .IfCondition(
                     Or(
@@ -79,12 +80,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (descending) {
                 block.StaticMethod(
                     typeof(Collections),
-                    "Sort",
+                    "SortInPlace",
                     @Ref("list"),
-                    StaticMethod(typeof(Collections), "ReverseOrder"));
+                    StaticMethod(typeof(Comparers), "Inverse", new[] {typeof(object)}));
             }
             else {
-                block.StaticMethod(typeof(Collections), "Sort", @Ref("list"));
+                block.StaticMethod(typeof(Collections), "SortInPlace", @Ref("list"));
             }
 
             var method = block.MethodReturn(@Ref("list"));

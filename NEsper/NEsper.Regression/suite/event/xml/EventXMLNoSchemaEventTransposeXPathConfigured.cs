@@ -74,7 +74,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 new object[] { "a", "SAMPLE_V8", "b" });
 
             // assert event and fragments alone
-            var wildcardStmtEvent = env.GetEnumerator("s0").Advance();
+            var wildcardStmtEventEnum = env.GetEnumerator("s0");
+            Assert.That(wildcardStmtEventEnum.MoveNext(), Is.True);
+
+            var wildcardStmtEvent = wildcardStmtEventEnum.Current;
             SupportEventTypeAssertionUtil.AssertConsistency(wildcardStmtEvent);
 
             var eventType = wildcardStmtEvent.EventType.GetFragmentType("nested1simple");

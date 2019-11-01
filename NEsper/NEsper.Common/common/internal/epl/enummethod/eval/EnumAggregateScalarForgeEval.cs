@@ -88,13 +88,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.evalEventType, EPStatementInitServicesConstants.REF)));
 
+            var paramTypes = (forge.initialization.EvaluationType == typeof(EventBean))
+                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
+                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     forge.initialization.EvaluationType,
                     typeof(EnumAggregateScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramTypes);
 
             var initializationEvalType = forge.initialization.EvaluationType;
             var innerEvalType = forge.innerExpression.EvaluationType;

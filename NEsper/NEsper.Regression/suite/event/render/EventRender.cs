@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.support;
@@ -47,22 +48,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         new[] {new object[] {1, "x"}, new object[] {2, "y"}}));
 
                 MyRenderer.Contexts.Clear();
+
+                var myEventEnum = env.GetEnumerator("s0");
+                Assert.That(myEventEnum.MoveNext(), Is.True);
+
+                var myEvent = myEventEnum.Current;
+                Assert.That(myEvent, Is.Not.Null);
+               
                 var jsonOptions = new JSONRenderingOptions();
                 jsonOptions.Renderer = new MyRenderer();
                 var json = env.Runtime.RenderEventService.RenderJSON(
                     "MyEvent",
-                    env.GetEnumerator("s0").Advance(),
+                    myEvent,
                     jsonOptions);
                 Assert.AreEqual(4, MyRenderer.Contexts.Count);
+                
                 var contexts = MyRenderer.Contexts;
-                var context = contexts[2];
-                Assert.IsNotNull(context.DefaultRenderer);
-                Assert.AreEqual(1, (int) context.IndexedPropertyIndex);
-                Assert.AreEqual(typeof(MyRendererEvent).Name, context.EventType.Name);
-                Assert.AreEqual("someProperties", context.PropertyName);
+                var context = contexts.FirstOrDefault(c => 
+                    c.EventType.Name == typeof(MyRendererEvent).Name && 
+                    c.IndexedPropertyIndex == 1);
+                Assert.That(context, Is.Not.Null);
+                Assert.That(context.DefaultRenderer, Is.Not.Null);
+                Assert.That(context.PropertyName, Is.EqualTo("SomeProperties"));
 
                 var expectedJson =
-                    "{ \"MyEvent\": { \"id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"MappedProperty\": { \"key\": \"value\" } } }";
+                    "{ \"MyEvent\": { \"Id\": \"id1\", \"MappedProperty\": { \"key\": \"value\" }, \"SomeProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"] } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 MyRenderer.Contexts.Clear();
@@ -73,7 +83,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     env.GetEnumerator("s0").Advance(),
                     xmlOptions);
                 var expected =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <Id>Id1</Id> <someProperties>index#0=1;index#1=x</someProperties> <someProperties>index#0=2;index#1=y</someProperties> <mappedProperty> <key>value</key> </mappedProperty> </MyEvent>";
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    " <MyEvent>" +
+                    " <Id>id1</Id>" +
+                    " <SomeProperties>index#0=1;index#1=x</SomeProperties>" +
+                    " <SomeProperties>index#0=2;index#1=y</SomeProperties>" +
+                    " <MappedProperty> <key>value</key> </MappedProperty>" +
+                    " </MyEvent>";
                 Assert.AreEqual(4, MyRenderer.Contexts.Count);
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
@@ -89,14 +105,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 env.CompileDeploy("@Name('s0') select * from MyObjectArrayType");
                 env.SendEventObjectArray(values, "MyObjectArrayType");
 
-                var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
+                var enumerator = env.GetEnumerator("s0");
+                Assert.That(enumerator, Is.Not.Null);
+                Assert.That(enumerator.MoveNext(), Is.True);
+
+                var theEvent = enumerator.Current;
+                Assert.That(theEvent, Is.Not.Null);
+
+                var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", theEvent);
                 var expectedJson =
-                    "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null } } }";
+                    "{ \"MyEvent\": { \"P0\": \"abc\", \"P1\": 1, \"P2\": { \"Id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null }, \"P3\": 2, \"P4\": 3.0 } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 var xmlOne = env.Runtime.RenderEventService.RenderXML("MyEvent", env.GetEnumerator("s0").Advance());
                 var expected =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <Id>1</Id> <P00>P00</P00> </p2> </MyEvent>";
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    " <MyEvent>" +
+                    " <P0>abc</P0>" +
+                    " <P1>1</P1>" +
+                    " <P3>2</P3>" +
+                    " <P4>3.0</P4>" +
+                    " <P2>" +
+                    " <Id>1</Id>" +
+                    " <P00>P00</P00>" +
+                    " </P2>" +
+                    " </MyEvent>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
                 env.UndeployAll();
@@ -120,17 +153,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                 var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
                 var expectedJson =
-                    "{ \"MyEvent\": { \"stringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
+                    "{ \"MyEvent\": { \"StringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 var xmlOne = env.Runtime.RenderEventService.RenderXML("MyEvent", env.GetEnumerator("s0").Advance());
                 var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                "<MyEvent>\n" +
-                               "  <stringObjectMap>\n" +
+                               "  <StringObjectMap>\n" +
                                "    <abc>def</abc>\n" +
                                "    <def>123</def>\n" +
                                "    <efg></efg>\n" +
-                               "  </stringObjectMap>\n" +
+                               "  </StringObjectMap>\n" +
                                "</MyEvent>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
@@ -142,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     opt);
                 var expectedTwo = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                   "<MyEvent>\n" +
-                                  "  <stringObjectMap abc=\"def\" def=\"123\"/>\n" +
+                                  "  <StringObjectMap abc=\"def\" def=\"123\"/>\n" +
                                   "</MyEvent>";
                 Assert.AreEqual(RemoveNewline(expectedTwo), RemoveNewline(xmlTwo));
                 env.UndeployModuleContaining("s0");
@@ -184,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
             public void Render(EventPropertyRendererContext context)
             {
-                if (context.PropertyName.Equals("someProperties")) {
+                if (context.PropertyName.Equals("SomeProperties")) {
                     var value = (object[]) context.PropertyValue;
 
                     var builder = context.StringBuilder;

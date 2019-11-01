@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace com.espertech.esper.compat.datetime
 {
-    public class DateTimeFormat
+    public class DateTimeFormat : DateFormat
     {
         public static DateTimeFormat ISO_DATE_TIME {
             get;
@@ -23,7 +23,7 @@ namespace com.espertech.esper.compat.datetime
         static DateTimeFormat()
         {
             ISO_DATE_TIME = new DateTimeFormat(
-                dateTimeString => ParseDefaultEx(dateTimeString, "s"),
+                dateTimeString => DateTimeParsingFunctions.ParseDefaultEx(dateTimeString),
                 dateTimeOffset => dateTimeOffset.UtcDateTime.ToString("s", CultureInfo.InvariantCulture));
         }
 
@@ -81,6 +81,11 @@ namespace com.espertech.esper.compat.datetime
             return Formatter.Invoke(dateTimeOffset);
         }
 
+        public string Format(DateTimeOffset? dateTime)
+        {
+            return dateTime == null ? null : Format(dateTime.Value);
+        }
+
         /// <summary>
         /// Formats the specified date time.
         /// </summary>
@@ -98,6 +103,26 @@ namespace com.espertech.esper.compat.datetime
             }
 
             return Formatter.Invoke(dateTimeOffset);
+        }
+
+        /// <summary>
+        /// Formats the specified date time.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        public string Format(DateTime? dateTime)
+        {
+            return dateTime == null ? null : Format(dateTime.Value);
+        }
+
+        /// <summary>
+        /// Formats the specified date time.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns></returns>
+        public string Format(long? timeInMillis)
+        {
+            return timeInMillis == null ? null : Format(DateTimeEx.UtcInstance(timeInMillis.Value));
         }
 
         /// <summary>
@@ -119,19 +144,34 @@ namespace com.espertech.esper.compat.datetime
                 dateTimeOffset => dateTimeOffset.ToString(dateTimeFormat, CultureInfo.InvariantCulture));
         }
 
-        public static DateTimeEx ParseDefaultEx(string dateTimeString, string dateTimeFormat)
+        public static DateTimeEx ParseDefaultEx(
+            string dateTimeString,
+            string dateTimeFormat)
         {
-            DateTimeOffset dateTime;
-
-            //var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
             var timeZone = TimeZoneInfo.Utc;
 
-            if (DateTimeOffset.TryParseExact(dateTimeString, dateTimeFormat, null, DateTimeStyles.None, out dateTime))
-            {
-                return new DateTimeEx(dateTime, timeZone);
+            if (DateTime.TryParseExact(
+                dateTimeString,
+                dateTimeFormat,
+                null,
+                DateTimeStyles.None,
+                out var dateTime)) {
+                if (dateTime.Kind == DateTimeKind.Unspecified) {
+                    return new DateTimeEx(new DateTimeOffset(dateTime, TimeSpan.Zero), timeZone);
+                }
+            }
+            
+            if (DateTimeOffset.TryParseExact(
+                dateTimeString,
+                dateTimeFormat,
+                null,
+                DateTimeStyles.None,
+                out var dateTimeOffset)) {
+                return new DateTimeEx(dateTimeOffset, timeZone);
             }
 
-            throw new ArgumentException("unable to parse message");
+            throw new ArgumentException(
+                $"Exception parsing date '{dateTimeString}' format '{dateTimeFormat}': Unparseable date: \"{dateTimeString}\"' in text");
         }
     }
 }

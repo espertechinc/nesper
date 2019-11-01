@@ -22,91 +22,91 @@ namespace com.espertech.esper.common.@internal.util
     {
         public static readonly SimpleTypeCaster Int16TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastInt16,
+            ProcCast = v => CastHelper.PrimitiveCastInt16(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastInt16", input)
         };
 
         public static readonly SimpleTypeCaster Int32TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastInt32,
+            ProcCast = v => CastHelper.PrimitiveCastInt32(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastInt32", input)
         };
 
         public static readonly SimpleTypeCaster Int64TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastInt64,
+            ProcCast = v => CastHelper.PrimitiveCastInt64(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastInt64", input)
         };
 
         public static readonly SimpleTypeCaster UInt16TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastUInt16,
+            ProcCast = v => CastHelper.PrimitiveCastUInt16(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt16", input)
         };
 
         public static readonly SimpleTypeCaster UInt32TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastUInt32,
+            ProcCast = v => CastHelper.PrimitiveCastUInt32(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt32", input)
         };
 
         public static readonly SimpleTypeCaster UInt64TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastUInt64,
+            ProcCast = v => CastHelper.PrimitiveCastUInt64(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt64", input)
         };
 
         public static readonly SimpleTypeCaster SingleTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastSingle,
+            ProcCast = v => CastHelper.PrimitiveCastSingle(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastSingle", input)
         };
 
         public static readonly SimpleTypeCaster DoubleTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastDouble,
+            ProcCast = v => CastHelper.PrimitiveCastDouble(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastDouble", input)
         };
 
         public static readonly SimpleTypeCaster DecimalTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastDecimal,
+            ProcCast = v => CastHelper.PrimitiveCastDecimal(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastDecimal", input)
         };
 
         public static readonly SimpleTypeCaster CharTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastChar,
+            ProcCast = v => CastHelper.PrimitiveCastChar(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastChar", input)
         };
 
         public static readonly SimpleTypeCaster ByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastByte,
+            ProcCast = v => CastHelper.PrimitiveCastByte(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastByte", input)
         };
 
         public static readonly SimpleTypeCaster SByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastSByte,
+            ProcCast = v => CastHelper.PrimitiveCastSByte(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastSByte", input)
         };
 
         public static readonly SimpleTypeCaster BigIntegerTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = CastHelper.PrimitiveCastBigInteger,
+            ProcCast = v => CastHelper.PrimitiveCastBigInteger(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "PrimitiveCastBigInteger", input)
         };

@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -335,7 +336,7 @@ namespace com.espertech.esper.common.@internal.@event.render
             RendererMeta meta,
             RendererMetaOptions rendererMetaOptions)
         {
-            foreach (var simpleProp in meta.SimpleProperties) {
+            foreach (var simpleProp in meta.SimpleProperties.OrderBy(p => p.Name)) {
                 var value = simpleProp.Getter.Get(theEvent);
 
                 if (value == null) {
@@ -365,7 +366,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 buf.Append(Newline);
             }
 
-            foreach (var indexProp in meta.IndexProperties) {
+            foreach (var indexProp in meta.IndexProperties.OrderBy(p => p.Name)) {
                 var value = indexProp.Getter.Get(theEvent);
 
                 if (value == null) {
@@ -466,7 +467,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
             }
 
-            foreach (var mappedProp in meta.MappedProperties) {
+            foreach (var mappedProp in meta.MappedProperties.OrderBy(p => p.Name)) {
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if (value != null && !(value is IDictionary<string, object>)) {
@@ -537,7 +538,7 @@ namespace com.espertech.esper.common.@internal.@event.render
             }
 
             var nestedProps = meta.NestedProperties;
-            foreach (var nestedProp in nestedProps) {
+            foreach (var nestedProp in nestedProps.OrderBy(p => p.Name)) {
                 var value = nestedProp.Getter.GetFragment(theEvent);
 
                 if (value == null) {

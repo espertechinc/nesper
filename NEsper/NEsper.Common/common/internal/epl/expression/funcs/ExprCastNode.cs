@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -82,9 +83,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var fromType = ChildNodes[0].Forge.EvaluationType;
             var classIdentifier = ClassIdentifierWArray.ClassIdentifier;
-            var classIdentifierInvariant = classIdentifier.Trim().ToLowerInvariant();
+            var classIdentifierInvariant = classIdentifier.Trim();
             var arrayDimensions = ClassIdentifierWArray.ArrayDimensions;
 
+            // Local function to match a class identifier
+            bool MatchesClassIdentifier(string identifier)
+            {
+                return string.Equals(
+                    classIdentifierInvariant,
+                    identifier,
+                    StringComparison.InvariantCultureIgnoreCase);
+            }
+            
             // determine date format parameter
             var namedParams =
                 ExprNodeUtilityValidate.GetNamedExpressionsHandleDups(ChildNodes);
@@ -93,7 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             if (dateFormatParameter != null) {
                 ExprNodeUtilityValidate.ValidateNamedExpectType(
                     dateFormatParameter,
-                    new[] {typeof(string), typeof(DateFormat), typeof(DateTimeFormat)});
+                    new[] {
+                        typeof(string), 
+                        typeof(DateFormat), 
+                        typeof(DateTimeFormat)
+                    });
             }
 
             // identify target type
@@ -133,8 +147,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 caster = null;
 
                 if (targetType == typeof(DateTimeEx) ||
-                    classIdentifierInvariant.Equals("calendar") ||
-                    classIdentifierInvariant.Equals("dateTimeEx")) {
+                    MatchesClassIdentifier("calendar") ||
+                    MatchesClassIdentifier("dateTimeEx")) {
                     targetType = typeof(DateTimeEx);
 
                     var desc = ValidateDateFormat(dateFormatParameter, validationContext);
@@ -154,8 +168,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 else if (targetType == typeof(DateTimeOffset) ||
                          targetType == typeof(DateTimeOffset?) ||
-                         classIdentifierInvariant.Equals("dto") ||
-                         classIdentifierInvariant.Equals("datetimeoffset")) {
+                         MatchesClassIdentifier("dto") ||
+                         MatchesClassIdentifier("datetimeoffset")) {
                     targetType = typeof(DateTimeOffset);
                     var desc = ValidateDateFormat(dateFormatParameter, validationContext);
                     if (desc.IsIso8601Format) {
@@ -172,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 else if (targetType == typeof(DateTime) ||
                          targetType == typeof(DateTime?) ||
-                         classIdentifierInvariant.Equals("datetime")) {
+                         MatchesClassIdentifier("datetime")) {
                     targetType = typeof(DateTime);
                     var desc = ValidateDateFormat(dateFormatParameter, validationContext);
                     if (desc.IsIso8601Format) {
@@ -204,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     throw new ExprValidationException(
                         "Use of the '" +
                         dateFormatParameter.ParameterName +
-                        "' named parameter requires a target type of DateEx, long, DateTime, or DateTimeOffset (dto)");
+                        "' named parameter requires a target type of long, DateTime, DateTimeOffset or DateEx");
                 }
             }
             else if (targetType != null) {
@@ -212,13 +226,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
                 numeric = caster.IsNumericCast;
             }
-            else if (classIdentifierInvariant.Equals("Bigint") || classIdentifierInvariant.Equals("Biginteger")) {
+            else if (MatchesClassIdentifier("bigint") || MatchesClassIdentifier("biginteger")) {
                 targetType = typeof(BigInteger);
                 targetType = ApplyDimensions(targetType);
                 caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
                 numeric = true;
             }
-            else if (classIdentifierInvariant.Equals("decimal")) {
+            else if (MatchesClassIdentifier("decimal")) {
                 targetType = typeof(decimal);
                 targetType = ApplyDimensions(targetType);
                 caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
@@ -279,7 +293,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         : casterParserComputerForge.EvaluatorComputer.Compute(@in, null, true, null);
                 }
             }
-
+            
             forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
             return null;
         }
@@ -370,7 +384,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                             throw new ExprValidationException(
                                 "Invalid date format '" +
                                 staticFormatString +
-                                "' (as obtained from DateTimeFormatter.ofPattern): " +
+                                "' (as obtained from DateTimeFormatter.For): " +
                                 ex.Message,
                                 ex);
                         }
@@ -378,12 +392,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
             else {
-                if (!TypeHelper.IsSubclassOrImplementsInterface(formatReturnType, typeof(DateFormat))) {
+                if ((typeof(DateFormat) != formatReturnType) &&
+                    (!typeof(DateFormat).IsAssignableFrom(formatReturnType)) &&
+                    (typeof(DateTimeFormat) != formatReturnType) &&
+                    (!typeof(DateTimeFormat).IsAssignableFrom(formatReturnType))) {
                     throw GetFailedExpected(typeof(DateFormat), formatReturnType);
-                }
-
-                if (!TypeHelper.IsSubclassOrImplementsInterface(formatReturnType, typeof(DateTimeFormat))) {
-                    throw GetFailedExpected(typeof(DateTimeFormat), formatReturnType);
                 }
             }
 

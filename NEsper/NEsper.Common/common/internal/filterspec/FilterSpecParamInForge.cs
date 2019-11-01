@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -284,7 +285,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 ICollection<object> constants,
                 object value)
             {
-                var map = (IDictionary<string, object>) value;
+                var map = value.AsObjectDictionary(MagicMarker.SingletonInstance);
                 constants.AddAll(map.Keys);
             }
         }
@@ -301,7 +302,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 ICollection<object> constants,
                 object value)
             {
-                var coll = (ICollection<object>) value;
+                var coll = value.UnwrapEnumerable<object>();
                 constants.AddAll(coll);
             }
         }

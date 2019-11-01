@@ -66,7 +66,10 @@ namespace com.espertech.esper.common.client.render
         ///     Returns the index for indexed properties.
         /// </summary>
         /// <returns>property index</returns>
-        public int? IndexedPropertyIndex { get; set; }
+        public int? IndexedPropertyIndex {
+            get;
+            set;
+        }
 
         /// <summary>
         ///     Returns the map key for mapped properties

@@ -266,6 +266,16 @@ namespace com.espertech.esper.compat.collections
             return returnValue;
         }
 
+        public static V? GetBoxed<K, V>(this IDictionary<K, V> dictionary, K key)
+            where V : struct
+        {
+            if (!dictionary.TryGetValue(key, out V returnValue)) {
+                return null;
+            }
+
+            return returnValue;
+        }
+
         /// <summary>
         /// Sets the given key in the dictionary.  If the key
         /// already exists, then it is remapped to thenew value.

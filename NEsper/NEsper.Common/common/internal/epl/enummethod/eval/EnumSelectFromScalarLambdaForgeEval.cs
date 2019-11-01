@@ -80,12 +80,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
             var scope = new ExprForgeCodegenSymbol(false, null);
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumSelectFromScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramTypes);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))

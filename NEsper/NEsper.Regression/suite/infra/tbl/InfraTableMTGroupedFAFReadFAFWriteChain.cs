@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // join
             foreach (var t in threads) {
-                t.Join();
+                t.Join(TimeSpan.FromSeconds(60));
             }
 
             env.UndeployAll();

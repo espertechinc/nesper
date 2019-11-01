@@ -76,11 +76,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.type, EPStatementInitServicesConstants.REF)));
             var resultType = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(resultType, typeof(EnumFirstOfPredicateScalarForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramTypes);
 
             var block = methodNode.Block
                 .DeclareVar<ObjectArrayEventBean>(

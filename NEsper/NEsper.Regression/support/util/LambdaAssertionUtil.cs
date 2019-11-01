@@ -48,7 +48,11 @@ namespace com.espertech.esper.regressionlib.support.util
             var arr = listener.AssertOneGetNew()
                 .Get(property)
                 .UnwrapIntoArray<SupportBean_ST0>();
-            if (expectedList.Length == 0 && arr.Length == 0) {
+            if (arr == null) {
+                arr = new SupportBean_ST0[0];
+            }
+            
+            if (string.IsNullOrEmpty(expectedList) && arr.Length == 0) {
                 return;
             }
 

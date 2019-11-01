@@ -32,12 +32,17 @@ namespace com.espertech.esper.common.client.hook.expr
             StatementUserObject = statementUserObject;
         }
 
-        public string RuntimeURI { get; private set; }
+        public string RuntimeURI { get; }
 
-        public string StatementName { get; private set; }
+        public string StatementName { get; }
 
-        public int ContextPartitionId { get; private set; }
+        public int ContextPartitionId { get; }
 
-        public object StatementUserObject { get; private set; }
+        public object StatementUserObject { get; }
+
+        public string GetRuntimeURI()
+        {
+            return RuntimeURI;
+        }
     }
 } // end of namespace

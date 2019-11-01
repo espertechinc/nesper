@@ -84,9 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<IDictionary<string, object>>(
+                .DeclareVar<IDictionary<object, int>>(
                     "items",
-                    NewInstance(typeof(LinkedHashMap<string, object>)));
+                    NewInstance(typeof(HashMap<object, int>)));
 
             var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -96,13 +96,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.innerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>(
                     "existing",
-                    Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("item"))))
+                    ExprDotMethod(Ref("items"), "GetBoxed", Ref("item")))
                 .IfCondition(EqualsNull(Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
                 .Increment("existing")
                 .BlockEnd()
-                .ExprDotMethod(Ref("items"), "Put", Ref("item"), Ref("existing"));
+                .ExprDotMethod(Ref("items"), "Put", Ref("item"), Unbox(Ref("existing")));
             block.MethodReturn(
                 Cast(
                     returnType,

@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configurationCompiler.AddPlugInSingleRowFunction("convertToArray", typeof(SupportSelectorWithListEvent), "ConvertToArray");
             configurationCompiler.AddPlugInSingleRowFunction("extractAfterUnderscore", typeof(ExprEnumGroupBy), "ExtractAfterUnderscore");
             configurationCompiler.AddPlugInSingleRowFunction("extractNum", typeof(ExprEnumMinMax.MyService), "ExtractNum");
-            configurationCompiler.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExprEnumMinMax.MyService), "ExtractBigDecimal");
+            configurationCompiler.AddPlugInSingleRowFunction("extractDecimal", typeof(ExprEnumMinMax.MyService), "ExtractDecimal");
             configurationCompiler.AddPlugInSingleRowFunction("inrect", typeof(LRUtil), "Inrect");
             configurationCompiler.AddPlugInSingleRowFunction("distance", typeof(LRUtil), "Distance");
             configurationCompiler.AddPlugInSingleRowFunction("getZoneNames", typeof(Zone), "GetZoneNames");

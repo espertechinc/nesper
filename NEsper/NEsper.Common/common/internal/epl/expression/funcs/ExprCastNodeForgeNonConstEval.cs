@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -62,8 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return ConstantNull();
             }
 
-
             var forgeEvaluationType = forge.EvaluationType;
+            // REVIEW: Should all generated classes be boxed to nullable to allow
+            //    for nullable values in case we do primitive conversion?
             if (!childType.IsPrimitive) {
                 forgeEvaluationType = forgeEvaluationType.GetBoxedType();
             }

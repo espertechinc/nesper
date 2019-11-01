@@ -17,6 +17,11 @@ namespace com.espertech.esper.compat.collections
             return new InverseComparer<T>(baseComparer);
         }
 
+        public static IComparer<T> Inverse<T>()
+        {
+            return new InverseComparer<T>(Comparer<T>.Default);
+        }
+
         internal class InverseComparer<T> : IComparer<T>
         {
             private readonly IComparer<T> _baseComparer;

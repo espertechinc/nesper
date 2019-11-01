@@ -81,9 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var innerType = forge.innerExpression.EvaluationType;
             var innerTypeBoxed = Boxing.GetBoxedType(innerType);
-            var paramTypes = (innerType == typeof(EventBean))
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            //var paramTypes = (innerType == typeof(EventBean))
+            //    ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
+            //    : EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS_EVENTBEAN;
             
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope

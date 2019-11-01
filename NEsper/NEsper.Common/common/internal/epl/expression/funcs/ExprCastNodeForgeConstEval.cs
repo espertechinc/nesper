@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -45,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return ConstantNull();
             }
 
-            var evaluationType = forge.EvaluationType;
+            var evaluationType = forge.EvaluationType.GetBoxedType();
             var initMethod = codegenClassScope.NamespaceScope.InitMethod.MakeChildWithScope(
                 evaluationType,
                 typeof(ExprCastNodeForgeConstEval),

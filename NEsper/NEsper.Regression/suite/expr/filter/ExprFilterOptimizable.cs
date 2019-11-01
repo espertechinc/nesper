@@ -1310,7 +1310,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 TryInvalidCompile(
                     env,
                     "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.Longs))]",
-                    "Implicit conversion from datatype 'System.Int64' to 'System.Int32' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
+                    "Implicit conversion from datatype 'System.Int64' to 'System.Nullable<System.Int32>' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
             }
         }
 

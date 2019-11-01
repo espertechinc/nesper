@@ -223,7 +223,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 configuration.Common.AddEventType(clazz);
             }
 
-            configuration.Common.AddEventType("MyDateType", CollectionUtil.PopulateNameValueMap("yyyymmdd", typeof(string), "yyyymmddhhmmss", typeof(string), "hhmmss", typeof(string), "yyyymmddhhmmssvv", typeof(string)));
+            configuration.Common.AddEventType("MyDateType", CollectionUtil.PopulateNameValueMap(
+                "yyyymmdd", typeof(string), 
+                "yyyymmddhhmmss", typeof(string),
+                "hhmmss", typeof(string), 
+                "yyyymmddhhmmsszz", typeof(string)));
 
             configuration.Common.AddImportType(typeof(SupportBean));
             configuration.Common.AddImportType(typeof(SupportEnum));

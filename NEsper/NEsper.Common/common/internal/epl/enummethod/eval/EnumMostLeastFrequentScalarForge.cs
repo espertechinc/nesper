@@ -73,29 +73,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var block = codegenMethodScope
                 .MakeChild(returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
+                .AddParam(paramTypes)
                 .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<IDictionary<string, object>>("items", NewInstance(typeof(LinkedHashMap<string, object>)));
+                .DeclareVar<IDictionary<object, int>>("items", NewInstance(typeof(HashMap<object, int>)));
             var forEach = block
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar<int>("existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "Get", @Ref("next"))))
-                .IfCondition(EqualsNull(@Ref("existing")))
+                .DeclareVar<int?>("existing", ExprDotMethod(Ref("items"), "GetBoxed", Ref("next")))
+                .IfCondition(EqualsNull(Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
                 .Increment("existing")
                 .BlockEnd()
-                .ExprDotMethod(@Ref("items"), "Put", @Ref("next"), @Ref("existing"));
+                .ExprDotMethod(Ref("items"), "Put", Ref("next"), Unbox(Ref("existing")));
             var method = block.MethodReturn(
                 Cast(
                     returnType,
                     StaticMethod(
                         typeof(EnumMostLeastFrequentEventForgeEval),
                         "GetEnumMostLeastFrequentResult",
-                        @Ref("items"),
+                        Ref("items"),
                         Constant(isMostFrequent))));
             return LocalMethod(method, args.Expressions);
         }

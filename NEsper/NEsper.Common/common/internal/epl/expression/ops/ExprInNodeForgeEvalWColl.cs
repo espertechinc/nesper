@@ -244,6 +244,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                 }
+                else if (reftype.IsGenericDictionary()) {
+                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
+                    {
+                        if (!leftTypeUncoerced.IsPrimitive) {
+                            ifRightNotNull.IfRefNullReturnNull("left");
+                        }
+
+                        var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
+                            Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
+                        
+                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing))
+                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
+                    }
+                }
                 else if (reftype.IsGenericCollection()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
@@ -256,20 +270,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         
                         ifRightNotNull
                             .IfCondition(ExprDotMethod(Ref(refname), "Contains", leftWithBoxing))
-                            .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
-                    }
-                }
-                else if (reftype.IsGenericDictionary()) {
-                    var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
-                    {
-                        if (!leftTypeUncoerced.IsPrimitive) {
-                            ifRightNotNull.IfRefNullReturnNull("left");
-                        }
-
-                        var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
-                            Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
-                        
-                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }

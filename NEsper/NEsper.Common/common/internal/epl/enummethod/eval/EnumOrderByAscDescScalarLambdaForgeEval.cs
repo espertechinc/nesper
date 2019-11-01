@@ -92,13 +92,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             var innerBoxedType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(ICollection<object>),
                     typeof(EnumOrderByAscDescScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramTypes);
 
             var block = methodNode.Block
                 .DeclareVar<OrderedDictionary<object, object>>(

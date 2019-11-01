@@ -1770,8 +1770,8 @@ namespace com.espertech.esper.common.@internal.util
                 case "dtx":
                     return typeof(DateTimeEx);
 
-                case "Bigint":
-                case "Biginteger":
+                case "bigint":
+                case "biginteger":
                     return typeof(BigInteger?);
 
                 default:

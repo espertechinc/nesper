@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
 
             // test Bean-type Date-type timestamps
-            var typeName = typeof(SupportBean).Name;
+            var typeName = typeof(SupportBean).FullName;
             var startA = "2002-05-30T09:00:00.000";
             var epl = 
                 $"create schema SupportBeanXXX as {typeName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n" +

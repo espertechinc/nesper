@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(EnumDistinctScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
                 .Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)

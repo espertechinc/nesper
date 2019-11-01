@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     typeof(DateTimeFormat),
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(DateTimeFormat),
-                        "OfPattern",
+                        "For",
                         CodegenExpressionBuilder.Constant(format)));
             }
         }

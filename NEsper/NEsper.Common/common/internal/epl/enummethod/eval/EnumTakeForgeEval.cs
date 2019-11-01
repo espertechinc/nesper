@@ -50,21 +50,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EnumTakeForge forge,
             EnumForgeCodegenParams args,
             CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            bool isEventBeanCollection)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
+            var returnType = isEventBeanCollection
+                ? typeof(ICollection<EventBean>)
+                : typeof(ICollection<object>);
+            var paramTypes = isEventBeanCollection
+                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
+                : EnumForgeCodegenNames.PARAMS_OBJECT;
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<EventBean>),
+                    returnType,
                     typeof(EnumTakeForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramTypes);
 
-            var sizeType = forge.sizeEval.EvaluationType;
-            var block = methodNode.Block.DeclareVar(
-                sizeType,
-                "size",
-                forge.sizeEval.EvaluateCodegen(sizeType, methodNode, scope, codegenClassScope));
+            var sizeType = forge.SizeEval.EvaluationType;
+            var block = methodNode.Block
+                .DebugStack()
+                .DeclareVar(
+                    sizeType,
+                    "size",
+                    forge.SizeEval.EvaluateCodegen(sizeType, methodNode, scope, codegenClassScope));
             if (!sizeType.IsPrimitive) {
                 block.IfRefNullReturnNull("size");
             }

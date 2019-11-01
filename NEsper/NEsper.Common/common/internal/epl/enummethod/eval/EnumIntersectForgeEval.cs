@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<ICollection<EventBean>>(
+                block.DeclareVar<ICollection<object>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }

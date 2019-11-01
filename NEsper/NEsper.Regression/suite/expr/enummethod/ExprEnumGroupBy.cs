@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val" },
-                    new[] {typeof(IDictionary<string, object>)});
+                    new[] {typeof(IDictionary<object, object>)});
                 EPAssertionUtil.AssertionCollectionValueString extractorEvents = collectionItem => {
                     var p00 = ((SupportBean_ST0) collectionItem).P00;
                     return Convert.ToString(p00);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
                 EPAssertionUtil.AssertMapOfCollection(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                    (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                     new [] { "E1","E2" },
                     new[] {"1,2", "5"},
                     extractorEvents);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value());
                 Assert.AreEqual(
                     0,
-                    ((IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
+                    ((IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
                 env.UndeployAll();
 
                 // test scalar
@@ -86,11 +86,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val" },
-                    new[] {typeof(IDictionary<string, object>)});
+                    new[] {typeof(IDictionary<object, object>)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
                 EPAssertionUtil.AssertMapOfCollection(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                    (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                     new [] { "2","1" },
                     new[] {"E1_2,E3_2", "E2_1"},
                     GetExtractorScalar());
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportCollection.MakeString(""));
                 Assert.AreEqual(
                     0,
-                    ((IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
+                    ((IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
 
                 env.UndeployAll();
             }
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E1,2", "E2,5"));
                 EPAssertionUtil.AssertMapOfCollection(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                    (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                     new [] { "E1","E2" },
                     new[] {"1,2", "5"},
                     extractor);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value());
                 Assert.AreEqual(
                     0,
-                    ((IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
+                    ((IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
 
                 env.UndeployModuleContaining("s0");
 
@@ -144,11 +144,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val" },
-                    new[] {typeof(IDictionary<string, object>)});
+                    new[] {typeof(IDictionary<object, object>)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
                 EPAssertionUtil.AssertMapOfCollection(
-                    (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                    (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                     new [] { "2","1" },
                     new[] {"E1_2,E3_2", "E2_1"},
                     GetExtractorScalar());
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportCollection.MakeString(""));
                 Assert.AreEqual(
                     0,
-                    ((IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
+                    ((IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val")).Count);
 
                 env.UndeployAll();
             }

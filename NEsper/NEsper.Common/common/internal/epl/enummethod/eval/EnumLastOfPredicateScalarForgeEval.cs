@@ -77,12 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.type, EPStatementInitServicesConstants.REF)));
-            var resultType = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
 
+            var resultType = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
+            var paramsType = EnumForgeCodegenNames.PARAMS_EVENTBEAN;
             var scope = new ExprForgeCodegenSymbol(false, null);
+            
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(resultType, typeof(EnumLastOfPredicateScalarForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramsType);
 
             CodegenBlock block;
             block = methodNode.Block

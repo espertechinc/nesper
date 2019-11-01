@@ -1043,6 +1043,21 @@ namespace com.espertech.esper.compat.collections
 
             return Unwrap<T>(value, includeNullValues).ToList();
         }
+        
+        public static ISet<T> UnwrapIntoSet<T>(
+            this object value,
+            bool includeNullValues = true)
+        {
+            if (value == null) {
+                return null;
+            }
+
+            if (value is ISet<T> list) {
+                return list;
+            }
+
+            return new HashSet<T>(Unwrap<T>(value, includeNullValues));
+        }
 
         public static ICollection<T> UnwrapSafe<T>(
             this object value,

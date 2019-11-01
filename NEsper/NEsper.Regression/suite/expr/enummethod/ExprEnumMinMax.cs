@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select coll.max().minus(1 minute) >= coll.min() as c0 from SupportEventWithLongArray");
+                    "@Name('s0') select Coll.max().minus(1 minute) >= Coll.min() as c0 from SupportEventWithLongArray");
                 env.AddListener("s0");
                 var fields = new [] { "c0" };
 

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         .DeclareVar<object>(
                             "format",
                             formatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
-                        .DeclareVar<SimpleDateFormat>(
+                        .DeclareVar<DateFormat>(
                             "dateFormat",
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(ExprCastNode),

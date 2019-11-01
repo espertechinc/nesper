@@ -283,21 +283,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                if (reftype.IsGenericCollection()) {
+                if (reftype.IsArray) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refname));
+                        var forLoopArray = blockIfNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
                         {
-                            var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
+                            forLoopArray.DeclareVar(
+                                Boxing.GetBoxedType(reftype.GetElementType()),
+                                "item",
+                                ArrayAtIndex(Ref(refname), Ref("index")));
+                            var ifItemNull = forLoopArray.IfCondition(EqualsNull(Ref("item")));
                             {
                                 if (isAll) {
-                                    ifNotNumber.IfRefNullReturnNull("item");
+                                    ifItemNull.IfReturn(ConstantNull());
                                 }
                             }
-                            var ifNotNumberElse = ifNotNumber.IfElse();
+                            var ifItemNotNull = ifItemNull.IfElse();
                             {
-                                ifNotNumberElse.AssignRef("hasNonNullRow", ConstantTrue());
-                                var ifLeftNotNull = ifNotNumberElse.IfCondition(NotEqualsNull(Ref("valueLeft")));
+                                ifItemNotNull.AssignRef("hasNonNullRow", ConstantTrue());
+                                var ifLeftNotNull = ifItemNotNull.IfCondition(NotEqualsNull(Ref("valueLeft")));
                                 {
                                     ifLeftNotNull.IfCondition(
                                             NotOptional(
@@ -305,7 +309,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                 forge.Computer.Codegen(
                                                     Ref("valueLeft"),
                                                     valueLeftType,
-                                                    Cast(typeof(object), Ref("item")),
+                                                    Ref("item"),
                                                     typeof(object))))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }
@@ -346,25 +350,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                 }
-                else if (reftype.IsArray) {
+                else if (reftype.IsGenericCollection()) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        var forLoopArray = blockIfNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
+                        var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refname));
                         {
-                            forLoopArray.DeclareVar(
-                                Boxing.GetBoxedType(reftype.GetElementType()),
-                                "item",
-                                ArrayAtIndex(Ref(refname), Ref("index")));
-                            var ifItemNull = forLoopArray.IfCondition(EqualsNull(Ref("item")));
+                            var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
                             {
                                 if (isAll) {
-                                    ifItemNull.IfReturn(ConstantNull());
+                                    ifNotNumber.IfRefNullReturnNull("item");
                                 }
                             }
-                            var ifItemNotNull = ifItemNull.IfElse();
+                            var ifNotNumberElse = ifNotNumber.IfElse();
                             {
-                                ifItemNotNull.AssignRef("hasNonNullRow", ConstantTrue());
-                                var ifLeftNotNull = ifItemNotNull.IfCondition(NotEqualsNull(Ref("valueLeft")));
+                                ifNotNumberElse.AssignRef("hasNonNullRow", ConstantTrue());
+                                var ifLeftNotNull = ifNotNumberElse.IfCondition(NotEqualsNull(Ref("valueLeft")));
                                 {
                                     ifLeftNotNull.IfCondition(
                                             NotOptional(
@@ -372,7 +372,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                 forge.Computer.Codegen(
                                                     Ref("valueLeft"),
                                                     valueLeftType,
-                                                    Ref("item"),
+                                                    Cast(typeof(object), Ref("item")),
                                                     typeof(object))))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }

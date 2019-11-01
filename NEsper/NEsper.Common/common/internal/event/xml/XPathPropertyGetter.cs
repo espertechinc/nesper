@@ -458,41 +458,73 @@ namespace com.espertech.esper.common.@internal.@event.xml
             SimpleTypeParser simpleTypeParser,
             XPathExpression expression)
         {
-            if (!(result is XmlNodeList)) {
-                return null;
-            }
-
-            var nodeList = (XmlNodeList) result;
-            var array = Array.CreateInstance(optionalCastToType, nodeList.Count);
-
-            for (var i = 0; i < nodeList.Count; i++) {
-                object arrayItem = null;
-                try {
-                    var item = nodeList.Item(i);
-                    string textContent;
-                    if (item.NodeType == XmlNodeType.Attribute || item.NodeType == XmlNodeType.Element) {
-                        textContent = item.InnerText;
-                    }
-                    else {
-                        continue;
-                    }
-
-                    arrayItem = simpleTypeParser.Parse(textContent);
-                }
-                catch (Exception) {
-                    if (Log.IsInfoEnabled) {
-                        Log.Info(
-                            "Parse error for text content " +
-                            nodeList.Item(i).InnerText +
-                            " for expression " +
-                            expression);
-                    }
+            if (result is XPathNodeIterator nodeIterator) {
+                if (nodeIterator.Count == 0) {
+                    return null;
                 }
 
-                array.SetValue(arrayItem, i);
+                var array = Array.CreateInstance(optionalCastToType, nodeIterator.Count);
+                for (var i = 0; nodeIterator.MoveNext(); i++) {
+                    var nodeCurrent = nodeIterator.Current;
+                    object arrayItem = null;
+                    
+                    try {
+                        if ((nodeCurrent.NodeType == XPathNodeType.Attribute) ||
+                            (nodeCurrent.NodeType == XPathNodeType.Element)) {
+                            var textContent = nodeCurrent.Value;
+                            arrayItem = simpleTypeParser.Parse(textContent);
+                        }
+                    }
+                    catch (Exception e) {
+                        if (Log.IsInfoEnabled) {
+                            Log.Info(
+                                "Parse error for text content " +
+                                nodeCurrent.InnerXml +
+                                " for expression " +
+                                expression);
+                        }
+                    }
+                    
+                    array.SetValue(arrayItem, i);
+                }
+
+                return array;
+            }
+            if (result is XmlNodeList) {
+                var nodeList = (XmlNodeList) result;
+                var array = Array.CreateInstance(optionalCastToType, nodeList.Count);
+
+                for (var i = 0; i < nodeList.Count; i++) {
+                    object arrayItem = null;
+                    try {
+                        var item = nodeList.Item(i);
+                        string textContent;
+                        if (item.NodeType == XmlNodeType.Attribute || item.NodeType == XmlNodeType.Element) {
+                            textContent = item.InnerText;
+                        }
+                        else {
+                            continue;
+                        }
+
+                        arrayItem = simpleTypeParser.Parse(textContent);
+                    }
+                    catch (Exception) {
+                        if (Log.IsInfoEnabled) {
+                            Log.Info(
+                                "Parse error for text content " +
+                                nodeList.Item(i).InnerText +
+                                " for expression " +
+                                expression);
+                        }
+                    }
+
+                    array.SetValue(arrayItem, i);
+                }
+
+                return array;
             }
 
-            return array;
+            return null;
         }
     }
 } // end of namespace

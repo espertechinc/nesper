@@ -9,10 +9,15 @@
 using System;
 using System.Globalization;
 
+using com.espertech.esper.compat.datetime;
+
 namespace com.espertech.esper.compat
 {
     public class SimpleDateFormat : DateFormat
     {
+        /// <summary>
+        /// Initialize a new instance of the <see cref="SimpleDateFormat"/> class.
+        /// </summary>
         public SimpleDateFormat()
         {
             FormatString = "s";
@@ -39,6 +44,15 @@ namespace com.espertech.esper.compat
             FormatString = formatString;
             FormatProvider = formatProvider;
         }
+
+        /// <summary>
+        /// Returns an instance of a <see cref="SimpleDateFormat" /> class.
+        /// </summary>
+        /// <returns></returns>
+        public static SimpleDateFormat GetInstance()
+        {
+            return new SimpleDateFormat("s", CultureInfo.InvariantCulture);
+        } 
 
         /// <summary>
         ///     Returns the date format string.
@@ -101,8 +115,30 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public DateTimeEx Parse(string dateTimeString)
         {
-            var dateTime = DateTime.ParseExact(dateTimeString, FormatString, null, DateTimeStyles.None);
-            return DateTimeEx.GetInstance(TimeZoneInfo.Utc, dateTime);
+            var timeZone = TimeZoneInfo.Utc;
+            
+            if (DateTime.TryParseExact(
+                dateTimeString,
+                FormatString,
+                null,
+                DateTimeStyles.None,
+                out var dateTime)) {
+                if (dateTime.Kind == DateTimeKind.Unspecified) {
+                    return new DateTimeEx(new DateTimeOffset(dateTime, TimeSpan.Zero), timeZone);
+                }
+            }
+            
+            if (DateTimeOffset.TryParseExact(
+                dateTimeString,
+                FormatString,
+                null,
+                DateTimeStyles.None,
+                out var dateTimeOffset)) {
+                return new DateTimeEx(dateTimeOffset, timeZone);
+            }
+            
+            throw new ArgumentException(
+                $"Exception parsing date '{dateTimeString}' format '{FormatString}': Unparseable date: \"{dateTimeString}\"' in text");
         }
     }
 }

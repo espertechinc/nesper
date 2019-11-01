@@ -43,14 +43,12 @@ namespace com.espertech.esper.common.@internal.util
     public class ProxyTypeCaster : SimpleTypeCaster
     {
         public Func<object, object> ProcCast;
-
-        public object Cast(object @object)
-            => ProcCast?.Invoke(@object);
-
-        public bool IsNumericCast { get; set; }
-
         public Func<CodegenExpression, Type, CodegenMethodScope, CodegenClassScope, CodegenExpression> ProcCodegen;
         public Func<CodegenExpression, CodegenExpression> ProcCodegenInput;
+
+        public object Cast(object @object) => ProcCast?.Invoke(@object);
+
+        public bool IsNumericCast { get; set; }
 
         public CodegenExpression Codegen(
             CodegenExpression input,

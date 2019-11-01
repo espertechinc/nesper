@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         .DeclareVar<object>(
                             "format",
                             dateFormatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
-                        .DeclareVar<SimpleDateFormat>(
+                        .DeclareVar<DateFormat>(
                             "dateFormat",
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(ExprCastNode),
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(StringToDateTimExWStaticFormatComputer),
-                        "StringToCalendarWStaticFormatParse",
+                        "StringToDtxWStaticFormatParse",
                         format,
                         CodegenExpressionBuilder.Ref("input"),
                         timeZoneField));

@@ -13,7 +13,6 @@ using System.Numerics;
 using System.Reflection;
 
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.compat
 {
@@ -87,8 +86,23 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static short AsShort(this object value)
         {
-            if (value is short)
-                return (short)value;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+
+            // -- Down-casts / Cross-casts
+            if (value is int intValue)
+                return (short) intValue;
+            if (value is long longValue)
+                return (short) longValue;
+            if (value is float floatValue)
+                return (short) floatValue;
+            if (value is double doubleValue)
+                return (short) doubleValue;
+            if (value is decimal decimalValue)
+                return (short) decimalValue;
+
             return Convert.ToInt16(value);
         }
 
@@ -100,7 +114,7 @@ namespace com.espertech.esper.compat
         public static int? AsBoxedInt(this object value)
         {
             if (value == null) return null;
-            if (value is int) return (int) value;
+            if (value is int intValue) return intValue;
             return AsInt(value);
         }
 
@@ -111,8 +125,23 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static int AsInt(this object value)
         {
-            if (value is int)
-                return (int) value;
+            if (value is int intValue)
+                return intValue;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+            
+            // -- Down-casts / Cross-casts
+            if (value is long longValue)
+                return (int) longValue;
+            if (value is float floatValue)
+                return (int) floatValue;
+            if (value is double doubleValue)
+                return (int) doubleValue;
+            if (value is decimal decimalValue)
+                return (int) decimalValue;
+
             return Convert.ToInt32(value);
         }
 
@@ -124,7 +153,7 @@ namespace com.espertech.esper.compat
         public static long? AsBoxedLong(this object value)
         {
             if (value == null) return null;
-            if (value is long) return (long)value;
+            if (value is long longValue) return longValue;
             return AsLong(value);
         }
 
@@ -135,10 +164,23 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static long AsLong(this object value)
         {
-            if (value is long)
-                return (long)value;
-            if (value is int)
-                return (int)value;
+            if (value is long longValue)
+                return longValue;
+            if (value is int intValue)
+                return intValue;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+
+            // -- Down-casts / Cross-casts
+            if (value is float floatValue)
+                return (long) floatValue;
+            if (value is double doubleValue)
+                return (long) doubleValue;
+            if (value is decimal decimalValue)
+                return (long) decimalValue;
+
             return Convert.ToInt64(value);
         }
 
@@ -149,18 +191,24 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static float AsFloat(this object value)
         {
-            if (value is decimal)
-                return (float) ((decimal) value);
-            if (value is double)
-                return (float)((double)value);
-            if (value is float)
-                return (float)value;
-            if (value is long)
-                return (long)value;
-            if (value is int)
-                return (int)value;
-            if (value is BigInteger)
-                return (float) ((BigInteger)value);
+            if (value is float floatValue)
+                return floatValue;
+            if (value is double doubleValue)
+                return (float) doubleValue;
+            if (value is decimal decimalValue)
+                return (float) decimalValue;
+
+            if (value is long longValue)
+                return longValue;
+            if (value is int intValue)
+                return intValue;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+            
+            if (value is BigInteger bigIntegerValue)
+                return (float) bigIntegerValue;
 
             return Convert.ToSingle(value);
         }
@@ -184,18 +232,25 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static double AsDouble(this object value)
         {
-            if (value is decimal)
-                return (double)((decimal)value);
-            if (value is double)
-                return (double) value;
-            if (value is float)
-                return (float) value;
-            if (value is long)
-                return (long) value;
-            if (value is int)
-                return (int) value;
-            if (value is BigInteger)
-                return (double) ((BigInteger) value);
+            if (value is double doubleValue)
+                return doubleValue;
+            if (value is float floatValue)
+                return floatValue;
+
+            if (value is long longValue)
+                return longValue;
+            if (value is int intValue)
+                return intValue;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+
+            // -- Down-casts / Cross-casts
+            if (value is decimal decimalValue)
+                return (double) decimalValue;
+            if (value is BigInteger bigIntegerValue)
+                return (double) bigIntegerValue;
 
             return Convert.ToDouble(value);
         }
@@ -218,18 +273,24 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static decimal AsDecimal(this object value)
         {
-            if (value is decimal)
-                return (decimal)value;
-            if (value is double)
-                return (decimal) ((double) value);
-            if (value is float)
-                return (decimal) ((float) value);
-            if (value is long)
-                return (long)value;
-            if (value is int)
-                return (int)value;
-            if (value is BigInteger)
-                return (decimal) ((BigInteger)value);
+            if (value is decimal decimalValue)
+                return decimalValue;
+            if (value is double doubleValue)
+                return (decimal) doubleValue;
+            if (value is float floatValue)
+                return (decimal) floatValue;
+            
+            if (value is long longValue)
+                return longValue;
+            if (value is int intValue)
+                return intValue;
+            if (value is short shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+            
+            if (value is BigInteger bigIntegerValue)
+                return (decimal) bigIntegerValue;
 
             return Convert.ToDecimal(value);
         }
@@ -248,25 +309,30 @@ namespace com.espertech.esper.compat
 
         public static BigInteger AsBigInteger(this object value)
         {
-            if (value is BigInteger)
-                return (BigInteger) value;
-            if (value is decimal)
-                return new BigInteger((decimal) value);
-            if (value is double)
-                return new BigInteger((double) value);
-            if (value is float)
-                return new BigInteger((float) value);
-            if (value is long)
-                return new BigInteger((long) value);
-            if (value is int)
-                return new BigInteger((int) value);
-            if (value is uint)
-                return new BigInteger((uint) value);
-            if (value is ulong)
-                return new BigInteger((ulong) value);
-            if (value is byte)
-                return new BigInteger((byte) value);
+            if (value is BigInteger bigIntegerValue)
+                return bigIntegerValue;
+            
+            if (value is decimal decimalValue)
+                return new BigInteger(decimalValue);
+            if (value is double doubleValue)
+                return new BigInteger(doubleValue);
+            if (value is float floatValue)
+                return new BigInteger(floatValue);
 
+            if (value is long longValue)
+                return new BigInteger(longValue);
+            if (value is int intValue)
+                return new BigInteger(intValue);
+            if (value is short shortValue)
+                return new BigInteger(shortValue);
+            if (value is byte byteValue)
+                return new BigInteger(byteValue);
+
+            if (value is ulong ulongValue)
+                return new BigInteger(ulongValue);
+            if (value is uint uintValue)
+                return new BigInteger(uintValue);
+ 
             throw new ArgumentException("invalid value for BigInteger", nameof(value));
         }
 
@@ -274,8 +340,8 @@ namespace com.espertech.esper.compat
         {
             if (value == null)
                 return false;
-            if (value is bool)
-                return (bool)value;
+            if (value is bool boolValue)
+                return boolValue;
 
             throw new ArgumentException("invalid value for bool", nameof(value));
         }
@@ -289,12 +355,12 @@ namespace com.espertech.esper.compat
 
         public static DateTime AsDateTime(this object value)
         {
-            if (value is DateTime)
-                return (DateTime) value;
-            if (value is int)
-                return DateTimeHelper.TimeFromMillis((int) value);
-            if (value is long)
-                return DateTimeHelper.TimeFromMillis((long) value);
+            if (value is DateTime dateTimeValue)
+                return dateTimeValue;
+            if (value is int intValue)
+                return DateTimeHelper.TimeFromMillis(intValue);
+            if (value is long longValue)
+                return DateTimeHelper.TimeFromMillis(longValue);
 
             throw new ArgumentException("invalid value for datetime", nameof(value));
         }
@@ -313,14 +379,14 @@ namespace com.espertech.esper.compat
 
         public static DateTimeOffset AsDateTimeOffset(this object value, TimeZoneInfo timeZone)
         {
-            if (value is DateTimeOffset)
-                return ((DateTimeOffset) value).TranslateTo(timeZone);
-            if (value is DateTime)
-                return ((DateTime) value).TranslateTo(timeZone);
-            if (value is long)
-                return DateTimeOffsetHelper.TimeFromMillis((long) value, timeZone);
-            if (value is int)
-                return DateTimeOffsetHelper.TimeFromMillis((int) value, timeZone);
+            if (value is DateTimeOffset dateTimeOffsetValue)
+                return dateTimeOffsetValue.TranslateTo(timeZone);
+            if (value is DateTime dateTimeValue)
+                return dateTimeValue.TranslateTo(timeZone);
+            if (value is long longValue)
+                return DateTimeOffsetHelper.TimeFromMillis(longValue, timeZone);
+            if (value is int intValue)
+                return DateTimeOffsetHelper.TimeFromMillis(intValue, timeZone);
 
             throw new ArgumentException("invalid value for datetime", nameof(value));
         }
@@ -480,7 +546,7 @@ namespace com.espertech.esper.compat
             {
                 throw new ArgumentException("Interface class passed in is not an interface");
             }
-            bool resultThisClass = RecursiveIsImplementsInterface(clazz, interfaceClass);
+            var resultThisClass = RecursiveIsImplementsInterface(clazz, interfaceClass);
             if (resultThisClass)
             {
                 return true;

@@ -15,7 +15,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
     public class ISupportAConstants
     {
-        private const int VALUE_1 = 1;
-        private const int VALUE_2 = 2;
+        public const int VALUE_1 = 1;
+        public const int VALUE_2 = 2;
     }
 } // end of namespace

@@ -1135,9 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
                           " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
                           " end as P1 " +
-                          " from " +
-                          typeof(SupportEnum).FullName +
-                          "#length(10)";
+                          " from " + typeof(SupportBeanWithEnum).Name + "#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("P1"));
@@ -1170,7 +1168,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(SupportEnum), env.Statement("s0").EventType.GetPropertyType("P1"));
+                Assert.AreEqual(typeof(SupportEnum?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, 1);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];

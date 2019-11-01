@@ -37,8 +37,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IReaderWriterLock readWriteLock)
             : base(FilterOperator.IN_LIST_OF_VALUES, lookupable)
         {
-            constantsMap = new Dictionary<object, IList<EventEvaluator>>();
-            evaluatorsMap = new Dictionary<HashableMultiKey, EventEvaluator>();
+            constantsMap = new HashMap<object, IList<EventEvaluator>>();
+            evaluatorsMap = new HashMap<HashableMultiKey, EventEvaluator>();
             constantsMapRWLock = readWriteLock;
         }
 

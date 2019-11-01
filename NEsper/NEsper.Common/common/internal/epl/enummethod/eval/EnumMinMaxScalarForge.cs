@@ -49,9 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
 
+            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var block = codegenMethodScope
                 .MakeChild(innerTypeBoxed, typeof(EnumMinMaxEventsForgeEval), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN)
+                .AddParam(paramTypes)
                 .Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull());
 

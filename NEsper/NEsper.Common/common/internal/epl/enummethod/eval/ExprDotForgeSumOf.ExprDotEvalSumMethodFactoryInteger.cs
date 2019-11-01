@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             public void CodegenDeclare(CodegenBlock block)
             {
                 block.DeclareVar<int>("sum", Constant(0));
-                block.DeclareVar<long>("cnt", Constant(0));
+                block.DeclareVar<int>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -21,7 +20,10 @@ using com.espertech.esper.regressionlib.support.multistmtassert;
 
 using NUnit.Framework;
 
-using SupportBeanComplexProps = com.espertech.esper.common.@internal.support.SupportBeanComplexProps;
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean; 
+using SupportEnum = com.espertech.esper.common.@internal.support.SupportEnum;
+using SupportEnumHelper = com.espertech.esper.common.@internal.support.SupportEnumHelper;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -83,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         private static void TryRewriteWhereNamedWindow(RegressionEnvironment env)
         {
             var epl = "create window NamedWindowA#length(1) as SupportBean;\n" +
-                      "select * from NamedWindowA mywindow WHERE (mywindow.TheString.trim() is 'abc');\n";
+                      "select * from NamedWindowA mywindow WHERE (mywindow.TheString.Trim() is 'abc');\n";
             env.CompileDeploy(epl).UndeployAll();
         }
 
@@ -455,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s0') select * from SupportBean(IntPrimitive = 1 or IntPrimitive = 2)")
                     .AddListener("s0");
                 env.CompileDeploy(
-                        "@Name('s1') select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.alwaysTrue())")
+                        "@Name('s1') select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.AlwaysTrue())")
                     .AddListener("s1");
 
                 SupportStaticMethodLib.Invocations.Clear();
@@ -485,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 text = "select * from SupportBean(IntPrimitive in (IntBoxed, " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".minusOne(DoubleBoxed)))";
+                       ".MinusOne(DoubleBoxed)))";
                 Try3Fields(
                     env,
                     milestone,
@@ -792,14 +794,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern[every event1=SupportTradeEvent(userId in ('100','101'),amount>=1000)]";
+                    "@Name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportTradeEvent(1, "100", 1001));
                 Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("event1.Id"));
 
                 var eplTwo =
-                    "@Name('s1') select * from pattern [every event1=SupportTradeEvent(userId in ('100','101'))]";
+                    "@Name('s1') select * from pattern [every event1=SupportTradeEvent(UserId in ('100','101'))]";
                 env.CompileDeployAddListenerMileZero(eplTwo, "s1");
 
                 env.SendEventBean(new SupportTradeEvent(2, "100", 1001));
@@ -875,7 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.property2 = '4' and SupportRuntimeExBean.property1 = '1')";
+                    "@Name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.Property2 = '4' and SupportRuntimeExBean.Property1 = '1')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportRuntimeExBean());
@@ -902,19 +904,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 < x",
+                        "select * from SupportInstanceMethodBean where 4 < X",
                         new[] {false, false, true}));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 <= x",
+                        "select * from SupportInstanceMethodBean where 4 <= X",
                         new[] {false, true, true}));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 > x",
+                        "select * from SupportInstanceMethodBean where 4 > X",
                         new[] {true, false, false}));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 >= x",
+                        "select * from SupportInstanceMethodBean where 4 >= X",
                         new[] {true, true, false}));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
@@ -930,7 +932,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [every event1=SupportTradeEvent(userId like '123%')]";
+                var epl = "@Name('s0') select * from pattern [every event1=SupportTradeEvent(UserId like '123%')]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportTradeEvent(1, null, 1001));
@@ -948,7 +950,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from pattern [SupportBean(IntPrimitive=" +
-                          typeof(ISupportA).FullName +
+                          typeof(ISupportAConstants).FullName +
                           ".VALUE_1)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -969,8 +971,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
-                          typeof(SupportEnum).FullName +
-                          ".ValueOf('ENUM_VALUE_1'))]";
+                          typeof(SupportEnumHelper).FullName +
+                          ".GetEnumFor('ENUM_VALUE_1'))]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var theEvent = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
@@ -1452,7 +1454,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                        typeof(SupportBean).Name +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".minusOne(a.DoubleBoxed))]";
+                       ".MinusOne(a.DoubleBoxed))]";
                 TryPattern(
                     env,
                     text,
@@ -1467,10 +1469,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                        typeof(SupportBean).Name +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".minusOne(a.DoubleBoxed) or " +
+                       ".MinusOne(a.DoubleBoxed) or " +
                        "DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".minusOne(a.IntBoxed))]";
+                       ".MinusOne(a.IntBoxed))]";
                 TryPattern(
                     env,
                     text,
@@ -1493,17 +1495,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('b', TheString))";
+                       ".IsStringEquals('b', TheString))";
                 assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
 
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
 
                 text = "select * from SupportBean('b'=TheString," +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new[] {false, true, false}));
 
                 text = "select * from SupportBean('b'=TheString, TheString='b', TheString != 'a')";
@@ -1520,7 +1522,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 text = "select * from SupportBean(TheString = 'a' and TheString = 'c' and " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new[] {false, false, false}));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
@@ -1608,7 +1610,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBeanComplexProps(nested=nested)";
+                var epl = "@Name('s0') select * from SupportBeanComplexProps(Nested=Nested)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventOne = SupportBeanComplexProps.MakeDefaultBean();
@@ -1742,7 +1744,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "select * from SupportBeanWithEnum(TheString=" +
                     typeof(SupportEnum).FullName +
                     ".ENUM_VALUE_1)",
-                    $"Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '{typeof(SupportEnum).CleanName()}' to ')' to '{typeof(string).CleanName()}' is not allowed [");
+                    $"Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '{typeof(SupportEnum?).CleanName()}' to '{typeof(string).CleanName()}' is not allowed [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -1754,7 +1756,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "select * from pattern [a=SupportBean -> b=" +
                     typeof(SupportBean).Name +
                     "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
-                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
+                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.I...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -1772,15 +1774,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodAlwaysTrue()) as S0",
+                    "select * from SupportInstanceMethodBean(S0.MyInstanceMethodAlwaysTrue()) as S0",
                     new[] {true, true, true});
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodEventBean(s0, 'x', 1)) as S0",
+                    "select * from SupportInstanceMethodBean(S0.MyInstanceMethodEventBean(S0, 'X', 1)) as S0",
                     new[] {false, true, false});
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(S0.myInstanceMethodEventBean(*, 'x', 1)) as S0",
+                    "select * from SupportInstanceMethodBean(S0.MyInstanceMethodEventBean(*, 'X', 1)) as S0",
                     new[] {false, true, false});
             }
 
@@ -1803,8 +1805,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportBeanComplexProps(simpleProperty='1')#keepall as S0" +
-                           ", SupportBeanComplexProps(simpleProperty='2')#keepall as S1" +
+                var text = "@Name('s0') select * from SupportBeanComplexProps(SimpleProperty='1')#keepall as S0" +
+                           ", SupportBeanComplexProps(SimpleProperty='2')#keepall as S1" +
                            " where S0.Nested = S1.Nested";
                 env.CompileDeploy(text).AddListener("s0");
 

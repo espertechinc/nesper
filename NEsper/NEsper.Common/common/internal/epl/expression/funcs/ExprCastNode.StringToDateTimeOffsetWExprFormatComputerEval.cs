@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     .AddParam(typeof(string), "input");
                 CodegenExpression formatter;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
-                    formatter = FormatFieldExpr(typeof(DateTimeFormat), dateFormatForge, codegenClassScope);
+                    formatter = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);
                 }
                 else {
                     method.Block.DeclareVar<DateTimeFormat>(
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(StringToDateTimeOffsetWStaticFormatComputer),
-                        "StringToLocalDateTimeWStaticFormatParse",
+                        "StringToDateTimeOffsetWStaticFormatParse",
                         CodegenExpressionBuilder.Ref("input"),
                         formatter));
                 return CodegenExpressionBuilder.LocalMethod(method, input);

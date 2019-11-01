@@ -46,12 +46,13 @@ namespace com.espertech.esper.compat.datetime
         {
             DateTimeOffset dateTime;
 
+            var timeZone = TimeZoneInfo.Utc;
             var provider = CultureInfo.InvariantCulture;
-            var dateTimeInputs = new List<string>() {
-                dateTimeString
-            };
-            
-            var match = Regex.Match(dateTimeString, @"^(\d{1,4}-\d{1,2}-\d{1,2})[T ](\d{1,2}:\d{1,2}:\d{1,2})(\.\d{1,4}|)(.*)$");
+            var dateTimeInputs = new List<string>();
+
+            var match = Regex.Match(
+                dateTimeString,
+                @"^(\d{1,4}-\d{1,2}-\d{1,2})[T ](\d{1,2}:\d{1,2}:\d{1,2})(\.\d{1,4}|)(.*)$");
             if (match != Match.Empty) {
                 var matchDate = Regex.Match(match.Groups[1].Value, @"(\d{1,4})-(\d{1,2})-(\d{1,2})");
                 var rwDate = string.Format(
@@ -80,99 +81,59 @@ namespace com.espertech.esper.compat.datetime
                     dateTimeString += match.Groups[4].Value;
                 }
 
-                dateTimeInputs.Clear();
                 dateTimeInputs.Add(dateTimeString);
                 dateTimeInputs.Add(dateTimeText);
 
-                string[] zoneFormats = {
-                    "yyyy-MM-dd HH:mm:ss.ffffZ",
-                    "yyyy-MM-dd HH:mm:ss.fffZ",
-                    "yyyy-MM-dd HH:mm:ss.ffZ",
-                    "yyyy-MM-dd HH:mm:ss.fZ",
-                    "yyyy-MM-dd HH:mm:ssZ",
-                    "yyyy-MM-dd HH:mm:ss.ffffzzz",
-                    "yyyy-MM-dd HH:mm:ss.fffzzz",
-                    "yyyy-MM-dd HH:mm:ss.ffzzz",
-                    "yyyy-MM-dd HH:mm:ss.fzzz",
-                    "yyyy-MM-dd HH:mm:sszzz",
-                };
-
-                string[] nonZoneFormats = {
-                    "yyyy-MM-dd HH:mm:ss.ffff",
-                    "yyyy-MM-dd HH:mm:ss.fff",
-                    "yyyy-MM-dd HH:mm:ss.ff",
-                    "yyyy-MM-dd HH:mm:ss.f",
-                    "yyyy-MM-dd HH:mm:ss",
-                };
-
-                foreach (var dateTimeInput in dateTimeInputs) {
-                    // Full-parse, including zone information
-                    if (DateTimeOffset.TryParseExact(
-                        dateTimeInput,
-                        zoneFormats,
-                        provider,
-                        DateTimeStyles.AllowWhiteSpaces,
-                        out dateTime)) {
-                        var timeZoneText = match.Groups[4].Value;
-                        var timeZone = TimeZoneHelper.GetTimeZoneInfoOrDefault(timeZoneText);
-                        return new DateTimeEx(dateTime, timeZone);
-                    }
-
-                    // Partial-parse, missing zone information
-                    if (DateTimeOffset.TryParseExact(
-                        dateTimeInput,
-                        nonZoneFormats,
-                        provider,
-                        DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal,
-                        out dateTime)) {
-                        var timeZoneText = match.Groups[3].Value;
-                        var timeZone = TimeZoneInfo.Utc;
-                        return new DateTimeEx(dateTime, timeZone);
-                    }
-                }
-            }
-
-#if false
-            dateTimeString = String.Format(
-                    "{0}-{1}-{2} {3}:{4}:{5}.{6}{7}",
-                    Int32.Parse(match.Groups[1].Value).ToString(CultureInfo.InvariantCulture).PadLeft(4, '0'),
-                    Int32.Parse(match.Groups[2].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                    Int32.Parse(match.Groups[3].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                    Int32.Parse(match.Groups[4].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                    Int32.Parse(match.Groups[5].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                    Int32.Parse(match.Groups[6].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                    match.Groups[7].Value,
-                    match.Groups[8].Value);
+                timeZone = TimeZoneHelper.GetTimeZoneInfoOrDefault(match.Groups[4].Value);
             }
             else {
-                match = Regex.Match(dateTimeString, @"^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)(.*)$");
-                if (match != Match.Empty) {
-                    dateTimeString = String.Format(
-                        "{0}-{1}-{2} {3}:{4}:{5}.000{6}",
-                        Int32.Parse(match.Groups[1].Value).ToString(CultureInfo.InvariantCulture).PadLeft(4, '0'),
-                        Int32.Parse(match.Groups[2].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                        Int32.Parse(match.Groups[3].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                        Int32.Parse(match.Groups[4].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                        Int32.Parse(match.Groups[5].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                        Int32.Parse(match.Groups[6].Value).ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                        match.Groups[7].Value);
+                dateTimeInputs.Add(dateTimeString);
+            }
+
+            string[] zoneFormats = {
+                "yyyy-MM-dd HH:mm:ss.ffffZ",
+                "yyyy-MM-dd HH:mm:ss.fffZ",
+                "yyyy-MM-dd HH:mm:ss.ffZ",
+                "yyyy-MM-dd HH:mm:ss.fZ",
+                "yyyy-MM-dd HH:mm:ssZ",
+                "yyyy-MM-dd HH:mm:ss.ffffzzz",
+                "yyyy-MM-dd HH:mm:ss.fffzzz",
+                "yyyy-MM-dd HH:mm:ss.ffzzz",
+                "yyyy-MM-dd HH:mm:ss.fzzz",
+                "yyyy-MM-dd HH:mm:sszzz",
+            };
+
+            string[] nonZoneFormats = {
+                "yyyy-MM-dd HH:mm:ss.ffff",
+                "yyyy-MM-dd HH:mm:ss.fff",
+                "yyyy-MM-dd HH:mm:ss.ff",
+                "yyyy-MM-dd HH:mm:ss.f",
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd",
+                "HH:mm:ss"
+            };
+
+            foreach (var dateTimeInput in dateTimeInputs) {
+                // Full-parse, including zone information
+                if (DateTimeOffset.TryParseExact(
+                    dateTimeInput,
+                    zoneFormats,
+                    provider,
+                    DateTimeStyles.AllowWhiteSpaces,
+                    out dateTime)) {
+                    return new DateTimeEx(dateTime, timeZone);
+                }
+
+                // Partial-parse, missing zone information
+                if (DateTimeOffset.TryParseExact(
+                    dateTimeInput,
+                    nonZoneFormats,
+                    provider,
+                    DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeUniversal,
+                    out dateTime)) {
+                    return new DateTimeEx(dateTime, TimeZoneInfo.Utc);
                 }
             }
-
-            var timeZone = TimeZoneInfo.Utc;
-            //var timeZone = dateTimeString.EndsWith("Z") ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
-
-            DateTime dateTime;
-
-            if ((DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.fff", null, DateTimeStyles.None, out dateTime)) ||
-                (DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss.ff", null, DateTimeStyles.None, out dateTime)) ||
-                (DateTime.TryParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss", null, DateTimeStyles.None, out dateTime))
-                )
-            {
-                return DateTimeEx.GetInstance(timeZone, dateTime);
-            }
-
-#endif
 
             // Unable to parse, throw an exception
             throw new ArgumentException("unable to parse value", nameof(dateTimeString));

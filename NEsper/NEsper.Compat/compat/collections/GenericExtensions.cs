@@ -152,6 +152,11 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
+        public static bool IsGenericSet(this Type t)
+        {
+            return FindGenericInterface(t, typeof (ISet<>)) != null;
+        }
+
         public static bool IsGenericCollection(this Type t)
         {
             return FindGenericInterface(t, typeof (ICollection<>)) != null;

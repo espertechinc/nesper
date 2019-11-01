@@ -140,7 +140,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     true,
                     typeof(AtomicLong),
                     NewInstance(typeof(AtomicLong)));
-                block.DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "GetAndIncrement"))
+                block
+                    .DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "GetAndIncrement"))
                     .TryCatch()
                     .Expression(ExprDotMethod(Ref("cache"), "PushContext", Ref("contextNumber")))
                     .IfRefNullReturnNull("coll")
