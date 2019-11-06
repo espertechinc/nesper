@@ -2052,7 +2052,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         targetType);
                 }
                 else if (theEvent.EventType is BeanEventType && targetType is BeanEventType) {
-                    converted = eventAdapterService.AdapterForTypedBean(theEvent.Underlying, targetType);
+                    converted = eventAdapterService.AdapterForTypedObject(theEvent.Underlying, targetType);
                 }
                 else if (theEvent.EventType is ObjectArrayEventType && targetType is ObjectArrayEventType) {
                     var convertedObjectArray = ObjectArrayEventType.ConvertEvent(
@@ -2402,7 +2402,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedBean(underlying, eventType);
+                return eventBeanTypedEventFactory.AdapterForTypedObject(underlying, eventType);
             }
         }
 

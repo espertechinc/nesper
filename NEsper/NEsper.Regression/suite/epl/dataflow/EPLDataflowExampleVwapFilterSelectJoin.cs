@@ -88,10 +88,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             }
 
             Assert.AreEqual(1, received.Length);
+
+            var receivedArray = received[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertProps(
-                (EventBean) received[0],
-                new[] {"index"},
-                new object[] {2000 * Math.Exp(100 - 99.5)});
+                env.Container,
+                receivedArray,
+                new string[] { "index" },
+                new object[] { 2000 * Math.Exp(100 - 99.5) });
 
             env.UndeployAll();
         }

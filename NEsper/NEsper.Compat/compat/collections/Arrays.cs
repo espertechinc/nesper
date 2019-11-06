@@ -33,12 +33,12 @@ namespace com.espertech.esper.compat.collections
             Array array1,
             Array array2)
         {
-            if (array1 == null) {
-                throw new ArgumentNullException("array1");
-            }
-
-            if (array2 == null) {
-                throw new ArgumentNullException("array2");
+            if (array1 == null && array2 == null) {
+                return true;
+            } else if (array1 == null) {
+                return false;
+            } else if (array2 == null) {
+                return false;
             }
 
             if (array1.Length != array2.Length) {

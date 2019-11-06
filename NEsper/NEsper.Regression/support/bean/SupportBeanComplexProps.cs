@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.bean
         private int[] _arrayProperty;
         private int[] _indexedProps;
         private Properties _mappedProps;
-        private IDictionary<string, string> _mapProperty;
+        private IDictionary<string, object> _mapProperty;
         private SupportBeanSpecialGetterNested _nested;
         private object[] _objectArray;
         private string _simpleProperty;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             string simpleProperty,
             Properties mappedProps,
             int[] indexedProps,
-            IDictionary<string, string> mapProperty,
+            IDictionary<string, object> mapProperty,
             int[] arrayProperty,
             string nestedValue,
             string nestedNestedValue)
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             set => _simpleProperty = value;
         }
 
-        public IDictionary<string, string> MapProperty {
+        public IDictionary<string, object> MapProperty {
             get => _mapProperty;
             set => _mapProperty = value;
         }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             properties.Put("keyOne", "valueOne");
             properties.Put("keyTwo", "valueTwo");
 
-            IDictionary<string, string> mapProp = new Dictionary<string, string>();
+            IDictionary<string, object> mapProp = new Dictionary<string, object>();
             mapProp.Put("xOne", "yOne");
             mapProp.Put("xTwo", "yTwo");
 

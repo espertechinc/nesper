@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             object[] value,
             EventType eventType);
 
-        EventBean AdapterForTypedBean(
+        EventBean AdapterForTypedObject(
             object value,
             EventType eventType);
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         public const string ADAPTERFORTYPEDMAP = "AdapterForTypedMap";
         public const string ADAPTERFORTYPEDOBJECTARRAY = "AdapterForTypedObjectArray";
-        public const string ADAPTERFORTYPEDBEAN = "AdapterForTypedBean";
+        public const string ADAPTERFORTYPEDBEAN = "AdapterForTypedObject";
         public const string ADAPTERFORTYPEDDOM = "AdapterForTypedDOM";
         public const string ADAPTERFORTYPEDAVRO = "AdapterForTypedAvro";
         public const string ADAPTERFORTYPEDWRAPPER = "AdapterForTypedWrapper";

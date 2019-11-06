@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return new ObjectArrayEventBean(value, eventType);
         }
 
-        public EventBean AdapterForTypedBean(
+        public EventBean AdapterForTypedObject(
             object value,
             EventType eventType)
         {

@@ -8,11 +8,16 @@
 
 using System;
 
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.sum;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -23,8 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     /// </summary>
     public class AggregatorAvgNonBig : AggregatorSumNonBig
     {
+        private readonly AggregationFactoryMethodAvg _factoryMethodAvg;
+        
         public AggregatorAvgNonBig(
-            AggregationForgeFactory factory,
+            AggregationFactoryMethodAvg factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
@@ -44,6 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 optionalFilter,
                 sumType)
         {
+            _factoryMethodAvg = factory;
         }
 
         public override void GetValueCodegen(
@@ -53,11 +61,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             method.Block
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))
                 .BlockReturn(ConstantNull());
-            if (sumType == typeof(double)) {
+
+            var sumTypeBoxed = sumType.GetBoxedType();
+            if (sumTypeBoxed == typeof(decimal?)) {
+                var mathContext = _factoryMethodAvg.optionalMathContext;
+                if (mathContext == null) {
+                    method.Block.MethodReturn(Op(sum, "/", Cast<decimal>(cnt)));
+                }
+                else {
+                    var mathContextField = classScope.AddOrGetDefaultFieldSharable(
+                        new MathContextCodegenField(_factoryMethodAvg.optionalMathContext));
+                    method.Block.MethodReturn(
+                        StaticMethod(
+                            typeof(MathContextExtensions),
+                            "GetValueDivide",
+                            mathContextField,
+                            sum,
+                            cnt));
+                }
+            }
+            else if (sumTypeBoxed == typeof(double?)) {
                 method.Block.MethodReturn(Op(sum, "/", cnt));
             }
             else {
-                method.Block.MethodReturn(Op(sum, "/", Cast(typeof(double), cnt)));
+                method.Block.MethodReturn(Op(sum, "/", Cast<double>(cnt)));
             }
         }
     }

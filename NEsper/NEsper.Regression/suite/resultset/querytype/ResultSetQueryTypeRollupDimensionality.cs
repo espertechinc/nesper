@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                       "grouping(TheString) as c5," +
                       "grouping(IntPrimitive) as c6," +
                       "grouping(LongPrimitive) as c7," +
-                      "grouping_Id(TheString, IntPrimitive, LongPrimitive) as c8 " +
+                      "grouping_id(TheString, IntPrimitive, LongPrimitive) as c8 " +
                       "from SupportBean#length(4) " +
                       "group by " +
                       groupBy;

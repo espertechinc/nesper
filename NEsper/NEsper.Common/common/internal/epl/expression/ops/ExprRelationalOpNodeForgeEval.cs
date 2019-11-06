@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNullReturnNull("right");
             }
 
-            block.MethodReturn(forge.Computer.Codegen(Ref("left"), lhsType, Ref("right"), rhsType));
+            block.MethodReturn(forge.Computer.Codegen(Unbox(Ref("left")), lhsType, Ref("right"), rhsType));
             return LocalMethod(methodNode);
         }
     }

@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 Type keyPropType;
                 if (keyProps[i] is QueryGraphValueEntryHashKeyedForgeExpr) {
                     var hashExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyProps[i];
-                    keyPropType = hashExpr.KeyExpr.Forge.EvaluationType;
+                    keyPropType = hashExpr.KeyExpr.Forge.EvaluationType.GetBoxedType();
                 }
                 else {
                     var hashKeyProp = (QueryGraphValueEntryHashKeyedForgeProp) keyProps[i];

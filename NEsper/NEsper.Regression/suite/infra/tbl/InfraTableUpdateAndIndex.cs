@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[E1, 0]' already exists");
+                        "Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[\"E1\", 0]' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
@@ -118,8 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
-                        ex.InnerException,
-                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[E1, 0]' already exists");
+                        ex, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[\"E1\", 0]' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Statement("create").GetEnumerator(),
@@ -191,8 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
-                        ex.InnerException,
-                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
+                        ex, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),

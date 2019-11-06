@@ -13,9 +13,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     /// </summary>
     public class MetricExecStatement : MetricExec
     {
-        private readonly MetricEventRouter metricEventRouter;
-        private readonly MetricScheduleService metricScheduleService;
-        private readonly int statementGroup;
+        private readonly MetricEventRouter _metricEventRouter;
+        private readonly MetricScheduleService _metricScheduleService;
+        private readonly int _statementGroup;
         private long _interval;
 
         /// <summary>
@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             long interval,
             int statementGroup)
         {
-            this.metricEventRouter = metricEventRouter;
-            this.metricScheduleService = metricScheduleService;
-            Interval = interval;
-            this.statementGroup = statementGroup;
+            this._metricEventRouter = metricEventRouter;
+            this._metricScheduleService = metricScheduleService;
+            this._interval = interval;
+            this._statementGroup = statementGroup;
         }
 
         /// <summary>
@@ -47,29 +47,29 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 // Set a new interval, cancels the existing schedule, re-establishes the new
                 // schedule if the interval is a positive number.
                 _interval = value;
-                metricScheduleService.Remove(this);
+                _metricScheduleService.Remove(this);
                 if (_interval > 0) {
-                    metricScheduleService.Add(Interval, this);
+                    _metricScheduleService.Add(Interval, this);
                 }
             }
         }
 
         public void Execute(MetricExecutionContext context)
         {
-            var timestamp = metricScheduleService.CurrentTime;
-            var metrics = context.StatementMetricRepository.ReportGroup(statementGroup);
+            var timestamp = _metricScheduleService.CurrentTime;
+            var metrics = context.StatementMetricRepository.ReportGroup(_statementGroup);
             if (metrics != null) {
                 for (var i = 0; i < metrics.Length; i++) {
                     var metric = metrics[i];
                     if (metric != null) {
                         metric.Timestamp = timestamp;
-                        metricEventRouter.Route(metrics[i]);
+                        _metricEventRouter.Route(metric);
                     }
                 }
             }
 
             if (_interval != -1) {
-                metricScheduleService.Add(_interval, this);
+                _metricScheduleService.Add(_interval, this);
             }
         }
     }

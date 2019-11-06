@@ -145,10 +145,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             // try join passing of params
             var eplJoin = "@Name('s0') select " +
-                          typeof(InfraTableSelect).Name +
-                          ".myServiceEventBean(mt) as c0, " +
-                          typeof(InfraTableSelect).Name +
-                          ".myServiceObjectArray(mt) as c1 " +
+                          typeof(InfraTableSelect).FullName + ".MyServiceEventBean(mt) as c0, " +
+                          typeof(InfraTableSelect).FullName + ".MyServiceObjectArray(mt) as c1 " +
                           "from SupportBean_S2, MyTable as mt";
             env.CompileDeploy(eplJoin, path).AddListener("s0");
 
@@ -179,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(epl, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S2(0));
-            AssertEventUnd(env.Listener("s0").AssertOneGetNewAndReset().Get("arr"), rowValues);
+            AssertEventUnd(env.Listener("s0").AssertOneGetNewAndReset().Get("Arr"), rowValues);
 
             env.UndeployModuleContaining("s0");
         }
@@ -192,10 +190,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var epl = "@Name('s0') select (select * from MyTable).where(v->v.key = 'G1') as mt from SupportBean_S2";
             env.CompileDeploy(epl, path).AddListener("s0");
 
-            Assert.AreEqual(typeof(ICollection<object>), env.Statement("s0").EventType.GetPropertyType("mt"));
+            Assert.AreEqual(typeof(ICollection<object[]>), env.Statement("s0").EventType.GetPropertyType("mt"));
 
             env.SendEventBean(new SupportBean_S2(0));
-            var coll = (ICollection<object>) env.Listener("s0").AssertOneGetNewAndReset().Get("mt");
+            var coll = (ICollection<object[]>) env.Listener("s0").AssertOneGetNewAndReset().Get("mt");
             AssertEventUnd(coll.First(), rowValues);
 
             env.UndeployModuleContaining("s0");

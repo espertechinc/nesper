@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     /// </summary>
     public class CompositeTableLookupStrategy : JoinExecTableLookupStrategy
     {
-        private readonly EventType eventType;
-        private readonly PropertyCompositeEventTable index;
-        private readonly CompositeIndexQuery chain;
+        private readonly EventType _eventType;
+        private readonly PropertyCompositeEventTable _index;
+        private readonly CompositeIndexQuery _chain;
 
         public CompositeTableLookupStrategy(
             EventType eventType,
@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             QueryGraphValueEntryRange[] rangeKeyPairs,
             PropertyCompositeEventTable index)
         {
-            this.eventType = eventType;
-            this.index = index;
-            chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, rangeKeyPairs);
+            this._eventType = eventType;
+            this._index = index;
+            _chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, rangeKeyPairs);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         /// </summary>
         /// <returns>event type of the lookup event</returns>
         public EventType EventType {
-            get => eventType;
+            get => _eventType;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         /// </summary>
         /// <returns>index to use</returns>
         public PropertyCompositeEventTable Index {
-            get => index;
+            get => _index;
         }
 
         public ICollection<EventBean> Lookup(
@@ -68,14 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             InstrumentationCommon instrumentationCommon = context.InstrumentationProvider;
             if (instrumentationCommon.Activated()) {
-                instrumentationCommon.QIndexJoinLookup(this, index);
+                instrumentationCommon.QIndexJoinLookup(this, _index);
                 List<object> keys = new List<object>(2);
-                var resultCollectKeys = chain.GetCollectKeys(theEvent, index.Index, context, keys, index.PostProcessor);
+                var resultCollectKeys = _chain.GetCollectKeys(theEvent, _index.Index, context, keys, _index.PostProcessor);
                 instrumentationCommon.AIndexJoinLookup(resultCollectKeys, keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return resultCollectKeys;
             }
 
-            var result = chain.Get(theEvent, index.Index, context, index.PostProcessor);
+            var result = _chain.Get(theEvent, _index.Index, context, _index.PostProcessor);
             if (result != null && result.IsEmpty()) {
                 return null;
             }

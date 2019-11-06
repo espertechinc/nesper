@@ -116,12 +116,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create table WordCountTable(wordcms countMinSketch())", path);
                 env.CompileDeploy(
                     "create table WordCountTable2(wordcms countMinSketch({\n" +
-                    "  epsOfTotalCount: 0.000002,\n" +
-                    "  confidence: 0.999,\n" +
-                    "  seed: 38576,\n" +
-                    "  topk: 20,\n" +
-                    "  agent: '" +
-                    typeof(CountMinSketchAgentStringUTF16Forge).Name +
+                    "  EpsOfTotalCount: 0.000002,\n" +
+                    "  Confidence: 0.999,\n" +
+                    "  Seed: 38576,\n" +
+                    "  Topk: 20,\n" +
+                    "  Agent: '" +
+                    typeof(CountMinSketchAgentStringUTF16Forge).FullName +
                     "'" +
                     "}))",
                     path);
@@ -145,21 +145,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplTable = "create table MyApproxNS(bytefreq countMinSketch({" +
-                               "  epsOfTotalCount: 0.02," +
-                               "  confidence: 0.98," +
-                               "  topk: null," +
-                               "  agent: '" +
-                               typeof(MyBytesPassthruAgentForge).Name +
+                               "  EpsOfTotalCount: 0.02," +
+                               "  Confidence: 0.98," +
+                               "  Topk: null," +
+                               "  Agent: '" +
+                               typeof(MyBytesPassthruAgentForge).FullName +
                                "'" +
                                "}))";
                 env.CompileDeploy(eplTable, path);
 
                 var eplInto =
-                    "into table MyApproxNS select countMinSketchAdd(body) as bytefreq from SupportByteArrEventStringId(Id='A')";
+                    "into table MyApproxNS select countMinSketchAdd(Body) as bytefreq from SupportByteArrEventStringId(Id='A')";
                 env.CompileDeploy(eplInto, path);
 
                 var eplRead =
-                    "@Name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(body) as freq from SupportByteArrEventStringId(Id='B')";
+                    "@Name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(Body) as freq from SupportByteArrEventStringId(Id='B')";
                 env.CompileDeploy(eplRead, path).AddListener("s0");
 
                 env.SendEventBean(new SupportByteArrEventStringId("A", new byte[] {1, 2, 3}));
@@ -263,22 +263,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({xxx:3}))",
-                    "Failed to validate table-column expression 'countMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
+                    "Failed to validate table-column expression 'countMinSketch({\"xxx\"=3})': Unrecognized parameter 'xxx' [");
                 TryInvalidCompile(
                     env,
                     path,
-                    "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an System.Double but receives a value of type System.String [");
+                    "create table MyTable(cms countMinSketch({EpsOfTotalCount:'a'}))",
+                    "Failed to validate table-column expression 'countMinSketch({\"EpsOfTotalCount\"=\"a\"})': Property 'EpsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
+                    "Failed to validate table-column expression 'countMinSketch({\"agent\"=\"a\"})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'System.String'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provider: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
+                    "Failed to validate table-column expression 'countMinSketch({\"agent\"=\"System.Str...(41 chars)': Failed to instantiate agent provider: Type 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
 
                 // invalid "countMinSketchAdd" declarations
                 //
@@ -295,8 +295,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "into table MyCMS select countMinSketchAdd(body) as wordcms from SupportByteArrEventStringId",
-                    "Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'countMinSketch()' and received 'countMinSketchAdd(body)': Mismatching parameter return type, expected any of [class System.String] but received byte(Array) [");
+                    "into table MyCMS select countMinSketchAdd(Body) as wordcms from SupportByteArrEventStringId",
+                    "Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'countMinSketch()' and received 'countMinSketchAdd(Body)': " +
+                    "Mismatching parameter return type, expected any of [System.String] but received System.Byte[] [");
                 TryInvalidCompile(
                     env,
                     path,
@@ -327,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select MyCMS.wordcms.countMinSketchTopk(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
+                    "Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(Th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
 
                 env.UndeployAll();
             }

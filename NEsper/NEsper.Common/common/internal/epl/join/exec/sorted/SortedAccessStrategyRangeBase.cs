@@ -15,10 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
 {
     public abstract class SortedAccessStrategyRangeBase
     {
-        private readonly EventBean[] events;
+        private readonly EventBean[] _events;
 
-        private readonly bool isNWOnTrigger;
-        private readonly int lookupStream;
+        private readonly bool _isNwOnTrigger;
+        private readonly int _lookupStream;
         protected ExprEvaluator end;
         protected bool includeEnd;
         protected bool includeStart;
@@ -37,14 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             this.includeStart = includeStart;
             this.end = end;
             this.includeEnd = includeEnd;
-            this.isNWOnTrigger = isNWOnTrigger;
+            this._isNwOnTrigger = isNWOnTrigger;
 
-            this.lookupStream = lookupStream;
+            this._lookupStream = lookupStream;
             if (lookupStream != -1) {
-                events = new EventBean[lookupStream + 1];
+                _events = new EventBean[lookupStream + 1];
             }
             else {
-                events = new EventBean[numStreams + 1];
+                _events = new EventBean[numStreams + 1];
             }
         }
 
@@ -52,40 +52,40 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             EventBean theEvent,
             ExprEvaluatorContext context)
         {
-            events[lookupStream] = theEvent;
-            return start.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            return start.Evaluate(_events, true, context);
         }
 
         public object EvaluateLookupEnd(
             EventBean theEvent,
             ExprEvaluatorContext context)
         {
-            events[lookupStream] = theEvent;
-            return end.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            return end.Evaluate(_events, true, context);
         }
 
         public object EvaluatePerStreamStart(
             EventBean[] eventsPerStream,
             ExprEvaluatorContext context)
         {
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 return start.Evaluate(eventsPerStream, true, context);
             }
 
-            Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-            return start.Evaluate(events, true, context);
+            Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
+            return start.Evaluate(_events, true, context);
         }
 
         public object EvaluatePerStreamEnd(
             EventBean[] eventsPerStream,
             ExprEvaluatorContext context)
         {
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 return end.Evaluate(eventsPerStream, true, context);
             }
 
-            Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-            return end.Evaluate(events, true, context);
+            Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
+            return end.Evaluate(_events, true, context);
         }
 
         public string ToQueryPlan()

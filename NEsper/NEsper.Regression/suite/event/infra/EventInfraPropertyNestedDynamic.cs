@@ -91,10 +91,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(Collections.EmptyDataMap, NotExists()),
                 new Pair<object, object>(
-                    Collections.SingletonMap("item", Collections.SingletonMap("Id", 101)),
+                    Collections.SingletonMap("Item", Collections.SingletonMap("Id", 101)),
                     Exists(101)),
                 new Pair<object, object>(
-                    Collections.SingletonMap("item", Collections.EmptyDataMap),
+                    Collections.SingletonMap("Item", Collections.EmptyDataMap),
                     NotExists())
             };
             RunAssertion(
@@ -117,8 +117,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // XML
             Pair<object, object>[] xmlTests = {
-                new Pair<object, object>("<item Id=\"101\"/>", Exists("101")),
-                new Pair<object, object>("<item/>", NotExists())
+                new Pair<object, object>("<Item Id=\"101\"/>", Exists("101")),
+                new Pair<object, object>("<Item/>", NotExists())
             };
             if (!outputEventRep.IsAvroEvent()) {
                 RunAssertion(

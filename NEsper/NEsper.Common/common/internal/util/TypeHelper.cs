@@ -672,7 +672,7 @@ namespace com.espertech.esper.common.@internal.util
             object numToCoerce,
             Type resultBoxedType)
         {
-            //resultBoxedType = resultBoxedType.GetBoxedType();
+            resultBoxedType = resultBoxedType.GetBoxedType();
 
             if (numToCoerce.GetType() == resultBoxedType)
             {

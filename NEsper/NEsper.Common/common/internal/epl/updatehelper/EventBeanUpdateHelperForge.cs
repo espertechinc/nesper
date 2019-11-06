@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             for (var i = 0; i < UpdateItems.Length; i++) {
                 var updateItem = UpdateItems[i];
                 method.Block.Apply(Instblock(classScope, "qInfraUpdateRHSExpr", Constant(i)));
-
+                
                 if (types[i] == null && updateItem.OptionalWriter != null) {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
@@ -228,9 +228,10 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 if (updateItem.OptionalWidener != null) {
                     assigned = updateItem.OptionalWidener.WidenCodegen(@ref, method, classScope);
                 }
-
-                // Unbox the reference if applicable
-                assigned = Unbox(assigned, types[i]);
+                else {
+                    // Unbox the reference if applicable
+                    assigned = Unbox(assigned, types[i]);
+                }
 
                 if (!types[i].IsPrimitive && updateItem.IsNotNullableField) {
                     method.Block

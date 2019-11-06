@@ -690,7 +690,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var milestone = new AtomicLong();
 
-                #if false
                 RunAssertionDatetimeBaseTypes(env, true, milestone);
 
                 RunAssertionDatetimeVariance(env, milestone);
@@ -702,7 +701,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 RunAssertionConstantDate(env, milestone);
 
                 RunAssertionISO8601Date(env, milestone);
-                #endif
 
                 RunAssertionDateformatNonString(env, milestone);
 

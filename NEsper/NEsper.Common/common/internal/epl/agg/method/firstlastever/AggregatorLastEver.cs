@@ -54,7 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
                 optionalFilter)
         {
             _childType = childType.GetBoxedType();
-            lastValue = membersColumnized.AddMember(col, _childType, "lastValue");
+            // NOTE: we had originally set the value of the member to childType which seems correct an
+            //   appropriate.  However, the code is not doing proper type checking and cast conversion
+            //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
+            //   time.
+            lastValue = membersColumnized.AddMember(col, typeof(object), "lastValue");
             serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
         }
 

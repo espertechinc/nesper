@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 q.SetObject(1, id);
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(q);
                 Assert.AreEqual(1, result.Array.Length, "failed for Id " + id);
-                Assert.AreEqual(id, result.Array[0].Get("P0"));
+                Assert.AreEqual(id, result.Array[0].Get("p0"));
                 stageOutput.Push(id);
                 numberOfOperations++;
             }

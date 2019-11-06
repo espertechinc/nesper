@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return coercer.CoerceCodegen(Cast(typeof(object), expression), typeof(object));
+            return coercer.CoerceCodegen(expression, typeof(object));
         }
     }
 } // end of namespace

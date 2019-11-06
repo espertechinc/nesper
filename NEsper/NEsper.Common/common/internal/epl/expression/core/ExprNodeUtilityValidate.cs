@@ -188,7 +188,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     break;
                 }
 
-                if ((returnType == expectedType) || (expectedType.IsAssignableFrom(returnType))) {
+                if ((returnType == expectedType.GetBoxedType()) ||
+                    (expectedType.IsAssignableFrom(returnType))) {
                     found = true;
                     break;
                 }

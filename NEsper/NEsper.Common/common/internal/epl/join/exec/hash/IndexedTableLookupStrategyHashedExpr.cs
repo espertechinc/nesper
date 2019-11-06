@@ -24,22 +24,22 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
 {
     public class IndexedTableLookupStrategyHashedExpr : JoinExecTableLookupStrategy
     {
-        private readonly IndexedTableLookupPlanHashedOnlyFactory factory;
-        private readonly PropertyHashedEventTable index;
-        private readonly EventBean[] eventsPerStream;
+        private readonly IndexedTableLookupPlanHashedOnlyFactory _factory;
+        private readonly PropertyHashedEventTable _index;
+        private readonly EventBean[] _eventsPerStream;
 
         public IndexedTableLookupStrategyHashedExpr(
             IndexedTableLookupPlanHashedOnlyFactory factory,
             PropertyHashedEventTable index,
             int numStreams)
         {
-            this.factory = factory;
-            this.index = index;
-            this.eventsPerStream = new EventBean[numStreams + 1];
+            _factory = factory;
+            _index = index;
+            _eventsPerStream = new EventBean[numStreams + 1];
         }
 
         public PropertyHashedEventTable Index {
-            get => index;
+            get => _index;
         }
 
         public ICollection<EventBean> Lookup(
@@ -48,11 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
             ExprEvaluatorContext exprEvaluatorContext)
         {
             InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QIndexJoinLookup(this, index);
+            instrumentationCommon.QIndexJoinLookup(this, _index);
 
-            eventsPerStream[factory.LookupStream] = theEvent;
-            object key = factory.ExprEvaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            ISet<EventBean> result = index.Lookup(key);
+            _eventsPerStream[_factory.LookupStream] = theEvent;
+            var key = _factory.ExprEvaluator.Evaluate(_eventsPerStream, true, exprEvaluatorContext);
+            var result = _index.Lookup(key);
 
             instrumentationCommon.AIndexJoinLookup(result, key);
             return result;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
         {
             return "IndexedTableLookupStrategySingleExpr evaluation" +
                    " index=(" +
-                   index +
+                   _index +
                    ')';
         }
 

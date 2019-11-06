@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
     /// </summary>
     public class LookupInstructionExecNode : ExecNode
     {
-        private readonly BaseAssemblyNode[] assemblyInstructions;
-        private readonly LookupInstructionExec[] lookupInstructions;
-        private readonly MyResultAssembler myResultAssembler;
-        private readonly int numStreams;
-        private readonly bool[] requiredPerStream;
-        private readonly int rootStream;
-        private readonly string rootStreamName;
-        private readonly int requireResultsInstruction;
+        private readonly BaseAssemblyNode[] _assemblyInstructions;
+        private readonly LookupInstructionExec[] _lookupInstructions;
+        private readonly MyResultAssembler _myResultAssembler;
+        private readonly int _numStreams;
+        private readonly bool[] _requiredPerStream;
+        private readonly int _rootStream;
+        private readonly string _rootStreamName;
+        private readonly int _requireResultsInstruction;
 
         /// <summary>
         ///     Ctor.
@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             bool[] requiredPerStream,
             BaseAssemblyNodeFactory[] assemblyInstructionFactories)
         {
-            this.rootStream = rootStream;
-            this.rootStreamName = rootStreamName;
-            this.numStreams = numStreams;
-            this.lookupInstructions = lookupInstructions;
-            this.requiredPerStream = requiredPerStream;
+            this._rootStream = rootStream;
+            this._rootStreamName = rootStreamName;
+            this._numStreams = numStreams;
+            this._lookupInstructions = lookupInstructions;
+            this._requiredPerStream = requiredPerStream;
 
             // We have a list of factories that are pointing to each other in a tree, i.e.:
             // F1 (=>F3), F2 (=>F3), F3
@@ -79,21 +79,21 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                 }
             }
 
-            assemblyInstructions = new BaseAssemblyNode[assemblyInstructionFactories.Length];
+            _assemblyInstructions = new BaseAssemblyNode[assemblyInstructionFactories.Length];
             for (var i = 0; i < assemblyInstructionFactories.Length; i++) {
-                assemblyInstructions[i] = nodes.Get(assemblyInstructionFactories[i]);
+                _assemblyInstructions[i] = nodes.Get(assemblyInstructionFactories[i]);
             }
 
-            myResultAssembler = new MyResultAssembler(rootStream);
-            assemblyInstructions[assemblyInstructions.Length - 1].ParentAssembler = myResultAssembler;
+            _myResultAssembler = new MyResultAssembler(rootStream);
+            _assemblyInstructions[_assemblyInstructions.Length - 1].ParentAssembler = _myResultAssembler;
 
             // Determine up to which instruction we are dealing with optional results.
             // When dealing with optional results we don't do fast exists if we find no lookup results
-            requireResultsInstruction = 1; // we always require results from the very first lookup
+            _requireResultsInstruction = 1; // we always require results from the very first lookup
             for (var i = 1; i < lookupInstructions.Length; i++) {
                 var fromStream = lookupInstructions[i].FromStream;
                 if (requiredPerStream[fromStream]) {
-                    requireResultsInstruction =
+                    _requireResultsInstruction =
                         i + 1; // require results as long as the from-stream is a required stream
                 }
                 else {
@@ -108,11 +108,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             ICollection<EventBean[]> resultFinalRows,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var repository = new RepositoryImpl(rootStream, lookupEvent, numStreams);
+            var repository = new RepositoryImpl(_rootStream, lookupEvent, _numStreams);
             var processOptional = true;
 
-            for (var i = 0; i < requireResultsInstruction; i++) {
-                var currentInstruction = lookupInstructions[i];
+            for (var i = 0; i < _requireResultsInstruction; i++) {
+                var currentInstruction = _lookupInstructions[i];
                 var hasResults = currentInstruction.Process(repository, exprEvaluatorContext);
 
                 // no results, check what to do
@@ -130,8 +130,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             }
 
             if (processOptional) {
-                for (var i = requireResultsInstruction; i < lookupInstructions.Length; i++) {
-                    var currentInstruction = lookupInstructions[i];
+                for (var i = _requireResultsInstruction; i < _lookupInstructions.Length; i++) {
+                    var currentInstruction = _lookupInstructions[i];
                     currentInstruction.Process(repository, exprEvaluatorContext);
                 }
             }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
 
             // no results - need to execute the very last instruction/top node
             if (results == null) {
-                var lastAssemblyNode = assemblyInstructions[assemblyInstructions.Length - 1];
+                var lastAssemblyNode = _assemblyInstructions[_assemblyInstructions.Length - 1];
                 lastAssemblyNode.Init(null);
                 lastAssemblyNode.Process(null, resultFinalRows, lookupEvent);
                 return;
@@ -149,13 +149,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
 
             // we have results - execute all instructions
             BaseAssemblyNode assemblyNode;
-            for (var i = 0; i < assemblyInstructions.Length; i++) {
-                assemblyNode = assemblyInstructions[i];
+            for (var i = 0; i < _assemblyInstructions.Length; i++) {
+                assemblyNode = _assemblyInstructions[i];
                 assemblyNode.Init(results);
             }
 
-            for (var i = 0; i < assemblyInstructions.Length; i++) {
-                assemblyNode = assemblyInstructions[i];
+            for (var i = 0; i < _assemblyInstructions.Length; i++) {
+                assemblyNode = _assemblyInstructions[i];
                 assemblyNode.Process(results, resultFinalRows, lookupEvent);
             }
         }
@@ -165,27 +165,27 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             writer.WriteLine(
                 "LookupInstructionExecNode" +
                 " rootStream=" +
-                rootStream +
+                _rootStream +
                 " name=" +
-                rootStreamName +
+                _rootStreamName +
                 " requiredPerStream=" +
-                requiredPerStream.RenderAny());
+                _requiredPerStream.RenderAny());
 
             writer.IncrIndent();
-            for (var i = 0; i < lookupInstructions.Length; i++) {
+            for (var i = 0; i < _lookupInstructions.Length; i++) {
                 writer.WriteLine("lookup inst node " + i);
                 writer.IncrIndent();
-                lookupInstructions[i].Print(writer);
+                _lookupInstructions[i].Print(writer);
                 writer.DecrIndent();
             }
 
             writer.DecrIndent();
 
             writer.IncrIndent();
-            for (var i = 0; i < assemblyInstructions.Length; i++) {
+            for (var i = 0; i < _assemblyInstructions.Length; i++) {
                 writer.WriteLine("assembly inst node " + i);
                 writer.IncrIndent();
-                assemblyInstructions[i].Print(writer);
+                _assemblyInstructions[i].Print(writer);
                 writer.DecrIndent();
             }
 
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         /// </summary>
         public class MyResultAssembler : ResultAssembler
         {
-            private readonly int rootStream;
+            private readonly int _rootStream;
 
             /// <summary>
             ///     Ctor.
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             /// <param name="rootStream">is the root stream for which we get results</param>
             public MyResultAssembler(int rootStream)
             {
-                this.rootStream = rootStream;
+                this._rootStream = rootStream;
             }
 
             public void Result(
@@ -216,7 +216,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                 ICollection<EventBean[]> resultFinalRows,
                 EventBean resultRootEvent)
             {
-                row[rootStream] = resultRootEvent;
+                row[_rootStream] = resultRootEvent;
                 resultFinalRows.Add(row);
             }
         }

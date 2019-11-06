@@ -27,21 +27,21 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
     /// </summary>
     public class InKeywordMultiTableLookupStrategyExpr : JoinExecTableLookupStrategy
     {
-        private readonly InKeywordTableLookupPlanMultiIdxFactory factory;
-        private readonly PropertyHashedEventTable[] indexes;
-        private readonly EventBean[] eventsPerStream;
+        private readonly InKeywordTableLookupPlanMultiIdxFactory _factory;
+        private readonly PropertyHashedEventTable[] _indexes;
+        private readonly EventBean[] _eventsPerStream;
 
         public InKeywordMultiTableLookupStrategyExpr(
             InKeywordTableLookupPlanMultiIdxFactory factory,
             PropertyHashedEventTable[] indexes)
         {
-            this.factory = factory;
-            this.indexes = indexes;
-            this.eventsPerStream = new EventBean[factory.LookupStream + 1];
+            this._factory = factory;
+            this._indexes = indexes;
+            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
         public PropertyHashedEventTable[] Index {
-            get => indexes;
+            get => _indexes;
         }
 
         public ICollection<EventBean> Lookup(
@@ -50,14 +50,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             ExprEvaluatorContext exprEvaluatorContext)
         {
             InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QIndexJoinLookup(this, indexes[0]);
+            instrumentationCommon.QIndexJoinLookup(this, _indexes[0]);
 
-            eventsPerStream[factory.LookupStream] = theEvent;
+            _eventsPerStream[_factory.LookupStream] = theEvent;
             ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
-                factory.KeyExpr,
-                eventsPerStream,
+                _factory.KeyExpr,
+                _eventsPerStream,
                 exprEvaluatorContext,
-                indexes);
+                _indexes);
 
             instrumentationCommon.AIndexJoinLookup(result, null);
 

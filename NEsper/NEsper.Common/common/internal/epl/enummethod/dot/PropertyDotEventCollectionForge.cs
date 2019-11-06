@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = methodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(ICollection<EventBean>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
             methodNode.Block

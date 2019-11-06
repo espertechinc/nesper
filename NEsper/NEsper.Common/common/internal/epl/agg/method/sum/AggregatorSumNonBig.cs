@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                 sumType)
 
         {
-            ISet<Type> typeSet = Collections.Set(
+            var typeSet = Collections.Set(
+                typeof(decimal?),
                 typeof(double?),
                 typeof(long?),
                 typeof(int?),
@@ -61,6 +63,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 
         protected override CodegenExpression InitOfSum()
         {
+            if (sumType == typeof(decimal?)) {
+                return Constant(0.0m);
+            } else if (sumType == typeof(double?)) {
+                return Constant(0.0d);
+            } else if (sumType == typeof(float?)) {
+                return Constant(0.0f);
+            } else if (sumType == typeof(long?)) {
+                return Constant(0L);
+            }
+
             return Constant(0);
         }
 
@@ -104,17 +116,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (sumType == typeof(double?)) {
+            if (sumType == typeof(decimal?)) {
+                method.Block.Apply(WriteDecimal(output, row, sum));
+            }
+            else if (sumType == typeof(double?)) {
                 method.Block.Apply(WriteDouble(output, row, sum));
+            }
+            else if (sumType == typeof(float?)) {
+                method.Block.Apply(WriteFloat(output, row, sum));
             }
             else if (sumType == typeof(long?)) {
                 method.Block.Apply(WriteLong(output, row, sum));
             }
             else if (sumType == typeof(int?)) {
                 method.Block.Apply(WriteInt(output, row, sum));
-            }
-            else if (sumType == typeof(float?)) {
-                method.Block.Apply(WriteFloat(output, row, sum));
             }
             else {
                 throw new IllegalStateException("Unrecognized sum type " + sumType);
@@ -127,17 +142,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (sumType == typeof(double?)) {
+            if (sumType == typeof(decimal?)) {
+                method.Block.Apply(ReadDecimal(row, sum, input));
+            }
+            else if (sumType == typeof(double?)) {
                 method.Block.Apply(ReadDouble(row, sum, input));
+            }
+            else if (sumType == typeof(float?)) {
+                method.Block.Apply(ReadFloat(row, sum, input));
             }
             else if (sumType == typeof(long?)) {
                 method.Block.Apply(ReadLong(row, sum, input));
             }
             else if (sumType == typeof(int?)) {
                 method.Block.Apply(ReadInt(row, sum, input));
-            }
-            else if (sumType == typeof(float?)) {
-                method.Block.Apply(ReadFloat(row, sum, input));
             }
             else {
                 throw new IllegalStateException("Unrecognized sum type " + sumType);
@@ -162,10 +180,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenClassScope classScope)
         {
             var coercer = GetCoercerNonBigInt(sumType);
-            var valueType = method.LocalParams.First(p => p.Name == value.Ref).Type;
             var opcode = enter ? "+" : "-";
-            method.Block.AssignRef(sum, Op(sum, opcode, 
-                coercer.CoerceCodegen(value, valueType)));
+            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, typeof(object))));
         }
     }
 } // end of namespace

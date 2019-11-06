@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
         SortedAccessStrategy
     {
         // indicate whether "a between 60 and 50" should return no results (false, equivalent to a>= X and a <=Y) or should return results (true, equivalent to 'between' and 'in')
-        private readonly bool allowRangeReversal;
+        private readonly bool _allowRangeReversal;
 
         public SortedAccessStrategyRange(
             bool isNWOnTrigger,
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             bool allowRangeReversal)
             : base(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd)
         {
-            this.allowRangeReversal = allowRangeReversal;
+            this._allowRangeReversal = allowRangeReversal;
         }
 
         public ISet<EventBean> Lookup(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
                 includeStart,
                 base.EvaluateLookupEnd(theEvent, context),
                 includeEnd,
-                allowRangeReversal);
+                _allowRangeReversal);
         }
 
         public ISet<EventBean> LookupCollectKeys(
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             keys.Add(start);
             object end = base.EvaluateLookupEnd(theEvent, context);
             keys.Add(end);
-            return index.LookupRange(start, includeStart, end, includeEnd, allowRangeReversal);
+            return index.LookupRange(start, includeStart, end, includeEnd, _allowRangeReversal);
         }
 
         public ICollection<EventBean> Lookup(
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
                 includeStart,
                 base.EvaluatePerStreamEnd(eventsPerStream, context),
                 includeEnd,
-                allowRangeReversal);
+                _allowRangeReversal);
         }
 
         public ICollection<EventBean> LookupCollectKeys(
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             keys.Add(start);
             object end = base.EvaluatePerStreamEnd(eventsPerStream, context);
             keys.Add(end);
-            return index.LookupRangeColl(start, includeStart, end, includeEnd, allowRangeReversal);
+            return index.LookupRangeColl(start, includeStart, end, includeEnd, _allowRangeReversal);
         }
     }
 } // end of namespace

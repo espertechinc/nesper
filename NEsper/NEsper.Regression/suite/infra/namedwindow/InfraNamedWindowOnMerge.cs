@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             RegressionEnvironment env,
             string onInsert)
         {
-            var epl = "insert into SBStream select * from SupportBean_Container[beans];\n" +
+            var epl = "insert into SBStream select * from SupportBean_Container[Beans];\n" +
                       "@Name('window') create window MyWindow#keepall as SupportBean;\n" +
                       onInsert;
             env.CompileDeploy(epl);
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(
                     "@Name('merge') on SupportBean_S0 as sb " +
                     "merge MyWindowUNP as mywin when matched then " +
-                    "update set mywin.set_DoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
+                    "update set mywin.SetDoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
                     path);
                 env.AddListener("merge");
                 var fields = new [] { "IntPrimitive","DoublePrimitive","DoubleBoxed" };

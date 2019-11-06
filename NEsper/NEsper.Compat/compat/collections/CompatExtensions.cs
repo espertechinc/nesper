@@ -1256,6 +1256,11 @@ namespace com.espertech.esper.compat.collections
             throw new ArgumentException("invalid value for string dictionary", nameof(value));
         }
 
+        public static IDictionary<string, object> AsStringDictionary(this object value)
+        {
+            return AsStringDictionary(value, MagicMarker.SingletonInstance);
+        }
+
         public static IDictionary<object, object> AsObjectDictionary(
             this object value)
         {

@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var eplInto = "into table vartotal select " +
                           CollectionUtil.ToString(GetIntoCols()) +
-                          " from Support10ColEvent group by groupKey";
+                          " from Support10ColEvent group by GroupKey";
             env.CompileDeploy(eplInto, path);
 
             // initialize groups
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             IList<string> cols = new List<string>();
             for (var i = 0; i < 10; i++) { // 10 columns, not configurable
-                cols.Add("sum(c" + i + ") as tc" + i);
+                cols.Add("sum(C" + i + ") as tc" + i);
             }
 
             return cols;

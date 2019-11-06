@@ -16,10 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
 {
     public abstract class SortedAccessStrategyRelOpBase
     {
-        private readonly EventBean[] events;
-        private readonly bool isNWOnTrigger;
-        private readonly ExprEvaluator keyEval;
-        private readonly int lookupStream;
+        private readonly EventBean[] _events;
+        private readonly bool _isNwOnTrigger;
+        private readonly ExprEvaluator _keyEval;
+        private readonly int _lookupStream;
 
         protected SortedAccessStrategyRelOpBase(
             bool isNWOnTrigger,
@@ -27,14 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             int numStreams,
             ExprEvaluator keyEval)
         {
-            this.lookupStream = lookupStream;
-            this.keyEval = keyEval;
-            this.isNWOnTrigger = isNWOnTrigger;
+            this._lookupStream = lookupStream;
+            this._keyEval = keyEval;
+            this._isNwOnTrigger = isNWOnTrigger;
             if (lookupStream != -1) {
-                events = new EventBean[lookupStream + 1];
+                _events = new EventBean[lookupStream + 1];
             }
             else {
-                events = new EventBean[numStreams + 1];
+                _events = new EventBean[numStreams + 1];
             }
         }
 
@@ -42,25 +42,25 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             EventBean theEvent,
             ExprEvaluatorContext context)
         {
-            events[lookupStream] = theEvent;
-            return keyEval.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            return _keyEval.Evaluate(_events, true, context);
         }
 
         public object EvaluatePerStream(
             EventBean[] eventsPerStream,
             ExprEvaluatorContext context)
         {
-            if (isNWOnTrigger) {
-                return keyEval.Evaluate(eventsPerStream, true, context);
+            if (_isNwOnTrigger) {
+                return _keyEval.Evaluate(eventsPerStream, true, context);
             }
 
-            Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-            return keyEval.Evaluate(events, true, context);
+            Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
+            return _keyEval.Evaluate(_events, true, context);
         }
 
         public string ToQueryPlan()
         {
-            return GetType().GetSimpleName() + " key " + keyEval.GetType().GetSimpleName();
+            return GetType().GetSimpleName() + " key " + _keyEval.GetType().GetSimpleName();
         }
     }
 } // end of namespace

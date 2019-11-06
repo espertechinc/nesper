@@ -64,6 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             foreach (var channel in dataflow.LogicalChannels) {
                 var targetClass = operators.Get(channel.ConsumingOpNum).GetType();
                 var consumingMethod = FindMatchingMethod(channel.ConsumingOpPrettyPrint, targetClass, channel, false);
+
                 LogicalChannelBindingMethodDesc onSignalMethod = null;
                 if (channel.OutputPort.HasPunctuation) {
                     onSignalMethod = FindMatchingMethod(channel.ConsumingOpPrettyPrint, targetClass, channel, true);
@@ -240,8 +241,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             if (channelDesc.ConsumingOptStreamAliasName != null) {
                 channelSpecificMethodName = "On" + channelDesc.ConsumingOptStreamAliasName;
             }
-
-            foreach (var method in target.GetMethods()) {
+            
+            var methods = target.GetMethods();
+            foreach (var method in methods) {
                 var eligible = method.Name.Equals("OnInput");
                 if (!eligible && method.Name.Equals(channelSpecificMethodName)) {
                     eligible = true;
@@ -257,13 +259,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
                 if (expectedUnderlying != null) {
                     if (numParams == 1 &&
-                        TypeHelper.IsSubclassOrImplementsInterface(paramTypes[0], expectedUnderlying)) {
-                        return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
+                        TypeHelper.IsAssignmentCompatible(expectedUnderlying.GetType(), paramTypes[0])) {
+                        return new LogicalChannelBindingMethodDesc(
+                            method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
 
                     if (numParams == 2 &&
-                        paramTypes[0].GetBoxedType() == typeof(int) &&
-                        TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying)) {
+                        paramTypes[0].GetBoxedType() == typeof(int?) &&
+                        TypeHelper.IsAssignmentCompatible(expectedUnderlying.GetType(), paramTypes[1])) {
                         return new LogicalChannelBindingMethodDesc(
                             method,
                             new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
@@ -274,7 +277,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     (paramTypes[0] == typeof(object) ||
                      paramTypes[0] == typeof(object[]) &&
                      method.IsVarArgs())) {
-                    return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
+                    return new LogicalChannelBindingMethodDesc(
+                        method, LogicalChannelBindingTypePassAlong.INSTANCE);
                 }
 
                 if (numParams == 2 &&

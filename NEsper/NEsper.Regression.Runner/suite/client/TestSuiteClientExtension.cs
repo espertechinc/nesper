@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, new ClientExtendAggregationFunction());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestClientExtendAggregationMultiFunction()
         {
             RegressionRunner.Run(_session, new ClientExtendAggregationMultiFunction());

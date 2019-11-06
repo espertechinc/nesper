@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventBean Wrap(object underlying)
         {
-            var bean = eventBeanTypedEventFactory.AdapterForTypedBean(underlying, beanEventType);
+            var bean = eventBeanTypedEventFactory.AdapterForTypedObject(underlying, beanEventType);
             return eventBeanTypedEventFactory.AdapterForTypedWrapper(
                 bean,
                 Collections.GetEmptyMap<string, object>(),

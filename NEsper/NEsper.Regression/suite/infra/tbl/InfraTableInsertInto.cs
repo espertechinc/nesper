@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
             else {
                 schemaCompiled = env.Compile(
-                    "create " + rep.GetOutputTypeCreateSchemaName() + " schema MySchema (p0 string, p1 string)",
+                    "create " + rep.GetOutputTypeCreateSchemaName() + " schema MySchema (P0 string, P1 string)",
                     options => {
                         options.BusModifierEventType = ctx => EventTypeBusModifier.BUS;
                         options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             path.Add(schemaCompiled);
             env.Deploy(schemaCompiled);
 
-            env.CompileDeploy("@Name('create') create table TheTable (p0 string, p1 string)", path);
+            env.CompileDeploy("@Name('create') create table TheTable (P0 string, P1 string)", path);
             env.CompileDeploy("insert into TheTable select * from MySchema", path);
 
             if (bean) {
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("create").Advance(),
-                new [] { "p0","p1" },
+                new [] { "P0","P1" },
                 new object[] {"a", "b"});
             env.UndeployAll();
         }
@@ -472,7 +472,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "System.Exception: Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
+                        "Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
                 }
 
                 env.UndeployAll();

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.type
             }
 
             public CodegenExpression Codegen(
-                CodegenExpressionRef lhs,
+                CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
                 Type rhsType)

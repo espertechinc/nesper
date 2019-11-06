@@ -1264,10 +1264,18 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 var theEvent = env.Listener("A").AssertOneGetNewAndReset();
-                Assert.AreEqual("NineToFive", theEvent.Get("c1"));
-                Assert.AreEqual("2002-05-03T16:59:59.000", theEvent.Get("c2").RenderAny());
-                Assert.AreEqual("2002-05-03T17:00:00.000", theEvent.Get("c3").RenderAny());
-                Assert.AreEqual("E1", theEvent.Get("c4"));
+                Assert.That(
+                    theEvent.Get("c1"),
+                    Is.EqualTo("NineToFive"));
+                Assert.That(
+                    theEvent.Get("c2"),
+                    Is.EqualTo(DateTimeParsingFunctions.ParseDefaultMSec("2002-05-03T16:59:59.000")));
+                Assert.That(
+                    theEvent.Get("c3"),
+                    Is.EqualTo(DateTimeParsingFunctions.ParseDefaultMSec("2002-05-03T17:00:00.000")));
+                Assert.That(
+                    theEvent.Get("c4"),
+                    Is.EqualTo("E1"));
 
                 env.UndeployAll();
             }

@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {
     public class CompositeIndexQueryKeyed : CompositeIndexQuery
     {
-        private readonly EventBean[] events;
-        private readonly ExprEvaluator hashGetter;
-        private readonly bool isNWOnTrigger;
-        private readonly int lookupStream;
+        private readonly EventBean[] _events;
+        private readonly ExprEvaluator _hashGetter;
+        private readonly bool _isNwOnTrigger;
+        private readonly int _lookupStream;
 
-        private CompositeIndexQuery next;
+        private CompositeIndexQuery _next;
 
         public CompositeIndexQueryKeyed(
             bool isNWOnTrigger,
@@ -32,21 +32,21 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             int numStreams,
             ExprEvaluator hashGetter)
         {
-            this.hashGetter = hashGetter;
-            this.isNWOnTrigger = isNWOnTrigger;
-            this.lookupStream = lookupStream;
+            this._hashGetter = hashGetter;
+            this._isNwOnTrigger = isNWOnTrigger;
+            this._lookupStream = lookupStream;
 
             if (lookupStream != -1) {
-                events = new EventBean[lookupStream + 1];
+                _events = new EventBean[lookupStream + 1];
             }
             else {
-                events = new EventBean[numStreams + 1];
+                _events = new EventBean[numStreams + 1];
             }
         }
 
         public CompositeIndexQuery SetNext(CompositeIndexQuery next)
         {
-            this.next = next;
+            this._next = next;
             return this;
         }
 
@@ -56,15 +56,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ExprEvaluatorContext context,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            events[lookupStream] = theEvent;
-            var mk = hashGetter.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            var mk = _hashGetter.Evaluate(_events, true, context);
             var innerEntry = parent.Get(mk);
             if (innerEntry == null) {
                 return null;
             }
 
             var innerIndex = innerEntry.AssertIndex();
-            return next.Get(theEvent, innerIndex, context, postProcessor);
+            return _next.Get(theEvent, innerIndex, context, postProcessor);
         }
 
         public ICollection<EventBean> GetCollectKeys(
@@ -74,8 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> keys,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            events[lookupStream] = theEvent;
-            var mk = hashGetter.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            var mk = _hashGetter.Evaluate(_events, true, context);
             if (mk is MultiKey<object> multiKeyArray) {
                 keys.AddAll(multiKeyArray.Array);
             }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var innerIndex = innerEntry.AssertIndex();
-            return next.GetCollectKeys(theEvent, innerIndex, context, keys, postProcessor);
+            return _next.GetCollectKeys(theEvent, innerIndex, context, keys, postProcessor);
         }
 
         public ICollection<EventBean> Get(
@@ -99,22 +99,22 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             EventBean[] eventsToUse;
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 eventsToUse = eventsPerStream;
             }
             else {
-                Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-                eventsToUse = events;
+                Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
+                eventsToUse = _events;
             }
 
-            var mk = hashGetter.Evaluate(eventsToUse, true, context);
+            var mk = _hashGetter.Evaluate(eventsToUse, true, context);
             var innerEntry = parent.Get(mk);
             if (innerEntry == null) {
                 return null;
             }
 
             var innerIndex = innerEntry.AssertIndex();
-            return next.Get(eventsPerStream, innerIndex, context, postProcessor);
+            return _next.Get(eventsPerStream, innerIndex, context, postProcessor);
         }
 
         public ICollection<EventBean> GetCollectKeys(
@@ -125,15 +125,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             EventBean[] eventsToUse;
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 eventsToUse = eventsPerStream;
             }
             else {
-                Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-                eventsToUse = events;
+                Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
+                eventsToUse = _events;
             }
 
-            var mk = hashGetter.Evaluate(eventsToUse, true, context);
+            var mk = _hashGetter.Evaluate(eventsToUse, true, context);
             if (mk is MultiKey<object> mkArray) {
                 keys.AddAll(mkArray.Array);
             }
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var innerIndex = innerEntry.AssertIndex();
-            return next.GetCollectKeys(eventsPerStream, innerIndex, context, keys, postProcessor);
+            return _next.GetCollectKeys(eventsPerStream, innerIndex, context, keys, postProcessor);
         }
 
         public void Add(

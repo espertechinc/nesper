@@ -26,13 +26,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
     /// </summary>
     public class LookupInstructionExec
     {
-        private readonly string fromStreamName;
-        private readonly JoinExecTableLookupStrategy[] lookupStrategies;
+        private readonly string _fromStreamName;
+        private readonly JoinExecTableLookupStrategy[] _lookupStrategies;
 
-        private readonly int numSubStreams;
-        private readonly int[] optionalSubStreams;
-        private readonly int[] requiredSubStreams;
-        private readonly ICollection<EventBean>[] resultPerStream;
+        private readonly int _numSubStreams;
+        private readonly int[] _optionalSubStreams;
+        private readonly int[] _requiredSubStreams;
+        private readonly ICollection<EventBean>[] _resultPerStream;
 
         /// <summary>
         ///     Ctor.
@@ -62,11 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             }
 
             FromStream = fromStream;
-            this.fromStreamName = fromStreamName;
-            numSubStreams = toStreams.Length;
-            this.lookupStrategies = lookupStrategies;
+            this._fromStreamName = fromStreamName;
+            _numSubStreams = toStreams.Length;
+            this._lookupStrategies = lookupStrategies;
 
-            resultPerStream = new ISet<EventBean>[numSubStreams];
+            _resultPerStream = new ISet<EventBean>[_numSubStreams];
 
             // Build a separate array for the required and for the optional streams
             var required = new LinkedList<int>();
@@ -80,9 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                 }
             }
 
-            requiredSubStreams = required.ToArray();
-            optionalSubStreams = optional.ToArray();
-            HasRequiredStream = requiredSubStreams.Length > 0;
+            _requiredSubStreams = required.ToArray();
+            _optionalSubStreams = optional.ToArray();
+            HasRequiredStream = _requiredSubStreams.Length > 0;
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                 var streamCount = 0;
 
                 // For that event, lookup in all required streams
-                while (streamCount < requiredSubStreams.Length) {
-                    var lookupResult = lookupStrategies[streamCount]
+                while (streamCount < _requiredSubStreams.Length) {
+                    var lookupResult = _lookupStrategies[streamCount]
                         .Lookup(lookupEvent, cursor, exprEvaluatorContext);
 
                     // There is no result, break if this is a required stream
@@ -127,28 +127,28 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                         break;
                     }
 
-                    resultPerStream[streamCount] = lookupResult;
+                    _resultPerStream[streamCount] = lookupResult;
                     streamCount++;
                 }
 
                 // No results for a required stream, we are done with this event
-                if (streamCount < requiredSubStreams.Length) {
+                if (streamCount < _requiredSubStreams.Length) {
                     continue;
                 }
 
                 // Add results to repository
-                for (var i = 0; i < requiredSubStreams.Length; i++) {
+                for (var i = 0; i < _requiredSubStreams.Length; i++) {
                     hasOneResultRow = true;
-                    repository.AddResult(cursor, resultPerStream[i], requiredSubStreams[i]);
+                    repository.AddResult(cursor, _resultPerStream[i], _requiredSubStreams[i]);
                 }
 
                 // For that event, lookup in all optional streams
-                for (var i = 0; i < optionalSubStreams.Length; i++) {
-                    var lookupResult = lookupStrategies[streamCount].Lookup(lookupEvent, cursor, exprEvaluatorContext);
+                for (var i = 0; i < _optionalSubStreams.Length; i++) {
+                    var lookupResult = _lookupStrategies[streamCount].Lookup(lookupEvent, cursor, exprEvaluatorContext);
 
                     if (lookupResult != null) {
                         hasOneResultRow = true;
-                        repository.AddResult(cursor, lookupResult, optionalSubStreams[i]);
+                        repository.AddResult(cursor, lookupResult, _optionalSubStreams[i]);
                     }
 
                     streamCount++;
@@ -180,17 +180,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
                 " fromStream=" +
                 FromStream +
                 " fromStreamName=" +
-                fromStreamName +
+                _fromStreamName +
                 " numSubStreams=" +
-                numSubStreams +
+                _numSubStreams +
                 " requiredSubStreams=" +
-                requiredSubStreams.RenderAny() +
+                _requiredSubStreams.RenderAny() +
                 " optionalSubStreams=" +
-                optionalSubStreams.RenderAny());
+                _optionalSubStreams.RenderAny());
 
             writer.IncrIndent();
-            for (var i = 0; i < lookupStrategies.Length; i++) {
-                writer.WriteLine("lookupStrategies[" + i + "] : " + lookupStrategies[i]);
+            for (var i = 0; i < _lookupStrategies.Length; i++) {
+                writer.WriteLine("lookupStrategies[" + i + "] : " + _lookupStrategies[i]);
             }
 
             writer.DecrIndent();

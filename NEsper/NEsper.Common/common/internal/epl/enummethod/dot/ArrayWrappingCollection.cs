@@ -36,12 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public int Count => Array.Length;
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<EventBean> GetEnumerator()
+        IEnumerator<EventBean> IEnumerable<EventBean>.GetEnumerator()
         {
             for (var ii = 0; ii < Array.Length; ii++) {
                 yield return (EventBean) Array.GetValue(ii);
@@ -50,7 +45,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
-            return GetEnumerator();
+            for (var ii = 0; ii < Array.Length; ii++) {
+                yield return Array.GetValue(ii);
+            }
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            for (var ii = 0; ii < Array.Length; ii++) {
+                yield return Array.GetValue(ii);
+            }
         }
 
         public void Add(EventBean item)

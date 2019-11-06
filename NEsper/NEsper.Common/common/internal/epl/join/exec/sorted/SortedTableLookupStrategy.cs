@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
     /// </summary>
     public class SortedTableLookupStrategy : JoinExecTableLookupStrategy
     {
-        private readonly PropertySortedEventTable index;
-        private readonly SortedAccessStrategy strategy;
+        private readonly PropertySortedEventTable _index;
+        private readonly SortedAccessStrategy _strategy;
 
         public SortedTableLookupStrategy(
             int lookupStream,
@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             QueryGraphValueEntryRange rangeKeyPair,
             PropertySortedEventTable index)
         {
-            this.index = index;
-            this.strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
+            this._index = index;
+            this._strategy = SortedAccessStrategyFactory.Make(false, lookupStream, numStreams, rangeKeyPair);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
         /// </summary>
         /// <returns>index to use</returns>
         public PropertySortedEventTable Index {
-            get => index;
+            get => _index;
         }
 
         public ICollection<EventBean> Lookup(
@@ -56,14 +56,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
         {
             InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             if (instrumentationCommon.Activated()) {
-                instrumentationCommon.QIndexJoinLookup(this, index);
+                instrumentationCommon.QIndexJoinLookup(this, _index);
                 List<object> keys = new List<object>(2);
-                ISet<EventBean> result = strategy.LookupCollectKeys(theEvent, index, exprEvaluatorContext, keys);
+                ISet<EventBean> result = _strategy.LookupCollectKeys(theEvent, _index, exprEvaluatorContext, keys);
                 instrumentationCommon.AIndexJoinLookup(result, keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return result;
             }
 
-            return strategy.Lookup(theEvent, index, exprEvaluatorContext);
+            return _strategy.Lookup(theEvent, _index, exprEvaluatorContext);
         }
 
         public LookupStrategyType LookupStrategyType {

@@ -277,7 +277,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             }
 
             if (variable.MetaData.EventType != null && initialState != null && !(initialState is EventBean)) {
-                initialState = eventBeanTypedEventFactory.AdapterForTypedBean(
+                initialState = eventBeanTypedEventFactory.AdapterForTypedObject(
                     initialState,
                     variable.MetaData.EventType);
             }
@@ -489,7 +489,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "'");
                 }
 
-                var eventBean = eventBeanTypedEventFactory.AdapterForTypedBean(newValue, variable.MetaData.EventType);
+                var eventBean = eventBeanTypedEventFactory.AdapterForTypedObject(newValue, variable.MetaData.EventType);
                 Write(variableNumber, agentInstanceId, eventBean);
                 return;
             }

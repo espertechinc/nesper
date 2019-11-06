@@ -48,14 +48,14 @@ namespace NEsper.Avro.Getter
                     typeof(object),
                     typeof(AvroEventBeanGetterIndexedRuntimeKeyed),
                     codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(int), "index")
                 .Block
                 .DeclareVar<GenericRecord>(
                     "record",
                     CodegenExpressionBuilder.CastUnderlying(
                         typeof(GenericRecord),
-                        CodegenExpressionBuilder.Ref("event")))
+                        CodegenExpressionBuilder.Ref("@event")))
                 .DeclareVar<object>(
                     "values",
                     CodegenExpressionBuilder.ExprDotMethod(

@@ -165,7 +165,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public Type[] GetCoercionTypes(string[] indexProperties)
         {
             foreach (var entry in Items) {
-                if (CompatExtensions.DeepEquals(entry.Value.HashProps, indexProperties)) {
+                var hashProps = new HashSet<string>(entry.Value.HashProps);
+                if (hashProps.SetEquals(indexProperties)) {
                     return entry.Value.HashTypes;
                 }
             }
@@ -183,8 +184,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             Type[] coercionTypes)
         {
             var found = false;
+
             foreach (var entry in Items) {
-                if (CompatExtensions.DeepEquals(entry.Value.HashProps, indexProperties)) {
+                var hashProps = new HashSet<string>(entry.Value.HashProps);
+                if (hashProps.SetEquals(indexProperties)) {
                     entry.Value.HashTypes = coercionTypes;
                     found = true;
                 }

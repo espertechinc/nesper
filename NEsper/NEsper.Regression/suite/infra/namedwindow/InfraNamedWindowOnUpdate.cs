@@ -48,9 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('window') create window MyWindow#keepall as select *, 1 as p0 from SupportBean;\n" +
-                          "insert into MyWindow select *, 2 as p0 from SupportBean;\n" +
-                          "on SupportBean_S0 update MyWindow set TheString = 'x', p0 = 2;\n";
+                var epl = "@Name('window') create window MyWindow#keepall as select *, 1 as P0 from SupportBean;\n" +
+                          "insert into MyWindow select *, 2 as P0 from SupportBean;\n" +
+                          "on SupportBean_S0 update MyWindow set TheString = 'x', P0 = 2;\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 100));
                 env.SendEventBean(new SupportBean_S0(-1));
@@ -69,11 +69,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "@Name('window') create window MyWindowBeanCopyMethod#keepall as SupportBeanCopyMethod;\n" +
                           "insert into MyWindowBeanCopyMethod select * from SupportBeanCopyMethod;\n" +
-                          "on SupportBean update MyWindowBeanCopyMethod set valOne = 'x';\n";
+                          "on SupportBean update MyWindowBeanCopyMethod set ValOne = 'x';\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBeanCopyMethod("a", "b"));
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual("x", env.GetEnumerator("window").Advance().Get("valOne"));
+                Assert.AreEqual("x", env.GetEnumerator("window").Advance().Get("ValOne"));
 
                 env.UndeployAll();
             }
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@Name('create') create window MyWindowSC#keepall as select * from SupportBeanAbstractSub;\n" +
                     "insert into MyWindowSC select * from SupportBeanAbstractSub;\n" +
-                    "on SupportBean update MyWindowSC set v1=TheString, v2=TheString;\n";
+                    "on SupportBean update MyWindowSC set V1=TheString, V2=TheString;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
                 env.SendEventBean(new SupportBeanAbstractSub("value2"));
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").LastNewData[0],
-                    new[] {"v1", "v2"},
+                    new[] {"V1", "V2"},
                     new object[] {"E1", "E1"});
 
                 env.UndeployAll();

@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
 {
     public class RangeIndexLookupValueRange : RangeIndexLookupValue
     {
-        private QueryGraphRangeEnum @operator;
-        private bool isAllowRangeReverse;
+        private QueryGraphRangeEnum _operator;
+        private bool _isAllowRangeReverse;
 
         public RangeIndexLookupValueRange(
             object value,
@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
             bool allowRangeReverse)
             : base(value)
         {
-            this.@operator = @operator;
-            isAllowRangeReverse = allowRangeReverse;
+            _operator = @operator;
+            _isAllowRangeReverse = allowRangeReverse;
         }
 
         public QueryGraphRangeEnum Operator {
-            get => @operator;
+            get => _operator;
         }
 
         public bool IsAllowRangeReverse {
-            get => isAllowRangeReverse;
+            get => _isAllowRangeReverse;
         }
     }
 } // end of namespace

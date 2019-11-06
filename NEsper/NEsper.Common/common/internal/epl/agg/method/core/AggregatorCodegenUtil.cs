@@ -97,12 +97,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadLong"));
         }
 
+        public static Consumer<CodegenBlock> WriteDecimal(
+            CodegenExpressionRef output,
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref)
+        {
+            return block => block.ExprDotMethod(output, "WriteDecimal", RowDotRef(row, @ref));
+        }
+
         public static Consumer<CodegenBlock> WriteDouble(
             CodegenExpressionRef output,
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
             return block => block.ExprDotMethod(output, "WriteDouble", RowDotRef(row, @ref));
+        }
+
+        public static Consumer<CodegenBlock> ReadDecimal(
+            CodegenExpressionRef row,
+            CodegenExpressionRef @ref,
+            CodegenExpression input)
+        {
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadDecimal"));
         }
 
         public static Consumer<CodegenBlock> ReadDouble(

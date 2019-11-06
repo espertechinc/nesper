@@ -28,11 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new ResultSetAggregateStar());
             execs.Add(new ResultSetAggregateUnboundedSimple());
             execs.Add(new ResultSetAggregateUnboundedStream());
-            #endif
             execs.Add(new ResultSetAggregateWindowedUnGrouped());
             execs.Add(new ResultSetAggregateWindowedGrouped());
             execs.Add(new ResultSetAggregateFirstLastIndexed());

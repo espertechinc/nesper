@@ -90,23 +90,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var stmtText = "@Name('s0') select * from " +
                                "OrderBean as orderEvent unidirectional, " +
-                               "OrderBean[select * from Books] as book, " +
-                               "OrderBean[select * from OrderDetail.Items] as item " +
-                               "where book.BookId=item.ProductId " +
-                               "order by book.BookId, item.Amount";
+                               "OrderBean[select * from Books] as Book, " +
+                               "OrderBean[select * from OrderDetail.Items] as Item " +
+                               "where Book.BookId=Item.ProductId " +
+                               "order by Book.BookId, Item.Amount";
                 var stmtTextFormatted = "@Name('s0')" +
                                         NEWLINE +
                                         "select *" +
                                         NEWLINE +
                                         "from OrderBean as orderEvent unidirectional," +
                                         NEWLINE +
-                                        "OrderBean[select * from Books] as book," +
+                                        "OrderBean[select * from Books] as Book," +
                                         NEWLINE +
-                                        "OrderBean[select * from OrderDetail.Items] as item" +
+                                        "OrderBean[select * from OrderDetail.Items] as Item" +
                                         NEWLINE +
-                                        "where book.BookId=Item.ProductId" +
+                                        "where Book.BookId=Item.ProductId" +
                                         NEWLINE +
-                                        "order by book.BookId, Item.Amount";
+                                        "order by Book.BookId, Item.Amount";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertionUnidirectionalJoin(env);
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             private void TryAssertionUnidirectionalJoin(RegressionEnvironment env)
             {
-                var fields = new [] { "orderEvent.OrderDetail.OrderId","book.BookId","book.title","item.amount" };
+                var fields = new [] { "orderEvent.OrderDetail.OrderId","Book.BookId","Book.Title","Item.Amount" };
                 env.SendEventBean(MakeEventOne());
                 Assert.AreEqual(3, env.Listener("s0").LastNewData.Length);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -162,8 +162,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var stmtText = "@Name('s0') select count(*) from " +
                                "OrderBean OrderBean unidirectional, " +
                                "OrderBean[Books] as book, " +
-                               "OrderBean[OrderDetail.Items] item " +
-                               "where book.BookId = item.ProductId order by book.BookId asc, item.Amount asc";
+                               "OrderBean[OrderDetail.Items] Item " +
+                               "where book.BookId = Item.ProductId order by book.BookId asc, Item.Amount asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -198,8 +198,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var fields = new [] { "count(*)" };
                 var stmtText = "@Name('s0') select count(*) from " +
                                "OrderBean[Books]#unique(BookId) book, " +
-                               "OrderBean[OrderDetail.Items]#keepall item " +
-                               "where book.BookId = item.ProductId";
+                               "OrderBean[OrderDetail.Items]#keepall Item " +
+                               "where book.BookId = Item.ProductId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -253,12 +253,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "book.BookId","item.ItemId","amount" };
-                var stmtText = "@Name('s0') select book.BookId,item.ItemId,amount from " +
-                               "OrderBean[Books]#firstunique(BookId) book, " +
-                               "OrderBean[OrderDetail.Items]#keepall item " +
-                               "where book.BookId = item.ProductId " +
-                               "order by book.BookId, item.ItemId";
+                var fields = new [] { "Book.BookId","Item.ItemId","Amount" };
+                var stmtText = "@Name('s0') select Book.BookId,Item.ItemId,Amount from " +
+                               "OrderBean[Books]#firstunique(BookId) Book, " +
+                               "OrderBean[OrderDetail.Items]#keepall Item " +
+                               "where Book.BookId = Item.ProductId " +
+                               "order by Book.BookId, Item.ItemId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -439,9 +439,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') insert into WordStream select * from SentenceEvent[words]";
+                var stmtText = "@Name('s0') insert into WordStream select * from SentenceEvent[Words]";
 
-                var fields = new [] { "word" };
+                var fields = new [] { "Word" };
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SentenceEvent("I am testing this"));
@@ -461,13 +461,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var path = new RegressionPath();
                 env.CompileDeploy("create objectarray schema ContainedId(Id string)", path);
                 env.CompileDeploy(
-                        "@Name('s0') select * from SupportStringBeanWithArray[select topId, * from ContainedIds @type(ContainedId)]",
+                        "@Name('s0') select * from SupportStringBeanWithArray[select TopId, * from ContainedIds @type(ContainedId)]",
                         path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportStringBeanWithArray("A", new [] { "one","two","three" }));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "topId","Id" },
+                    new [] { "TopId","Id" },
                     new[] {new object[] {"A", "one"}, new object[] {"A", "two"}, new object[] {"A", "three"}});
                 env.UndeployAll();
             }

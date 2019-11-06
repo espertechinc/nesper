@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
     {
         private ExprEvaluator frequencyEval;
 
-        public void SetFrequencyEval(ExprEvaluator frequencyEval)
-        {
-            this.frequencyEval = frequencyEval;
+        public ExprEvaluator FrequencyEval {
+            get => this.frequencyEval;
+            set => this.frequencyEval = value;
         }
 
         public object GetValue(
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object value = frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            CountMinSketchAggState state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
+            var value = frequencyEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var state = (CountMinSketchAggState) row.GetAccessState(aggColNum);
             return state.Frequency(value);
         }
 

@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             AgentInstanceContext agentInstanceContext)
         {
             return Collections.SingletonList(
-                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(invocationResult, eventType));
+                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObject(invocationResult, eventType));
         }
     }
 } // end of namespace

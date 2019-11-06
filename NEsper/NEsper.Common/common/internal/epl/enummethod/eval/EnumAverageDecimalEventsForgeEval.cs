@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var agg = new AggregatorAvgBigDecimal(_forge.optionalMathContext);
+            var agg = new AggregatorAvgDecimal(_forge.optionalMathContext);
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
@@ -83,9 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
             var block = methodNode.Block;
-            block.DeclareVar<AggregatorAvgBigDecimal>(
+            block.DeclareVar<AggregatorAvgDecimal>(
                 "agg",
-                NewInstance<AggregatorAvgBigDecimal>(math));
+                NewInstance<AggregatorAvgDecimal>(math));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
                 .DeclareVar(
@@ -102,19 +103,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
-        public class AggregatorAvgBigDecimal
+        public class AggregatorAvgDecimal
         {
             private readonly MathContext _optionalMathContext;
             private long _cnt;
             private decimal _sum;
 
-            public AggregatorAvgBigDecimal(MathContext optionalMathContext)
+            public AggregatorAvgDecimal(MathContext optionalMathContext)
             {
                 _sum = 0.0m;
                 _optionalMathContext = optionalMathContext;
             }
 
-            public decimal? Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum);
+            public decimal? Value => _optionalMathContext.GetValueDivide(_sum, _cnt);
 
             public void Enter(object @object)
             {

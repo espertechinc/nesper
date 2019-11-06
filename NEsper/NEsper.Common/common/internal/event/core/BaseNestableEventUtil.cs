@@ -281,13 +281,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var events = new EventBean[len];
                 for (var i = 0; i < events.Length; i++) {
                     events[i] = eventBeanTypedEventFactory
-                        .AdapterForTypedBean(array.GetValue(i), eventType);
+                        .AdapterForTypedObject(array.GetValue(i), eventType);
                 }
 
                 return events;
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedBean(result, eventType);
+            return eventBeanTypedEventFactory.AdapterForTypedObject(result, eventType);
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             // there is a need to read the iterator to the cache since if it's iterated twice, the iterator is already exhausted
             return result
                 .UnwrapEnumerable<object>()
-                .Select(v => eventBeanTypedEventFactory.AdapterForTypedBean(v, type))
+                .Select(v => eventBeanTypedEventFactory.AdapterForTypedObject(v, type))
                 .ToList();
 
             //return new WrappingCollection(eventBeanTypedEventFactory, type, ((IEnumerable) result).GetEnumerator());
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             return enumerable
                 .Cast<object>()
-                .Select(value => eventBeanTypedEventFactory.AdapterForTypedBean(value, type))
+                .Select(value => eventBeanTypedEventFactory.AdapterForTypedObject(value, type))
                 .ToList();
         }
     }

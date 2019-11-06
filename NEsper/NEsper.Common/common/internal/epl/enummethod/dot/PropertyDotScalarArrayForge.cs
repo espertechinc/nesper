@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -245,7 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("value");
             CodegenMethod method;
-            if (ComponentTypeCollection.IsPrimitive) {
+            if (ComponentTypeCollection.IsPrimitive || ComponentTypeCollection.GetUnboxedType().IsPrimitive) {
                 method = block.MethodReturn(NewInstance<ArrayWrappingCollection>(Ref("value")));
             }
             else {

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 }
             }
 
-            return _eventBeanTypedEventFactory.AdapterForTypedBean(theEvent, _beanEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedObject(theEvent, _beanEventType);
         }
     }
 } // end of namespace

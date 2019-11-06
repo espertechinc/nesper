@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "OrderEvent");
 
                 var c = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<object>();
-                EPAssertionUtil.AssertEqualsExactOrder(c, new[] {detailTwo});
+                EPAssertionUtil.AssertEqualsExactOrder(c, new object[] {detailTwo});
 
                 env.UndeployAll();
             }

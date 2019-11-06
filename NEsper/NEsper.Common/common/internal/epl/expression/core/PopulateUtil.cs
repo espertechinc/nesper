@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // apply values
             foreach (var desc in descriptors) {
-                object value = jsonRaw.Remove(desc.PropertyName.ToLowerInvariant());
+                object value = jsonRaw.Delete(desc.PropertyName.ToLowerInvariant());
                 var coerced = CoerceProperty(
                     desc.PropertyName,
                     desc.ContainerType,
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var detail = "expects an " +
                              type.CleanName() +
                              " but receives a value of type " +
-                             value.GetType().Name;
+                             value.GetType().CleanName();
                 throw new ExprValidationException(
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }

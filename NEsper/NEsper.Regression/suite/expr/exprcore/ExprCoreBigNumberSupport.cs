@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 using com.espertech.esper.common.client.scopetest;
@@ -263,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "@Name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric",
                     "s0",
                     2);
-                Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("avgRate"));
+                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("avgRate"));
                 SendBigNumEvent(env, 0, 5);
                 var avgRate = env.Listener("s0").AssertOneGetNewAndReset().Get("avgRate");
                 Assert.IsTrue(avgRate is decimal);
@@ -277,28 +278,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "sum(Bigint),sum(DecimalOne)," +
-                             "avg(Bigint),avg(DecimalOne)," +
-                             "median(Bigint),median(DecimalOne)," +
-                             "stddev(Bigint),stddev(DecimalOne)," +
-                             "avedev(Bigint),avedev(DecimalOne)," +
-                             "min(Bigint),min(DecimalOne)";
-                var epl = "@Name('s0') select " + fields + " from SupportBeanNumeric";
+                var fields = new[] {
+                    "sum(Bigint)",
+                    "sum(DecimalOne)",
+                    "avg(Bigint)",
+                    "avg(DecimalOne)",
+                    "median(Bigint)",
+                    "median(DecimalOne)",
+                    "stddev(Bigint)",
+                    "stddev(DecimalOne)",
+                    "avedev(Bigint)",
+                    "avedev(DecimalOne)",
+                    "min(Bigint)",
+                    "min(DecimalOne)"
+                };
+                var epl = "@Name('s0') select " + string.Join(",", fields) + " from SupportBeanNumeric";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fieldList = fields.SplitCsv();
                 SendBigNumEvent(env, 1, 2);
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    fieldList,
+                    fields,
                     new object[] {
-                        new BigInteger(1), 2m, // sum
-                        1m, 2m, // avg
+                        BigInteger.One, 2m, // sum
+                        BigInteger.One, 2m, // avg
                         1d, 2d, // median
                         null, null,
                         0.0, 0.0,
-                        new BigInteger(1), 2m
+                        BigInteger.One, 2m
                     });
 
                 env.Milestone(1);
@@ -307,10 +315,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    fieldList,
+                    fields,
                     new object[] {
                         new BigInteger(5), 7m, // sum
-                        2.5m, 3.5m, // avg
+                        new BigInteger(2), 3.5m, // avg
                         2.5d, 3.5d, // median
                         2.1213203435596424, 2.1213203435596424,
                         1.5, 1.5,

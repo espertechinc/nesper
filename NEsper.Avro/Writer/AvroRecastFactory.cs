@@ -286,13 +286,15 @@ namespace NEsper.Avro.Writer
                     .DeclareVar<GenericRecord>(
                         "target",
                         CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+                
                 foreach (var item in _items) {
                     CodegenExpression value;
                     if (item.OptionalFromIndex != null) {
-                        value = CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("source"),
+                        value = CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(item.OptionalFromIndex));
+                            CodegenExpressionBuilder.Ref("source"),
+                            CodegenExpressionBuilder.Constant(item.OptionalFromIndex.Name));
                     }
                     else {
                         if (item.OptionalWidener != null) {
@@ -312,10 +314,11 @@ namespace NEsper.Avro.Writer
                         }
                     }
 
-                    block.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("target"),
+                    block.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Put",
-                        CodegenExpressionBuilder.Constant(item.ToIndex),
+                        CodegenExpressionBuilder.Ref("target"),
+                        CodegenExpressionBuilder.Constant(item.ToIndex.Name),
                         value);
                 }
 

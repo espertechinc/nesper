@@ -16,25 +16,25 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {
     public class CompositeIndexLookupKeyed : CompositeIndexLookup
     {
-        private readonly object[] keys;
-        private CompositeIndexLookup next;
+        private readonly object[] _keys;
+        private CompositeIndexLookup _next;
 
         public CompositeIndexLookupKeyed(object[] keys)
         {
-            this.keys = keys;
+            this._keys = keys;
         }
 
         public CompositeIndexLookup Next {
-            set { this.next = value; }
+            set { this._next = value; }
         }
 
         private object GetKey()
         {
-            if (keys.Length == 1) {
-                return keys[0];
+            if (_keys.Length == 1) {
+                return _keys[0];
             }
             else {
-                return new HashableMultiKey(keys);
+                return new HashableMultiKey(_keys);
             }
         }
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var innerIndex = innerEntry.AssertIndex();
-            next.Lookup(innerIndex, result, postProcessor);
+            _next.Lookup(innerIndex, result, postProcessor);
         }
     }
 } // end of namespace

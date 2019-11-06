@@ -74,15 +74,15 @@ namespace NEsper.Avro.SelectExprRep
 
             methodNode.Block
                 .DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
-                .IfRefNullReturnNull("event")
+                .IfRefNullReturnNull("@event")
                 .DeclareVar<object[]>(
                     "result",
                     CodegenExpressionBuilder.Cast(
                         typeof(object[]),
                         _getter.EventBeanGetCodegen(
-                            CodegenExpressionBuilder.Ref("event"),
+                            CodegenExpressionBuilder.Ref("@event"),
                             methodNode,
                             codegenClassScope)))
                 .IfRefNullReturnNull("result")

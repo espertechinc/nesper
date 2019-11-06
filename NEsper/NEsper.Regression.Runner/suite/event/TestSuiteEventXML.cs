@@ -251,11 +251,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var sensorcfg = new ConfigurationCommonEventTypeXMLDOM();
             sensorcfg.RootElementName = "Sensor";
             sensorcfg.AddXPathProperty("countTags", "count(/ss:Sensor/ss:Observation/ss:Tag)", XPathResultType.Number);
-            sensorcfg.AddXPathProperty(
-                "countTagsInt",
-                "count(/ss:Sensor/ss:Observation/ss:Tag)",
-                XPathResultType.Number,
-                "int");
+            sensorcfg.AddXPathProperty("countTagsInt", "count(/ss:Sensor/ss:Observation/ss:Tag)", XPathResultType.Number, "int");
             sensorcfg.AddNamespacePrefix("ss", "SensorSchema");
             sensorcfg.AddXPathProperty("idarray", "//ss:Tag/ss:ID", XPathResultType.NodeSet, "String[]");
             sensorcfg.AddXPathPropertyFragment("tagArray", "//ss:Tag", XPathResultType.NodeSet, "TagEvent");

@@ -121,58 +121,58 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create table MyEventAggregationTable (\n" +
                     "  myKey string primary key,\n" +
                     "  myWindow window(*) @type(SupportMySortValueEvent), // column holds a window of SupportMySortValueEvent events\n" +
-                    "  mySorted sorted(mySortValue) @type(SupportMySortValueEvent), // column holds SupportMySortValueEvent events sorted by mySortValue\n" +
-                    "  myMaxByEver maxbyever(mySortValue) @type(SupportMySortValueEvent) // column holds the single SupportMySortValueEvent event that \n" +
-                    "        // provided the highest value of mySortValue ever\n" +
+                    "  mySorted sorted(MySortValue) @type(SupportMySortValueEvent), // column holds SupportMySortValueEvent events sorted by MySortValue\n" +
+                    "  myMaxByEver maxbyever(MySortValue) @type(SupportMySortValueEvent) // column holds the single SupportMySortValueEvent event that \n" +
+                    "        // provided the highest value of MySortValue ever\n" +
                     ")",
                     path);
 
                 env.CompileDeploy("create context NineToFive start (0, 9, *, *, *) end (0, 17, *, *, *)", path);
                 env.CompileDeploy(
-                    "context NineToFive create table AverageSpeedTable (carId string primary key, avgSpeed avg(double))",
+                    "context NineToFive create table AverageSpeedTable (CarId string primary key, avgSpeed avg(double))",
                     path);
                 env.CompileDeploy(
-                    "context NineToFive into table AverageSpeedTable select avg(speed) as avgSpeed from SupportTrafficEvent group by carId",
+                    "context NineToFive into table AverageSpeedTable select avg(Speed) as avgSpeed from SupportTrafficEvent group by CarId",
                     path);
 
                 env.CompileDeploy(
                     "create table IntrusionCountTable (\n" +
-                    "  fromAddress string primary key,\n" +
-                    "  toAddress string primary key,\n" +
-                    "  countIntrusion10Sec count(*),\n" +
-                    "  countIntrusion60Sec count(*)," +
+                    "  FromAddress string primary key,\n" +
+                    "  ToAddress string primary key,\n" +
+                    "  CountIntrusion10Sec count(*),\n" +
+                    "  CountIntrusion60Sec count(*)," +
                     "  active boolean\n" +
                     ")",
                     path);
                 env.CompileDeploy(
                     "into table IntrusionCountTable\n" +
-                    "select count(*) as countIntrusion10Sec\n" +
+                    "select count(*) as CountIntrusion10Sec\n" +
                     "from SupportIntrusionEvent#time(10)\n" +
-                    "group by fromAddress, toAddress",
+                    "group by FromAddress, ToAddress",
                     path);
                 env.CompileDeploy(
                     "into table IntrusionCountTable\n" +
-                    "select count(*) as countIntrusion60Sec\n" +
+                    "select count(*) as CountIntrusion60Sec\n" +
                     "from SupportIntrusionEvent#time(60)\n" +
-                    "group by fromAddress, toAddress",
+                    "group by FromAddress, ToAddress",
                     path);
 
-                env.CompileDeploy("create table TotalIntrusionCountTable (totalIntrusions count(*))", path);
+                env.CompileDeploy("create table TotalIntrusionCountTable (TotalIntrusions count(*))", path);
                 env.CompileDeploy(
-                    "into table TotalIntrusionCountTable select count(*) as totalIntrusions from SupportIntrusionEvent",
+                    "into table TotalIntrusionCountTable select count(*) as TotalIntrusions from SupportIntrusionEvent",
                     path);
                 env.CompileDeploy(
-                    "expression alias totalIntrusions {count(*)}\n" +
-                    "select totalIntrusions from SupportIntrusionEvent",
+                    "expression alias TotalIntrusions {count(*)}\n" +
+                    "select TotalIntrusions from SupportIntrusionEvent",
                     path);
                 env.CompileDeploy(
-                    "select TotalIntrusionCountTable.totalIntrusions from pattern[every timer:interval(60 sec)]",
+                    "select TotalIntrusionCountTable.TotalIntrusions from pattern[every timer:interval(60 sec)]",
                     path);
 
                 env.CompileDeploy(
                     "create table MyTable (\n" +
                     "theWindow window(*) @type(SupportMySortValueEvent),\n" +
-                    "theSorted sorted(mySortValue) @type(SupportMySortValueEvent)\n" +
+                    "theSorted sorted(MySortValue) @type(SupportMySortValueEvent)\n" +
                     ")",
                     path);
                 env.CompileDeploy("select MyTable.theWindow.first(), MyTable.theSorted.maxBy() from SupportBean", path);
@@ -180,12 +180,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "select\n" +
                     "  (select * from IntrusionCountTable as intr\n" +
-                    "   where intr.fromAddress = firewall.fromAddress and intr.toAddress = firewall.toAddress) \n" +
+                    "   where intr.FromAddress = firewall.FromAddress and intr.ToAddress = firewall.ToAddress) \n" +
                     "from SupportIntrusionEvent as firewall",
                     path);
                 env.CompileDeploy(
                     "select * from IntrusionCountTable as intr, SupportIntrusionEvent as firewall\n" +
-                    "where intr.fromAddress = firewall.fromAddress and intr.toAddress = firewall.toAddress",
+                    "where intr.FromAddress = firewall.FromAddress and intr.ToAddress = firewall.ToAddress",
                     path);
 
                 env.CompileDeploy(

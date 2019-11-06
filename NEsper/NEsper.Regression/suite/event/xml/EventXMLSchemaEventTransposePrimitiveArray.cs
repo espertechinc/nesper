@@ -33,10 +33,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var sender = env.EventService.GetEventSender("TestNested2");
             sender.SendEvent(
-                SupportXML.GetDocument("<nested2><prop3>2</prop3><prop3></prop3><prop3>4</prop3></nested2>"));
+                SupportXML.GetDocument(
+                    "<nested2><prop3>2</prop3><prop3></prop3><prop3>4</prop3></nested2>"));
             var theEvent = env.GetEnumerator("s0").Advance();
+            var theValues = theEvent.Get("prop3").Unwrap<object>(true); 
             EPAssertionUtil.AssertEqualsExactOrder(
-                theEvent.Get("prop3").Unwrap<object>(),
+                theValues,
                 new object[] {2, null, 4});
             SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
             env.UndeployModuleContaining("s0");

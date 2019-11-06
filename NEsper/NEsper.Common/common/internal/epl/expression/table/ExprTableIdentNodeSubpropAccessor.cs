@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         /// <param name="isNewData">new-data flag</param>
         /// <param name="exprEvaluatorContext">expr ctx</param>
         /// <returns>value</returns>
-        public static ICollection<object> EvaluateTableWithReaderCollectionEvents(
+        public static ICollection<EventBean> EvaluateTableWithReaderCollectionEvents(
             int streamNum,
             AggregationMultiFunctionTableReader reader,
             int aggColNum,
@@ -279,9 +279,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
 
             var row = ExprTableEvalStrategyUtil.GetRow((ObjectArrayBackedEventBean) @event);
-            return reader
-                .GetValueCollectionEvents(aggColNum, row, eventsPerStream, isNewData, exprEvaluatorContext)
-                .Unwrap<object>();
+            return reader.GetValueCollectionEvents(
+                aggColNum, row, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         /// <summary>

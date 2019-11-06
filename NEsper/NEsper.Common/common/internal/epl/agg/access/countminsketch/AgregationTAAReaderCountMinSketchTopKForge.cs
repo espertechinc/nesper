@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(AgregationTAAReaderCountMinSketchTopK),
                 this.GetType(),
                 classScope);

@@ -83,8 +83,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // verify
                 var events = env.Statement("create").GetEnumerator();
                 var count = 0;
-                for (; events.MoveNext();) {
-                    var next = events.Advance();
+                while (events.MoveNext()) {
+                    var next = events.Current;
                     Assert.AreEqual(1, next.Get("c2"));
                     count++;
                 }

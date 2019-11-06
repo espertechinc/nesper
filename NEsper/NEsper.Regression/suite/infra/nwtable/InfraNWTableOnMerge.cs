@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             execs.Add(new InfraPropertyEvalUpdate(true));
             execs.Add(new InfraPropertyEvalUpdate(false));
-
+            
             execs.Add(new InfraPropertyEvalInsertNoMatch(true));
             execs.Add(new InfraPropertyEvalUpdate(false));
 
@@ -485,9 +485,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@Name('create') create table MyInfra(c1 string primary key, c2 string)";
                 env.CompileDeploy(stmtTextCreateOne, path);
 
-                var epl = "@Name('merge') on OrderBean[books] " +
+                var epl = "@Name('merge') on OrderBean[Books] " +
                           "merge MyInfra mw " +
-                          "insert select BookId as c1, title as c2 ";
+                          "insert select BookId as c1, Title as c2 ";
                 env.CompileDeploy(epl, path).AddListener("merge");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@Name('create') create table MyInfra(p0 string primary key, p1 int)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "on SupportBean_Container[beans] merge MyInfra where TheString=p0 " +
+                    "on SupportBean_Container[Beans] merge MyInfra where TheString=p0 " +
                     "when matched then update set p1 = IntPrimitive",
                     path);
 
@@ -758,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "p0","p1","" };
+                var fields = new [] { "p0","p1" };
                 var path = new RegressionPath();
                 var createEPL = namedWindow
                     ? "@Name('Window') create window InsertOnlyInfra#unique(p0) as (p0 string, p1 int)"
@@ -789,7 +789,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("Window"),
                     fields,
-                    new[] {new object[] {"E1", 1}});
+                    new[] {
+                        new object[] {"E1", 1}
+                    });
                 var onEvent = env.Listener("on").AssertOneGetNewAndReset();
                 Assert.AreEqual("E1", onEvent.Get("p0"));
                 Assert.AreSame(onEvent.EventType, onType);
@@ -800,7 +802,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("Window"),
                     fields,
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+                    new[] {
+                        new object[] {"E1", 1}, 
+                        new object[] {"E2", 2}
+                    });
                 Assert.AreEqual("E2", env.Listener("on").AssertOneGetNewAndReset().Get("p0"));
 
                 env.UndeployAll();
@@ -1094,7 +1099,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Incorrect syntax near 'Update' (a reserved keyword) expecting 'insert' but found 'Update' at line 1 column 9");
+                    "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 9");
 
                 if (namedWindow) {
                     epl =
@@ -1122,7 +1127,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found end-of-input at line 1 column 66 [");
+                    "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found EOF at line 1 column 66 [");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete";
                 SupportMessageAssertUtil.TryInvalidCompile(

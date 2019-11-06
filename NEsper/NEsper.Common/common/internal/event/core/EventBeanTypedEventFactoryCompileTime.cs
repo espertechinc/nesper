@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             throw new UnsupportedOperationException();
         }
 
-        public EventBean AdapterForTypedBean(
+        public EventBean AdapterForTypedObject(
             object value,
             EventType eventType)
         {

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         public EventBean Make(object[] properties)
         {
             var instance = MakeUnderlying(properties);
-            return eventBeanTypedEventFactory.AdapterForTypedBean(instance, beanEventType);
+            return eventBeanTypedEventFactory.AdapterForTypedObject(instance, beanEventType);
         }
 
         public object MakeUnderlying(object[] properties)

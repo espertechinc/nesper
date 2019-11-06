@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string keyJoin,
             double value)
         {
-            env.CompileExecuteFAF("insert into Infra2 values ('" + keyJoin + "', " + value + ")", path);
+            env.CompileExecuteFAF("insert into Infra2 values ('" + keyJoin + "', " + value.RenderAny() + ")", path);
         }
 
         private static long GetMyInfraCount(
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 InsertInfra2Event(env, path, "X", 10);
                 InsertInfra2Event(env, path, "Y", 10);
 
-                query = "select distinct value from Infra1 as i1, Infra2 as i2 where i1.KeyJoin = i2.KeyJoin";
+                query = "select distinct value from Infra1 as i1, Infra2 as i2 where i1.keyJoin = i2.keyJoin";
                 fields = new [] { "value" };
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Nullable<System.Int32>', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
 
                 epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "ProvIded EPL expression is a continuous query expression (not an on-demand query)");
+                    "Provided EPL expression is a continuous query expression (not an on-demand query)");
 
                 env.UndeployAll();
             }
@@ -719,11 +719,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfraJoin(env, namedWindow);
 
                 var queryAgg =
-                    "select w1.Key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.KeyJoin = w2.KeyJoin GROUP BY w1.Key order by w1.Key";
-                var fieldsAgg = new [] { "w1.Key","sum(value)" };
+                    "select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
+                var fieldsAgg = new [] { "w1.key","sum(value)" };
                 var queryNoagg =
-                    "select w1.Key, w2.Value from Infra1 w1, Infra2 w2 where w1.KeyJoin = w2.KeyJoin and value = 1 order by w1.Key";
-                var fieldsNoagg = new [] { "w1.Key","w2.Value" };
+                    "select w1.key, w2.value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
+                var fieldsNoagg = new [] { "w1.key","w2.value" };
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);
@@ -743,12 +743,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertPropsPerRow(
                     result,
                     fieldsAgg,
-                    new[] {new object[] {"key1", 1d}});
+                    new[] {
+                        new object[] {"key1", 1d}
+                    });
                 result = env.CompileExecuteFAF(queryNoagg, path).Array;
                 EPAssertionUtil.AssertPropsPerRow(
                     result,
                     fieldsNoagg,
-                    new[] {new object[] {"key1", 1d}});
+                    new[] {
+                        new object[] {"key1", 1d}
+                    });
 
                 env.Milestone(0);
 
@@ -1469,15 +1473,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 var result = CompileExecute("update MyInfra set TheString = 'ABC'", path, env);
-                EPAssertionUtil.AssertPropsPerRow(
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("TheInfra"),
                     fields,
-                    new[] {new object[] {"ABC", 0}, new object[] {"ABC", 1}});
+                    new[] {
+                        new object[] {"ABC", 0},
+                        new object[] {"ABC", 1}
+                    });
                 if (namedWindow) {
-                    EPAssertionUtil.AssertPropsPerRow(
+                    EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         result.Array,
                         fields,
-                        new[] {new object[] {"ABC", 0}, new object[] {"ABC", 1}});
+                        new[] {
+                            new object[] {"ABC", 0}, 
+                            new object[] {"ABC", 1}
+                        });
                 }
 
                 // test update with where-clause
@@ -1493,13 +1503,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
-                        new[] {new object[] {"X", -1}});
+                        new[] {
+                            new object[] {"X", -1}
+                        });
                 }
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("TheInfra"),
                     fields,
-                    new[] {new object[] {"E0", 0}, new object[] {"E2", 2}, new object[] {"X", -1}});
+                    new[] {
+                        new object[] {"E0", 0}, 
+                        new object[] {"E2", 2}, 
+                        new object[] {"X", -1}
+                    });
 
                 // test update with SODA
                 var epl = "update MyInfra set IntPrimitive=IntPrimitive+10 where TheString=\"E2\"";
@@ -1510,13 +1526,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
-                        new[] {new object[] {"E2", 12}});
+                        new[] {
+                            new object[] {"E2", 12}
+                        });
                 }
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("TheInfra"),
                     fields,
-                    new[] {new object[] {"E0", 0}, new object[] {"X", -1}, new object[] {"E2", 12}});
+                    new[] {
+                        new object[] {"E0", 0}, 
+                        new object[] {"X", -1},
+                        new object[] {"E2", 12}
+                    });
 
                 // test update with initial value
                 result = env.CompileExecuteFAF(
@@ -1526,13 +1548,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
-                        new[] {new object[] {"E0y", 100}});
+                        new[] {
+                            new object[] {"E0y", 100}
+                        });
                 }
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("TheInfra"),
                     fields,
-                    new[] {new object[] {"X", -1}, new object[] {"E2", 12}, new object[] {"E0y", 100}});
+                    new[] {
+                        new object[] {"X", -1}, 
+                        new object[] {"E2", 12}, 
+                        new object[] {"E0y", 100}
+                    });
 
                 env.CompileExecuteFAF("delete from MyInfra", path);
                 for (var i = 0; i < 5; i++) {
@@ -1599,11 +1627,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 if (namedWindow) {
                     env.CompileExecuteFAF("delete from MyInfra", path);
                     env.SendEventBean(new SupportBean("A", 10));
-                    env.CompileExecuteFAF("update MyInfra mw set mw.setTheString('XYZ'), doubleInt(mw)", path);
+                    env.CompileExecuteFAF("update MyInfra mw set mw.SetTheString('XYZ'), doubleInt(mw)", path);
                     EPAssertionUtil.AssertPropsPerRow(
                         env.GetEnumerator("TheInfra"),
                         new [] { "TheString","IntPrimitive" },
-                        new[] {new object[] {"XYZ", 20}});
+                        new[] {
+                            new object[] {"XYZ", 20}
+                        });
                 }
 
                 env.UndeployAll();
@@ -1692,10 +1722,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +
-                    typeof(SupportEnum).Name +
+                    typeof(SupportEnum).FullName +
                     "." +
                     SupportEnum.ENUM_VALUE_2.GetName() +
-                    " as mode",
+                    " as Mode",
                     path);
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("enumwin").Advance(),

@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 
             var table = hashes.Table;
             output.WriteInt(table.Length);
-            foreach (long[] row in table) {
+            foreach (var row in table) {
                 output.WriteInt(row.Length);
                 foreach (var col in row) {
                     output.WriteLong(col);
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             DataOutput output,
             ByteBuffer value)
         {
-            byte[] bytes = value.Array;
+            var bytes = value.Array;
             output.WriteInt(bytes.Length);
             output.Write(bytes);
         }

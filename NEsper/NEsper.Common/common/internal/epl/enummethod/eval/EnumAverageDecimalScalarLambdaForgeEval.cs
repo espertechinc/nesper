@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEvaluatorContext context)
         {
             var agg =
-                new EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal(forge.optionalMathContext);
+                new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(forge.optionalMathContext);
             var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
@@ -91,9 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
             var block = methodNode.Block;
-            block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
+            block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal>(
                     "agg",
-                    NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), math))
+                    NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal), math))
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(

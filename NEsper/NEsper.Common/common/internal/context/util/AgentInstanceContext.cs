@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class AgentInstanceContext : ExprEvaluatorContext
     {
-        private readonly MappedEventBean contextProperties;
-        private AgentInstanceScriptContext agentInstanceScriptContext;
-        private StatementContextCPPair statementContextCPPair;
-        private object terminationCallbacks;
+        private readonly MappedEventBean _contextProperties;
+        private AgentInstanceScriptContext _agentInstanceScriptContext;
+        private StatementContextCPPair _statementContextCpPair;
+        private object _terminationCallbacks;
 
         public AgentInstanceContext(
             StatementContext statementContext,
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceId = agentInstanceId;
             EpStatementAgentInstanceHandle = epStatementAgentInstanceHandle;
             AgentInstanceFilterProxy = agentInstanceFilterProxy;
-            this.contextProperties = contextProperties;
+            _contextProperties = contextProperties;
             AuditProvider = auditProvider;
             InstrumentationProvider = instrumentationProvider;
         }
@@ -155,32 +155,32 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public StatementContextCPPair StatementContextCPPair {
             get {
-                if (statementContextCPPair == null) {
-                    statementContextCPPair = new StatementContextCPPair(
+                if (_statementContextCpPair == null) {
+                    _statementContextCpPair = new StatementContextCPPair(
                         StatementContext.StatementId,
                         AgentInstanceId,
                         StatementContext);
                 }
 
-                return statementContextCPPair;
+                return _statementContextCpPair;
             }
         }
 
         public ICollection<AgentInstanceStopCallback> TerminationCallbackRO {
             get {
-                if (terminationCallbacks == null) {
+                if (_terminationCallbacks == null) {
                     return Collections.GetEmptyList<AgentInstanceStopCallback>();
                 }
 
-                if (terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                    return (ICollection<AgentInstanceStopCallback>) terminationCallbacks;
+                if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
+                    return (ICollection<AgentInstanceStopCallback>) _terminationCallbacks;
                 }
 
-                return Collections.SingletonList((AgentInstanceStopCallback) terminationCallbacks);
+                return Collections.SingletonList((AgentInstanceStopCallback) _terminationCallbacks);
             }
         }
 
-        public EventBean ContextProperties => contextProperties;
+        public EventBean ContextProperties => _contextProperties;
 
         public string RuntimeURI => StatementContext.RuntimeURI;
 
@@ -212,11 +212,11 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public AgentInstanceScriptContext AllocateAgentInstanceScriptContext {
             get {
-                if (agentInstanceScriptContext == null) {
-                    agentInstanceScriptContext = AgentInstanceScriptContext.From(StatementContext);
+                if (_agentInstanceScriptContext == null) {
+                    _agentInstanceScriptContext = AgentInstanceScriptContext.From(StatementContext);
                 }
 
-                return agentInstanceScriptContext;
+                return _agentInstanceScriptContext;
             }
         }
 
@@ -229,30 +229,30 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="callback">to add</param>
         public void AddTerminationCallback(AgentInstanceStopCallback callback)
         {
-            if (terminationCallbacks == null) {
-                terminationCallbacks = callback;
+            if (_terminationCallbacks == null) {
+                _terminationCallbacks = callback;
             }
-            else if (terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                ((ICollection<AgentInstanceStopCallback>) terminationCallbacks).Add(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
+                ((ICollection<AgentInstanceStopCallback>) _terminationCallbacks).Add(callback);
             }
             else {
-                var cb = (AgentInstanceStopCallback) terminationCallbacks;
+                var cb = (AgentInstanceStopCallback) _terminationCallbacks;
                 var q = new HashSet<AgentInstanceStopCallback>();
                 q.Add(cb);
                 q.Add(callback);
-                terminationCallbacks = q;
+                _terminationCallbacks = q;
             }
         }
 
         public void RemoveTerminationCallback(AgentInstanceStopCallback callback)
         {
-            if (terminationCallbacks == null) {
+            if (_terminationCallbacks == null) {
             }
-            else if (terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                ((ICollection<AgentInstanceStopCallback>) terminationCallbacks).Remove(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
+                ((ICollection<AgentInstanceStopCallback>) _terminationCallbacks).Remove(callback);
             }
-            else if (terminationCallbacks == callback) {
-                terminationCallbacks = null;
+            else if (_terminationCallbacks == callback) {
+                _terminationCallbacks = null;
             }
         }
     }

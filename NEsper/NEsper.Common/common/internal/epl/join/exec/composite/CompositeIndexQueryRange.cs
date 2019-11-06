@@ -18,8 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {
     public class CompositeIndexQueryRange : CompositeIndexQuery
     {
-        private readonly CompositeAccessStrategy strategy;
-        private CompositeIndexQuery next;
+        private readonly CompositeAccessStrategy _strategy;
+        private CompositeIndexQuery _next;
 
         public CompositeIndexQueryRange(
             bool isNWOnTrigger,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 var includeEnd = rangeProp.Type.IsIncludeEnd();
 
                 if (!rangeProp.Type.IsRangeInverted()) {
-                    strategy = new CompositeAccessStrategyRangeNormal(
+                    _strategy = new CompositeAccessStrategyRangeNormal(
                         isNWOnTrigger,
                         lookupStream,
                         numStreams,
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                         rangeIn.IsAllowRangeReversal);
                 }
                 else {
-                    strategy = new CompositeAccessStrategyRangeInverted(
+                    _strategy = new CompositeAccessStrategyRangeInverted(
                         isNWOnTrigger,
                         lookupStream,
                         numStreams,
@@ -61,16 +61,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 var relOp = (QueryGraphValueEntryRangeRelOp) rangeProp;
                 var key = relOp.Expression;
                 if (rangeProp.Type == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
-                    strategy = new CompositeAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, key);
+                    _strategy = new CompositeAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, key);
                 }
                 else if (rangeProp.Type == QueryGraphRangeEnum.GREATER) {
-                    strategy = new CompositeAccessStrategyGT(isNWOnTrigger, lookupStream, numStreams, key);
+                    _strategy = new CompositeAccessStrategyGT(isNWOnTrigger, lookupStream, numStreams, key);
                 }
                 else if (rangeProp.Type == QueryGraphRangeEnum.LESS_OR_EQUAL) {
-                    strategy = new CompositeAccessStrategyLE(isNWOnTrigger, lookupStream, numStreams, key);
+                    _strategy = new CompositeAccessStrategyLE(isNWOnTrigger, lookupStream, numStreams, key);
                 }
                 else if (rangeProp.Type == QueryGraphRangeEnum.LESS) {
-                    strategy = new CompositeAccessStrategyLT(isNWOnTrigger, lookupStream, numStreams, key);
+                    _strategy = new CompositeAccessStrategyLT(isNWOnTrigger, lookupStream, numStreams, key);
                 }
                 else {
                     throw new ArgumentException("Comparison operator " + rangeProp.Type + " not supported");
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            strategy.Lookup(eventsPerStream, parent, result, next, null, null, postProcessor);
+            _strategy.Lookup(eventsPerStream, parent, result, _next, null, null, postProcessor);
         }
 
         public void Add(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            strategy.Lookup(theEvent, parent, result, next, null, null, postProcessor);
+            _strategy.Lookup(theEvent, parent, result, _next, null, null, postProcessor);
         }
 
         public ICollection<EventBean> Get(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ExprEvaluatorContext context,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            return strategy.Lookup(theEvent, parent, null, next, context, null, postProcessor);
+            return _strategy.Lookup(theEvent, parent, null, _next, context, null, postProcessor);
         }
 
         public ICollection<EventBean> Get(
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ExprEvaluatorContext context,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            return strategy.Lookup(eventsPerStream, parent, null, next, context, null, postProcessor);
+            return _strategy.Lookup(eventsPerStream, parent, null, _next, context, null, postProcessor);
         }
 
         public ICollection<EventBean> GetCollectKeys(
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> keys,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            return strategy.Lookup(theEvent, parent, null, next, context, keys, postProcessor);
+            return _strategy.Lookup(theEvent, parent, null, _next, context, keys, postProcessor);
         }
 
         public ICollection<EventBean> GetCollectKeys(
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> keys,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            return strategy.Lookup(eventsPerStream, parent, null, next, context, keys, postProcessor);
+            return _strategy.Lookup(eventsPerStream, parent, null, _next, context, keys, postProcessor);
         }
 
         protected internal static ICollection<EventBean> Handle(
@@ -241,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public CompositeIndexQuery SetNext(CompositeIndexQuery next)
         {
-            this.next = next;
+            this._next = next;
             return this;
         }
     }

@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return ToFragmentIterable(@object, _fragmentEventType, _eventBeanTypedEventFactory);
             }
 
-            return _eventBeanTypedEventFactory.AdapterForTypedBean(@object, _fragmentEventType);
+            return _eventBeanTypedEventFactory.AdapterForTypedObject(@object, _fragmentEventType);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     continue;
                 }
 
-                events[countFilled] = eventBeanTypedEventFactory.AdapterForTypedBean(element, fragmentEventType);
+                events[countFilled] = eventBeanTypedEventFactory.AdapterForTypedObject(element, fragmentEventType);
                 countFilled++;
             }
 
@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                         continue;
                     }
 
-                    events[countFilled] = eventBeanTypedEventFactory.AdapterForTypedBean(element, fragmentEventType);
+                    events[countFilled] = eventBeanTypedEventFactory.AdapterForTypedObject(element, fragmentEventType);
                     countFilled++;
                 }
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return returnVal;
             }
 
-            return eventBeanTypedEventFactory.AdapterForTypedBean(@object, fragmentEventType);
+            return eventBeanTypedEventFactory.AdapterForTypedObject(@object, fragmentEventType);
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     continue;
                 }
 
-                events.Add(eventBeanTypedEventFactory.AdapterForTypedBean(next, fragmentEventType));
+                events.Add(eventBeanTypedEventFactory.AdapterForTypedObject(next, fragmentEventType));
             } while (enumerator.MoveNext());
 
             return events.ToArray();

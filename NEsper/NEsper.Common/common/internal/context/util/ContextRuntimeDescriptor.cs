@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.context.util
         public ContextRuntimeDescriptor(
             string contextName,
             string contextDeploymentId,
-            ContextIteratorHandler iteratorHandler)
+            ContextIteratorHandler enumeratorHandler)
         {
             ContextName = contextName;
             ContextDeploymentId = contextDeploymentId;
-            IteratorHandler = iteratorHandler;
+            EnumeratorHandler = enumeratorHandler;
         }
 
-        public ContextIteratorHandler IteratorHandler { get; }
+        public ContextIteratorHandler EnumeratorHandler { get; }
 
         public string ContextName { get; }
 

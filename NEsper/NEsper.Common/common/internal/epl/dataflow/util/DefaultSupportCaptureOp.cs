@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public object[] GetPunctuated()
         {
-            var result = _numRowLatch.Await(TimeSpan.FromSeconds(1));
+            var result = _numRowLatch.Await(TimeSpan.FromSeconds(10));
             if (!result) {
                 throw new TimeoutException("latch timed out");
             }

@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.rettype
 {
     public class EventEPType : EPType
     {
-        internal EventEPType(EventType type)
+        public EventEPType(EventType type)
         {
             EventType = type;
         }

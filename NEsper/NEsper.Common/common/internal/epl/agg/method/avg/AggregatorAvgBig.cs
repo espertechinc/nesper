@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly CodegenExpressionRef cnt;
-        private readonly AggregationFactoryMethodAvg factory;
-        private readonly CodegenExpressionRef sum;
+        private readonly CodegenExpressionRef _cnt;
+        private readonly AggregationFactoryMethodAvg _factory;
+        private readonly CodegenExpressionRef _sum;
 
         public AggregatorAvgBig(
             AggregationFactoryMethodAvg factory,
@@ -60,10 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 hasFilter,
                 optionalFilter)
         {
-            this.factory = factory;
-            sum = membersColumnized.AddMember(col, typeof(decimal), "sum");
-            cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
-            rowCtor.Block.AssignRef(sum, Constant(0d));
+            _factory = factory;
+            _sum = membersColumnized.AddMember(col, typeof(BigInteger), "sum");
+            _cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
+            rowCtor.Block.AssignRef(_sum, EnumValue(typeof(BigInteger), "Zero"));
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -74,16 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            if (valueType.IsBigInteger()) {
-                method.Block.AssignRef(
-                    sum, Op(sum, "+", NewInstance<decimal>(value)));
-            }
-            else {
-                method.Block.AssignRef(
-                    sum, Op(sum, "+", valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
-            }
+            method.Block.AssignRef(
+                _sum,
+                Op(_sum, "+", ExprDotMethod(value, "AsBigInteger")));
 
-            method.Block.Increment(cnt);
+            method.Block.Increment(_cnt);
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -94,21 +89,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Relational(cnt, LE, Constant(1)))
+            method.Block
+                .IfCondition(Relational(_cnt, LE, Constant(1)))
                 .Apply(ClearCode())
                 .IfElse()
-                .Decrement(cnt)
+                .Decrement(_cnt)
                 .Apply(
-                    block => {
-                        if (valueType == typeof(BigInteger)) {
-                            block.AssignRef(
-                                sum, Op(sum, "-", NewInstance<decimal>(value)));
-                        }
-                        else {
-                            block.AssignRef(
-                                sum, Op(sum, "-", valueType == typeof(decimal) ? value : ExprDotMethod(value, "AsDecimal")));
-                        }
-                    });
+                    block => block.AssignRef(
+                        _sum,
+                        Op(_sum, "-", ExprDotMethod(value, "AsBigInteger"))));
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -117,16 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (evaluationTypes[0] == typeof(BigInteger)) {
-                method.Block.AssignRef(
-                    sum, Op(sum, "+", NewInstance<decimal>(Cast(typeof(BigInteger), value))));
-            }
-            else {
-                method.Block.AssignRef(
-                    sum, Op(sum, "+", Cast(typeof(decimal), value)));
-            }
-
-            method.Block.Increment(cnt);
+            method.Block.AssignRef(
+                _sum, Op(_sum, "+", ExprDotMethod(value, "AsBigInteger")));
+            method.Block.Increment(_cnt);
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -135,21 +117,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Relational(cnt, LE, Constant(1)))
+            method.Block
+                .IfCondition(Relational(_cnt, LE, Constant(1)))
                 .Apply(ClearCode())
                 .IfElse()
-                .Decrement(cnt)
+                .Decrement(_cnt)
                 .Apply(
-                    block => {
-                        if (evaluationTypes[0] == typeof(BigInteger)) {
-                            block.AssignRef(
-                                sum, Op(sum, "-", NewInstance<decimal>(Cast(typeof(BigInteger), value))));
-                        }
-                        else {
-                            block.AssignRef(
-                                sum, Op(sum, "-", Cast(typeof(decimal), value)));
-                        }
-                    });
+                    block => block.AssignRef(
+                        _sum, Op(_sum, "-", ExprDotMethod(value, "AsBigInteger"))));
         }
 
         protected override void ClearWODistinct(
@@ -163,10 +138,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var math = factory.optionalMathContext == null
+            var math = _factory.optionalMathContext == null
                 ? ConstantNull()
-                : classScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(factory.optionalMathContext));
-            method.Block.MethodReturn(StaticMethod(GetType(), "GetValueDecimalDivide", cnt, math, sum));
+                : classScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_factory.optionalMathContext));
+            method.Block.MethodReturn(Op(_sum, "/", _cnt));
+            //StaticMethod(GetType(), "GetValueDivide", cnt, math, sum));
         }
 
         protected override void WriteWODistinct(
@@ -179,8 +155,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(WriteLong(output, row, cnt))
-                .StaticMethod(typeof(DIOSerdeBigInteger), "WriteBigDec", RowDotRef(row, sum), output);
+                .Apply(WriteLong(output, row, _cnt))
+                .StaticMethod(typeof(DIOSerdeBigInteger), "WriteBigInt", RowDotRef(row, _sum), output);
         }
 
         protected override void ReadWODistinct(
@@ -192,10 +168,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(ReadLong(row, cnt, input))
+                .Apply(ReadLong(row, _cnt, input))
                 .AssignRef(
-                    RowDotRef(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
+                    RowDotRef(row, _sum),
+                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
         }
 
         /// <summary>
@@ -205,10 +181,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         /// <param name="optionalMathContext">math ctx</param>
         /// <param name="sum">sum</param>
         /// <returns>result</returns>
-        public static decimal? GetValueDecimalDivide(
+        public static BigInteger? GetValueDivide(
             long cnt,
             MathContext optionalMathContext,
-            decimal sum)
+            BigInteger sum)
         {
             if (cnt == 0) {
                 return null;
@@ -219,18 +195,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     return sum / cnt;
                 }
 
-                return optionalMathContext.Apply(decimal.Divide(sum, cnt));
+                return sum / cnt;
             }
             catch (ArithmeticException ex) {
                 Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
-                return 0.0m;
+                return BigInteger.Zero;
             }
         }
 
         private Consumer<CodegenBlock> ClearCode()
         {
             return block =>
-                block.AssignRef(sum, NewInstance<decimal>(Constant(0.0m))).AssignRef(cnt, Constant(0));
+                block
+                    .AssignRef(_sum, EnumValue(typeof(BigInteger), "Zero"))
+                    .AssignRef(_cnt, Constant(0));
         }
     }
 } // end of namespace

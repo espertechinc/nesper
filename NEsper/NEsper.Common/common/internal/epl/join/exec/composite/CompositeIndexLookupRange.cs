@@ -20,16 +20,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {
     public class CompositeIndexLookupRange : CompositeIndexLookup
     {
-        private readonly RangeIndexLookupValue lookupValue;
-        private readonly Type coercionType;
-        private CompositeIndexLookup next;
+        private readonly RangeIndexLookupValue _lookupValue;
+        private readonly Type _coercionType;
+        private CompositeIndexLookup _next;
 
         public CompositeIndexLookupRange(
             RangeIndexLookupValue lookupValue,
             Type coercionType)
         {
-            this.lookupValue = lookupValue;
-            this.coercionType = coercionType;
+            this._lookupValue = lookupValue;
+            this._coercionType = coercionType;
         }
 
         public void Lookup(
@@ -37,19 +37,19 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ISet<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            if (lookupValue is RangeIndexLookupValueEquals equals) {
+            if (_lookupValue is RangeIndexLookupValueEquals equals) {
                 var inner = parent.Get(equals.Value);
-                if (next == null) {
+                if (_next == null) {
                     result.AddAll(inner.AssertCollection());
                 }
                 else {
-                    next.Lookup(inner.AssertIndex(), result, postProcessor);
+                    _next.Lookup(inner.AssertIndex(), result, postProcessor);
                 }
 
                 return;
             }
 
-            var lookup = (RangeIndexLookupValueRange) lookupValue;
+            var lookup = (RangeIndexLookupValueRange) _lookupValue;
             var treeMap = (OrderedDictionary<object, CompositeIndexEntry>) parent;
             var rangeValue = lookup.Value;
             if (lookup.Operator == QueryGraphRangeEnum.RANGE_CLOSED) {
@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         private object Coerce(object key)
         {
-            return EventBeanUtility.Coerce(key, coercionType);
+            return EventBeanUtility.Coerce(key, _coercionType);
         }
 
         private void Normalize(
@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return;
             }
 
-            if (next == null) {
+            if (_next == null) {
                 if (postProcessor != null) {
                     foreach (KeyValuePair<object, CompositeIndexEntry> entry in submap) {
                         postProcessor.Add(entry.Value.AssertCollection(), result);
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             else {
                 foreach (KeyValuePair<object, CompositeIndexEntry> entry in submap) {
                     var index = entry.Value.AssertIndex();
-                    next.Lookup(index, result, postProcessor);
+                    _next.Lookup(index, result, postProcessor);
                 }
             }
         }
@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         }
 
         public CompositeIndexLookup Next {
-            set { this.next = value; }
+            set { this._next = value; }
         }
     }
 } // end of namespace

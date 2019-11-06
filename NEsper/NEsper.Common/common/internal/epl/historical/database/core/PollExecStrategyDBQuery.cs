@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                         var rowData = _outputRowConversionHook.GetOutputRow(rowContext);
                                         if (rowData != null) {
                                             eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory
-                                                .AdapterForTypedBean(
+                                                .AdapterForTypedObject(
                                                     rowData,
                                                     (BeanEventType) _factory.EventType);
                                         }

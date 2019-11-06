@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
             env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
             var fields = new [] { "StatementName","NumInput" };
-
+            
             env.SendEventBean(new SupportBean("E1", 1));
             env.AdvanceTime(1000);
             var received = ArrayHandlingUtil.Reorder("StatementName", env.Listener("X").NewDataListFlattened);

@@ -22,6 +22,9 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.filter
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static int _gid = 0;
+        private int _id = ++_gid;
+        
         private readonly FilterFactory factory;
         private readonly AgentInstanceContext agentInstanceContext;
         private EventBeanSPI theEvent;

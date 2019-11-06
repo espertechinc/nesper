@@ -93,13 +93,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLInsertIntoPopulateSingleColByMethodCall());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLInsertIntoPopulateUnderlying()
         {
             RegressionRunner.Run(session, EPLInsertIntoPopulateUnderlying.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLInsertIntoPopulateUndStreamSelect()
         {
             RegressionRunner.Run(session, EPLInsertIntoPopulateUndStreamSelect.Executions());

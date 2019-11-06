@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return null;
             }
 
-            return _eventAdapterService.AdapterForTypedBean(copied, _beanEventType);
+            return _eventAdapterService.AdapterForTypedObject(copied, _beanEventType);
         }
     }
 } // end of namespace

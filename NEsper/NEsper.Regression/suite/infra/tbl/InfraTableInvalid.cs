@@ -104,6 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     false,
                     "sum(DoublePrimitive, TheString='a')",
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(DoublePrimitive,TheString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
+                
                 TryInvalidAggMatch(
                     env,
                     "var1",
@@ -447,12 +448,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "into table xxx select count(*) as total from SupportBean group by IntPrimitive",
                     "Invalid into-table clause: Failed to find table by name 'xxx' [");
+                
                 // group-by key type and count of group-by expressions
                 TryInvalidCompile(
                     env,
                     path,
                     "into table aggvar_grouped_string select count(*) as total from SupportBean group by IntPrimitive",
-                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'System.Int32' but the table expects 'System.String' [");
+                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'System.Nullable<System.Int32>' but the table expects 'System.String' [");
                 TryInvalidCompile(
                     env,
                     path,
@@ -514,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select aggvar_grouped_string[5].total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'System.Int32' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
+                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'System.Nullable<System.Int32>' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
 
                 // top-level variable use without "keys" function
                 TryInvalidCompile(

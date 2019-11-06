@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtStateless());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadStmtStatelessEnummethod()
         {
             RegressionRunner.Run(session, new MultithreadStmtStatelessEnummethod());

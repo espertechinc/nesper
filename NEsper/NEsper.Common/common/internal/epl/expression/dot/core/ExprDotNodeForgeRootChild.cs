@@ -50,15 +50,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             StreamNumReferenced = streamNumReferenced;
             RootPropertyName = rootPropertyName;
             if (rootLambdaEvaluator != null) {
-                if (typeInfo is EventMultiValuedEPType) {
+                if (typeInfo is EventMultiValuedEPType eventMultiValuedEpType) {
                     innerForge = new InnerDotEnumerableEventCollectionForge(
                         rootLambdaEvaluator,
-                        ((EventMultiValuedEPType) typeInfo).Component);
+                        eventMultiValuedEpType.Component);
                 }
-                else if (typeInfo is EventEPType) {
+                else if (typeInfo is EventEPType eventEpType) {
                     innerForge = new InnerDotEnumerableEventBeanForge(
                         rootLambdaEvaluator,
-                        ((EventEPType) typeInfo).EventType);
+                        eventEpType.EventType);
                 }
                 else {
                     innerForge = new InnerDotEnumerableScalarCollectionForge(

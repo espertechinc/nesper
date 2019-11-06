@@ -20,11 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalStreamNumEnumCollForge : ExprForge
     {
-        private readonly ExprEnumerationForge enumeration;
+        private readonly ExprEnumerationForge _enumeration;
+        private readonly Type _evaluationType;
 
         public ExprEvalStreamNumEnumCollForge(ExprEnumerationForge enumeration)
         {
-            this.enumeration = enumeration;
+            _enumeration = enumeration;
+
+            // NOTE: the forge knows the type that needs to be rendered.  In Java, they use the
+            //   generic "Collection" type which allows them to not specify which type of collection
+            //   they are using.  In C# we have strong type checking which means we need to know.
+            //   Unfortunately, this data is only known in the ExprForge.  Revisit this.
+
+            if (_enumeration is ExprForge exprForge) {
+                _evaluationType = exprForge.EvaluationType;
+            }
+            else {
+                // REFERENCE: TestSuiteClientExtensions.TestClientExtendSingleRowFunction
+                _evaluationType = typeof(ICollection<EventBean>);
+            }
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -37,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return enumeration.EvaluateGetROCollectionEventsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _enumeration.EvaluateGetROCollectionEventsCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -45,13 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            //get => typeof(ICollection<object>);
-            // REFERENCE: TestSuiteClientExtensions.TestClientExtendSingleRowFunction
-            get => typeof(ICollection<EventBean>);
+            get => _evaluationType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumeration.EnumForgeRenderable;
+            get => _enumeration.EnumForgeRenderable;
         }
     }
 } // end of namespace

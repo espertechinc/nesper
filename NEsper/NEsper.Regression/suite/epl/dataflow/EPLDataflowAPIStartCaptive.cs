@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Container,
                 captureOp.Current,
                 fields,
-                new object[][] {new object[] {"E1", 10}});
+                new[] {new object[] {"E1", 10}});
 
             emitter.Submit(new object[] {"E2", 20});
             EPAssertionUtil.AssertPropsPerRow(

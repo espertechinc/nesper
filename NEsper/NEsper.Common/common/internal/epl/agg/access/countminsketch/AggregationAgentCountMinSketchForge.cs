@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), this.GetType(), classScope);
             method.Block
                 .DeclareVar<AggregationAgentCountMinSketch>("cms", NewInstance(typeof(AggregationAgentCountMinSketch)))
                 .SetProperty(

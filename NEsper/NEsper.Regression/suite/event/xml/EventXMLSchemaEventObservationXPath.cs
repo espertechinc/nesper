@@ -24,14 +24,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy(
-                "@Name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from SensorEventWithXPath",
-                path);
+            env.CompileDeploy("@Name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from SensorEventWithXPath", path);
             env.CompileDeploy("@Name('e0') insert into TagOneStream select tagOne.* from SensorEventWithXPath", path);
             env.CompileDeploy("@Name('e1') select ID from TagOneStream", path);
-            env.CompileDeploy(
-                "@Name('e2') insert into TagArrayStream select tagArray as mytags from SensorEventWithXPath",
-                path);
+            env.CompileDeploy("@Name('e2') insert into TagArrayStream select tagArray as mytags from SensorEventWithXPath", path);
             env.CompileDeploy("@Name('e3') select mytags[1].ID from TagArrayStream", path);
 
             var doc = SupportXML.GetDocument(OBSERVATION_XML);
@@ -55,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("s0").Advance(),
                 new [] { "countTags","countTagsInt" },
-                new object[] {2d, 2});
+                new object[] { 2d, 2 });
             Assert.AreEqual("urn:epc:1:2.24.400", env.GetEnumerator("e1").Advance().Get("ID"));
             Assert.AreEqual("urn:epc:1:2.24.401", env.GetEnumerator("e3").Advance().Get("mytags[1].ID"));
 

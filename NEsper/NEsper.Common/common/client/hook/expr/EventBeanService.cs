@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.hook.expr
         /// <param name="bean">event underlying</param>
         /// <param name="eventType">event type (Bean only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedBean(
+        EventBean AdapterForTypedObject(
             object bean,
             EventType eventType);
 

@@ -21,19 +21,19 @@ namespace com.espertech.esper.regressionlib.support.dataflow
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IEnumerator<object[]> iterator;
+        private readonly IEnumerator<object[]> enumerator;
 
         [DataFlowContext] private EPDataFlowEmitter graphContext;
 
-        public MyObjectArrayGraphSource(IEnumerator<object[]> iterator)
+        public MyObjectArrayGraphSource(IEnumerator<object[]> enumerator)
         {
-            this.iterator = iterator;
+            this.enumerator = enumerator;
         }
 
         public void Next()
         {
-            if (iterator.MoveNext()) {
-                var next = iterator.Advance();
+            if (enumerator.MoveNext()) {
+                var next = enumerator.Current;
                 if (log.IsDebugEnabled) {
                     log.Debug("submitting row " + next.RenderAny());
                 }

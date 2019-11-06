@@ -263,13 +263,23 @@ namespace com.espertech.esper.common.@internal.context.module
                 return ConstantNull();
             }
 
-            var anonymousClass = NewAnonymousClass(
-                method.Block,
-                typeof(InstrumentationCommon));
+            var instrumentation = Ref("instrumentation");
+            method.Block.AssignRef(instrumentation, NewInstance<ProxyInstrumentationCommon>());
+            
+            //var anonymousClass = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(InstrumentationCommon));
 
-            var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
-            anonymousClass.AddMethod("Activated", activated);
-            activated.Block.MethodReturn(ConstantTrue());
+            //var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
+            //activated.Block.MethodReturn(ConstantTrue());
+
+            method.Block.SetProperty(
+                instrumentation,
+                "ProcActivated",
+                new CodegenExpressionLambda(method.Block)
+                    .WithBody(
+                        block => block.BlockReturn(
+                            ConstantTrue())));
 
             foreach (var forwarded in typeof(InstrumentationCommon).GetMethods()) {
                 if (forwarded.DeclaringType == typeof(object)) {
@@ -291,13 +301,29 @@ namespace com.espertech.esper.common.@internal.context.module
                     num++;
                 }
 
-                var m = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                    .AddParam(@params);
-                anonymousClass.AddMethod(forwarded.Name, m);
-                m.Block.Apply(InstrumentationCode.Instblock(classScope, forwarded.Name, expressions));
+                //var m = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
+                //    .AddParam(@params);
+
+                // Now we need a lambda to associate with the instrumentation and tie them together
+                var proc = $"Proc{forwarded.Name}";
+
+                method.Block.SetProperty(
+                    instrumentation,
+                    "ProcActivated",
+                    new CodegenExpressionLambda(method.Block)
+                        .WithParams(@params)
+                        .WithBody(
+                            block => block
+                                .Apply(
+                                    InstrumentationCode.Instblock(
+                                        classScope,
+                                        forwarded.Name,
+                                        expressions))));
+
+                //instrumentation.AddMethod(forwarded.Name, m);
             }
 
-            return anonymousClass;
+            return instrumentation;
         }
 
         private CodegenExpression MakeAuditProvider(

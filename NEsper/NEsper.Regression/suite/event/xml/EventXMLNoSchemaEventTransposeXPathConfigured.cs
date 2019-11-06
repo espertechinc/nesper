@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 new object[] { "SAMPLE_V1", "true", "SAMPLE_ATTR1", "4" });
             EPAssertionUtil.AssertProps(
                 received,
-                new[] { "nested4array[0].Id", "nested4array[0].prop5[1]", "nested4array[1].Id" },
+                new[] { "nested4array[0].id", "nested4array[0].prop5[1]", "nested4array[1].id" },
                 new object[] { "a", "SAMPLE_V8", "b" });
 
             // assert event and fragments alone

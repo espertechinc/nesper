@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 );
 
                 // one secondary hash index on single field
-                string[] createIndexHashSingleK1 = {"create index Idx_k1 on varagg (k1)"};
+                string[] createIndexHashSingleK1 = {"create index idx_k1 on varagg (k1)"};
                 AssertIndexChoice(
                     env,
                     eplDeclare,
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "id = k1",
+                            "Id = k1",
                             "idx_k1",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // two secondary hash indexes on one field each
                 string[] createIndexHashTwoDiscrete =
-                    {"create index Idx_k1 on varagg (k1)", "create index Idx_k0 on varagg (k0)"};
+                    {"create index idx_k1 on varagg (k1)", "create index idx_k0 on varagg (k0)"};
                 AssertIndexChoice(
                     env,
                     eplDeclare,
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 );
 
-                string[] createIndexHashSingleK0 = {"create index Idx_k0 on varagg (k0)"};
+                string[] createIndexHashSingleK0 = {"create index idx_k0 on varagg (k0)"};
                 // in-keyword single-directional use
                 AssertIndexChoice(
                     env,
@@ -559,12 +559,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     milestone,
                     new[] {
                         new IndexAssertion(
-                            "k0 = keyLong",
+                            "k0 = KeyLong",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertion),
                         new IndexAssertion(
-                            "k0 = keyLong",
+                            "k0 = KeyLong",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertion)

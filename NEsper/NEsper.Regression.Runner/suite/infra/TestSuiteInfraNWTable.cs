@@ -53,6 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 typeof(SupportSpatialPoint),
                 typeof(SupportMarketDataBean),
                 typeof(SupportBean_Container),
+                typeof(SupportEnum),
                 typeof(OrderBean)
             }) {
                 configuration.Common.AddEventType(clazz);
@@ -104,7 +105,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(_session, new InfraNWTableEventType());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableInfraFAF()
         {
             RegressionRunner.Run(_session, InfraNWTableFAF.Executions());

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     public class CompositeAccessStrategyRangeNormal : CompositeAccessStrategyRangeBase,
         CompositeAccessStrategy
     {
-        private bool allowReverseRange;
+        private bool _allowReverseRange;
 
         public CompositeAccessStrategyRangeNormal(
             bool isNWOnTrigger,
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             bool allowReverseRange)
             : base(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd)
         {
-            this.allowReverseRange = allowReverseRange;
+            this._allowReverseRange = allowReverseRange;
         }
 
         public ICollection<EventBean> Lookup(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
             catch (ArgumentException) {
-                if (allowReverseRange) {
+                if (_allowReverseRange) {
                     submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
                 }
                 else {
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
             catch (ArgumentException) {
-                if (allowReverseRange) {
+                if (_allowReverseRange) {
                     submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
                 }
                 else {

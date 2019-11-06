@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         }
                         else if (variableMetaData.EventType != null) {
                             var eventBean =
-                                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(
+                                agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObject(
                                     value,
                                     variableMetaData.EventType);
                             variableService.Write(variableNumber, agentInstanceId, eventBean);

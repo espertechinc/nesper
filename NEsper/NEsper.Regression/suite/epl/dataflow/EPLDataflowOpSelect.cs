@@ -62,10 +62,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             instance.Run();
 
-            var result = capture.GetAndReset()[0].UnwrapIntoArray<EventBean>();
+            var result = capture.GetAndReset()[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertPropsPerRow(
+                env.Container,
                 result,
-                new [] { "MyString","total" },
+                new[] { "MyString","total" },
                 new[] {
                     new object[] {"one", 1}, 
                     new object[] {"two", 3}

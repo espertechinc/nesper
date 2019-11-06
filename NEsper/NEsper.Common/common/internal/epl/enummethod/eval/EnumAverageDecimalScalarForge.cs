@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal(optionalMathContext);
+            var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(optionalMathContext);
 
             foreach (var next in enumcoll) {
                 var num = next;
@@ -67,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .MakeChild(typeof(decimal?), typeof(EnumAverageScalarForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
                 .Block
-                .DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
+                .DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal>(
                     "agg",
-                    NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), math))
+                    NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal), math))
                 .ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("num")
                 .BlockContinue()

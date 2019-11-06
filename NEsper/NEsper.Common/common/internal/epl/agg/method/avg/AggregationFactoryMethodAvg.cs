@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         internal readonly MathContext optionalMathContext;
         internal readonly ExprAvgNode parent;
         internal readonly Type resultType;
-        private AggregatorMethod aggregator;
+        private AggregatorMethod _aggregator;
 
         public AggregationFactoryMethodAvg(
             ExprAvgNode parent,
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 parent.HasFilter,
                 parent.ChildNodes[0].Forge.EvaluationType);
 
-        public override AggregatorMethod Aggregator => aggregator;
+        public override AggregatorMethod Aggregator => _aggregator;
 
         public override void InitMethodForge(
             int col,
@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenClassScope classScope)
         {
             var distinctValueType = !parent.IsDistinct ? null : childType;
-            if (resultType.IsBigInteger() || resultType.IsDecimal()) {
-                aggregator = new AggregatorAvgBig(
+            if (resultType.IsBigInteger()) {
+                _aggregator = new AggregatorAvgBig(
                     this,
                     col,
                     rowCtor,
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     parent.OptionalFilter);
             }
             else {
-                aggregator = new AggregatorAvgNonBig(
+                _aggregator = new AggregatorAvgNonBig(
                     this,
                     col,
                     rowCtor,
@@ -94,8 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
         private Type GetAvgAggregatorType(Type type)
         {
-            if (type.IsDecimal() || type.IsBigInteger()) {
+            if (type.IsDecimal()) {
                 return typeof(decimal?);
+            } else if (type.IsBigInteger()) {
+                return typeof(BigInteger?);
             }
 
             return typeof(double?);

@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns true if metrics reporting is turned on, false if not.
         /// </summary>
         /// <returns>indicator whether metrics reporting is turned on</returns>
-        public bool IsEnableMetricsReporting { get; set; }
+        public bool IsEnableMetricsReporting {
+            get;
+            set;
+        }
 
         /// <summary>
         ///     Returns true to indicate that metrics reporting takes place in a separate thread (default),

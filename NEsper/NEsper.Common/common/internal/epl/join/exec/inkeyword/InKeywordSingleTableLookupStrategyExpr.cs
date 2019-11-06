@@ -27,17 +27,17 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
     /// </summary>
     public class InKeywordSingleTableLookupStrategyExpr : JoinExecTableLookupStrategy
     {
-        private readonly InKeywordTableLookupPlanSingleIdxFactory factory;
-        private readonly PropertyHashedEventTable index;
-        private readonly EventBean[] eventsPerStream;
+        private readonly InKeywordTableLookupPlanSingleIdxFactory _factory;
+        private readonly PropertyHashedEventTable _index;
+        private readonly EventBean[] _eventsPerStream;
 
         public InKeywordSingleTableLookupStrategyExpr(
             InKeywordTableLookupPlanSingleIdxFactory factory,
             PropertyHashedEventTable index)
         {
-            this.factory = factory;
-            this.index = index;
-            this.eventsPerStream = new EventBean[factory.LookupStream + 1];
+            this._factory = factory;
+            this._index = index;
+            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
         public ICollection<EventBean> Lookup(
@@ -46,14 +46,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             ExprEvaluatorContext exprEvaluatorContext)
         {
             InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QIndexJoinLookup(this, index);
+            instrumentationCommon.QIndexJoinLookup(this, _index);
 
-            eventsPerStream[factory.LookupStream] = theEvent;
+            _eventsPerStream[_factory.LookupStream] = theEvent;
             ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
-                factory.Expressions,
-                eventsPerStream,
+                _factory.Expressions,
+                _eventsPerStream,
                 exprEvaluatorContext,
-                index);
+                _index);
 
             instrumentationCommon.AIndexJoinLookup(result, null);
             return result;
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
         {
             return "IndexedTableLookupStrategyExpr expressions" +
                    " index=(" +
-                   index +
+                   _index +
                    ')';
         }
 

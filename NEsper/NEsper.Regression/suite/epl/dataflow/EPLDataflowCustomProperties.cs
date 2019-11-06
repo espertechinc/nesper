@@ -85,18 +85,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  TheString = 'a'," +
-                    "  TheInt: 1," +
-                    "  TheBool: true," +
-                    "  TheLongOne: 1L," +
-                    "  TheLongTwo: 2," +
-                    "  TheLongThree: null," +
-                    "  TheDoubleOne: 1d," +
-                    "  TheDoubleTwo: 2," +
-                    "  TheFloatOne: 1f," +
-                    "  TheFloatTwo: 2," +
-                    "  TheStringWithSetter: 'b'," +
-                    "  TheSystemProperty: systemProperties('log4j.configuration')" +
+                    "  theString = 'a'," +
+                    "  theInt: 1," +
+                    "  theBool: true," +
+                    "  theLongOne: 1L," +
+                    "  theLongTwo: 2," +
+                    "  theLongThree: null," +
+                    "  theDoubleOne: 1d," +
+                    "  theDoubleTwo: 2," +
+                    "  theFloatOne: 1f," +
+                    "  theFloatTwo: 2," +
+                    "  theStringWithSetter: 'b'," +
+                    "  theSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];

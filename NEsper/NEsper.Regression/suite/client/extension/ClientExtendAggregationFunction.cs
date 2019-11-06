@@ -224,13 +224,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 new [] { "val" },
-                new object[] {"SupportBean(d, -1)"});
+                new object[] {"SupportBean(\"d\", -1)"});
 
             env.SendEventBean(new SupportBean("e", 2));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 new [] { "val" },
-                new object[] {"SupportBean(d, -1) SupportBean(e, 2)"});
+                new object[] {"SupportBean(\"d\", -1) SupportBean(\"e\", 2)"});
 
             TryInvalidCompile(
                 env,

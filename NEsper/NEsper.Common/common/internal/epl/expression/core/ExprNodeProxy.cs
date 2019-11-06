@@ -56,6 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static object NewInstance(ExprNode exprNode)
         {
+            if (exprNode is IProxyTargetAccessor) {
+                return exprNode;
+            }
+            
             var interfaces = exprNode.GetType()
                 .GetInterfaces()
                 .Where(t => t != typeof(ExprNode))

@@ -85,11 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             if (hasFilter) {
                 method.Block
-                    .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
-                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .DeclareVar<object[]>("vin", Cast(typeof(object[]), value))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("vin"), Constant(1))))
                     .IfCondition(Not(Unbox(Ref("pass"))))
                     .BlockReturnNoValue()
-                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
+                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("vin"), Constant(0)));
                 ApplyTableEnterFiltered(Ref("filtered"), evaluationTypes, method, classScope);
             }
             else {
@@ -118,11 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             if (hasFilter) {
                 method.Block
-                    .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
-                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .DeclareVar<object[]>("vin", Cast(typeof(object[]), value))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("vin"), Constant(1))))
                     .IfCondition(Not(Unbox(Ref("pass"))))
                     .BlockReturnNoValue()
-                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
+                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("vin"), Constant(0)));
                 ApplyTableLeaveFiltered(Ref("filtered"), evaluationTypes, method, classScope);
             }
             else {

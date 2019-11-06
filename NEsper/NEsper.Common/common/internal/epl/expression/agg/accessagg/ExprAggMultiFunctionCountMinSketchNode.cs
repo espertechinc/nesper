@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         private const int DEFAULT_SEED = 1234567;
 
         private const string MSG_NAME = "Count-min-sketch";
-        private const string NAME_EPS_OF_TOTAL_COUNT = "epsOfTotalCount";
+        private const string NAME_EPS_OF_TOTAL_COUNT = "EpsOfTotalCount";
         private const string NAME_CONFIDENCE = "confidence";
         private const string NAME_SEED = "seed";
         private const string NAME_TOPK = "topk";

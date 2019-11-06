@@ -168,7 +168,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             IEnumerator<EventBean> theIterator;
             if (statementContext.ContextRuntimeDescriptor != null)
             {
-                theIterator = statementContext.ContextRuntimeDescriptor.IteratorHandler.GetEnumerator(statementContext.StatementId);
+                theIterator = statementContext.ContextRuntimeDescriptor.EnumeratorHandler.GetEnumerator(statementContext.StatementId);
             }
             else
             {
@@ -195,7 +195,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             if (statementContext.ContextRuntimeDescriptor != null)
             {
                 statementContext.VariableManagementService.SetLocalVersion();
-                return statementContext.ContextRuntimeDescriptor.IteratorHandler.GetSafeEnumerator(statementContext.StatementId);
+                return statementContext.ContextRuntimeDescriptor.EnumeratorHandler.GetSafeEnumerator(statementContext.StatementId);
             }
 
             // Set variable version and acquire the lock first
@@ -285,7 +285,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
                 return null;
             }
 
-            return statementContext.ContextRuntimeDescriptor.IteratorHandler.GetEnumerator(statementContext.StatementId, selector);
+            return statementContext.ContextRuntimeDescriptor.EnumeratorHandler
+                .GetEnumerator(statementContext.StatementId, selector);
         }
 
         public SafeEnumerator<EventBean> GetSafeEnumerator(ContextPartitionSelector selector)
@@ -308,7 +309,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             }
 
             statementContext.VariableManagementService.SetLocalVersion();
-            return statementContext.ContextRuntimeDescriptor.IteratorHandler.GetSafeEnumerator(statementContext.StatementId, selector);
+            return statementContext.ContextRuntimeDescriptor.EnumeratorHandler.GetSafeEnumerator(statementContext.StatementId, selector);
         }
 
         public string DeploymentId

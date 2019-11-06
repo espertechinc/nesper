@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "EventTypeForNativeObject", @Ref("result")))
                 .DeclareVar<EventBean>(
                     "wrappedEvent",
-                    ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", @Ref("result"), @Ref("beanEventType")))
+                    ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", @Ref("result"), @Ref("beanEventType")))
                 .DeclareVar<EventBean>("variant", ExprDotMethod(type, "GetValueAddEventBean", @Ref("wrappedEvent")))
                 .MethodReturn(
                     ExprDotMethod(

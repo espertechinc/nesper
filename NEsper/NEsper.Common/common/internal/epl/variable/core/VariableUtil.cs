@@ -305,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 }
 
                 if (eventBeanTypedEventFactory != EventBeanTypedEventFactoryCompileTime.INSTANCE) {
-                    coercedValue = eventBeanTypedEventFactory.AdapterForTypedBean(value, eventType);
+                    coercedValue = eventBeanTypedEventFactory.AdapterForTypedObject(value, eventType);
                 }
             }
             else if (variableType == typeof(object)) {

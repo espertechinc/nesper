@@ -24,19 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
 {
     public class IndexedTableLookupStrategyHashedProp : JoinExecTableLookupStrategy
     {
-        private readonly IndexedTableLookupPlanHashedOnlyFactory factory;
-        private readonly PropertyHashedEventTable index;
+        private readonly IndexedTableLookupPlanHashedOnlyFactory _factory;
+        private readonly PropertyHashedEventTable _index;
 
         public IndexedTableLookupStrategyHashedProp(
             IndexedTableLookupPlanHashedOnlyFactory factory,
             PropertyHashedEventTable index)
         {
-            this.factory = factory;
-            this.index = index;
+            _factory = factory;
+            _index = index;
         }
 
         public PropertyHashedEventTable Index {
-            get => index;
+            get => _index;
         }
 
         public ICollection<EventBean> Lookup(
@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
             ExprEvaluatorContext exprEvaluatorContext)
         {
             InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QIndexJoinLookup(this, index);
+            instrumentationCommon.QIndexJoinLookup(this, _index);
 
-            object key = factory.EventPropertyValueGetter.Get(theEvent);
-            ISet<EventBean> events = index.Lookup(key);
+            object key = _factory.EventPropertyValueGetter.Get(theEvent);
+            ISet<EventBean> events = _index.Lookup(key);
 
             instrumentationCommon.AIndexJoinLookup(events, key);
             return events;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
         {
             return "IndexedTableLookupStrategySingleExpr evaluation" +
                    " index=(" +
-                   index +
+                   _index +
                    ')';
         }
 

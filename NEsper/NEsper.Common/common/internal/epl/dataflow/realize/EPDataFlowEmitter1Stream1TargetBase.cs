@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client.dataflow.util;
@@ -19,13 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         SubmitHandler
     {
         internal readonly EPDataFlowEmitterExceptionHandler exceptionHandler;
-
         internal readonly MethodInfo fastMethod;
-
-        internal readonly int operatorNum;
-        internal readonly SignalHandler signalHandler;
-        internal readonly DataFlowSignalManager signalManager;
         internal readonly object targetObject;
+
+        private readonly int operatorNum;
+        private readonly SignalHandler signalHandler;
+        private readonly DataFlowSignalManager signalManager;
 
         public EPDataFlowEmitter1Stream1TargetBase(
             int operatorNum,
@@ -40,6 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             this.signalHandler = signalHandler;
             this.exceptionHandler = exceptionHandler;
 
+            if (target.Binding.ConsumingBindingDesc.Method.DeclaringType.FullName == "com.espertech.esper.common.internal.epl.dataflow.util.DefaultSupportCaptureOp") {
+                Console.WriteLine("stop here");
+            }
+            
             fastMethod = target.Binding.ConsumingBindingDesc.Method;
             targetObject = target.Target;
         }

@@ -48,9 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var fields = new [] { "lasteveru","firsteveru","windowb" };
             var path = new RegressionPath();
             var eplDeclare = "create table varagg (" +
-                             "lasteveru lastever(*) @type('SupportBean'), " +
-                             "firsteveru firstever(*) @type('SupportBean'), " +
-                             "windowb window(*) @type('SupportBean'))";
+                             "lasteveru lastever(*) @Type('SupportBean'), " +
+                             "firsteveru firstever(*) @Type('SupportBean'), " +
+                             "windowb window(*) @Type('SupportBean'))";
             env.CompileDeploy(soda, eplDeclare, path);
 
             var eplIterate = "@Name('iterate') select varagg from SupportBean_S0#lastevent";
@@ -598,14 +598,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 EPAssertionUtil.AssertProps(
                     result,
                     fields,
-                    new object[] {5.0m, 100m, new BigInteger(5), 100m});
+                    new object[] {
+                        new BigInteger(5),
+                        100m, 
+                        new BigInteger(5),
+                        100m
+                    });
 
                 env.SendEventBean(new SupportBeanNumeric(new BigInteger(4), 200m));
                 result = env.GetEnumerator("tbl").Advance();
                 EPAssertionUtil.AssertProps(
                     result,
                     fields,
-                    new object[] {4m, 200m, new BigInteger(4), 200m});
+                    new object[] {
+                        new BigInteger(4),
+                        200m, 
+                        new BigInteger(4),
+                        200m
+                    });
 
                 env.UndeployAll();
             }

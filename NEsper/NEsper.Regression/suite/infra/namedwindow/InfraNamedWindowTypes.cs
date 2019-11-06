@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
-                    new [] { "S1.col1","S1.col2" },
+                    new [] { "s1.col1","s1.col2" },
                     new object[] {10, 11});
 
                 env.UndeployAll();

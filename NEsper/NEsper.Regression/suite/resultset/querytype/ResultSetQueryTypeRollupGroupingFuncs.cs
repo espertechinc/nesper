@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportCarEvent("opel", "germany", 7000));
 
                 epl =
-                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_Id(Name, Place) as gId " +
+                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place) as gId " +
                     "from CarWindow group by grouping sets((Name, Place),Name, Place,())";
                 var result = env.CompileExecuteFAF(epl, path);
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // try simple
                 var epl =
-                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_Id(Name,Place) as gId " +
+                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name,Place) as gId " +
                     "from SupportCarEvent group by grouping sets((Name, Place), Name, Place, ())";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -146,8 +146,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test uncorrelated subquery and expression-declaration and single-row func
                 var epl = "create expression myExpr {x-> '|' || x.Name || '|'};\n" +
                           "@Name('s0') select myfunc(" +
-                          "  Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_Id(Name, Place)," +
-                          "  (select refId from SupportCarInfoEvent#lastevent), " +
+                          "  Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place)," +
+                          "  (select RefId from SupportCarInfoEvent#lastevent), " +
                           "  myExpr(ce)" +
                           "  )" +
                           "from SupportCarEvent ce group by grouping sets((Name, Place),Name, Place,())";
@@ -230,8 +230,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select TheString, sum(IntPrimitive), grouping_Id(TheString, TheString) from SupportBean group by rollup(TheString)",
-                    "Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_Id(TheString, TheString) from SupportBean group by rollup(TheString)]");
+                    "select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)",
+                    "Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)]");
             }
         }
 

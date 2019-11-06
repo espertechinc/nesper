@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     "recast",
                     ExprDotMethod(
                         eventBeanFactory,
-                        "AdapterForTypedBean",
+                        "AdapterForTypedObject",
                         ExprDotUnderlying(@Ref("theEvent")),
                         memberUndType))
                 .MethodReturn(

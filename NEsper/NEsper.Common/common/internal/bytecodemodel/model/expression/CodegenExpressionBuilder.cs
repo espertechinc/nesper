@@ -210,7 +210,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return new CodegenExpressionNewAnonymousClass(parentBlock, interfaceOrSuperClass, ctorParams);
         }
-#endif
 
         public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
             CodegenBlock parentBlock,
@@ -221,6 +220,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 interfaceOrSuperClass,
                 Collections.GetEmptyList<CodegenExpression>());
         }
+#endif
 
         public static CodegenExpression Noop()
         {

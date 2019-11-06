@@ -17,12 +17,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     {
         internal readonly ExprEvaluator end;
 
-        private readonly EventBean[] events;
+        private readonly EventBean[] _events;
         internal readonly bool includeEnd;
         internal readonly bool includeStart;
 
-        private readonly bool isNWOnTrigger;
-        private readonly int lookupStream;
+        private readonly bool _isNwOnTrigger;
+        private readonly int _lookupStream;
         internal readonly ExprEvaluator start;
 
         protected CompositeAccessStrategyRangeBase(
@@ -38,56 +38,56 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             this.includeStart = includeStart;
             this.end = end;
             this.includeEnd = includeEnd;
-            this.isNWOnTrigger = isNWOnTrigger;
+            this._isNwOnTrigger = isNWOnTrigger;
 
             if (lookupStream != -1) {
-                events = new EventBean[lookupStream + 1];
+                _events = new EventBean[lookupStream + 1];
             }
             else {
-                events = new EventBean[numStreams + 1];
+                _events = new EventBean[numStreams + 1];
             }
 
-            this.lookupStream = lookupStream;
+            this._lookupStream = lookupStream;
         }
 
         public object EvaluateLookupStart(
             EventBean theEvent,
             ExprEvaluatorContext context)
         {
-            events[lookupStream] = theEvent;
-            return start.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            return start.Evaluate(_events, true, context);
         }
 
         public object EvaluateLookupEnd(
             EventBean theEvent,
             ExprEvaluatorContext context)
         {
-            events[lookupStream] = theEvent;
-            return end.Evaluate(events, true, context);
+            _events[_lookupStream] = theEvent;
+            return end.Evaluate(_events, true, context);
         }
 
         public object EvaluatePerStreamStart(
             EventBean[] eventPerStream,
             ExprEvaluatorContext context)
         {
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 return start.Evaluate(eventPerStream, true, context);
             }
 
-            Array.Copy(eventPerStream, 0, events, 1, eventPerStream.Length);
-            return start.Evaluate(events, true, context);
+            Array.Copy(eventPerStream, 0, _events, 1, eventPerStream.Length);
+            return start.Evaluate(_events, true, context);
         }
 
         public object EvaluatePerStreamEnd(
             EventBean[] eventPerStream,
             ExprEvaluatorContext context)
         {
-            if (isNWOnTrigger) {
+            if (_isNwOnTrigger) {
                 return end.Evaluate(eventPerStream, true, context);
             }
 
-            Array.Copy(eventPerStream, 0, events, 1, eventPerStream.Length);
-            return end.Evaluate(events, true, context);
+            Array.Copy(eventPerStream, 0, _events, 1, eventPerStream.Length);
+            return end.Evaluate(_events, true, context);
         }
     }
 } // end of namespace

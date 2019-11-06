@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.compat.logging;
 
@@ -49,7 +51,12 @@ namespace com.espertech.esper.regressionlib.support.client
         public static bool TakeWallTime(long msecTarget)
         {
             try {
-                Thread.Sleep((int) msecTarget);
+                var currentTime = DateTime.UtcNow;
+                var targetTime = currentTime + TimeSpan.FromMilliseconds(msecTarget);
+                while (currentTime < targetTime) {
+                    Thread.SpinWait(1000);
+                    currentTime = DateTime.UtcNow;
+                }
             }
             catch (ThreadInterruptedException e) {
                 log.Error("Unexpected exception", e);

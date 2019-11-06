@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Fire-and-forget (on-demand) delete DML.
     /// </summary>
+    [Serializable]
     public class FireAndForgetDelete : FireAndForgetClause
     {
     }

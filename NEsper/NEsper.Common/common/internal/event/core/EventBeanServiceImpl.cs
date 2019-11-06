@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             string eventTypeName)
         {
             var eventType = FindType(eventTypeName);
-            return typedEventFactory.AdapterForTypedBean(theEvent, eventType);
+            return typedEventFactory.AdapterForTypedObject(theEvent, eventType);
         }
 
         public EventBean AdapterForDOM(
@@ -105,11 +105,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             return FindTypeMayNull(eventTypeName);
         }
 
-        public EventBean AdapterForTypedBean(
+        public EventBean AdapterForTypedObject(
             object bean,
             EventType eventType)
         {
-            return typedEventFactory.AdapterForTypedBean(bean, eventType);
+            return typedEventFactory.AdapterForTypedObject(bean, eventType);
         }
 
         private EventType FindType(string eventTypeName)

@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .IfRefNotNull("value")
                     .AssignRef(
                         "theEvent",
-                        ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", Ref("value"), wrapperUndType))
+                        ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", Ref("value"), wrapperUndType))
                     .BlockEnd();
             }
             else if (underlyingExprForge != null) {
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .IfRefNotNull("value")
                     .AssignRef(
                         "theEvent",
-                        ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", Ref("value"), wrapperUndType))
+                        ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", Ref("value"), wrapperUndType))
                     .BlockEnd();
             }
             else {

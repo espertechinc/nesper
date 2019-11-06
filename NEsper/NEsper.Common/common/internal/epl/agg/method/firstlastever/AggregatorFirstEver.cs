@@ -57,7 +57,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             _childType = childType.GetBoxedType();
             _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
-            _firstValue = membersColumnized.AddMember(col, _childType, "firstValue");
+            // NOTE: we had originally set the value of the member to childType which seems correct an
+            //   appropriate.  However, the code is not doing proper type checking and cast conversion
+            //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
+            //   time.
+            _firstValue = membersColumnized.AddMember(col, typeof(object), "firstValue");
             _serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
         }
 

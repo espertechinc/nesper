@@ -17,37 +17,37 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
     public class CompositeIndexEnterRemoveRange : CompositeIndexEnterRemove
     {
-        private readonly EventPropertyValueGetter propertyGetter;
-        private HashSet<EventBean> nullKeys;
-        private CompositeIndexEnterRemove next;
+        private readonly EventPropertyValueGetter _propertyGetter;
+        private HashSet<EventBean> _nullKeys;
+        private CompositeIndexEnterRemove _next;
 
         public CompositeIndexEnterRemoveRange(EventPropertyValueGetter propertyGetter)
         {
-            this.propertyGetter = propertyGetter;
+            this._propertyGetter = propertyGetter;
         }
 
         public CompositeIndexEnterRemove Next {
-            get => this.next;
-            set => this.next = value;
+            get => this._next;
+            set => this._next = value;
         }
 
         public void GetAll(
             ISet<EventBean> result,
             CompositeDictionary parent)
         {
-            if (next == null) {
+            if (_next == null) {
                 foreach (var value in parent.Values) {
                     result.AddAll(value.AssertCollection());
                 }
             }
             else {
                 foreach (var value in parent.Values) {
-                    next.GetAll(result, value.AssertIndex());
+                    _next.GetAll(result, value.AssertIndex());
                 }
             }
 
-            if (nullKeys != null) {
-                result.AddAll(nullKeys);
+            if (_nullKeys != null) {
+                result.AddAll(_nullKeys);
             }
         }
 
@@ -55,18 +55,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             EventBean theEvent,
             CompositeDictionary parent)
         {
-            var sortable = propertyGetter.Get(theEvent);
+            var sortable = _propertyGetter.Get(theEvent);
             if (sortable == null) {
-                if (nullKeys == null) {
-                    nullKeys = new HashSet<EventBean>();
+                if (_nullKeys == null) {
+                    _nullKeys = new HashSet<EventBean>();
                 }
 
-                nullKeys.Add(theEvent);
+                _nullKeys.Add(theEvent);
                 return;
             }
 
             // if this is a leaf, enter event
-            if (next == null) {
+            if (_next == null) {
                 var eventMap = parent;
                 var entry = parent.Get(sortable);
                 if (entry == null) {
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                     innerEntry.AssertIndex();
                 }
 
-                next.Enter(theEvent, innerEntry.Index);
+                _next.Enter(theEvent, innerEntry.Index);
             }
         }
 
@@ -97,14 +97,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             EventBean theEvent,
             CompositeDictionary parent)
         {
-            var sortable = propertyGetter.Get(theEvent);
+            var sortable = _propertyGetter.Get(theEvent);
             if (sortable == null) {
-                nullKeys?.Remove(theEvent);
+                _nullKeys?.Remove(theEvent);
                 return;
             }
 
             // if this is a leaf, remove event
-            if (next == null) {
+            if (_next == null) {
                 var eventMap = parent;
                 var entry = eventMap?.Get(sortable);
                 if (entry == null) {
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 }
 
                 var innerIndex = innerEntry.AssertIndex();
-                next.Remove(theEvent, innerIndex);
+                _next.Remove(theEvent, innerIndex);
                 if (innerIndex.IsEmpty()) {
                     parent.Remove(sortable);
                 }

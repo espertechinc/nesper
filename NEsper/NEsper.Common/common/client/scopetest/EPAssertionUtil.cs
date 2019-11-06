@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertEqualsExactOrder(
             object[][] actual,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             if (CompareCount(expected, actual)) {
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertEqualsExactOrder(
             ICollection<object[]> actual,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             var arr = actual.ToArray();
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>
         public static void AssertEqualsExactOrderUnderlying(
-            object[] expected,
+            IList<object> expected,
             IEnumerator<EventBean> actual)
         {
             var underlyingValues = new List<object>();
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>
         public static void AssertEqualsExactOrderUnderlying(
-            object[] expected,
+            IList<object> expected,
             EventBean[] actual)
         {
             if (CompareCount(expected, actual)) {
@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>
         public static void AssertEqualsExactOrder(
-            object[] expected,
+            IList<object> expected,
             IDictionary<string, object>[] actual)
         {
             if (CompareCount(expected, actual)) {
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.client.scopetest
                 expected = new object[0];
             }
 
-            for (var i = 0; i < expected.Length; i++) {
+            for (var i = 0; i < expected.Count; i++) {
                 object value = actual[i];
                 var expectedValue = expected[i];
                 AssertEqualsAllowArray("Failed to assert at element " + i, expectedValue, value);
@@ -218,14 +218,14 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">is the expected values</param>
         /// <param name="actual">is the actual values</param>
         public static void AssertSameExactOrder(
-            object[] expected,
-            object[] actual)
+            IList<object> expected,
+            IList<object> actual)
         {
             if (CompareCount(expected, actual)) {
                 return;
             }
 
-            for (var i = 0; i < expected.Length; i++) {
+            for (var i = 0; i < expected.Count; i++) {
                 ScopeTestHelper.AssertSame("at element " + i, expected[i], actual[i]);
             }
         }
@@ -417,7 +417,7 @@ namespace com.espertech.esper.common.client.scopetest
         public static void AssertPropsPerRow(
             IEnumerator<EventBean> enumerator,
             IEnumerator<EventBean> safeEnumerator,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             AssertPropsPerRow(EnumeratorToArray(enumerator), propertyNames, expected);
@@ -433,7 +433,7 @@ namespace com.espertech.esper.common.client.scopetest
         public static void AssertPropsPerRowAnyOrder(
             IEnumerator<EventBean> enumerator,
             IEnumerator<EventBean> safeEnumerator,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             AssertPropsPerRowAnyOrder(EnumeratorToArray(enumerator), propertyNames, expected);
@@ -447,7 +447,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertPropsPerRowAnyOrder(
             IEnumerator<EventBean> enumerator,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             AssertPropsPerRowAnyOrder(EnumeratorToArray(enumerator), propertyNames, expected);
@@ -459,7 +459,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertPropsPerRow(
             IEnumerator<EventBean> enumerator,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             AssertPropsPerRow(EnumeratorToArray(enumerator), propertyNames, expected);
@@ -475,7 +475,7 @@ namespace com.espertech.esper.common.client.scopetest
         public static void AssertPropsPerRow(
             IContainer container,
             IList<object[]> received,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             ScopeTestHelper.AssertEquals(received.Count, expected.Length);
@@ -490,7 +490,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertPropsPerRow(
             IDictionary<string, object>[] actual,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             if (CompareArraySize(expected, actual)) {
@@ -513,8 +513,8 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="propertyNames">array of property names</param>
         /// <param name="expected">expected values</param>
         public static void AssertPropsPerRow(
-            EventBean[] received,
-            string[] propertyNames,
+            IList<EventBean> received,
+            IList<string> propertyNames,
             object[][] expected)
         {
             AssertPropsPerRow(received, propertyNames, expected, "");
@@ -526,20 +526,20 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         /// <param name="streamName">an optional name for the stream for use in messages</param>
         public static void AssertPropsPerRow(
-            EventBean[] actual,
-            string[] propertyNames,
-            object[][] expected,
+            IList<EventBean> actual,
+            IList<string> propertyNames,
+            IList<object[]> expected,
             string streamName)
         {
             if (CompareArraySize(expected, actual)) {
                 return;
             }
 
-            for (var i = 0; i < expected.Length; i++) {
+            for (var i = 0; i < expected.Count; i++) {
                 var propertiesThisRow = expected[i];
                 ScopeTestHelper.AssertEquals(
                     "Number of properties expected mismatches for row " + i,
-                    propertyNames.Length,
+                    propertyNames.Count,
                     propertiesThisRow.Length);
                 for (var j = 0; j < propertiesThisRow.Length; j++) {
                     var name = propertyNames[j];
@@ -566,7 +566,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertPropsPerRowAnyOrder(
             EventBean[] actual,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expected)
         {
             if (CompareArraySize(expected, actual)) {
@@ -580,9 +580,9 @@ namespace com.espertech.esper.common.client.scopetest
             // build received
             var receivedArray = new object[actual.Length];
             for (var i = 0; i < actual.Length; i++) {
-                var data = new object[propertyNames.Length];
+                var data = new object[propertyNames.Count];
                 receivedArray[i] = data;
-                for (var j = 0; j < propertyNames.Length; j++) {
+                for (var j = 0; j < propertyNames.Count; j++) {
                     var name = propertyNames[j];
                     var eventProp = actual[i].Get(name);
                     data[j] = eventProp;
@@ -594,7 +594,7 @@ namespace com.espertech.esper.common.client.scopetest
 
         public static void AssertPropsPerRowAnyOrder(
             UniformPair<EventBean[]> pair,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expectedNew,
             object[][] expectedOld)
         {
@@ -606,21 +606,33 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="received">provides events</param>
         /// <param name="propertyNames">array of property names</param>
         /// <param name="expected">expected values</param>
-        public static void AssertProps(
+        private static void AssertPropsImpl(
             EventBean received,
-            string[] propertyNames,
-            object[] expected)
+            IList<string> propertyNames,
+            IList<object> expected)
         {
             if (CompareCount(expected, propertyNames)) {
                 return;
             }
 
-            for (var j = 0; j < expected.Length; j++) {
+            for (var j = 0; j < expected.Count; j++) {
                 var name = propertyNames[j].Trim();
                 var value = expected[j];
                 var eventProp = received.Get(name);
                 AssertEqualsAllowArray("Failed to assert property '" + name + "'", value, eventProp);
             }
+        }
+
+        /// <summary>Assert that the property values of a single event match the expected values. </summary>
+        /// <param name="received">provides events</param>
+        /// <param name="propertyNames">array of property names</param>
+        /// <param name="expected">expected values</param>
+        public static void AssertProps(
+            EventBean received,
+            IList<string> propertyNames,
+            params object[] expected)
+        {
+            AssertPropsImpl(received, propertyNames, expected);
         }
 
         /// <summary>Assert that the property values of a new event and a removed event match the expected insert and removed values. </summary>
@@ -630,12 +642,12 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expectedRemoved">expected values remove stream</param>
         public static void AssertProps(
             UniformPair<EventBean> received,
-            string[] propertyNames,
-            object[] expectedInsert,
-            object[] expectedRemoved)
+            IList<string> propertyNames,
+            IList<object> expectedInsert,
+            IList<object> expectedRemoved)
         {
-            AssertProps(received.First, propertyNames, expectedInsert);
-            AssertProps(received.Second, propertyNames, expectedRemoved);
+            AssertPropsImpl(received.First, propertyNames, expectedInsert);
+            AssertPropsImpl(received.Second, propertyNames, expectedRemoved);
         }
 
         /// <summary>Assert that the property values of a new event and a removed event match the expected insert and removed values. </summary>
@@ -645,7 +657,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expectedRemoved">expected values remove stream</param>
         public static void AssertPropsPerRow(
             UniformPair<EventBean[]> received,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object[][] expectedInsert,
             object[][] expectedRemoved)
         {
@@ -661,8 +673,8 @@ namespace com.espertech.esper.common.client.scopetest
         public static void AssertPropsPerRow(
             UniformPair<EventBean[]> received,
             string propertyName,
-            object[] expectedInsert,
-            object[] expectedRemoved)
+            IList<object> expectedInsert,
+            IList<object> expectedRemoved)
         {
             var propsInsert = EventsToObjectArr(received.First, propertyName);
             AssertEqualsExactOrder(expectedInsert, propsInsert);
@@ -677,15 +689,15 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expectedUnderlyingRemove">expected underlying object remove stream</param>
         public static void AssertUnderlyingPerRow(
             UniformPair<EventBean[]> received,
-            object[] expectedUnderlyingInsert,
-            object[] expectedUnderlyingRemove)
+            IList<object> expectedUnderlyingInsert,
+            IList<object> expectedUnderlyingRemove)
         {
             var newEvents = received.First;
             var oldEvents = received.Second;
 
             if (expectedUnderlyingInsert != null) {
-                ScopeTestHelper.AssertEquals(expectedUnderlyingInsert.Length, newEvents.Length);
-                for (var i = 0; i < expectedUnderlyingInsert.Length; i++) {
+                ScopeTestHelper.AssertEquals(expectedUnderlyingInsert.Count, newEvents.Length);
+                for (var i = 0; i < expectedUnderlyingInsert.Count; i++) {
                     ScopeTestHelper.AssertSame(expectedUnderlyingInsert[i], newEvents[i].Underlying);
                 }
             }
@@ -694,8 +706,8 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             if (expectedUnderlyingRemove != null) {
-                ScopeTestHelper.AssertEquals(expectedUnderlyingRemove.Length, oldEvents.Length);
-                for (var i = 0; i < expectedUnderlyingRemove.Length; i++) {
+                ScopeTestHelper.AssertEquals(expectedUnderlyingRemove.Count, oldEvents.Length);
+                for (var i = 0; i < expectedUnderlyingRemove.Count; i++) {
                     ScopeTestHelper.AssertSame(expectedUnderlyingRemove[i], oldEvents[i].Underlying);
                 }
             }
@@ -709,7 +721,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected values</param>
         public static void AssertAllPropsSortedByName(
             EventBean received,
-            object[] expected)
+            IList<object> expected)
         {
             if (expected == null) {
                 if (received == null) {
@@ -726,7 +738,7 @@ namespace com.espertech.esper.common.client.scopetest
                 Array.Copy(propertyNames, 0, propertyNamesSorted, 0, propertyNames.Length);
                 Array.Sort(propertyNamesSorted);
 
-                for (var j = 0; j < expected.Length; j++) {
+                for (var j = 0; j < expected.Count; j++) {
                     var name = propertyNamesSorted[j].Trim();
                     var value = expected[j];
                     var eventProp = received.Get(name);
@@ -737,7 +749,7 @@ namespace com.espertech.esper.common.client.scopetest
 
         public static void AssertPropsMap(
             IDictionary<object, object> received,
-            string[] propertyNames,
+            IList<string> propertyNames,
             params object[] expected)
         {
             if (expected == null) {
@@ -750,7 +762,7 @@ namespace com.espertech.esper.common.client.scopetest
                 ScopeTestHelper.AssertEquals(
                     "Mismatch in number of values to compare",
                     expected.Length,
-                    propertyNames.Length);
+                    propertyNames.Count);
             }
 
             if (expected != null) {
@@ -769,8 +781,20 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="propertyNames">property names to assert</param>
         public static void AssertPropsMap(
             IDictionary<string, object> received,
-            string[] propertyNames,
+            IList<string> propertyNames,
             params object[] expected)
+        {
+            AssertPropsMapImpl(received, propertyNames, expected);
+        }
+
+        /// <summary>Compare the values of a Map against the expected values. </summary>
+        /// <param name="received">provides events</param>
+        /// <param name="expected">expected values</param>
+        /// <param name="propertyNames">property names to assert</param>
+        private static void AssertPropsMapImpl(
+            IDictionary<string, object> received,
+            IList<string> propertyNames,
+            IList<object> expected)
         {
             if (expected == null) {
                 if (received == null) {
@@ -781,12 +805,12 @@ namespace com.espertech.esper.common.client.scopetest
                 ScopeTestHelper.AssertNotNull(received);
                 ScopeTestHelper.AssertEquals(
                     "Mismatch in number of values to compare",
-                    expected.Length,
-                    propertyNames.Length);
+                    expected.Count,
+                    propertyNames.Count);
             }
 
             if (expected != null) {
-                for (var j = 0; j < expected.Length; j++) {
+                for (var j = 0; j < expected.Count; j++) {
                     var name = propertyNames[j].Trim();
                     var value = expected[j];
                     var eventProp = received.Get(name);
@@ -799,10 +823,10 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="received">provides properties</param>
         /// <param name="expected">expected values</param>
         /// <param name="propertyNames">property names to assert</param>
-        public static void AssertPropsObjectArray(
-            object[] received,
-            string[] propertyNames,
-            params object[] expected)
+        private static void AssertPropsObjectArrayImpl(
+            IList<object> received,
+            IList<string> propertyNames,
+            IList<object> expected)
         {
             if (expected == null) {
                 if (received == null) {
@@ -814,7 +838,7 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             if (expected != null) {
-                for (var j = 0; j < expected.Length; j++) {
+                for (var j = 0; j < expected.Count; j++) {
                     var name = propertyNames[j].Trim();
                     var value = expected[j];
                     var eventProp = received[j];
@@ -916,7 +940,7 @@ namespace com.espertech.esper.common.client.scopetest
 
         /// <summary>Asserts that all values in the given object array are bool-typed values and are true </summary>
         /// <param name="objects">values to assert that they are all true</param>
-        public static void AssertAllBooleanTrue(object[] objects)
+        public static void AssertAllBooleanTrue(IList<object> objects)
         {
             foreach (var @object in objects) {
                 ScopeTestHelper.AssertTrue(@object.AsBoolean());
@@ -928,11 +952,11 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="objects">is the objects to check the class for</param>
         public static void AssertTypeEqualsAnyOrder(
             Type[] classes,
-            object[] objects)
+            IList<object> objects)
         {
-            ScopeTestHelper.AssertEquals(classes.Length, objects.Length);
-            var resultClasses = new Type[objects.Length];
-            for (var i = 0; i < objects.Length; i++) {
+            ScopeTestHelper.AssertEquals(classes.Length, objects.Count);
+            var resultClasses = new Type[objects.Count];
+            for (var i = 0; i < objects.Count; i++) {
                 resultClasses[i] = objects[i].GetType();
             }
 
@@ -950,13 +974,30 @@ namespace com.espertech.esper.common.client.scopetest
             }
 
             var events = new List<EventBean>();
-            for (; enumerator.MoveNext();) {
+            while (enumerator.MoveNext()) {
                 events.Add(enumerator.Current);
             }
 
             return events.ToArray();
         }
 
+        public static EventBean[] EnumeratorToArray<TKey>(
+            IEnumerator<EventBean> enumerator,
+            Func<EventBean, TKey> comparer)
+        {
+            if (enumerator == null) {
+                ScopeTestHelper.Fail("Null enumerator");
+                return null;
+            }
+
+            var events = new List<EventBean>();
+            while (enumerator.MoveNext()) {
+                events.Add(enumerator.Current);
+            }
+
+            return events.OrderBy(comparer).ToArray();
+        }
+        
         /// <summary>Convert an enumerator of event beans to an array of underlying objects. </summary>
         /// <param name="enumerator">to convert</param>
         /// <returns>array of event underlying objects</returns>
@@ -1039,12 +1080,12 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="srcTwo">array to concatenate</param>
         /// <returns>concatenated array</returns>
         public static object[] ConcatenateArray(
-            object[] srcOne,
-            object[] srcTwo)
+            IList<object> srcOne,
+            IList<object> srcTwo)
         {
-            var result = new object[srcOne.Length + srcTwo.Length];
-            Array.Copy(srcOne, 0, result, 0, srcOne.Length);
-            Array.Copy(srcTwo, 0, result, srcOne.Length, srcTwo.Length);
+            var result = new object[srcOne.Count + srcTwo.Count];
+            srcOne.CopyTo(result, 0);
+            srcTwo.CopyTo(result, srcOne.Count);
             return result;
         }
 
@@ -1196,7 +1237,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">value</param>
         public static void AssertPropsAllValuesSame(
             EventBean received,
-            string[] propertyNames,
+            IList<string> propertyNames,
             object expected)
         {
             foreach (var field in propertyNames) {
@@ -1230,7 +1271,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <returns>value object array</returns>
         public static object[][] EventsToObjectArr(
             EventBean[] events,
-            string[] propertyNames)
+            IList<string> propertyNames)
         {
             if (events == null) {
                 return null;
@@ -1262,7 +1303,7 @@ namespace com.espertech.esper.common.client.scopetest
         /// <returns>value object array</returns>
         public static object[][] EnumeratorToObjectArr(
             IEnumerator<EventBean> enumerator,
-            string[] propertyNames)
+            IList<string> propertyNames)
         {
             if (enumerator == null) {
                 return null;
@@ -1309,8 +1350,8 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">is the expected values</param>
         /// <returns>indicate whether compared successfully</returns>
         public static bool CompareRefExactOrder(
-            object[] actual,
-            object[] expected)
+            IList<object> actual,
+            IList<object> expected)
         {
             if ((expected == null) && (actual == null)) {
                 return true;
@@ -1320,11 +1361,11 @@ namespace com.espertech.esper.common.client.scopetest
                 return false;
             }
 
-            if (expected.Length != actual.Length) {
+            if (expected.Count != actual.Count) {
                 return false;
             }
 
-            for (var i = 0; i < expected.Length; i++) {
+            for (var i = 0; i < expected.Count; i++) {
                 if (expected[i] != actual[i]) {
                     return false;
                 }
@@ -1342,12 +1383,12 @@ namespace com.espertech.esper.common.client.scopetest
         /// <param name="expected">expected value</param>
         public static void AssertPropsPerRow(
             IContainer container,
-            object[] received,
-            string[] propertyNames,
+            IList<object> received,
+            IList<string> propertyNames,
             object[][] expected)
         {
-            ScopeTestHelper.AssertEquals(received.Length, expected.Length);
-            for (var row = 0; row < received.Length; row++) {
+            ScopeTestHelper.AssertEquals(received.Count, expected.Length);
+            for (var row = 0; row < received.Count; row++) {
                 AssertProps(container, received[row], propertyNames, expected[row]);
             }
         }
@@ -1362,17 +1403,17 @@ namespace com.espertech.esper.common.client.scopetest
         public static void AssertProps(
             IContainer container,
             object received,
-            string[] propertyNames,
-            object[] expected)
+            IList<string> propertyNames,
+            IList<object> expected)
         {
-            if (received is IDictionary<string, object>) {
-                AssertPropsMap((IDictionary<string, object>) received, propertyNames, expected);
+            if (received is IDictionary<string, object> stringDictionary) {
+                AssertPropsMapImpl(stringDictionary, propertyNames, expected);
             }
-            else if (received is object[]) {
-                AssertPropsObjectArray((object[]) received, propertyNames, expected);
+            else if (received is object[] receivedArray) {
+                AssertPropsObjectArrayImpl(receivedArray, propertyNames, expected);
             }
-            else if (received is EventBean) {
-                AssertProps((EventBean) received, propertyNames, expected);
+            else if (received is EventBean eventBean) {
+                AssertPropsImpl(eventBean, propertyNames, expected);
             }
             else {
                 throw new UnsupportedOperationException(
@@ -1462,9 +1503,9 @@ namespace com.espertech.esper.common.client.scopetest
             return false;
         }
 
-        private static bool CompareCount<T>(
-            ICollection<T> expected,
-            ICollection<T> actual)
+        private static bool CompareCount<T1, T2>(
+            ICollection<T1> expected,
+            ICollection<T2> actual)
         {
             if ((expected == null) && (actual == null)) {
                 return false;
@@ -1487,7 +1528,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             return false;
         }
-
+        
         private static bool CompareArraySize(
             object expected,
             object actual)

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             public IEnumerator<EventBean> GetEnumerator()
             {
                 for (int ii = 0; ii < array.Length; ii++) {
-                    yield return eventBeanTypedEventFactory.AdapterForTypedBean(
+                    yield return eventBeanTypedEventFactory.AdapterForTypedObject(
                         array.GetValue(ii),
                         type);
                 }

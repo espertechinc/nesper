@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.xml;
 
@@ -359,7 +360,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                 // check bool type
                 if (result is bool) {
-                    if (optionalCastToType != typeof(bool?)) {
+                    if (optionalCastToType.GetBoxedType() != typeof(bool?)) {
                         Log.Warn(
                             "Error coercing XPath property named '" +
                             property +

@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var eplSelect =
                     $"@Name('s0') select " +
                     $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " + 
-                    $"varaggPWD{key}.mb.getMyProperty() as c1, " +
+                    $"varaggPWD{key}.mb.GetMyProperty() as c1, " +
                     $"varaggPWD{key}.mbarr.takeLast(1) as c2, " +
                     $"varaggPWD{key}.me.p0 as c3, " +
                     $"varaggPWD{key}.mearr.selectFrom(i -> i.p0) as c4 " +
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new [] { "c0","c1","c3" },
                     new object[] {55, "x", "p0value"});
                 Assert.AreEqual(1, ((ICollection<object>) output.Get("c2")).Count);
-                Assert.AreEqual("[0_p0, 1_p0]", output.Get("c4").ToString());
+                Assert.AreEqual("[\"0_p0\", \"1_p0\"]", output.Get("c4").RenderAny());
 
                 env.UndeployAll();
             }
@@ -290,6 +290,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public class MyBean
         {
             public string MyProperty => "x";
+
+            public string GetMyProperty()
+            {
+                return "x";
+            }
         }
     }
 } // end of namespace

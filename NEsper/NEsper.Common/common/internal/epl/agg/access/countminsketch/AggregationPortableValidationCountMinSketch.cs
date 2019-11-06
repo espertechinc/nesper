@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             this.acceptableValueTypes = acceptableValueTypes;
         }
 
-        public void SetAcceptableValueTypes(Type[] acceptableValueTypes)
-        {
-            this.acceptableValueTypes = acceptableValueTypes;
+        public Type[] AcceptableValueTypes {
+            get => acceptableValueTypes;
+            set => acceptableValueTypes = value;
         }
 
         public void ValidateIntoTableCompatible(
@@ -50,13 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
 
             if (factory is AggregationForgeFactoryAccessCountMinSketchAdd) {
-                AggregationForgeFactoryAccessCountMinSketchAdd add =
+                var add =
                     (AggregationForgeFactoryAccessCountMinSketchAdd) factory;
-                CountMinSketchAggType aggType = add.Parent.AggType;
+                var aggType = add.Parent.AggType;
                 if (aggType == CountMinSketchAggType.FREQ || aggType == CountMinSketchAggType.ADD) {
-                    Type clazz = add.AddOrFrequencyEvaluatorReturnType;
-                    bool foundMatch = false;
-                    foreach (Type allowed in acceptableValueTypes) {
+                    var clazz = add.AddOrFrequencyEvaluatorReturnType;
+                    var foundMatch = false;
+                    foreach (var allowed in acceptableValueTypes) {
                         if (TypeHelper.IsSubclassOrImplementsInterface(clazz, allowed)) {
                             foundMatch = true;
                         }
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(AggregationPortableValidationCountMinSketch),
                 this.GetType(),
                 classScope);

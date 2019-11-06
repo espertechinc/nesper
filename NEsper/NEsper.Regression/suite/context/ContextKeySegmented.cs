@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
             Assert.AreEqual(newIntExpected, env.Listener("s0").LastNewData[0].Get("IntPrimitive"));
-            var beans = (SupportBean[]) env.Listener("s0").LastNewData[0].Get("pw");
+            var beans = (SupportBean[]) env.Listener("s0").LastNewData[0].Get("Pw");
             Assert.AreEqual(newArrayExpected.Length, beans.Length);
             for (var i = 0; i < beans.Length; i++) {
                 Assert.AreEqual(newArrayExpected[i][0], beans[i].TheString);
@@ -362,7 +362,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Statement("s0").GetEnumerator(filtered),
                     env.Statement("s0").GetSafeEnumerator(filtered),
                     fields,
-                    new[] {new object[] {"E2", 41}});
+                    new[] {
+                        new object[] {"E2", 41}
+                    });
 
                 // test always-false filter - compare context partition info
                 var filteredFalse = new MySelectorFilteredPartitioned(null);
@@ -427,7 +429,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Int32' [");
+                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Nullable<System.Int32>' [");
 
                 // duplicate type specification
                 epl =
@@ -438,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "For context 'SegmentedByAString' the event type 'SupportBean' is listed twice [");
 
                 // duplicate type: subtype
-                epl = "create context SegmentedByAString partition by baseAB from ISupportBaseAB, a from ISupportA";
+                epl = "create context SegmentedByAString partition by BaseAB from ISupportBaseAB, A from ISupportA";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
@@ -700,7 +702,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = new [] { "col1" };
                 var epl =
-                    "@Name('context') create context SegmentedByString partition by baseAB from ISupportBaseAB;\n" +
+                    "@Name('context') create context SegmentedByString partition by BaseAB from ISupportBaseAB;\n" +
                     "@Name('s0') context SegmentedByString select count(*) as col1 from ISupportA;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1280,7 +1282,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "SegmentedByString";
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select context.name as c1, context.Id as c2, context.key1 as c3, TheString as c4 " +
+                    "select context.name as c1, context.id as c2, context.key1 as c3, TheString as c4 " +
                     "from SupportBean#length(2) as items",
                     path);
                 env.AddListener("s0");
@@ -1490,7 +1492,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 cpids.Add(id.ContextPartitionId);
                 Contexts.Add(id.Keys);
-                return Equals(id.Keys, match);
+                return Arrays.AreEqual(id.Keys, match);
             }
         }
     }
