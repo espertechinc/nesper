@@ -701,6 +701,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     exprSymbol,
                     codegenClassScope);
                 methodNode.Block.MethodReturn(expression);
+                
                 return LocalMethod(methodNode, start, end, parameter);
             }
 

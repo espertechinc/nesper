@@ -49,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public EPType TypeInfo {
             get {
                 if (type == DuckType.WRAPARRAY) {
-                    return EPTypeHelper.CollectionOfSingleValue(Method.ReturnType.GetElementType());
+                    return EPTypeHelper.CollectionOfSingleValue(
+                        Method.ReturnType.GetElementType(),
+                        Method.ReturnType);
                 }
 
                 return EPTypeHelper.FromMethod(Method);

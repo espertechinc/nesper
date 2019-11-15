@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
@@ -158,14 +159,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     beanClass = methodReflection.ReturnType.GetElementType();
                 }
 
-                isCollection = GenericExtensions.IsGenericCollection(beanClass);
+                isCollection = beanClass.IsGenericCollection() && !beanClass.IsGenericDictionary();
                 Type collectionClass = null;
                 if (isCollection) {
                     collectionClass = TypeHelper.GetGenericReturnType(methodReflection, true);
                     beanClass = collectionClass;
                 }
 
-                isIterator = GenericExtensions.IsGenericEnumerator(beanClass);
+                isIterator = beanClass.IsGenericEnumerator();
                 Type iteratorClass = null;
                 if (isIterator) {
                     iteratorClass = TypeHelper.GetGenericReturnType(methodReflection, true);
@@ -174,11 +175,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
                 // If the method returns a Map, look up the map type
                 string mapTypeName = null;
-                if (GenericExtensions.IsGenericDictionary(methodReflection.ReturnType) ||
+                if (methodReflection.ReturnType.IsGenericDictionary() ||
                     methodReflection.ReturnType.IsArray &&
-                    GenericExtensions.IsGenericDictionary(methodReflection.ReturnType.GetElementType()) ||
-                    isCollection && GenericExtensions.IsGenericDictionary(collectionClass) ||
-                    isIterator && GenericExtensions.IsGenericDictionary(iteratorClass)) {
+                    methodReflection.ReturnType.GetElementType().IsGenericDictionary() ||
+                    isCollection && collectionClass.IsGenericDictionary() ||
+                    isIterator && iteratorClass.IsGenericDictionary()) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
@@ -404,7 +405,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             bool fail;
             if (metadataClass.IsInterface) {
-                fail = !typeGetterMethod.ReturnType.IsImplementsInterface(metadataClass);
+                fail = !TypeHelper.IsImplementsInterface(typeGetterMethod.ReturnType, metadataClass);
             }
             else {
                 fail = typeGetterMethod.ReturnType != metadataClass;

@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         private CodegenExpression ActionCodegen(CodegenExpression date)
         {
-            return ExprDotMethod(NewInstance(typeof(SimpleDateFormat)), "Format", date);
+            return ExprDotMethod(NewInstance<SimpleDateFormat>(), "Format", date);
         }
     }
 } // end of namespace

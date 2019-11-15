@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             var epl = "@Name('flow') create dataflow RollingTopWords\n" +
                       "create objectarray schema WordEvent (word string),\n" +
-                      "Emitter -> wordstream<WordEvent> {name:'a'} // Produces word stream\n" +
+                      "Emitter -> wordstream:<WordEvent> {name:'a'} // Produces word stream\n" +
                       "Select(wordstream) -> wordcount { // Sliding time window count per word\n" +
                       "  select: (select word, count(*) as wordcount from wordstream#time(30) group by word)\n" +
                       "}\n" +

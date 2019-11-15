@@ -13,7 +13,6 @@ using System.Linq;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
@@ -53,16 +52,14 @@ using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.epl.pattern.or;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
-using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -2363,6 +2360,22 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void ExitClassIdentifier(EsperEPL2GrammarParser.ClassIdentifierContext ctx)
+        {
+        }
+
+        public void EnterClassIdentifierGenericArgs(EsperEPL2GrammarParser.ClassIdentifierGenericArgsContext ctx)
+        {
+        }
+
+        public void ExitClassIdentifierGenericArgs(EsperEPL2GrammarParser.ClassIdentifierGenericArgsContext ctx)
+        {
+        }
+
+        public void EnterClassIdentifierGenericArgsList(EsperEPL2GrammarParser.ClassIdentifierGenericArgsListContext ctx)
+        {
+        }
+
+        public void ExitClassIdentifierGenericArgsList(EsperEPL2GrammarParser.ClassIdentifierGenericArgsListContext ctx)
         {
         }
 

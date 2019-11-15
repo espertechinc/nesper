@@ -26,13 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         private readonly EnumUnionForge forge;
         private readonly ExprEnumerationEval evaluator;
+        internal readonly bool scalar;
 
         public EnumUnionForgeEval(
             EnumUnionForge forge,
-            ExprEnumerationEval evaluator)
+            ExprEnumerationEval evaluator,
+            bool scalar)
         {
             this.forge = forge;
             this.evaluator = evaluator;
+            this.scalar = scalar;
         }
 
         private object EvaluateEnumMethodInternal<T>(
@@ -73,10 +76,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var namedParams = forge.scalar
+                ? EnumForgeCodegenNames.PARAMS_OBJECT
+                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var returnType = forge.scalar
+                ? typeof(ICollection<object>)
+                : typeof(ICollection<EventBean>);
+            var listType = forge.scalar
+                ? typeof(List<object>)
+                : typeof(List<EventBean>);
+            
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(ICollection<EventBean>), typeof(EnumUnionForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .MakeChildWithScope(returnType, typeof(EnumUnionForgeEval), scope, codegenClassScope)
+                .AddParam(namedParams);
 
             var block = methodNode.Block;
             if (forge.scalar) {
@@ -92,7 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
-            block.DeclareVar<List<EventBean>>("result", NewInstance<List<EventBean>>())
+            block
+                .DeclareVar(listType, "result", NewInstance(listType))
                 .Expression(ExprDotMethod(@Ref("result"), "AddAll", EnumForgeCodegenNames.REF_ENUMCOLL))
                 .Expression(ExprDotMethod(@Ref("result"), "AddAll", @Ref("other")))
                 .MethodReturn(@Ref("result"));

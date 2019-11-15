@@ -88,6 +88,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             }
 
             public int Value { get; }
+
+            public int GetValue()
+            {
+                return Value;
+            }
         }
     }
 } // end of namespace

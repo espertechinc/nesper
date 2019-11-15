@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb";
+                var epl = "@Name('s0') select sb.Equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertDotObjectEquals(env, 10, true);

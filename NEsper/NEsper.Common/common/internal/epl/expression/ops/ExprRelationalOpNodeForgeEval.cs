@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -57,14 +58,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var chsType = forge.CoercionType;
+            
             var lhs = forge.ForgeRenderable.ChildNodes[0].Forge;
             var rhs = forge.ForgeRenderable.ChildNodes[1].Forge;
-            var lhsType = lhs.EvaluationType.GetBoxedType();
+            
+            var lhsType = lhs.EvaluationType;
             if (lhsType == null) {
                 return ConstantNull();
             }
 
-            var rhsType = rhs.EvaluationType.GetBoxedType();
+            var rhsType = rhs.EvaluationType;
             if (rhsType == null) {
                 return ConstantNull();
             }
@@ -74,18 +78,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(ExprRelationalOpNodeForgeEval),
                 codegenClassScope);
 
-            var block = methodNode.Block
-                .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
+            if ((lhsType != rhsType) && (lhsType.GetBoxedType() != rhsType.GetBoxedType())) {
+                throw new IllegalStateException("handle coercion dynamics");
+            }
+            
+            CodegenExpression lhsRef = Ref("left");
+            CodegenExpression rhsRef = Ref("right");
+            
+            var block = methodNode.Block;
+
+            block.DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
             if (!lhsType.IsPrimitive) {
                 block.IfRefNullReturnNull("left");
+                if (lhsType.IsNullable()) {
+                    lhsRef = Unbox(lhsRef);
+                }
             }
 
             block.DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
             if (!rhsType.IsPrimitive) {
                 block.IfRefNullReturnNull("right");
+                if (rhsType.IsNullable()) {
+                    rhsRef = Unbox(rhsRef);
+                }
             }
 
-            block.MethodReturn(forge.Computer.Codegen(Unbox(Ref("left")), lhsType, Ref("right"), rhsType));
+            block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType));
             return LocalMethod(methodNode);
         }
     }

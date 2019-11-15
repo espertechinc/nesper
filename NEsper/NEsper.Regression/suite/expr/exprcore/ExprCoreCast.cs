@@ -406,38 +406,44 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create schema MyEvent(arr_string System.Object, arr_primitive System.Object, " +
-                    "arr_boxed_one System.Object, arr_boxed_two System.Object, arr_object System.Object," +
-                    "arr_2dim_primitive System.Object, arr_2dim_object System.Object," +
-                    "arr_3dim_primitive System.Object, arr_3dim_object System.Object" +
+                    "create schema MyEvent(" +
+                    "arr_string System.Object, " +
+                    "arr_primitive System.Object, " +
+                    "arr_boxed_one System.Object, " +
+                    "arr_boxed_two System.Object, " +
+                    "arr_object System.Object," +
+                    "arr_2dim_primitive System.Object, " +
+                    "arr_2dim_object System.Object," +
+                    "arr_3dim_primitive System.Object, " +
+                    "arr_3dim_object System.Object" +
                     ");\n" +
                     "create schema MyArrayEvent as " + typeof(MyArrayEvent).MaskTypeName() + ";\n";
                 env.CompileDeployWBusPublicType(epl, path);
 
                 var insert = "@Name('s0') insert into MyArrayEvent select " +
-                             "cast(arr_string, string[]) as c0, " +
-                             "cast(arr_primitive, int[primitive]) as c1, " +
-                             "cast(arr_boxed_one, int[]) as c2, " +
-                             "cast(arr_boxed_two, System.Int32[]) as c3, " +
-                             "cast(arr_object, System.Object[]) as c4," +
-                             "cast(arr_2dim_primitive, int[primitive][]) as c5," +
-                             "cast(arr_2dim_object, System.Object[][]) as c6," +
-                             "cast(arr_3dim_primitive, int[primitive][][]) as c7," +
-                             "cast(arr_3dim_object, System.Object[][][]) as c8 " +
+                             "cast(arr_string, string[]) as C0, " +
+                             "cast(arr_primitive, int[primitive]) as C1, " +
+                             "cast(arr_boxed_one, int[]) as C2, " +
+                             "cast(arr_boxed_two, System.Nullable<System.Int32>[]) as C3, " +
+                             "cast(arr_object, System.Object[]) as C4," +
+                             "cast(arr_2dim_primitive, int[primitive][]) as C5," +
+                             "cast(arr_2dim_object, System.Object[][]) as C6," +
+                             "cast(arr_3dim_primitive, int[primitive][][]) as C7," +
+                             "cast(arr_3dim_object, System.Object[][][]) as C8 " +
                              "from MyEvent";
                 env.CompileDeploy(soda, insert, path);
 
                 var stmt = env.AddListener("s0").Statement("s0");
                 var eventType = stmt.EventType;
-                Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("c0"));
-                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("c1"));
-                Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c2"));
-                Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c3"));
-                Assert.AreEqual(typeof(object[]), eventType.GetPropertyType("c4"));
-                Assert.AreEqual(typeof(int[][]), eventType.GetPropertyType("c5"));
-                Assert.AreEqual(typeof(object[][]), eventType.GetPropertyType("c6"));
-                Assert.AreEqual(typeof(int[][][]), eventType.GetPropertyType("c7"));
-                Assert.AreEqual(typeof(object[][][]), eventType.GetPropertyType("c8"));
+                Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("C0"));
+                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("C1"));
+                Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("C2"));
+                Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("C3"));
+                Assert.AreEqual(typeof(object[]), eventType.GetPropertyType("C4"));
+                Assert.AreEqual(typeof(int[][]), eventType.GetPropertyType("C5"));
+                Assert.AreEqual(typeof(object[][]), eventType.GetPropertyType("C6"));
+                Assert.AreEqual(typeof(int[][][]), eventType.GetPropertyType("C7"));
+                Assert.AreEqual(typeof(object[][][]), eventType.GetPropertyType("C8"));
 
                 IDictionary<string, object> map = new Dictionary<string, object>();
                 map.Put("arr_string", new[] {"a"});
@@ -446,9 +452,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 map.Put("arr_boxed_two", new int?[] {3});
                 map.Put("arr_object", new[] {new SupportBean("E1", 0)});
                 map.Put("arr_2dim_primitive", new[] {new[] {10}});
-                map.Put("arr_2dim_object", new[] {new int?[] {11}});
+                map.Put("arr_2dim_object", new[] {new object[] {11}});
                 map.Put("arr_3dim_primitive", new[] {new[] {new[] {12}}});
-                map.Put("arr_3dim_object", new[] {new[] {new int?[] {13}}});
+                map.Put("arr_3dim_object", new[] {new[] {new object[] {13}}});
 
                 env.SendEventMap(map, "MyEvent");
 

@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public void AddChildNode(ExprNode childNode)
+        public virtual void AddChildNode(ExprNode childNode)
         {
             ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddSingle(ChildNodes, childNode);
         }
 
-        public void AddChildNodes(ICollection<ExprNode> childNodeColl)
+        public virtual void AddChildNodes(ICollection<ExprNode> childNodeColl)
         {
             ChildNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddElements(ChildNodes, childNodeColl);
         }

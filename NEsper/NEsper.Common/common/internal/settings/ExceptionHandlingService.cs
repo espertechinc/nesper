@@ -43,6 +43,7 @@ namespace com.espertech.esper.common.@internal.settings
 
         public string RuntimeURI { get; }
 
+
         public event ExceptionHandler UnhandledException;
 
         public event ConditionHandler UnhandledCondition;

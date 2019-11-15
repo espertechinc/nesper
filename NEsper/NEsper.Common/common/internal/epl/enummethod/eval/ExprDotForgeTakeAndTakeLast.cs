@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return new EventType[] { };
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,
@@ -52,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             if (EnumMethodEnum == EnumMethodEnum.TAKE) {
-                return new EnumTakeForge(sizeEval, numStreamsIncoming);
+                return new EnumTakeForge(sizeEval, numStreamsIncoming, inputEventType == null);
             }
             else {
-                return new EnumTakeLastForge(sizeEval, numStreamsIncoming);
+                return new EnumTakeLastForge(sizeEval, numStreamsIncoming, inputEventType == null);
             }
         }
     }

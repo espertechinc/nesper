@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Text;
 
 using com.espertech.esper.compat.collections;
 
@@ -608,6 +609,59 @@ namespace com.espertech.esper.compat
             return interfaces
                 .Select(interfaceX => RecursiveIsImplementsInterface(interfaceX, interfaceClass))
                 .Any(result => result);
+        }
+        
+        public static string CleanName<T>()
+        {
+            return CleanName(typeof(T), true);
+        }
+
+        public static string CleanName(
+            this Type type,
+            bool useFullName = true)
+        {
+            if (type == null)
+            {
+                return "null (any type)";
+            }
+
+            if (type.IsArray)
+            {
+                return CleanName(type.GetElementType()) + "[]";
+            }
+
+            if (type.IsGenericType)
+            {
+                var genericName = useFullName
+                    ? type.FullName ?? type.Name
+                    : type.Name;
+                var index = genericName.IndexOf('`');
+                if (index != -1)
+                {
+                    genericName = genericName.Substring(0, index);
+                }
+
+                var separator = "";
+                var builder = new StringBuilder();
+                builder.Append(genericName);
+                builder.Append('<');
+                foreach (var genericType in type.GetGenericArguments())
+                {
+                    builder.Append(separator);
+                    builder.Append(CleanName(genericType, useFullName));
+                    separator = ", ";
+                }
+
+                builder.Append('>');
+                return builder.ToString();
+            }
+
+            return useFullName ? type.FullName : type.Name;
+        }
+
+        public static string CleanName<T>(bool useFullName)
+        {
+            return CleanName(typeof(T), useFullName);
         }
     }
 }

@@ -16,6 +16,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Core;
@@ -112,6 +113,7 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            #if false
             return CodegenExpressionBuilder.Cast(
                 _propertyType,
                 CodegenExpressionBuilder.StaticMethod(
@@ -119,6 +121,15 @@ namespace NEsper.Avro.Getter
                     "Get",
                     underlyingExpression,
                     CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
+            #else
+            return CodegenLegoCast.CastSafeFromObjectType(
+                _propertyType,
+                CodegenExpressionBuilder.StaticMethod(
+                    typeof(GenericRecordExtensions),
+                    "Get",
+                    underlyingExpression,
+                    CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
+            #endif
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -163,11 +174,10 @@ namespace NEsper.Avro.Getter
                 return eventAdapterService.AdapterForTypedAvro(value, fragmentType);
             }
 
-            if (value is ICollection<object>) {
-                var coll = (ICollection<object>) value;
-                var events = new EventBean[coll.Count];
+            if (value is ICollection<object> valueAsCollection) {
+                var events = new EventBean[valueAsCollection.Count];
                 var index = 0;
-                foreach (var item in coll) {
+                foreach (var item in valueAsCollection) {
                     events[index++] = eventAdapterService.AdapterForTypedAvro(item, fragmentType);
                 }
 

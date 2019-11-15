@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // data flow
                 env.CompileDeploy(
                     "@Audit @Name('df') create dataflow MyFlow " +
-                    "EventBusSource -> a<SupportBean> {filter:TheString like 'I%'} " +
+                    "EventBusSource -> a:<SupportBean> {filter:TheString like 'I%'} " +
                     "filter(a) -> b {filter: true}" +
                     "LogSink(b) {log:false}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("df"), "MyFlow");

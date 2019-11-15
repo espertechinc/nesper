@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.@internal.parse;
+using com.espertech.esper.grammar.@internal.util;
 
 using static com.espertech.esper.common.@internal.epl.historical.database.core.
     HistoricalEventViewableDatabaseForgeFactory;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.util
         public static string LexSampleSQL(string querySQL)
         {
             querySQL = querySQL.RegexReplaceAll("\\s\\s+|\\n|\\r", " ");
-            ICharStream input = new CaseInsensitiveInputStream(querySQL);
+            var input = new CaseInsensitiveInputStream(querySQL);
             var whereIndex = -1;
             var groupbyIndex = -1;
             var havingIndex = -1;

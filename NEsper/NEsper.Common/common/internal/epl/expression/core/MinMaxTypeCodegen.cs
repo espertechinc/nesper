@@ -66,9 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         r0Type,
                         CodegenExpressionBuilder.Ref("r1"),
                         r1Type))
-                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(CodegenExpressionBuilder.Ref("r0"), r0Type, returnType))
+                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(
+                    CodegenExpressionBuilder.Ref("r0"), r0Type, returnType))
                 .IfElse()
-                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(CodegenExpressionBuilder.Ref("r1"), r1Type, returnType))
+                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(
+                    CodegenExpressionBuilder.Ref("r1"), r1Type, returnType))
                 .BlockEnd();
 
             for (var i = 2; i < nodes.Length; i++)
@@ -104,11 +106,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static CodegenExpression CodegenCompareRelop(
             Type resultType,
             RelationalOpEnum op,
-            CodegenExpressionRef lhs,
+            CodegenExpression lhs,
             Type lhsType,
             CodegenExpression rhs,
             Type rhsType)
         {
+            if (lhsType != resultType) {
+                lhs = CodegenLegoCast.CastSafeFromObjectType(resultType, lhs);
+            }
+
+            if (rhsType != resultType) {
+                rhs = CodegenLegoCast.CastSafeFromObjectType(resultType, rhs);
+            }
+            
             return CodegenExpressionBuilder.Op(lhs, op.GetExpressionText(), rhs);
         }
 

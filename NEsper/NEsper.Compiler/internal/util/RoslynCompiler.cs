@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;

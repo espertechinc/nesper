@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public virtual EnumEval EnumEvaluator {
-            get => new EnumUnionForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration);
+            get => new EnumUnionForgeEval(this, evaluatorForge.ExprEvaluatorEnumeration, scalar);
         }
 
         public virtual CodegenExpression Codegen(

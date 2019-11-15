@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
             if (newData != null) {
-                CompatExtensions.AddAll(eventSet, newData);
+                for (int ii = 0; ii < newData.Length; ii++) {
+                    eventSet.Add(newData[ii]);
+                }
             }
 
             if (oldData != null) {
@@ -65,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                CompatExtensions.AddAll(eventSet, events);
+                for (int ii = 0; ii < events.Length; ii++) {
+                    eventSet.Add(events[ii]);
+                }
             }
         }
 
@@ -74,8 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                foreach (var removeEvent in events) {
-                    eventSet.Remove(removeEvent);
+                for (var ii = 0; ii < events.Length; ii++) {
+                    eventSet.Remove(events[ii]);
                 }
             }
         }

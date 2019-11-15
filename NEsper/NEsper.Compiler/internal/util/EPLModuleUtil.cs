@@ -18,8 +18,9 @@ using com.espertech.esper.common.client.module;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compiler.@internal.generated;
 using com.espertech.esper.compiler.@internal.parse;
+using com.espertech.esper.grammar.@internal.generated;
+using com.espertech.esper.grammar.@internal.util;
 
 using Module = com.espertech.esper.common.client.module.Module;
 
@@ -278,7 +279,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public static IList<EPLModuleParseItem> Parse(string module)
         {
-            ICharStream input = new CaseInsensitiveInputStream(module);
+            var input = new CaseInsensitiveInputStream(module);
             var lex = ParseHelper.NewLexer(input);
             var tokens = new CommonTokenStream(lex);
             try {

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
@@ -15,11 +17,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public EnumForgeCodegenParams(
             CodegenExpression eps,
             CodegenExpression enumcoll,
+            Type enumcollType,
             CodegenExpression isNewData,
             CodegenExpression exprCtx)
         {
             Eps = eps;
             Enumcoll = enumcoll;
+            EnumcollType = enumcollType;
             IsNewData = isNewData;
             ExprCtx = exprCtx;
         }
@@ -28,10 +32,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
 
         public CodegenExpression Enumcoll { get; }
 
+        public Type EnumcollType { get; }
+
         public CodegenExpression IsNewData { get; }
 
         public CodegenExpression ExprCtx { get; }
 
-        public CodegenExpression[] Expressions => new[] {Eps, Enumcoll, IsNewData, ExprCtx};
+        public CodegenExpression[] Expressions => new[] {
+            Eps, Enumcoll, IsNewData, ExprCtx
+        };
     }
 } // end of namespace

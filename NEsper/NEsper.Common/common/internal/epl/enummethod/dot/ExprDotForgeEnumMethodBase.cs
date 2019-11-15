@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -167,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 validationContext.StreamTypeService,
                 enumMethodUsedName,
                 bodiesAndParameters,
-                inputEventType,
+                inputEventType, // TBD: collectionType, may not be applicable
                 collectionComponentType,
                 streamCountIncoming,
                 validationContext.IsDisablePropertyExpressionEventCollCache,
@@ -222,8 +224,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services);
 
-        public abstract EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public abstract EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,

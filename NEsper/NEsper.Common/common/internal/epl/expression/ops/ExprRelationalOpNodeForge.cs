@@ -28,13 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly ExprRelationalOpNodeImpl parent;
         private readonly RelationalOpEnumComputer computer;
+        private readonly Type coercionType;
 
-        public ExprRelationalOpNodeForge(
-            ExprRelationalOpNodeImpl parent,
-            RelationalOpEnumComputer computer)
+        public ExprRelationalOpNodeForge(ExprRelationalOpNodeImpl parent,
+            RelationalOpEnumComputer computer,
+            Type coercionType)
         {
             this.parent = parent;
             this.computer = computer;
+            this.coercionType = coercionType;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -71,19 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .Build();
         }
 
-        public Type EvaluationType {
-            get => typeof(bool?);
-        }
+        public Type EvaluationType => typeof(bool?);
 
-        public ExprRelationalOpNodeImpl ForgeRenderable {
-            get => parent;
-        }
+        public ExprRelationalOpNodeImpl ForgeRenderable => parent;
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public RelationalOpEnumComputer Computer {
-            get { return computer; }
-        }
+        public RelationalOpEnumComputer Computer => computer;
+
+        public Type CoercionType => coercionType;
 
         public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;

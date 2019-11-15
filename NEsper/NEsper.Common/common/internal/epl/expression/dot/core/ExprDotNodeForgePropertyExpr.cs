@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {

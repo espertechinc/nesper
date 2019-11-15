@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -19,23 +21,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeForge : EnumForge
     {
-        private ExprForge sizeEval;
-        private int numStreams;
-
         public EnumTakeForge(
             ExprForge sizeEval,
-            int numStreams)
+            int numStreams,
+            bool scalar)
         {
-            this.sizeEval = sizeEval;
-            this.numStreams = numStreams;
+            this.SizeEval = sizeEval;
+            this.StreamNumSize = numStreams;
+            this.Scalar = scalar;
         }
 
-        public ExprForge SizeEval => sizeEval;
+        public bool Scalar { get; }
 
-        public int StreamNumSize => numStreams;
+        public ExprForge SizeEval { get; }
+
+        public int StreamNumSize { get; }
 
         public virtual EnumEval EnumEvaluator {
-            get => new EnumTakeForgeEval(sizeEval.ExprEvaluator);
+            get => new EnumTakeForgeEval(SizeEval.ExprEvaluator);
         }
 
         public virtual CodegenExpression Codegen(
@@ -43,9 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            bool isEventBeanCollection = true;
             return EnumTakeForgeEval.Codegen(
-                this, premade, codegenMethodScope, codegenClassScope, isEventBeanCollection);
+                this, premade, codegenMethodScope, codegenClassScope);
         }
     }
 } // end of namespace

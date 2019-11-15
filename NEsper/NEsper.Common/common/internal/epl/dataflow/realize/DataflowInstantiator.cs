@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -259,14 +260,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
                 if (expectedUnderlying != null) {
                     if (numParams == 1 &&
-                        TypeHelper.IsAssignmentCompatible(expectedUnderlying.GetType(), paramTypes[0])) {
+                        TypeHelper.IsAssignmentCompatible(expectedUnderlying, paramTypes[0])) {
                         return new LogicalChannelBindingMethodDesc(
                             method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
 
                     if (numParams == 2 &&
                         paramTypes[0].GetBoxedType() == typeof(int?) &&
-                        TypeHelper.IsAssignmentCompatible(expectedUnderlying.GetType(), paramTypes[1])) {
+                        TypeHelper.IsAssignmentCompatible(expectedUnderlying, paramTypes[1])) {
                         return new LogicalChannelBindingMethodDesc(
                             method,
                             new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));

@@ -19,9 +19,9 @@
 		<Antlr4JavaExecutable>&quot;java.exe&quot;</Antlr4JavaExecutable>
 		<IntermediateOutputPath>$(MSBuildProjectDirectory)</IntermediateOutputPath>
 		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		<TargetDir>$(MSBuildProjectDirectory)\..\NEsper.Compiler\internal\generated</TargetDir>
+		<TargetDir>$(MSBuildProjectDirectory)\..\NEsper.Grammar\internal\generated</TargetDir>
 		<Antlr4AbstractGrammar>EsperEPL2Grammar.g4</Antlr4AbstractGrammar>
-		<AntlrTargetNamespace>com.espertech.esper.compiler.@internal.generated</AntlrTargetNamespace>
+		<AntlrTargetNamespace>com.espertech.esper.grammar.@internal.generated</AntlrTargetNamespace>
 	</PropertyGroup>
 
 	<Target Name="Build-Grammar">

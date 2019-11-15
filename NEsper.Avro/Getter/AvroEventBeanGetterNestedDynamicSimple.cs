@@ -125,15 +125,17 @@ namespace NEsper.Avro.Getter
                     "inner",
                     CodegenExpressionBuilder.Cast(
                         typeof(GenericRecord),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(_posTop))))
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_posTop.Name))))
                 .IfRefNullReturnNull("inner")
                 .MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("inner"),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
+                        CodegenExpressionBuilder.Ref("inner"),
                         CodegenExpressionBuilder.Constant(_propertyName)));
         }
 
@@ -158,10 +160,11 @@ namespace NEsper.Avro.Getter
                     "inner",
                     CodegenExpressionBuilder.Cast(
                         typeof(GenericRecord),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(_posTop))))
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_posTop.Name))))
                 .IfRefNullReturnFalse("inner")
                 .MethodReturn(
                     CodegenExpressionBuilder.NotEqualsNull(

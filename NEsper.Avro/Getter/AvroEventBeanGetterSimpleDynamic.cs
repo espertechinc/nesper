@@ -91,9 +91,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.ExprDotMethod(
-                underlyingExpression,
+            return CodegenExpressionBuilder.StaticMethod(
+                typeof(GenericRecordExtensions),
                 "Get",
+                underlyingExpression,
                 CodegenExpressionBuilder.Constant(_propertyName));
         }
 

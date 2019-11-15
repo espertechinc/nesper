@@ -31,6 +31,16 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public string[] TheArray => TheList.ToArray();
 
+        public IList<string> GetTheList()
+        {
+            return TheList;
+        }
+
+        public string[] GetTheArray()
+        {
+            return TheArray;
+        }
+        
         public SupportStringListEvent NestedMyEvent => new SupportStringListEvent(TheList);
 
         public static string[] ConvertToArray(IList<string> list)

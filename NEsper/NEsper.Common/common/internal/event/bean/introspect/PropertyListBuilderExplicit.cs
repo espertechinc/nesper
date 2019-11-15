@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
         ///     Ctor.
         /// </summary>
         /// <param name="legacyConfig">
-        ///     is a legacy type specification containinginformation about explicitly configured fields and methods
+        ///     is a legacy type specification containing information about explicitly configured fields and methods
         /// </param>
         public PropertyListBuilderExplicit(ConfigurationCommonEventTypeBean legacyConfig)
         {
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var methods = clazz.GetMethods();
             MethodInfo method = null;
             for (var i = 0; i < methods.Length; i++) {
-                if (!methods[i].Name.Equals(methodDesc.AccessorMethodName)) {
+                if (methods[i].Name != methodDesc.AccessorMethodName) {
                     continue;
                 }
 
@@ -95,7 +95,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 }
 
                 var parameterType = parameterTypes[0];
-                if (parameterType != typeof(int) && parameterType != typeof(int?) && parameterType != typeof(string)) {
+                if (parameterType != typeof(int) &&
+                    parameterType != typeof(int?) &&
+                    parameterType != typeof(string)) {
                     continue;
                 }
 
@@ -140,7 +142,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             FieldInfo field,
             string name)
         {
-            return new PropertyStem(name, field, PropertyType.SIMPLE);
+            var propertyType = PropertyType.SIMPLE;
+            var fieldType = field.FieldType;
+            if (fieldType.IsGenericStringDictionary()) {
+                propertyType |= PropertyType.MAPPED;
+            }
+            else if (fieldType.IsArray) {
+                propertyType |= PropertyType.INDEXED;
+            }
+            else if (fieldType == typeof(string)) {
+                propertyType |= PropertyType.INDEXED;
+            }
+            else if (fieldType.IsGenericList()) {
+                propertyType |= PropertyType.INDEXED;
+            }
+            else if (fieldType.IsGenericEnumerable()) {
+                propertyType |= PropertyType.INDEXED;
+            }
+
+            return new PropertyStem(name, field, propertyType);
         }
 
         /// <summary>
@@ -168,6 +188,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             }
             else {
                 propertyType = PropertyType.SIMPLE;
+
+                var returnType = method.ReturnType;
+                if (returnType.IsGenericStringDictionary()) {
+                    propertyType |= PropertyType.MAPPED;
+                }
+                else if (returnType.IsArray) {
+                    propertyType |= PropertyType.INDEXED;
+                }
+                else if (returnType == typeof(string)) {
+                    propertyType |= PropertyType.INDEXED;
+                }
+                else if (returnType.IsGenericList()) {
+                    propertyType |= PropertyType.INDEXED;
+                }
+                else if (returnType.IsGenericEnumerable()) {
+                    propertyType |= PropertyType.INDEXED;
+                }
             }
 
             return new PropertyStem(name, method, propertyType);

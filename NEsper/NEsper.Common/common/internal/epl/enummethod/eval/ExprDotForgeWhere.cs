@@ -59,8 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             return new EventType[] {firstParamType, indexEventType};
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,
@@ -84,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     (ObjectArrayEventType) first.GoesToTypes[1]);
             }
 
-            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             if (first.GoesToNames.Count == 1) {
                 return new EnumWhereScalarForge(
                     first.BodyForge,

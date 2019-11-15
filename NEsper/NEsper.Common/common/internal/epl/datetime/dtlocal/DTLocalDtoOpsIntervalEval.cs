@@ -99,7 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeOffset), "start")
                 .AddParam(typeof(DateTimeOffset), "end");
 
-            var block = methodNode.Block
+            var block = methodNode
+                .Block
+                .DebugStack()
                 .DeclareVar<long>(
                     "startMs",
                     StaticMethod(
@@ -112,8 +114,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
                         Ref("end")))
-                .DeclareVar<long>("deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
-                .DeclareVar<DateTimeOffset>("result", start);
+                .DeclareVar<long>(
+                    "deltaMSec",
+                    Op(Ref("endMs"), "-", Ref("startMs")))
+                .DeclareVar<DateTimeOffset>(
+                    "result",
+                    Ref("start"));
 
             EvaluateCalOpsDtoCodegen(block, "result", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
 

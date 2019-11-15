@@ -100,13 +100,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             for (var i = 0; i < expressions.Length; i++) {
                 // Check for downcast transformations between nullables and non-nullables
                 var parameter = parameters[i];
-                if ((parameter.ParameterType.IsValueType || parameter.ParameterType.IsPrimitive) &&
-                    (args[i].DeclareType.IsNullable()))
-                {
+                if (parameter.ParameterType == args[i].DeclareType) {
+                    expressions[i] = Ref(args[i].BlockRefName);
+                }
+                else if ((parameter.ParameterType.IsValueType || parameter.ParameterType.IsPrimitive) &&
+                         (args[i].DeclareType.IsNullable())) {
                     expressions[i] = ExprDotName(Ref(args[i].BlockRefName), "Value");
                 }
-                else
-                {
+                else {
                     expressions[i] = Ref(args[i].BlockRefName);
                 }
             }

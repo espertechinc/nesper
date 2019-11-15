@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.util
             var indexFirst = tickedString.IndexOf('`');
             var indexLast = tickedString.LastIndexOf('`');
             if (indexFirst != indexLast && indexFirst != -1 && indexLast != -1) {
-                return tickedString.Substring(indexFirst + 1, indexLast);
+                return tickedString.Substring(indexFirst + 1, indexLast - indexFirst - 1);
             }
 
             return tickedString;

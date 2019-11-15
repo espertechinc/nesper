@@ -131,10 +131,11 @@ namespace NEsper.Avro.Getter
                     "values",
                     CodegenExpressionBuilder.Cast(
                         typeof(IDictionary<string, object>),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(_pos))))
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_pos.Name))))
                 .IfRefNullReturnNull("values")
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(

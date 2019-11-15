@@ -8,7 +8,7 @@
 
 using Antlr4.Runtime;
 
-namespace com.espertech.esper.compiler.@internal.parse
+namespace com.espertech.esper.grammar.@internal.util
 {
     public class CaseInsensitiveInputStream : AntlrInputStream
     {

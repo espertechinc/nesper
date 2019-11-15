@@ -16,9 +16,9 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class PathRegistry<TK, TE>
+    public class PathRegistry<TK, TE> where TK : class
     {
-        private readonly IDictionary<TK, PathModuleEntry<TE>> entities = new Dictionary<TK, PathModuleEntry<TE>>();
+        private readonly IDictionary<TK, PathModuleEntry<TE>> entities = new HashMap<TK, PathModuleEntry<TE>>();
 
         public PathRegistry(PathRegistryObjectType objectType)
         {

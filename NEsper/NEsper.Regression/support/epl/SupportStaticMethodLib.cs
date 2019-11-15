@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NEsper.Avro.Extensions;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             var events = new EventBean[split.Length];
             for (var i = 0; i < split.Length; i++) {
                 events[i] = context.EventBeanService.AdapterForMap(
-                    Collections.SingletonDataMap("P0", split[i]),
+                    Collections.SingletonDataMap("p0", split[i]),
                     "MyItemEvent");
             }
 
@@ -934,7 +935,7 @@ namespace com.espertech.esper.regressionlib.support.epl
 
         public static int LibSplit(string theString)
         {
-            var key = theString.Split(' ');
+            var key = theString.Split('_');
             CountInvoked++;
             return int.Parse(key[1]);
         }
@@ -977,8 +978,10 @@ namespace com.espertech.esper.regressionlib.support.epl
                 Mapint = mapint;
             }
 
+            [PropertyName("mapstring")]
             public string Mapstring { get; }
 
+            [PropertyName("mapint")]
             public int? Mapint { get; }
         }
     }

@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream<" + typeName + ">{}\n" +
+                        "DefaultSupportSourceOp -> instream:<" + typeName + ">{}\n" +
                         "select(instream as ME) -> outstream {select: (select MyString, sum(MyInt) as total from ME)}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string message)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
+                        "DefaultSupportSourceOp -> instream:<SupportBean>{}\n" +
                         "select(instream as ME) -> outstream {select: (" +
                         select +
                         "), iterate: " +
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
-                          "  BeaconSource -> instream<SampleSchema> {}  // sample stream\n" +
-                          "  BeaconSource -> secondstream<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> instream:<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> secondstream:<SampleSchema> {}  // sample stream\n" +
                           "  \n" +
                           "  // Simple continuous count of events\n" +
                           "  select(instream) -> outstream {\n" +
@@ -158,37 +158,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "insert into ABC select TheString from ME",
                     false,
-                    "Failed to obtain operator 'Select': Insert-into clause is not supported");
+                    "Failed to obtain operator 'select': Insert-into clause is not supported");
 
                 TryInvalidCompileGraph(
                     env,
                     "select irstream TheString from ME",
                     false,
-                    "Failed to obtain operator 'Select': Selecting remove-stream is not supported");
+                    "Failed to obtain operator 'select': Selecting remove-stream is not supported");
 
                 TryInvalidCompileGraph(
                     env,
                     "select TheString from pattern[SupportBean]",
                     false,
-                    "Failed to obtain operator 'Select': From-clause must contain only streams and cannot contain patterns or other constructs");
+                    "Failed to obtain operator 'select': From-clause must contain only streams and cannot contain patterns or other constructs");
 
                 TryInvalidCompileGraph(
                     env,
                     "select TheString from DUMMY",
                     false,
-                    "Failed to obtain operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [ME]");
+                    "Failed to obtain operator 'select': Failed to find stream 'DUMMY' among input ports, input ports are [\"ME\"]");
 
                 TryInvalidCompileGraph(
                     env,
                     "select TheString from ME output every 10 seconds",
                     true,
-                    "Failed to obtain operator 'Select': Output rate limiting is not supported with 'iterate'");
+                    "Failed to obtain operator 'select': Output rate limiting is not supported with 'iterate'");
 
                 TryInvalidCompileGraph(
                     env,
                     "select (select * from SupportBean#lastevent) from ME",
                     false,
-                    "Failed to obtain operator 'Select': Subselects are not supported");
+                    "Failed to obtain operator 'select': Subselects are not supported");
             }
         }
 
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
                             "@Audit select(instream_s0 as ALIAS) -> outstream {\n" +
                             "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                             "  iterate: true" +
@@ -229,9 +229,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
                 EPAssertionUtil.AssertPropsPerRow(
-                    capture.Current.UnwrapIntoArray<EventBean>(),
+                    env.Container,
+                    capture.Current.UnwrapIntoArray<object>(),
                     new [] { "TheString","sumInt" },
-                    new[] {new object[] {"E1", 6}, new object[] {"E2", 5}, new object[] {"E3", 4}});
+                    new[] {
+                        new object[] {"E1", 6},
+                        new object[] {"E2", 5},
+                        new object[] {"E3", 4}
+                    });
 
                 instance.Cancel();
                 env.UndeployAll();
@@ -247,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
                             "select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                             "}\n" +
@@ -273,7 +278,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.AdvanceTime(60000 + 5000);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "sumInt" },
                     new object[] {14});
 
@@ -283,7 +289,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.AdvanceTime(120000 + 5000);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "sumInt" },
                     new object[] {14 + 9});
 
@@ -306,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
                             "select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                             "}\n" +
@@ -326,20 +333,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(5000);
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "sumInt" },
                     new object[] {2});
 
                 env.AdvanceTime(10000);
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E2", 5));
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "sumInt" },
                     new object[] {7});
 
                 env.AdvanceTime(65000);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "sumInt" },
                     new object[] {5});
 
@@ -357,8 +367,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Emitter -> instream_s0:<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1:<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
                             "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
@@ -377,7 +387,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "P00","P11" },
                     new object[] {"S0_1", null});
 
@@ -404,9 +415,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 string fromClause)
             {
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
-                            "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
+                            "Emitter -> instream_s0:<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1:<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Emitter -> instream_s2:<SupportBean_S2>{name: 'emitterS2'}\n" +
                             "select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
                             "  select: (select S0.Id as S0Id, S1.Id as S1Id, S2.Id as S2Id " +
                             fromClause +
@@ -431,7 +442,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captive.Emitters.Get("emitterS2").Submit(new SupportBean_S2(100));
                 Assert.AreEqual(1, capture.Current.Length);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) capture.GetCurrentAndReset()[0],
+                    env.Container,
+                    (object[]) capture.GetCurrentAndReset()[0],
                     new [] { "s0Id","s1Id","s2Id" },
                     new object[] {1, 10, 100});
 
@@ -473,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "create objectarray schema MyEventOA(p0 string, p1 long);\n" +
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "Emitter -> instream<MyEventOA> {name: 'E1'}" +
+                    "Emitter -> instream:<MyEventOA> {name: 'E1'}" +
                     "select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne");
                 var emitter = df.StartCaptive().Emitters.Get("E1");

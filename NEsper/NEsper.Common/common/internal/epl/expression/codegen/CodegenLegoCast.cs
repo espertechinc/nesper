@@ -108,6 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             else if (targetType.IsGenericStringDictionary()) {
                 return StaticMethod(typeof(CompatExtensions), "AsStringDictionary", value);
             }
+            else if (targetType.IsGenericDictionary()) {
+                return Cast(targetType, value);
+            }
             else if (targetType.IsGenericList()) {
                 var elementType = GenericExtensions.GetCollectionItemType(targetType);
                 return StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] {elementType}, value);

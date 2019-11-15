@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 services);
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,
@@ -54,13 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             if (bodiesAndParameters.IsEmpty()) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumDistinctScalarForge(numStreamsIncoming);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType == null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumDistinctScalarLambdaForge(
                     first.BodyForge,
                     first.StreamCountIncoming,

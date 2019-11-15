@@ -157,10 +157,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     getterReturnType,
                     "result",
                     CodegenLegoCast.CastSafeFromObjectType(
-                        typeof(IEnumerable),
+                        getterReturnType,
                         getter.EventBeanGetCodegen(@Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", @Ref("result")));
+                .MethodReturn(StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] { typeof(object) }, @Ref("result")));
             return LocalMethodBuild(method).Pass(@event).Call();
         }
 

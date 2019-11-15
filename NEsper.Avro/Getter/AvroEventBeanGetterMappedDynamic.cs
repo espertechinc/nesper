@@ -13,6 +13,8 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -131,6 +133,27 @@ namespace NEsper.Avro.Getter
             return CodegenExpressionBuilder.ConstantNull();
         }
 
+        public static IDictionary<string, object> GetUnderlyingMap(object value)
+        {
+            if (value == null) {
+                return null;
+            }
+
+            if (value is IDictionary<string, object> valueMap) {
+                return valueMap;
+            }
+            
+            var valueType = value.GetType();
+            if (valueType.IsGenericStringDictionary()) {
+                var magicMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+                if (magicMap != null) {
+                    return magicMap;
+                }
+            }
+
+            return null;
+        }
+        
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -144,11 +167,12 @@ namespace NEsper.Avro.Getter
             string key)
         {
             var value = record.Get(propertyName);
-            if (value == null || !(value is IDictionary<string, object>)) {
+            var valueMap = GetUnderlyingMap(value);
+            if (valueMap == null) {
                 return null;
             }
 
-            return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck((IDictionary<string, object>) value, key);
+            return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(valueMap, key);
         }
 
         /// <summary>
@@ -167,7 +191,8 @@ namespace NEsper.Avro.Getter
             }
 
             var value = record.Get(propertyName);
-            return value == null || value is IDictionary<string, object>;
+            var valueMap = GetUnderlyingMap(value);
+            return valueMap != null;
         }
     }
 } // end of namespace

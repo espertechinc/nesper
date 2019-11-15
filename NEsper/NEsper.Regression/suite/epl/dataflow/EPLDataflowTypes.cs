@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp -> outstream<SupportBean> {}" +
+                    "DefaultSupportSourceOp -> outstream:<SupportBean> {}" +
                     "MySupportBeanOutputOp(outstream) {}" +
                     "SupportGenericOutputOpWPort(outstream) {}");
 
@@ -94,14 +94,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create map schema MyMap (p0 String, p1 int)", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp -> outstream<MyMap> {}" +
+                    "DefaultSupportSourceOp -> outstream:<MyMap> {}" +
                     "MyMapOutputOp(outstream) {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
                 var source = new DefaultSupportSourceOp(new object[] {MakeMap("E1", 1)});
                 var outputOne = new MyMapOutputOp();
-                var outputTwo = new DefaultSupportCaptureOp<EventBean>(env.Container.LockManager());
+                var outputTwo = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions()
                         .WithOperatorProvider(new DefaultSupportGraphOpProvider(source, outputOne, outputTwo));
@@ -114,8 +114,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new[] {
                         new object[] {"E1", 1}
                     });
+
                 EPAssertionUtil.AssertPropsPerRow(
-                    outputTwo.GetAndReset()[0].ToArray(),
+                    env.Container,
+                    outputTwo.GetAndReset()[0].UnwrapIntoArray<object>(),
                     new[] {"P0", "P1"},
                     new[] {
                         new object[] {"E1", 1}

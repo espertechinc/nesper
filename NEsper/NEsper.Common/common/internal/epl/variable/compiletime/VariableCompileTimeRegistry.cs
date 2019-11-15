@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
     public class VariableCompileTimeRegistry : CompileTimeRegistry
     {
-        public IDictionary<string, VariableMetaData> Variables { get; } = new Dictionary<string, VariableMetaData>();
+        public IDictionary<string, VariableMetaData> Variables { get; } = new HashMap<string, VariableMetaData>();
 
         public void NewVariable(VariableMetaData metaData)
         {

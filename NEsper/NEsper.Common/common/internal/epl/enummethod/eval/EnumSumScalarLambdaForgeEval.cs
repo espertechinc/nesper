@@ -78,11 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    forge.sumMethodFactory.ValueType,
+                    forge.sumMethodFactory.ValueType.GetBoxedType(),
                     typeof(EnumSumEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
             var block = methodNode.Block;
             forge.sumMethodFactory.CodegenDeclare(block);

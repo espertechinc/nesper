@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             methodNode,
                             codegenClassScope,
                             @Ref("@event"),
-                            @Ref("index"))));
+                            Unbox(@Ref("index")))));
             return LocalMethod(methodNode);
         }
     }

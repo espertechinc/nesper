@@ -333,8 +333,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select min(Bigint, 10) as v1, min(10, Bigint) as v2, " +
-                          "max(DecimalOne, 10) as v3, max(10, 100d, Bigint, DecimalOne) as v4 from SupportBeanNumeric";
+                var epl = "@Name('s0') select " +
+                          "min(Bigint, 10) as v1, " +
+                          "min(10, Bigint) as v2, " +
+                          "max(DecimalOne, 10) as v3, " +
+                          "max(10, 100d, Bigint, DecimalOne) as v4 " +
+                          "from SupportBeanNumeric";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fieldList = new [] { "v1","v2","v3","v4" };
@@ -343,19 +347,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldList,
-                    new object[] {new BigInteger(1), new BigInteger(1), 10m, 100m});
+                    new object[] {
+                        new BigInteger(1),
+                        new BigInteger(1),
+                        10m,
+                        100m
+                    });
 
                 SendBigNumEvent(env, 40, 300);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldList,
-                    new object[] {new BigInteger(10), new BigInteger(10), 300m, 300m});
+                    new object[] {
+                        new BigInteger(10),
+                        new BigInteger(10),
+                        300m,
+                        300m
+                    });
 
                 SendBigNumEvent(env, 250, 200);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fieldList,
-                    new object[] {new BigInteger(10), new BigInteger(10), 200m, 250m});
+                    new object[] {
+                        new BigInteger(10),
+                        new BigInteger(10),
+                        200m,
+                        250m
+                    });
 
                 env.UndeployAll();
             }

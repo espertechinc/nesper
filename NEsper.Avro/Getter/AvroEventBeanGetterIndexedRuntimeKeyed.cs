@@ -58,10 +58,11 @@ namespace NEsper.Avro.Getter
                         CodegenExpressionBuilder.Ref("@event")))
                 .DeclareVar<object>(
                     "values",
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("record"),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
-                        CodegenExpressionBuilder.Constant(_pos)))
+                        CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.Constant(_pos.Name)))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterIndexed),

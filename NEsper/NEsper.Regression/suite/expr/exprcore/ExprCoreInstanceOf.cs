@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             executions.Add(new ExprCoreInstanceofSimple());
             executions.Add(new ExprCoreInstanceofStringAndNullOM());
             executions.Add(new ExprCoreInstanceofStringAndNullCompile());
-            executions.Add(new ExprCoreDynamicPropertyJavaTypes());
+            executions.Add(new ExprCoreDynamicPropertyCoreTypes());
             executions.Add(new ExprCoreDynamicSuperTypeAndInterface());
             return executions;
         }
@@ -136,11 +136,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             }
         }
 
-        internal class ExprCoreDynamicPropertyJavaTypes : RegressionExecution
+        internal class ExprCoreDynamicPropertyCoreTypes : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select instanceof(Item?, string) as t0, " +
+                var epl = "@Name('s0') select" +
+                          " instanceof(Item?, string) as t0, " +
                           " instanceof(Item?, int) as t1, " +
                           " instanceof(Item?, System.Single) as t2, " +
                           " instanceof(Item?, System.Single, char, byte) as t3, " +
@@ -155,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBeanDynRoot("abc"));
                 AssertResults(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {true, false, false, false, false, false, false, false});
+                    new[] {true, false, false, false, false, false, true, false});
 
                 env.SendEventBean(new SupportBeanDynRoot(100f));
                 AssertResults(

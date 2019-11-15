@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -17,7 +16,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {

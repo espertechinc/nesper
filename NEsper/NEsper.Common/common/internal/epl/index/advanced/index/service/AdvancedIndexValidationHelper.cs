@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string name)
         {
             var receivedType = expr.Forge.EvaluationType;
-            if (!TypeHelper.IsNumeric(receivedType)) {
+            if (!receivedType.IsNumeric()) {
                 throw MakeEx(indexTypeName, true, colnum, name, typeof(object), receivedType);
             }
         }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             ExprNode expr,
             string name)
         {
-            Type receivedType = Boxing.GetBoxedType(expr.Forge.EvaluationType);
+            Type receivedType = expr.Forge.EvaluationType.GetBoxedType();
             if (!IsSubclassOrImplementsInterface(receivedType, expectedReturnType)) {
                 throw MakeEx(indexTypeName, false, paramnum, name, expectedReturnType, receivedType);
             }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string name)
         {
             var receivedType = expr.Forge.EvaluationType;
-            if (!TypeHelper.IsNumeric(receivedType)) {
+            if (!receivedType.IsNumeric()) {
                 throw MakeEx(indexTypeName, false, paramnum, name, typeof(object), receivedType);
             }
         }
@@ -124,9 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 " that is providing " +
                 name +
                 "-values expecting type " +
-                TypeHelper.CleanName(expectedType) +
+                expectedType.CleanName() +
                 " but received type " +
-                TypeHelper.CleanName(receivedType));
+                receivedType.CleanName());
         }
     }
 } // end of namespace

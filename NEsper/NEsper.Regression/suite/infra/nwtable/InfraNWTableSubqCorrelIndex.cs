@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var path = new RegressionPath();
             var epl = namedWindow
                 ? "create window MyInfra." + datawindow + " as select * from SupportSimpleBeanOne"
-                : "create table MyInfra(s1 string primary key, i1 int, d1 double, l1 long)";
+                : "create table MyInfra(S1 string primary key, I1 int, D1 double, L1 long)";
             if (indexShare) {
                 epl = "@Hint('enable_window_subquery_indexshare') " + epl;
             }
@@ -142,12 +142,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var backingUniqueS1 = "unique hash={s1(string)} btree={} advanced={}";
+                var backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
 
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new [] { "s2","ssb1[0].S1","ssb1[0].i1" };
+                    var fields = new [] { "S2","ssb1[0].S1","ssb1[0].I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -161,42 +161,42 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 };
                 IndexAssertionEventSend noAssertion = () => { };
 
-                // unique-s1
+                // unique-S1
                 AssertIndexChoice(
                     env,
                     namedWindow,
                     false,
                     new string[0],
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2",
+                            "S1 = ssb2.S2",
                             namedWindow ? null : "MyInfra",
                             namedWindow ? BACKING_SINGLE_UNIQUE : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             namedWindow ? null : "MyInfra",
                             namedWindow ? BACKING_SINGLE_UNIQUE : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "i1 between 1 and 10",
+                            "I1 between 1 and 10",
                             null,
                             namedWindow ? BACKING_SORTED : null,
                             noAssertion),
                         new IndexAssertion(
                             null,
-                            "l1 = ssb2.l2",
+                            "L1 = ssb2.L2",
                             null,
                             namedWindow ? BACKING_SINGLE_DUPS : null,
                             eventSendAssertion)
                     });
 
-                // unique-s1+i1
+                // unique-S1+I1
                 if (namedWindow) {
                     AssertIndexChoice(
                         env,
@@ -204,36 +204,36 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         false,
                         new string[0],
                         preloadedEventsOne,
-                        "std:unique(s1, d1)",
+                        "std:unique(S1, D1)",
                         new[] {
-                            new IndexAssertion(null, "s1 = ssb2.S2", null, BACKING_SINGLE_DUPS, eventSendAssertion),
+                            new IndexAssertion(null, "S1 = ssb2.S2", null, BACKING_SINGLE_DUPS, eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.S2 and l1 = ssb2.l2",
+                                "S1 = ssb2.S2 and L1 = ssb2.L2",
                                 null,
                                 BACKING_MULTI_DUPS,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.S2 and d1 = ssb2.d2",
+                                "S1 = ssb2.S2 and D1 = ssb2.D2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.S2 and l1 = ssb2.l2 and d1 = ssb2.d2",
+                                "S1 = ssb2.S2 and L1 = ssb2.L2 and D1 = ssb2.D2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "d1 = ssb2.d2 and s1 = ssb2.S2 and l1 = ssb2.l2",
+                                "D1 = ssb2.D2 and S1 = ssb2.S2 and L1 = ssb2.L2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "l1 = ssb2.l2 and s1 = ssb2.S2 and d1 = ssb2.d2",
+                                "L1 = ssb2.L2 and S1 = ssb2.S2 and D1 = ssb2.D2",
                                 null,
                                 BACKING_MULTI_UNIQUE,
                                 eventSendAssertion)
@@ -254,20 +254,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 string[] noindexes = { };
-                var backingUniqueS1 = "unique hash={s1(string)} btree={} advanced={}";
-                var backingUniqueS1L1 = "unique hash={s1(string),l1(long)} btree={} advanced={}";
-                var backingUniqueS1D1 = "unique hash={s1(string),d1(double)} btree={} advanced={}";
-                var backingNonUniqueS1 = "non-unique hash={s1(string)} btree={} advanced={}";
-                var backingNonUniqueD1 = "non-unique hash={d1(double)} btree={} advanced={}";
-                var backingBtreeI1 = "non-unique hash={} btree={i1(int)} advanced={}";
-                var backingBtreeD1 = "non-unique hash={} btree={d1(double)} advanced={}";
+                var backingUniqueS1 = "unique hash={S1(string)} btree={} advanced={}";
+                var backingUniqueS1L1 = "unique hash={S1(string),L1(long)} btree={} advanced={}";
+                var backingUniqueS1D1 = "unique hash={S1(string),D1(double)} btree={} advanced={}";
+                var backingNonUniqueS1 = "non-unique hash={S1(string)} btree={} advanced={}";
+                var backingNonUniqueD1 = "non-unique hash={D1(double)} btree={} advanced={}";
+                var backingBtreeI1 = "non-unique hash={} btree={I1(int)} advanced={}";
+                var backingBtreeD1 = "non-unique hash={} btree={D1(double)} advanced={}";
                 var primaryIndexTable = namedWindow ? "MyNWIndex" : "MyInfra";
-                var primaryIndexEPL = "create unique index MyNWIndex on MyInfra(s1)";
+                var primaryIndexEPL = "create unique index MyNWIndex on MyInfra(S1)";
 
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = new [] { "s2","ssb1[0].S1","ssb1[0].i1" };
+                    var fields = new [] { "S2","ssb1[0].S1","ssb1[0].I1" };
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
@@ -288,23 +288,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     true,
                     primaryIndex,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2",
+                            "S1 = ssb2.S2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion)
@@ -312,25 +312,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // single index one field (essentially duplicated since declared std:unique)
                 if (namedWindow) {
-                    string[] indexOneField = {"create unique index One on MyInfra (s1)"};
+                    string[] indexOneField = {"create unique index One on MyInfra (S1)"};
                     AssertIndexChoice(
                         env,
                         namedWindow,
                         true,
                         indexOneField,
                         preloadedEventsOne,
-                        "std:unique(s1)",
+                        "std:unique(S1)",
                         new[] {
-                            new IndexAssertion(null, "s1 = ssb2.S2", "One", backingUniqueS1, eventSendAssertion),
+                            new IndexAssertion(null, "S1 = ssb2.S2", "One", backingUniqueS1, eventSendAssertion),
                             new IndexAssertion(
                                 null,
-                                "s1 = ssb2.S2 and l1 = ssb2.l2",
+                                "S1 = ssb2.S2 and L1 = ssb2.L2",
                                 "One",
                                 backingUniqueS1,
                                 eventSendAssertion),
                             new IndexAssertion(
                                 "@Hint('index(One)')",
-                                "s1 = ssb2.S2 and l1 = ssb2.l2",
+                                "S1 = ssb2.S2 and L1 = ssb2.L2",
                                 "One",
                                 backingUniqueS1,
                                 eventSendAssertion)
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 // single index two field
-                var secondaryEPL = "create unique index One on MyInfra (s1, l1)";
+                var secondaryEPL = "create unique index One on MyInfra (S1, L1)";
                 var indexTwoField = AppendArrayConditional(secondaryEPL, namedWindow, primaryIndexEPL);
                 AssertIndexChoice(
                     env,
@@ -346,26 +346,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     true,
                     indexTwoField,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new[] {
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2",
+                            "S1 = ssb2.S2",
                             primaryIndexTable,
                             backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingUniqueS1L1,
                             eventSendAssertion)
                     });
 
-                // two index one unique with std:unique(s1)
+                // two index one unique with std:unique(S1)
                 string[] indexSetTwo = {
-                    "create index One on MyInfra (s1)",
-                    "create unique index Two on MyInfra (s1, d1)"
+                    "create index One on MyInfra (S1)",
+                    "create unique index Two on MyInfra (S1, D1)"
                 };
                 AssertIndexChoice(
                     env,
@@ -373,47 +373,47 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     true,
                     indexSetTwo,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new[] {
-                        new IndexAssertion(null, "d1 = ssb2.d2", null, null, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = ssb2.D2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2",
+                            "S1 = ssb2.S2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(Two,One)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.S2 and l1 = ssb2.l2"), // busted
+                        new IndexAssertion("@Hint('index(Two,bust)')", "S1 = ssb2.S2 and L1 = ssb2.L2"), // busted
                         new IndexAssertion(
                             "@Hint('index(explicit,bust)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and d1 = ssb2.d2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and D1 = ssb2.D2 and L1 = ssb2.L2",
                             namedWindow ? "Two" : "MyInfra",
                             namedWindow ? backingUniqueS1D1 : backingUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(explicit,bust)')", "d1 = ssb2.d2 and l1 = ssb2.l2") // busted
+                        new IndexAssertion("@Hint('index(explicit,bust)')", "D1 = ssb2.D2 and L1 = ssb2.L2") // busted
                     });
 
                 // two index one unique with keep-all
@@ -425,52 +425,52 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     preloadedEventsOne,
                     "win:keepall()",
                     new[] {
-                        new IndexAssertion(null, "d1 = ssb2.d2", null, null, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = ssb2.D2", null, null, eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2",
+                            "S1 = ssb2.S2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(One)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             "@Hint('index(Two,One)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             "One",
                             backingNonUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(Two,bust)')", "s1 = ssb2.S2 and l1 = ssb2.l2"), // busted
+                        new IndexAssertion("@Hint('index(Two,bust)')", "S1 = ssb2.S2 and L1 = ssb2.L2"), // busted
                         new IndexAssertion(
                             "@Hint('index(explicit,bust)')",
-                            "s1 = ssb2.S2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and L1 = ssb2.L2",
                             namedWindow ? "One" : "MyInfra",
                             namedWindow ? backingNonUniqueS1 : backingUniqueS1,
                             eventSendAssertion),
                         new IndexAssertion(
                             null,
-                            "s1 = ssb2.S2 and d1 = ssb2.d2 and l1 = ssb2.l2",
+                            "S1 = ssb2.S2 and D1 = ssb2.D2 and L1 = ssb2.L2",
                             namedWindow ? "Two" : "MyInfra",
                             namedWindow ? backingUniqueS1D1 : backingUniqueS1,
                             eventSendAssertion),
-                        new IndexAssertion("@Hint('index(explicit,bust)')", "d1 = ssb2.d2 and l1 = ssb2.l2") // busted
+                        new IndexAssertion("@Hint('index(explicit,bust)')", "D1 = ssb2.D2 and L1 = ssb2.L2") // busted
                     });
 
                 // range
                 IndexAssertionEventSend noAssertion = () => { };
                 string[] indexSetThree = {
-                    "create index One on MyInfra (i1 btree)",
-                    "create index Two on MyInfra (d1 btree)"
+                    "create index One on MyInfra (I1 btree)",
+                    "create index Two on MyInfra (D1 btree)"
                 };
                 AssertIndexChoice(
                     env,
@@ -478,11 +478,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     true,
                     indexSetThree,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new[] {
-                        new IndexAssertion(null, "i1 between 1 and 10", "One", backingBtreeI1, noAssertion),
-                        new IndexAssertion(null, "d1 between 1 and 10", "Two", backingBtreeD1, noAssertion),
-                        new IndexAssertion("@Hint('index(One, bust)')", "d1 between 1 and 10") // busted
+                        new IndexAssertion(null, "I1 between 1 and 10", "One", backingBtreeI1, noAssertion),
+                        new IndexAssertion(null, "D1 between 1 and 10", "Two", backingBtreeD1, noAssertion),
+                        new IndexAssertion("@Hint('index(One, bust)')", "D1 between 1 and 10") // busted
                     });
 
                 env.UndeployAll();
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@Hint('enable_window_subquery_indexshare') create window MyInfraMIH#keepall as select * from SupportSimpleBeanOne"
-                    : "create table MyInfraMIH(s1 String primary key, i1 int  primary key, d1 double primary key, l1 long primary key)";
+                    : "create table MyInfraMIH(S1 String primary key, I1 int primary key, D1 double primary key, L1 long primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("create unique index I1 on MyInfraMIH (S1)", path);
                 env.CompileDeploy("create unique index I2 on MyInfraMIH (I1)", path);

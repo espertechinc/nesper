@@ -854,7 +854,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             passThroughParams[0] = Constant("DEBUG: " + formatString);
             Array.Copy(@params, 0, passThroughParams, 1, @params.Length);
             // Console.WriteLine -
-            return StaticMethod(typeof(Console), "WriteLine", passThroughParams);
+            return StaticMethod(typeof(CompatExtensions), "Debug", passThroughParams);
         }
     }
 } // end of namespace

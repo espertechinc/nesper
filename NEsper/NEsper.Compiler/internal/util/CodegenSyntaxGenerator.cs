@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 

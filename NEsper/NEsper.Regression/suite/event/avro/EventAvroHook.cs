@@ -45,9 +45,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             return execs;
         }
 
-        public static DateTime MakeDateTime()
+        public static DateTimeOffset MakeDateTimeOffset()
         {
-            return DateTimeHelper.GetCurrentTimeUniversal();
+            return DateTimeEx.NowUtc().DateTime;
         }
 
         public static SupportBean MakeSupportBean()
@@ -65,16 +65,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 // invalid without explicit conversion
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "insert into MyEvent(isodate) select dto from SupportEventWithDateTimeOffset",
+                    "insert into MyEvent(isodate) select DateTime from SupportEventWithDateTime",
                     "Invalid assignment of column 'isodate' of type '" +
-                    TypeHelper.CleanName<DateTimeOffset>() +
+                    typeof(DateTime).CleanName() +
                     "' to event property 'isodate' typed as '" +
-                    TypeHelper.CleanName<char[]>() +
+                    typeof(string).CleanName() +
                     "', column and parameter types mismatch");
 
                 // with hook
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyEvent(isodate) select dto from SupportEventWithDateTimeOffset")
+                        "@Name('s0') insert into MyEvent(isodate) select DateTimeOffset from SupportEventWithDateTimeOffset")
                     .AddListener("s0");
 
                 var now = DateTimeHelper.GetCurrentTimeUniversal();
@@ -97,8 +97,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 var epl = "@Name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           "insert into MyEventOut select " +
-                          typeof(EventAvroHook).Name +
-                          ".makeDateTimeOffset() as isodate from SupportBean as e1";
+                          typeof(EventAvroHook).FullName +
+                          ".MakeDateTimeOffset() as isodate from SupportBean as e1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var schema = SupportAvroUtil.GetAvroSchema(env.Statement("s0").EventType);
@@ -117,15 +117,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
         /// <summary>
         ///     Mapping of Class to GenericRecord
-        ///     }
         /// </summary>
         internal class EventAvroHookPopulate : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') insert into MyEventPopulate(sb) select " +
-                          typeof(EventAvroHook).Name +
-                          ".makeSupportBean() from SupportBean_S0 as e1";
+                          typeof(EventAvroHook).FullName +
+                          ".MakeSupportBean() from SupportBean_S0 as e1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(10));
@@ -170,11 +169,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             public TypeWidenerSPI Make(ObjectValueTypeWidenerFactoryContext context)
             {
                 Context = context;
-                if (context.Clazz == typeof(DateTime)) {
-                    return MyLDTTypeWidener.INSTANCE;
+
+                var contextClazz = context.Clazz.GetBoxedType();
+                if (contextClazz == typeof(DateTimeOffset?)) {
+                    return MyDateTimeOffsetTypeWidener.INSTANCE;
                 }
 
-                if (context.Clazz == typeof(SupportBean)) {
+                if (contextClazz == typeof(SupportBean)) {
                     return new MySupportBeanWidener();
                 }
 
@@ -182,18 +183,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             }
         }
 
-        public class MyLDTTypeWidener : TypeWidenerSPI
+        public class MyDateTimeOffsetTypeWidener : TypeWidenerSPI
         {
-            public static readonly MyLDTTypeWidener INSTANCE = new MyLDTTypeWidener();
+            public static readonly MyDateTimeOffsetTypeWidener INSTANCE = new MyDateTimeOffsetTypeWidener();
 
-            private MyLDTTypeWidener()
+            private MyDateTimeOffsetTypeWidener()
             {
             }
 
             public object Widen(object input)
             {
-                var ldt = (DateTime) input;
-                return DateTimeFormat.ISO_DATE_TIME.Format(ldt);
+                var dateTimeOffset = (DateTimeOffset) input;
+                return DateTimeFormat.ISO_DATE_TIME.Format(dateTimeOffset);
             }
 
             public CodegenExpression WidenCodegen(
@@ -239,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         {
             public object Map(TypeRepresentationMapperContext context)
             {
-                if (context.Clazz == typeof(DateTime)) {
+                if (context.Clazz.GetBoxedType() == typeof(DateTimeOffset?)) {
                     return TypeBuilder.StringType();
                 }
 

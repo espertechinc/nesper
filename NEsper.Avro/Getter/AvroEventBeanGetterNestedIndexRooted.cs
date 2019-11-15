@@ -173,10 +173,11 @@ namespace NEsper.Avro.Getter
                 .Block
                 .DeclareVar<object>(
                     "values",
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("record"),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
-                        CodegenExpressionBuilder.Constant(_posTop)))
+                        CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.Constant(_posTop.Name)))
                 .DeclareVar<object>(
                     "value",
                     CodegenExpressionBuilder.StaticMethod(

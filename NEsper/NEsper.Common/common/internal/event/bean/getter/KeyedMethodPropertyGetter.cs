@@ -168,10 +168,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             var parameterTypes = method.GetParameterTypes();
-            return codegenMethodScope.MakeChild(method.ReturnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
+            var returnType = method.ReturnType;
+            return codegenMethodScope.MakeChild(returnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
                 .AddParam(targetType, "@object")
                 .AddParam(parameterTypes[0], "key")
                 .Block
+                .DebugStack()
                 .MethodReturn(ExprDotMethod(Ref("@object"), method.Name, Ref("key")));
         }
 

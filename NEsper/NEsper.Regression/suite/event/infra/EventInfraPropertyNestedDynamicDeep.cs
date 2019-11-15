@@ -45,11 +45,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             typename) => {
             var schema = AvroSchemaUtil.ResolveAvroSchema(
                 env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
-            var itemSchema = schema.GetField("item").Schema;
+            var itemSchema = schema.GetField("Item").Schema;
             var itemDatum = new GenericRecord(itemSchema.AsRecordSchema());
-            itemDatum.Put("nested", value);
+            itemDatum.Put("Nested", value);
             var datum = new GenericRecord(schema.AsRecordSchema());
-            datum.Put("item", itemDatum);
+            datum.Put("Item", itemDatum);
             env.SendEventAvro(datum, typename);
         };
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(
                     "<Item>\n" +
                     "\t<Nested NestedValue=\"100\">\n" +
-                    "\t\t<NestedNested nestedNestedValue=\"101\">\n" +
+                    "\t\t<NestedNested NestedNestedValue=\"101\">\n" +
                     "\t\t</NestedNested>\n" +
                     "\t</Nested>\n" +
                     "</Item>\n",
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             nestedNestedDatum.Put("NestedNestedValue", 101);
             var nestedDatum = new GenericRecord(nestedSchema.AsRecordSchema());
             nestedDatum.Put("NestedValue", 100);
-            nestedDatum.Put("nestedNested", nestedNestedDatum);
+            nestedDatum.Put("NestedNested", nestedNestedDatum);
             var emptyDatum = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
             Pair<object, object>[] avroTests = {
                 new Pair<object, object>(nestedDatum, AllExist(100, 100, 101, 101, 101, 101)),

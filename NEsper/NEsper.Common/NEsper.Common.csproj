@@ -53,6 +53,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+    <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
   </ItemGroup>
 
   <ItemGroup>

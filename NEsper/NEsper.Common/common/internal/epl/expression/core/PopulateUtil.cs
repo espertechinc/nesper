@@ -98,8 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
 
                     var mappedProperty = (MappedProperty) prop;
-                    if (mappedProperty.PropertyNameAtomic.ToLowerInvariant()
-                        .Equals(ExprEvalSystemProperty.SYSTEM_PROPETIES_NAME)) {
+                    if (string.Equals(
+                        mappedProperty.PropertyNameAtomic,
+                        ExprEvalSystemProperty.SYSTEM_PROPETIES_NAME,
+                        StringComparison.InvariantCultureIgnoreCase)) {
                         if (type == typeof(ExprNode)) {
                             return new ExprEvalSystemProperty(mappedProperty.Key);
                         }
@@ -128,11 +130,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return null;
             }
 
-            if (value.GetType() == type) {
+            var valueType = value.GetType();
+            if (valueType == type) {
                 return value;
             }
 
-            if (value.GetType().IsAssignmentCompatible(type)) {
+            
+            var typeUnboxed = type.GetUnboxedType();
+            if (valueType.GetUnboxedType().IsAssignmentCompatible(typeUnboxed)) {
                 if (forceNumeric &&
                     value.GetType().GetBoxedType() != type.GetBoxedType() &&
                     type.IsNumeric() &&

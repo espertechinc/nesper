@@ -83,13 +83,13 @@ namespace com.espertech.esper.common.client.dataflow.util
             Type expectedReturnType)
         {
             Type returnType = validated.Forge.EvaluationType;
-            if (!TypeHelper.IsAssignmentCompatible(Boxing.GetBoxedType(returnType), expectedReturnType)) {
+            if (!returnType.GetBoxedType().IsAssignmentCompatible(expectedReturnType)) {
                 string message = "Failed to validate return type of parameter '" +
                                  name +
                                  "', expected '" +
-                                 TypeHelper.CleanName(expectedReturnType) +
+                                 expectedReturnType.CleanName() +
                                  "' but received '" +
-                                 TypeHelper.CleanName(returnType) +
+                                 returnType.CleanName() +
                                  "'";
                 throw new ExprValidationException(message);
             }

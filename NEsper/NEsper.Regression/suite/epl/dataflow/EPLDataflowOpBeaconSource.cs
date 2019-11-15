@@ -50,6 +50,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             EPDataFlowInstantiationOptions options;
 
             var path = new RegressionPath();
+            var streamType = eventbean ? "EventBean<MyEvent>" : "MyEvent";
+            
             env.CompileDeploy(
                 "create " +
                 representationEnum.GetOutputTypeCreateSchemaName() +
@@ -58,12 +60,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource -> BeaconStream<" +
-                (eventbean ? "EventBean<MyEvent>" : "MyEvent") +
-                "> {" +
+                "BeaconSource -> BeaconStream:<" + streamType + "> " +
+                "{" +
                 "  iterations : 3," +
                 "  p0 : 'abc'," +
-                "  p1 : Math.Round(Math.Random() * 10) + 1," +
+                "  p1 : cast(Math.Round(Randomizer.Random() * 10) + 1, long)," +
                 "  p2 : 1d," +
                 "}" +
                 "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -94,22 +95,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     }
                     else if (representationEnum.IsMapEvent()) {
                         var row = (IDictionary<string, object>) output[i];
-                        Assert.AreEqual("abc", row.Get("P0"));
-                        var val = row.Get("P1").AsLong();
+                        Assert.AreEqual("abc", row.Get("p0"));
+                        var val = row.Get("p1").AsLong();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("P2"));
+                        Assert.AreEqual(1d, row.Get("p2"));
                     }
                     else {
                         var row = (GenericRecord) output[i];
-                        Assert.AreEqual("abc", row.Get("P0"));
-                        var val = row.Get("P1").AsLong();
+                        Assert.AreEqual("abc", row.Get("p0"));
+                        var val = row.Get("p1").AsLong();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("P2"));
+                        Assert.AreEqual(1d, row.Get("p2"));
                     }
                 }
                 else {
                     var row = (EventBean) output[i];
-                    Assert.AreEqual("abc", row.Get("P0"));
+                    Assert.AreEqual("abc", row.Get("p0"));
                 }
             }
 
@@ -123,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource -> BeaconStream<" +
+                "BeaconSource -> BeaconStream:<" +
                 typeName +
                 "> {" +
                 "  Myfield : 'abc', iterations : 1" +
@@ -160,8 +161,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var resultLegacy = (MyLegacyEvent) RunAssertionBeans(env, "MyLegacyEvent");
                 Assert.AreEqual("abc", resultLegacy.Myfield);
 
+#if NOT_APPLICABLE // Java can by-pass constructor-less objects (kind of)
                 var resultNoDefCtor = (MyEventNoDefaultCtor) RunAssertionBeans(env, "MyEventNoDefaultCtor");
                 Assert.AreEqual("abc", resultNoDefCtor.Myfield);
+#endif
             }
         }
 
@@ -174,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create variable int var_iterations=3", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource -> BeaconStream<SomeEvent> {" +
+                    "BeaconSource -> BeaconStream:<SomeEvent> {" +
                     "  iterations : var_iterations" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -217,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  \n" +
                           "  // BeaconSource that produces one RFIDSchema event populating event properties\n" +
                           "  // from a user-defined function \"generateTagId\" and values.\n" +
-                          "  BeaconSource -> stream.two<SampleSchema> {\n" +
+                          "  BeaconSource -> stream.two:<SampleSchema> {\n" +
                           "    iterations : 1,\n" +
                           "    tagId : generateTagId(),\n" +
                           "    locX : 10,\n" +
@@ -230,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "    iterations : 1,\n" +
                           "    interval : 10, // every 10 seconds\n" +
                           "    initialDelay : 5, // start after 5 seconds\n" +
-                          "    Price : Math.Random() * 100,\n" +
+                          "    price : Randomizer.Random() * 100,\n" +
                           "  }";
                 env.CompileDeploy(epl);
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
@@ -238,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // test options-provided beacon field
                 var eplMinimal = "@Name('flow') create dataflow MyGraph " +
-                                 "BeaconSource -> outstream<SupportBean> {iterations:1} " +
+                                 "BeaconSource -> outstream:<SupportBean> {iterations:1} " +
                                  "EventBusSink(outstream) {}";
                 env.CompileDeploy(eplMinimal);
 
@@ -372,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create objectarray schema MyTestOAType(p1 string)", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowFive " +
-                    "BeaconSource -> BeaconStream<MyTestOAType> {" +
+                    "BeaconSource -> BeaconStream:<MyTestOAType> {" +
                     "  interval: 0.5," +
                     "  p1 : 'abc'" +
                     "}",

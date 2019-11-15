@@ -201,13 +201,18 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.NodeType == XmlNodeType.Element &&
-                    childNode.Name == propertyMap && 
-                    childNode.Attributes != null) {
-                    var attribute = childNode.Attributes.GetNamedItem("id");
-                    if (attribute != null && attribute.InnerText == mapKey) {
-                        return childNode;
-                    }
+                if (childNode.NodeType != XmlNodeType.Element) {
+                    continue;
+                }
+                
+                var elementName = childNode.LocalName;
+                if (elementName != propertyMap) {
+                    continue;
+                }
+
+                var attribute = childNode.Attributes?.GetNamedItem("Id");
+                if (attribute != null && attribute.InnerText == mapKey) {
+                    return childNode;
                 }
             }
 
@@ -236,21 +241,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 if (childNode.NodeType != XmlNodeType.Element) {
                     continue;
                 }
-
-                if (!childNode.Name.Equals(propertyMap)) {
+                
+                var elementName = childNode.LocalName;
+                if (elementName != propertyMap) {
                     continue;
                 }
 
-                var attribute = childNode.Attributes.GetNamedItem("id");
-                if (attribute == null) {
-                    continue;
+                var attribute = childNode.Attributes?.GetNamedItem("Id");
+                if (attribute != null && attribute.InnerText == mapKey) {
+                    return true;
                 }
-
-                if (!attribute.InnerText.Equals(mapKey)) {
-                    continue;
-                }
-
-                return true;
             }
 
             return false;

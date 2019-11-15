@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -100,15 +101,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var rhsType = rhs.Forge.EvaluationType;
 
             Type resultType;
-            if ((lhsType == typeof(short) || lhsType == typeof(short?)) &&
-                (rhsType == typeof(short) || rhsType == typeof(short?))) {
+
+            // If both sides are unboxed, then the result is also unboxed
+            if (!lhsType.IsNullable() && !rhsType.IsNullable()) {
+                if ((lhsType == typeof(short)) && (rhsType == typeof(short))) {
+                    resultType = typeof(int);
+                } else if (lhsType == typeof(byte) && (rhsType == typeof(byte))) {
+                    resultType = typeof(int);
+                } else if (lhsType == rhsType) {
+                    resultType = rhsType;
+                }
+                else {
+                    resultType = lhsType
+                        .GetArithmaticCoercionType(rhsType)
+                        .GetUnboxedType();
+                }
+            }
+            else if ((lhsType == typeof(short) || lhsType == typeof(short?)) &&
+                     (rhsType == typeof(short) || rhsType == typeof(short?))) {
                 resultType = typeof(int?);
             }
             else if ((lhsType == typeof(byte) || lhsType == typeof(byte?)) &&
                      (rhsType == typeof(byte) || rhsType == typeof(byte?))) {
                 resultType = typeof(int?);
             }
-            else if (lhsType.Equals(rhsType)) {
+            else if (lhsType == rhsType) {
                 resultType = rhsType.GetBoxedType();
             }
             else {

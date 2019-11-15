@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EventType type,
             TableMetaData table)
         {
-            this.typeInfo = EPTypeHelper.CollectionOfSingleValue(table.PublicEventType.UnderlyingType);
+            this.typeInfo = EPTypeHelper.CollectionOfSingleValue(
+                table.PublicEventType.UnderlyingType,
+                null);
             this.table = table;
         }
 

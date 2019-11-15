@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.EvaluationType,
                 typeof(ExprMathNodeForgeEval),
                 codegenClassScope);
-            var lhsType = lhs.Forge.EvaluationType.GetBoxedType();
-            var rhsType = rhs.Forge.EvaluationType.GetBoxedType();
+            var lhsType = lhs.Forge.EvaluationType;
+            var rhsType = rhs.Forge.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
                     lhsType,

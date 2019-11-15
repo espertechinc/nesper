@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var path = new RegressionPath();
             var epl = "create objectarray schema MyEvent ();\n" +
                       "@Name('df') create dataflow MyDataflow " +
-                      "BeaconSource -> outdata<MyEvent> {" +
+                      "BeaconSource -> outdata:<MyEvent> {" +
                       "  iterations:1" +
                       "}" +
                       "EventBusSink(outdata) {};\n";

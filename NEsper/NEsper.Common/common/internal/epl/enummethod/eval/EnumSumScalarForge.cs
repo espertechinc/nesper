@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -42,11 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    sumMethodFactory.ValueType,
+                    sumMethodFactory.ValueType.GetBoxedType(),
                     typeof(EnumSumScalarForge),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
             var block = methodNode.Block;
 
             sumMethodFactory.CodegenDeclare(block);

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -84,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
         }
 
         public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(componentType);
+            get => EPTypeHelper.CollectionOfSingleValue(
+                componentType,
+                typeof(ICollection<>).MakeGenericType(componentType));
         }
     }
 } // end of namespace

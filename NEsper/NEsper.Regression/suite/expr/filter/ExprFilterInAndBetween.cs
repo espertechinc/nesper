@@ -243,8 +243,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // try enum collection with substitution param
                 ISet<SupportEnum> types = new HashSet<SupportEnum>();
                 types.Add(SupportEnum.ENUM_VALUE_2);
+                var collectionType = typeof(ICollection<SupportEnum>).CleanName();
                 var compiled = env.Compile(
-                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::System.Collections.ICollection)");
+                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(

@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             bool? linefeed)
         {
             var graph = "@Name('flow') create dataflow MyConsoleOut\n" +
-                        "Emitter -> instream<SupportBean>{name : 'e1'}\n" +
+                        "Emitter -> instream:<SupportBean>{name : 'e1'}\n" +
                         "LogSink(instream) {\n" +
                         (format == null ? "" : "  format: '" + format + "',\n") +
                         (log == null ? "" : "  log: " + log + ",\n") +

@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                                   "sbcp.Indexed(IntPrimitive) as val1 " +
                                   "from SecondStream #lastevent sbcp, SupportBean unidirectional";
             RunAssertionBean(env, path, eplWrapPrefixed);
-
+            
             // test Map-type
             var eplMap = "select " +
                          "Mapped(TheString) as val0," +

@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {

@@ -221,6 +221,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             PathRegistry<K, E> registry,
             K entityKey,
             string moduleName)
+            where K : class
         {
             var dependencies = registry.GetDependencies(entityKey, moduleName);
             if (dependencies != null && !dependencies.IsEmpty())

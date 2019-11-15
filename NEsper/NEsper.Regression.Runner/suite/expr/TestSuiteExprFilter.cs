@@ -107,16 +107,16 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 "LibE1True",
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
             configuration.Compiler.AddPlugInSingleRowFunction(
-                "myCustomBigDecimalEquals",
+                "myCustomDecimalEquals",
                 typeof(ExprFilterOptimizable),
-                "MyCustomBigDecimalEquals");
+                "MyCustomDecimalEquals");
 
             var func = new ConfigurationCompilerPlugInSingleRowFunction();
             func.FunctionClassName = typeof(ExprFilterOptimizable).FullName;
-            func.FunctionMethodName = "myCustomOkFunction";
+            func.FunctionMethodName = "MyCustomOkFunction";
             func.FilterOptimizable = ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED;
             func.RethrowExceptions = true;
-            func.Name = "MyCustomOkFunction";
+            func.Name = "myCustomOkFunction";
             configuration.Compiler.PlugInSingleRowFunctions.Add(func);
 
             configuration.Compiler.AddPlugInSingleRowFunction(
@@ -131,13 +131,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprFilterExpressions.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprFilterInAndBetween()
         {
             RegressionRunner.Run(session, ExprFilterInAndBetween.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprFilterOptimizable()
         {
             RegressionRunner.Run(session, ExprFilterOptimizable.Executions());

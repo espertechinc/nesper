@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -551,36 +552,41 @@ namespace com.espertech.esper.common.@internal.@event.core
                 StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
-        public static object GetMappedPropertyValue(
-            object value,
-            string key)
+        public static Map GetUnderlyingMap(object value)
         {
             if (value == null) {
                 return null;
             }
 
-            if (!(value is Map)) {
-                return null;
+            if (value is Map valueMap) {
+                return valueMap;
+            }
+            
+            var valueType = value.GetType();
+            if (valueType.IsGenericStringDictionary()) {
+                var magicMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+                if (magicMap != null) {
+                    return magicMap;
+                }
             }
 
-            var innerMap = (Map) value;
-            return innerMap.Get(key);
+            return null;
+        }
+        
+        public static object GetMappedPropertyValue(
+            object value,
+            string key)
+        {
+            var valueMap = GetUnderlyingMap(value);
+            return valueMap?.Get(key);
         }
 
         public static bool GetMappedPropertyExists(
             object value,
             string key)
         {
-            if (value == null) {
-                return false;
-            }
-
-            if (!(value is Map)) {
-                return false;
-            }
-
-            var innerMap = (Map) value;
-            return innerMap.ContainsKey(key);
+            var valueMap = GetUnderlyingMap(value);
+            return valueMap != null && valueMap.ContainsKey(key);
         }
 
         public static MapIndexedPropPair GetIndexedAndMappedProps(string[] properties)
@@ -589,13 +595,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             ISet<string> arrayPropertiesToCopy = new HashSet<string>();
             for (var i = 0; i < properties.Length; i++) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(properties[i]);
-                if (prop is MappedProperty) {
-                    var mappedProperty = (MappedProperty) prop;
+                if (prop is MappedProperty mappedProperty) {
                     mapPropertiesToCopy.Add(mappedProperty.PropertyNameAtomic);
                 }
 
-                if (prop is IndexedProperty) {
-                    var indexedProperty = (IndexedProperty) prop;
+                if (prop is IndexedProperty indexedProperty) {
                     arrayPropertiesToCopy.Add(indexedProperty.PropertyNameAtomic);
                 }
             }
@@ -661,9 +665,28 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (value is object[]) {
-                var subEvents = (object[]) value;
+            if (value is Map[]) {
+                var mapTypedSubEvents = (Map[]) value;
 
+                var countNull = 0;
+                foreach (var map in mapTypedSubEvents) {
+                    if (map != null) {
+                        countNull++;
+                    }
+                }
+
+                var mapEvents = new EventBean[countNull];
+                var count = 0;
+                foreach (var map in mapTypedSubEvents) {
+                    if (map != null) {
+                        mapEvents[count++] = eventBeanTypedEventFactory.AdapterForTypedMap(map, fragmentEventType);
+                    }
+                }
+
+                return mapEvents;
+            }
+
+            if (value is Array subEvents) {
                 var countNullX = 0;
                 foreach (var subEvent in subEvents) {
                     if (subEvent != null) {
@@ -682,28 +705,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return outEvents;
             }
 
-            if (!(value is Map[])) {
-                return null;
-            }
-
-            var mapTypedSubEvents = (Map[]) value;
-
-            var countNull = 0;
-            foreach (var map in mapTypedSubEvents) {
-                if (map != null) {
-                    countNull++;
-                }
-            }
-
-            var mapEvents = new EventBean[countNull];
-            var count = 0;
-            foreach (var map in mapTypedSubEvents) {
-                if (map != null) {
-                    mapEvents[count++] = eventBeanTypedEventFactory.AdapterForTypedMap(map, fragmentEventType);
-                }
-            }
-
-            return mapEvents;
+            return null;
         }
 
         public static object GetBeanArrayValue(

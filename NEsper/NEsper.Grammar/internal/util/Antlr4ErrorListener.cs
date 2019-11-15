@@ -15,7 +15,7 @@ using Antlr4.Runtime.Sharpen;
 
 using com.espertech.esper.compat.logging;
 
-namespace com.espertech.esper.compiler.@internal.parse
+namespace com.espertech.esper.grammar.@internal.util
 {
     public class Antlr4ErrorListener<T> : IAntlrErrorListener<T>
     {

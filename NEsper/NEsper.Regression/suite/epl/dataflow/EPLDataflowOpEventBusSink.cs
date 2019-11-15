@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@Name('flow') create dataflow MyGraph " +
-                        "DefaultSupportSourceOp -> instream<" +
+                        "DefaultSupportSourceOp -> instream:<" +
                         typeName +
                         ">{}" +
                         "EventBusSink(instream) {}";
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SampleSchema(tagId string, locX double, locY double)", path);
                 var docSmple = "@Name('s0') create dataflow MyDataFlow\n" +
-                               "BeaconSource -> instream<SampleSchema> {} // produces sample stream to\n" +
+                               "BeaconSource -> instream:<SampleSchema> {} // produces sample stream to\n" +
                                "//demonstrate below\n" +
                                "// Send SampleSchema events produced by beacon to the event bus.\n" +
                                "EventBusSink(instream) {}\n" +
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "" +
-                    "BeaconSource -> BeaconStream<MyEventBeacon> {" +
+                    "BeaconSource -> BeaconStream:<MyEventBeacon> {" +
                     "  iterations : 3," +
                     "  P0 : 'abc'," +
                     "  P1 : 1," +
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlow " +
-                    "MyObjectArrayGraphSource -> OutStream<?> {}" +
+                    "MyObjectArrayGraphSource -> OutStream:<?> {}" +
                     "EventBusSink(OutStream) {" +
                     "  collector : {" +
                     "    class: '" +

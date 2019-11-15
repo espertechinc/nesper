@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             long value = ByteExtensions.GetCrc32(bytes);
-            int result = (int) value;
+            int result = (int) value % granularity;
             if (result >= 0) {
                 return result;
             }

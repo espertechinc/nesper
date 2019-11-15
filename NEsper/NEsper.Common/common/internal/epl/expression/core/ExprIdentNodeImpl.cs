@@ -121,14 +121,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(
+            var builder = new InstrumentationBuilderExpr(
                 GetType(),
                 this,
                 "ExprIdent",
                 requiredType,
                 codegenMethodScope,
                 exprSymbol,
-                codegenClassScope).Build();
+                codegenClassScope);
+            return builder.Build();
         }
 
         public ExprEvaluator ExprEvaluator => evaluator;

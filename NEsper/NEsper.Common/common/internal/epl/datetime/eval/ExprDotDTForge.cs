@@ -101,8 +101,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 block.IfRefNullReturnNull("target");
             }
 
-            block.MethodReturn(forge.Codegen(
-                targetValue, innerType, methodNode, exprSymbol, codegenClassScope));
+            block.MethodReturn(
+                forge.Codegen(
+                    targetValue,
+                    innerType,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
+
             return LocalMethod(methodNode, inner);
         }
 

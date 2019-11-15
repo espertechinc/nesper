@@ -140,11 +140,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
-                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
-                .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<string, object>), null)
+                .DeclareVar<object>(
+                    "valueTopObj",
+                    ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .DeclareVar<IDictionary<string, object>>(
                     "value",
-                    CastRef(typeof(IDictionary<string, object>), "valueTopObj"))
+                    StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("valueTopObj")))
+                .IfRefNullReturnNull("value")
                 .MethodReturn(getter.UnderlyingGetCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
 
@@ -155,11 +157,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
-                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
-                .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<string, object>), false)
+                .DeclareVar<object>(
+                    "valueTopObj",
+                    ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .DeclareVar<IDictionary<string, object>>(
                     "value",
-                    CastRef(typeof(IDictionary<object, object>), "valueTopObj"))
+                    StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("valueTopObj")))
+                .IfRefNullReturnFalse("value")
                 .MethodReturn(getter.UnderlyingExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
     }

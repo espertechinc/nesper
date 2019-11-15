@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.arrayType = arrayType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(arrayType.GetElementType());
+        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(
+            arrayType.GetElementType(),
+            arrayType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {

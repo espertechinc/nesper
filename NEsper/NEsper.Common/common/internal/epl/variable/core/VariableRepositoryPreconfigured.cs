@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     public class VariableRepositoryPreconfigured
     {
-        public IDictionary<string, VariableMetaData> Metadata { get; } = new Dictionary<string, VariableMetaData>();
+        public IDictionary<string, VariableMetaData> Metadata { get; } = new HashMap<string, VariableMetaData>();
 
         public void AddVariable(
             string name,

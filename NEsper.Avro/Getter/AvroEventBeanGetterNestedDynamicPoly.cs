@@ -122,9 +122,10 @@ namespace NEsper.Avro.Getter
                     "inner",
                     CodegenExpressionBuilder.Cast(
                         typeof(GenericRecord),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
+                            CodegenExpressionBuilder.Ref("record"),
                             CodegenExpressionBuilder.Constant(_fieldTop))))
                 .MethodReturn(
                     CodegenExpressionBuilder.Conditional(
@@ -166,9 +167,10 @@ namespace NEsper.Avro.Getter
                 .IfRefNullReturnFalse("field")
                 .DeclareVar<object>(
                     "inner",
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        CodegenExpressionBuilder.Ref("record"),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
+                        CodegenExpressionBuilder.Ref("record"),
                         CodegenExpressionBuilder.Constant(_fieldTop)))
                 .IfRefNotTypeReturnConst("inner", typeof(GenericRecord), false)
                 .MethodReturn(

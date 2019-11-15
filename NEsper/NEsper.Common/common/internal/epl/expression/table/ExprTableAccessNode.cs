@@ -268,7 +268,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 typeof(ExprTableEvalStrategy));
             var evaluation = ExprDotMethod(future, evaluationType.MethodName, eps, newData, evalCtx);
             if (resultType != typeof(object)) {
-                evaluation = Cast(resultType, evaluation);
+                evaluation = CodegenLegoCast.CastSafeFromObjectType(resultType, evaluation);
+                //evaluation = Cast(resultType, evaluation);
             }
 
             method.Block.MethodReturn(evaluation);

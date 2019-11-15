@@ -13,11 +13,14 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -130,16 +133,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             try {
                 var value = _property.GetValue(@object);
-                if (!(value is IList<object>)) {
-                    return null;
+                var valueList = value.AsObjectList(MagicMarker.SingletonInstance);
+                if (valueList != null) {
+                    if (valueList.Count <= index) {
+                        return null;
+                    }
+
+                    return valueList[index];
                 }
 
-                var valueList = (IList<object>) value;
-                if (valueList.Count <= index) {
-                    return null;
-                }
-
-                return valueList[index];
+                return null;
             }
             catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_property, @object, e);
@@ -155,10 +158,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(typeof(int), "index")
                 .Block
                 .DeclareVar<object>("value", ExprDotName(Ref("@object"), _property.Name))
-                .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
-                .DeclareVar<IList<object>>("l", Cast(typeof(IList<object>), Ref("value")))
+                .DeclareVar<IList<object>>(
+                    "l",
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        typeof(IList<object>),
+                        Ref("value")))
+                .IfRefNullReturnNull("l")
                 .IfConditionReturnConst(Relational(ExprDotName(Ref("l"), "Count"), LE, Ref("index")), null)
-                .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("l"), "Get", Ref("index"))));
+                .MethodReturn(
+                    Cast(
+                        BeanPropType,
+                        ArrayAtIndex(Ref("l"), Ref("index"))));
         }
 
         public override string ToString()

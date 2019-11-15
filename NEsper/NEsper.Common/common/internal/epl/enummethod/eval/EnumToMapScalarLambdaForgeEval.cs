@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumToMapScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))

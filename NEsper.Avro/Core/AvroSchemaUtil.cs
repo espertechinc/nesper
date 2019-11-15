@@ -181,11 +181,15 @@ namespace NEsper.Avro.Core
                 return;
             }
 
-            if (optionalMapper != null && propertyType is Type) {
-                var result = (Schema) optionalMapper.Map(
-                    new TypeRepresentationMapperContext((Type) propertyType, propertyName, statementName));
-                if (result != null) {
-                    assembler.Add(TypeBuilder.Field(propertyName, result));
+            if (optionalMapper != null && propertyType is Type propertyTypeType) {
+                var schemaResult = optionalMapper.Map(
+                    new TypeRepresentationMapperContext(propertyTypeType, propertyName, statementName));
+                if (schemaResult is JToken schemaAsJsonToken) {
+                    assembler.Add(TypeBuilder.Field(propertyName, schemaAsJsonToken));
+                    return;
+                }
+                if (schemaResult is Schema schemaFromResult) {
+                    assembler.Add(TypeBuilder.Field(propertyName, schemaFromResult));
                     // assembler.Name(propertyName).Type(result).NoDefault();
                     return;
                 }

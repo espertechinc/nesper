@@ -13,11 +13,11 @@ namespace com.espertech.esper.regressionlib.support.bean
     [Serializable]
     public class SupportEventWithDateTimeOffset
     {
-        public SupportEventWithDateTimeOffset(DateTimeOffset dto)
+        public SupportEventWithDateTimeOffset(DateTimeOffset dateTimeOffset)
         {
-            Dto = dto;
+            DateTimeOffset = dateTimeOffset;
         }
 
-        public DateTimeOffset Dto { get; }
+        public DateTimeOffset DateTimeOffset { get; }
     }
 }

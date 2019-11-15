@@ -57,11 +57,14 @@ namespace com.espertech.esper.common.@internal.@event.map
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "value")
                 .Block
-                .IfRefNotTypeReturnConst("value", typeof(IDictionary<object, object>), "null");
+                .IfRefNotTypeReturnConst(
+                    "value",
+                    typeof(IDictionary<string, object>),
+                    null);
             if (nestedGetter is MapEventPropertyGetter) {
                 return block.MethodReturn(
                     ((MapEventPropertyGetter) nestedGetter).UnderlyingGetCodegen(
-                        Cast(typeof(IDictionary<object, object>), Ref("value")),
+                        Cast(typeof(IDictionary<string, object>), Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
             }

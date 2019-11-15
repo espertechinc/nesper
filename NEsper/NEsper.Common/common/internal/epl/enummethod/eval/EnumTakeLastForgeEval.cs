@@ -53,13 +53,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var sizeType = forge.sizeEval.EvaluationType;
 
+            var returnType = args.EnumcollType ?? typeof(ICollection<EventBean>);
+            var paramArgs = returnType == typeof(ICollection<EventBean>)
+                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
+                : EnumForgeCodegenNames.PARAMS_OBJECT;
+
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<EventBean>),
+                    returnType,
                     typeof(EnumTakeLastForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(paramArgs);
 
             var block = methodNode.Block.DeclareVar(
                 sizeType,

@@ -10,7 +10,7 @@ using System;
 
 using Antlr4.Runtime;
 
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -20,9 +21,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     {
         public void Run(RegressionEnvironment env)
         {
+            /*
             RunAssertionOA(env);
             RunAssertionMap(env);
             RunAssertionWrapper(env);
+            */
             RunAssertionBean(env);
         }
 
@@ -30,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var path = new RegressionPath();
             env.CompileDeployWBusPublicType(
-                "create schema MyIndexMappedSamplerBean as " + typeof(MyIndexMappedSamplerBean).Name,
+                "create schema MyIndexMappedSamplerBean as " + typeof(MyIndexMappedSamplerBean).MaskTypeName(),
                 path);
 
             env.CompileDeploy("@Name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
@@ -39,22 +42,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             var type = @event.EventType;
-            Assert.AreEqual(2, type.GetGetterIndexed("listOfInt").Get(@event, 1));
-            Assert.AreEqual(2, type.GetGetterIndexed("iterableOfInt").Get(@event, 1));
+            Assert.AreEqual(2, type.GetGetterIndexed("ListOfInt").Get(@event, 1));
+            Assert.AreEqual(2, type.GetGetterIndexed("IterableOfInt").Get(@event, 1));
 
             env.UndeployAll();
         }
 
         private void RunAssertionWrapper(RegressionEnvironment env)
         {
+            var collections = typeof(Collections).FullName;
             env.CompileDeploy(
-                "@Name('s0') select {1, 2} as arr, *, Collections.SingletonDataMap('A', 2) as mapped from SupportBean");
+                $"@Name('s0') select {{1, 2}} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean());
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             var type = @event.EventType;
-            Assert.AreEqual(2, type.GetGetterIndexed("arr").Get(@event, 1));
+            Assert.AreEqual(2, type.GetGetterIndexed("Arr").Get(@event, 1));
             Assert.AreEqual(2, type.GetGetterMapped("Mapped").Get(@event, "A"));
 
             env.UndeployAll();
@@ -62,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionMap(RegressionEnvironment env)
         {
-            var epl = "create schema MapEventInner(p0 string);\n" +
+            var epl = "create schema MapEventInner(P0 string);\n" +
                       "create schema MapEvent(intarray int[], mapinner MapEventInner[]);\n" +
                       "@Name('s0') select * from MapEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");

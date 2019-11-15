@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowInsertFrom.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNamedWindowJoin()
         {
             RegressionRunner.Run(session, InfraNamedWindowJoin.Executions());

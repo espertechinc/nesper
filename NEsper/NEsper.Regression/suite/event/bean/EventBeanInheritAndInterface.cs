@@ -58,34 +58,34 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             public void Run(RegressionEnvironment env)
             {
                 string[] epls = {
-                    "select baseAB from ISupportBaseAB#length(10)",
-                    "select baseAB, a from ISupportA#length(10)",
-                    "select baseAB, b from ISupportB#length(10)",
-                    "select c from ISupportC#length(10)",
-                    "select baseAB, a, g from ISupportAImplSuperG#length(10)",
-                    "select baseAB, a, b, g, c from ISupportAImplSuperGImplPlus#length(10)"
+                    "select BaseAB from ISupportBaseAB#length(10)",
+                    "select BaseAB, A from ISupportA#length(10)",
+                    "select BaseAB, B from ISupportB#length(10)",
+                    "select C from ISupportC#length(10)",
+                    "select BaseAB, A, G from ISupportAImplSuperG#length(10)",
+                    "select BaseAB, A, B, G, C from ISupportAImplSuperGImplPlus#length(10)"
                 };
 
                 string[][] expected = {
-                    new[] {"baseAB"},
-                    new[] {"baseAB", "a"},
-                    new[] {"baseAB", "b"},
-                    new[] {"c"},
-                    new[] {"baseAB", "a", "g"},
-                    new[] {"baseAB", "a", "b", "g", "c"}
+                    new[] {"BaseAB"},
+                    new[] {"BaseAB", "A"},
+                    new[] {"BaseAB", "B"},
+                    new[] {"C"},
+                    new[] {"BaseAB", "A", "G"},
+                    new[] {"BaseAB", "A", "B", "G", "C"}
                 };
 
                 var stmts = new EPStatement[epls.Length];
                 var listeners = new SupportUpdateListener[epls.Length];
                 for (var i = 0; i < epls.Length; i++) {
-                    var name = string.Format("@Name('%s')", "stmt_" + i);
+                    var name = $"@Name('stmt_{i}')";
                     env.CompileDeploy(name + epls[i]);
                     stmts[i] = env.Statement("stmt_" + i);
                     listeners[i] = new SupportUpdateListener();
                     stmts[i].AddListener(listeners[i]);
                 }
 
-                env.SendEventBean(new ISupportAImplSuperGImplPlus("g", "a", "baseAB", "b", "c"));
+                env.SendEventBean(new ISupportAImplSuperGImplPlus("G", "A", "BaseAB", "B", "C"));
                 for (var i = 0; i < listeners.Length; i++) {
                     Assert.IsTrue(listeners[i].IsInvoked);
                     var theEvent = listeners[i].GetAndResetLastNewData()[0];

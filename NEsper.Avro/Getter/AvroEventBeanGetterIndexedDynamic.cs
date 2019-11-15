@@ -140,7 +140,7 @@ namespace NEsper.Avro.Getter
         {
             var value = record.Get(propertyName);
             return AvroEventBeanGetterIndexed.IsIndexableValue(value)
-                ? AvroEventBeanGetterIndexed.GetAvroIndexedValue((ICollection<object>) value, index)
+                ? AvroEventBeanGetterIndexed.GetAvroIndexedValue(value, index)
                 : null;
         }
 

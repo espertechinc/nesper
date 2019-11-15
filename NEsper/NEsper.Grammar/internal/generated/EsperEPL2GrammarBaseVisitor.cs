@@ -19,7 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace com.espertech.esper.compiler.@internal.generated {
+namespace com.espertech.esper.grammar.@internal.generated {
 
   using System;
   using System.Collections.Generic;
@@ -2340,6 +2340,26 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitClassIdentifier([NotNull] EsperEPL2GrammarParser.ClassIdentifierContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classIdentifierGenericArgs"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitClassIdentifierGenericArgs([NotNull] EsperEPL2GrammarParser.ClassIdentifierGenericArgsContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classIdentifierGenericArgsList"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitClassIdentifierGenericArgsList([NotNull] EsperEPL2GrammarParser.ClassIdentifierGenericArgsListContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionListWithNamed"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -2820,4 +2840,4 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitJsonpair([NotNull] EsperEPL2GrammarParser.JsonpairContext context) { return VisitChildren(context); }
 }
-} // namespace com.espertech.esper.compiler.@internal.generated
+} // namespace com.espertech.esper.grammar.@internal.generated

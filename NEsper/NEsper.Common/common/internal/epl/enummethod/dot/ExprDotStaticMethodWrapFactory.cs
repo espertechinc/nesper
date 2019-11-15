@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             if (method.ReturnType.IsGenericEnumerable()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
                 if (genericType == null || TypeHelper.IsBuiltinDataType(genericType)) {
-                    return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType);
+                    return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType, method.ReturnType);
                 }
 
                 var type = MakeBeanType(method.Name, genericType, validationContext);

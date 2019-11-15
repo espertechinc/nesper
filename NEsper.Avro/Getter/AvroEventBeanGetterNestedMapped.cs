@@ -14,6 +14,7 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Extensions;
@@ -122,19 +123,21 @@ namespace NEsper.Avro.Getter
                     "inner",
                     CodegenExpressionBuilder.Cast(
                         typeof(GenericRecord),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("record"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(_top))))
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_top.Name))))
                 .IfRefNullReturnNull("inner")
                 .DeclareVar<IDictionary<string, object>>(
                     "map",
-                    CodegenExpressionBuilder.Cast(
+                    CodegenLegoCast.CastSafeFromObjectType(
                         typeof(IDictionary<string, object>),
-                        CodegenExpressionBuilder.ExprDotMethod(
-                            CodegenExpressionBuilder.Ref("inner"),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
                             "Get",
-                            CodegenExpressionBuilder.Constant(_pos))))
+                            CodegenExpressionBuilder.Ref("inner"),
+                            CodegenExpressionBuilder.Constant(_pos.Name))))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterMapped),

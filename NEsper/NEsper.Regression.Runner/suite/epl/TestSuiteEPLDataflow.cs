@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.epl.dataflow;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.dataflow;
+using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
@@ -72,6 +73,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 
+            configuration.Common.AddImportType(typeof(Randomizer));
             configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOp));
             configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
             configuration.Common.AddImportType(typeof(EPLDataflowCustomProperties.MyOperatorOneForge));

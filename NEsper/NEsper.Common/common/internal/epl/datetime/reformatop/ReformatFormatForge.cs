@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
                 .LockOn(formatField)
-                .BlockReturn(ExprDotMethod(formatField, "Format", ExprDotMethod(Ref("dtx"), "getTime")));
+                .BlockReturn(ExprDotMethod(formatField, "Format", Ref("dtx")));
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
 
@@ -79,7 +79,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var formatField = CodegenFormatFieldInit(codegenClassScope);
-            return ExprDotMethod(inner, "Format", formatField);
+            var blockMethod = codegenMethodScope
+                .MakeChild(typeof(string), typeof(ReformatFormatForge), codegenClassScope)
+                .AddParam(typeof(DateTimeOffset), "dto")
+                .Block
+                .LockOn(formatField)
+                .BlockReturn(ExprDotMethod(formatField, "Format", Ref("dto")));
+            return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
 
         public CodegenExpression CodegenDateTime(
@@ -89,7 +95,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var formatField = CodegenFormatFieldInit(codegenClassScope);
-            return ExprDotMethod(inner, "Format", formatField);
+            var blockMethod = codegenMethodScope
+                .MakeChild(typeof(string), typeof(ReformatFormatForge), codegenClassScope)
+                .AddParam(typeof(DateTime), "dateTime")
+                .Block
+                .LockOn(formatField)
+                .BlockReturn(ExprDotMethod(formatField, "Format", Ref("dateTime")));
+            return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
 
         public CodegenExpression CodegenLong(
@@ -153,11 +165,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         private CodegenExpressionInstanceField CodegenFormatFieldInit(CodegenClassScope classScope)
         {
-            var formatEvalCall = CodegenLegoMethodExpression.CodegenExpression(
+            var formatEvalDtx = CodegenLegoMethodExpression.CodegenExpression(
                 formatter,
                 classScope.NamespaceScope.InitMethod,
                 classScope);
-            var formatEval = LocalMethod(formatEvalCall, ConstantNull(), ConstantTrue(), ConstantNull());
+            var formatEval = LocalMethod(formatEvalDtx, ConstantNull(), ConstantTrue(), ConstantNull());
             CodegenExpression init;
             if (formatterType.FormatterType != typeof(string)) {
                 init = formatEval;

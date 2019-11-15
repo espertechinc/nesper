@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -192,6 +193,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             try {
                 return MethodResolver.ResolveMethod(clazz, methodName, paramTypes, true, allFalse, allFalse);
+            }
+            catch (MethodResolverNoSuchMethodException) {
+                var method = MethodResolver.ResolveExtensionMethod(
+                    clazz,
+                    methodName,
+                    paramTypes,
+                    true,
+                    allFalse,
+                    allFalse);
+                if (method == null) {
+                    throw;
+                }
+
+                return method;
             }
             catch (Exception) {
                 Log.Debug("Not resolved for class '" + clazz.Name + "' method '" + methodName + "'");

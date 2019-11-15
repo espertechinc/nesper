@@ -59,10 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
                     codegenClassScope)
                 .AddParam(typeof(long), "reference");
 
-            methodNode.Block.DeclareVar<double>(
+            methodNode.Block
+                .DeclareVar<double>(
                     "sec",
                     timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
-                .MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(@Ref("sec"), codegenClassScope));
+                .MethodReturn(
+                    timeAbacus.DeltaForSecondsDoubleCodegen(
+                        @Ref("sec"), codegenClassScope));
             return LocalMethod(methodNode, reference);
         }
     }

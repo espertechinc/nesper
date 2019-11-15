@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object));
 
             // Map
-            var mapNestedNestedOne = Collections.SingletonDataMap("nestedNestedValue", 101);
+            var mapNestedNestedOne = Collections.SingletonDataMap("NestedNestedValue", 101);
             var mapNestedOne = TwoEntryMap<string, object>(
                 "NestedNested", mapNestedNestedOne,
                 "NestedValue", "abc");
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(mapOne, AllExist(5, "abc", 101))
             };
             RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object));
-
+            
             // Object-Array
             object[] oaNestedNestedOne = {101};
             object[] oaNestedOne = {"abc", oaNestedNestedOne};
@@ -134,12 +134,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           "SimpleProperty? as simple, " +
-                           "exists(SimpleProperty?) as exists_simple, " +
-                           "Nested?.NestedValue as nested, " +
-                           "exists(Nested?.NestedValue) as exists_nested, " +
-                           "Nested?.NestedNested.NestedNestedValue as nestedNested, " +
-                           "exists(Nested?.NestedNested.NestedNestedValue) as exists_nestedNested " +
+                           "SimpleProperty? as Simple, " +
+                           "exists(SimpleProperty?) as exists_Simple, " +
+                           "Nested?.NestedValue as Nested, " +
+                           "exists(Nested?.NestedValue) as exists_Nested, " +
+                           "Nested?.NestedNested.NestedNestedValue as NestedNested, " +
+                           "exists(Nested?.NestedNested.NestedNestedValue) as exists_NestedNested " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

@@ -8,8 +8,10 @@
 
 using System;
 using System.Numerics;
+using System.Reflection.Metadata;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.util;
 
 namespace com.espertech.esper.common.@internal.util
@@ -116,6 +118,13 @@ namespace com.espertech.esper.common.@internal.util
             ProcCast = sourceObj => sourceObj == null ? (object) null : Convert.ToBoolean(sourceObj),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(Convert), "ToBoolean", input)
+        };
+
+        public static readonly SimpleTypeCaster StringTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = false,
+            ProcCast = sourceObj => sourceObj == null ? (object) null : Convert.ToBoolean(sourceObj),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(Convert), "ToString", input)
         };
 
         public static readonly SimpleTypeCaster IdentityTypeCaster = new ProxyTypeCaster {
@@ -248,11 +257,23 @@ namespace com.espertech.esper.common.@internal.util
 
                         return sourceObj.ToString();
                     },
-                    ProcCodegen = (
-                        input,
-                        inputType,
-                        methodScope,
-                        classScope) => throw new NotImplementedException()
+                    ProcCodegenInput = input => CodegenExpressionBuilder
+                        .StaticMethod(typeof(Convert), "ToString", input)
+                };
+            }
+
+            if (targetType.IsArray) {
+                var arrayElementType = targetType.GetElementType();
+                return new ProxyTypeCaster {
+                    IsNumericCast = false,
+                    ProcCast = sourceObj => CompatExtensions.UnwrapIntoArray(targetType, sourceObj),
+                    ProcCodegenInput = input => CodegenExpressionBuilder
+                        .StaticMethod(
+                            typeof(CompatExtensions),
+                            "UnwrapIntoArray",
+                            new [] { arrayElementType },
+                            input,
+                            new CodegenExpressionConstant(true))
                 };
             }
 

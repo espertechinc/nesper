@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             var indexOpen = text.IndexOf('(');
             var indexClosed = text.LastIndexOf(')');
             if (indexOpen != -1) {
-                var value = text.Substring(indexOpen + 1, indexClosed - indexOpen).Trim();
+                var value = text.Substring(indexOpen + 1, indexClosed - indexOpen - 1).Trim();
                 try {
                     return int.Parse(value);
                 }

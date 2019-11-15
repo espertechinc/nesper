@@ -112,7 +112,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 ExprDotMethodChain(refExprEvalCtx)
                     .Get("ExpressionResultCacheService")
                     .Get("AllocateEnumerationMethod"));
-            var premade = new EnumForgeCodegenParams(Ref("eventsLambda"), Ref("coll"), refIsNewData, refExprEvalCtx);
+            
+            var premade = new EnumForgeCodegenParams(
+                Ref("eventsLambda"),
+                Ref("coll"),
+                innerType,
+                refIsNewData,
+                refExprEvalCtx);
+            
             if (forge.cache) {
                 block.DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
                         "cacheValue",

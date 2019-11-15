@@ -26,9 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new InfraTableOnMergeSimple());
             execs.Add(new InfraOnMergePlainPropsAnyKeyed());
             execs.Add(new InfraMergeWhereWithMethodRead());
+            #endif
             execs.Add(new InfraMergeSelectWithAggReadAndEnum());
             return execs;
         }
@@ -244,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = new [] { "c0", "c1", "c2" };
             var eplRead =
-                "@Name('s0') select varaggMIUD[Id,P00].KeyOne as c0, varaggMIUD[Id,P00].KeyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
+                "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -316,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S1(2));
             EPAssertionUtil.AssertProps(
                 env.Listener("convert").AssertOneGetNewAndReset(),
-                new [] { "val0.KeyOne" },
+                new [] { "val0.keyOne" },
                 new object[] {10});
 
             // delete for varagg[10, "A"]
@@ -437,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "from SupportBean#lastevent group by TheString",
                     path);
 
-                env.CompileDeploy("@Name('s0') select varaggMMR[P00].KeyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 
@@ -527,36 +529,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public class LocalSubBean
         {
-            public int KeyOne { get; private set; }
+            public int KeyOne { get; set; }
 
-            public string KeyTwo { get; private set; }
+            public string KeyTwo { get; set; }
 
-            public string Prop { get; private set; }
-
-            public void SetKeyOne(int keyOne)
-            {
-                KeyOne = keyOne;
-            }
-
-            public void SetKeyTwo(string keyTwo)
-            {
-                KeyTwo = keyTwo;
-            }
-
-            public void SetProp(string prop)
-            {
-                Prop = prop;
-            }
+            public string Prop { get; set; }
         }
 
         public class LocalBean
         {
-            public LocalSubBean Val0 { get; private set; }
-
-            public void SetVal0(LocalSubBean val0)
-            {
-                Val0 = val0;
-            }
+            public LocalSubBean Val0 { get; set; }
         }
     }
 } // end of namespace

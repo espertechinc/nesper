@@ -107,6 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var tryBlock = block.TryCatch();
             var invocation = ExprDotMethod(Ref("target"), forge.Method.Name, args);
+         
             CodegenStatementTryCatch tryCatch;
             if (returnType == typeof(void)) {
                 tryCatch = tryBlock.Expression(invocation).TryEnd();

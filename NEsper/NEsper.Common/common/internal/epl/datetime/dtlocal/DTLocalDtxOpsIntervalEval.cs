@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "UtcMillis"))
                 .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "UtcMillis"))
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(SetProperty(Ref("dtx"), "UtcMillis", Ref("startLong")));
+                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
                 block,
                 forge.calendarForges,

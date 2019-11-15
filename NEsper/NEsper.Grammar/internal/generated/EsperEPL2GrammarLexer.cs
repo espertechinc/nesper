@@ -19,7 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace com.espertech.esper.compiler.@internal.generated {
+namespace com.espertech.esper.grammar.@internal.generated {
 
   using System;
   using System.Collections.Generic;
@@ -2042,4 +2042,4 @@ public partial class EsperEPL2GrammarLexer : Lexer {
 
 
 }
-} // namespace com.espertech.esper.compiler.@internal.generated
+} // namespace com.espertech.esper.grammar.@internal.generated

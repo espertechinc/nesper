@@ -20,6 +20,8 @@ using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
+using static NEsper.Avro.Extensions.TypeBuilder;
+
 namespace com.espertech.esper.regressionrun.suite.@event
 {
     [TestFixture]
@@ -33,6 +35,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             foreach (Type clazz in new Type[] {
                 typeof(SupportBean),
                 typeof(SupportBean_S0),
+                typeof(SupportEventWithDateTime),
                 typeof(SupportEventWithDateTimeOffset)
             })
             {
@@ -46,21 +49,21 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             EventAvroHook.MySupportBeanWidener.supportBeanSchema = SchemaBuilder.Record(
                 "SupportBeanSchema",
-                TypeBuilder.RequiredString("TheString"),
-                TypeBuilder.RequiredInt("IntPrimitive"));
+                RequiredString("TheString"),
+                RequiredInt("IntPrimitive"));
             Schema schemaMyEventPopulate = SchemaBuilder.Record("MyEventSchema",
-                TypeBuilder.Field("sb", EventAvroHook.MySupportBeanWidener.supportBeanSchema));
+                Field("sb", EventAvroHook.MySupportBeanWidener.supportBeanSchema));
             session.Configuration.Common.AddEventTypeAvro("MyEventPopulate", new ConfigurationCommonEventTypeAvro(schemaMyEventPopulate));
 
-            Schema schemaMyEventSchema = SchemaBuilder.Record("MyEventSchema", TypeBuilder.RequiredString("isodate"));
+            Schema schemaMyEventSchema = SchemaBuilder.Record("MyEventSchema", RequiredString("isodate"));
             session.Configuration.Common.AddEventTypeAvro("MyEvent", new ConfigurationCommonEventTypeAvro(schemaMyEventSchema));
 
             EventAvroHook.MySupportBeanWidener.supportBeanSchema = SchemaBuilder.Record("SupportBeanSchema",
-                TypeBuilder.RequiredString("TheString"),
-                TypeBuilder.RequiredInt("IntPrimitive"));
+                RequiredString("TheString"),
+                RequiredInt("IntPrimitive"));
             Schema schemaMyEventWSchema = SchemaBuilder.Record("MyEventSchema",
-                TypeBuilder.Field("sb", TypeBuilder.Union(
-                    TypeBuilder.NullType(),
+                Field("sb", Union(
+                    NullType(),
                     EventAvroHook.MySupportBeanWidener.supportBeanSchema)));
             session.Configuration.Common.AddEventTypeAvro("MyEventWSchema", new ConfigurationCommonEventTypeAvro(schemaMyEventWSchema));
 

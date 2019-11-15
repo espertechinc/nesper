@@ -45,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             if (forge.scalar) {
                 var set = evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
-                return EnumExceptForgeEvalSet(set, enumcoll, forge.scalar);
+                return EnumExceptForgeEvalSet(set, enumcoll);
             }
             else {
                 var set = evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
-                return EnumExceptForgeEvalSet(set, enumcoll.Unwrap<EventBean>(), forge.scalar);
+                return EnumExceptForgeEvalSet(set, enumcoll.Unwrap<EventBean>());
             }
         }
 
@@ -59,13 +59,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var namedParams = forge.scalar
+                ? EnumForgeCodegenNames.PARAMS_OBJECT
+                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var returnType = forge.scalar
+                ? typeof(ICollection<object>)
+                : typeof(ICollection<EventBean>);
+
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    returnType,
                     typeof(EnumIntersectForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(namedParams);
 
             var block = methodNode.Block;
             if (forge.scalar) {
@@ -74,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
@@ -84,8 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumExceptForgeEval),
                     "EnumExceptForgeEvalSet",
                     Ref("other"),
-                    EnumForgeCodegenNames.REF_ENUMCOLL,
-                    Constant(forge.scalar)));
+                    EnumForgeCodegenNames.REF_ENUMCOLL));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
@@ -94,21 +100,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         /// </summary>
         /// <param name="other">other</param>
         /// <param name="enumcoll">coll</param>
-        /// <param name="scalar">indicator</param>
         /// <returns>intersection</returns>
-        public static ICollection<EventBean> EnumExceptForgeEvalSet<T>(
-            ICollection<T> other,
-            ICollection<T> enumcoll,
-            bool scalar)
+        public static ICollection<object> EnumExceptForgeEvalSet(
+            ICollection<object> other,
+            ICollection<object> enumcoll)
+        {
+            if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {
+                return enumcoll;
+            }
+
+            var resultX = new List<object>(enumcoll);
+            resultX.RemoveAll(other);
+            return resultX.Unwrap<object>();
+        }
+        
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="other">other</param>
+        /// <param name="enumcoll">coll</param>
+        /// <returns>intersection</returns>
+        public static ICollection<EventBean> EnumExceptForgeEvalSet(
+            ICollection<EventBean> other,
+            ICollection<EventBean> enumcoll)
         {
             if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {
                 return enumcoll.Unwrap<EventBean>();
-            }
-
-            if (scalar) {
-                var resultX = new List<T>(enumcoll);
-                resultX.RemoveAll(other);
-                return resultX.Unwrap<EventBean>();
             }
 
             var targetEvents = enumcoll.Unwrap<EventBean>();

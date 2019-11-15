@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventTypeAvro("MyNestedMap", avro);
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventAvroEventBean()
         {
             RegressionRunner.Run(session, new EventAvroEventBean());

@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return StaticMethod(
                 GetType(),
                 "GetMapMappedValue",
-                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                StaticMethod(typeof(CompatExtensions), "AsStringDictionary", ExprDotUnderlying(beanExpression)),
                 Constant(fieldName),
                 key);
         }

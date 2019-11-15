@@ -43,13 +43,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env,
             value,
             typeName) => {
-            var schema = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
-            var itemSchema = schema.GetField("item").Schema;
+            var schema = AvroSchemaUtil.ResolveAvroSchema(
+                env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
+            var itemSchema = schema.GetField("Item").Schema;
             var itemDatum = new GenericRecord(itemSchema.AsRecordSchema());
             itemDatum.Put("Id", value);
             var datum = new GenericRecord(schema.AsRecordSchema());
-            datum.Put("item", itemDatum);
+            datum.Put("Item", itemDatum);
             env.SendEventAvro(datum, typeName);
         };
 

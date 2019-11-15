@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.dataflow.annotations;
@@ -81,6 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
+                Environment.SetEnvironmentVariable("test.variable", "test.value");
+                
                 // test simple properties
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
@@ -96,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  theFloatOne: 1f," +
                     "  theFloatTwo: 2," +
                     "  theStringWithSetter: 'b'," +
-                    "  theSystemProperty: systemProperties('log4j.configuration')" +
+                    "  theSystemProperty: systemProperties('test.variable')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];
@@ -113,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual(1f, instanceOne.TheFloatOne);
                 Assert.AreEqual(2f, instanceOne.TheFloatTwo);
                 Assert.AreEqual(">b<", instanceOne.TheStringWithSetter);
-                Assert.IsNotNull(instanceOne.TheSystemProperty);
+                Assert.AreEqual("test.value", instanceOne.TheSystemProperty);
 
                 // test array etc. properties
                 MyOperatorTwoForge.Operators.Clear();
@@ -149,25 +152,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "xyz");
                 Assert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);
                 Assert.AreEqual(2, instanceTwo.TheInnerOp.fieldTwo);
-                Assert.IsTrue(instanceTwo.TheInnerOpInterface is MyOperatorTwoInterfaceImplTwo);
+                Assert.IsInstanceOf<MyOperatorTwoInterfaceImplTwo>(instanceTwo.TheInnerOpInterface);
             }
         }
 
         public class MyOperatorOneForge : DataFlowOperatorForge
         {
-            [DataFlowOpParameter] private readonly bool theBool;
-            [DataFlowOpParameter] private readonly double theDoubleOne;
-            [DataFlowOpParameter] private readonly double? theDoubleTwo;
-            [DataFlowOpParameter] private readonly float theFloatOne;
-            [DataFlowOpParameter] private readonly float? theFloatTwo;
-            [DataFlowOpParameter] private readonly int theInt;
-            [DataFlowOpParameter] private readonly long? theLongOne;
-            [DataFlowOpParameter] private readonly long? theLongThree;
-            [DataFlowOpParameter] private readonly long theLongTwo;
-            [DataFlowOpParameter] private readonly string theNotSetString;
-            [DataFlowOpParameter] private readonly string theString;
-            [DataFlowOpParameter] private string theStringWithSetter;
-
+            [DataFlowOpParameter] private string theString;
+            [DataFlowOpParameter] private string theNotSetString;
+            [DataFlowOpParameter] private int theInt;
+            [DataFlowOpParameter] private bool theBool;
+            [DataFlowOpParameter] private long? theLongOne;
+            [DataFlowOpParameter] private long theLongTwo;
+            [DataFlowOpParameter] private long? theLongThree;
+            [DataFlowOpParameter] private double theDoubleOne;
+            [DataFlowOpParameter] private double? theDoubleTwo;
+            [DataFlowOpParameter] private float theFloatOne;
+            [DataFlowOpParameter] private float? theFloatTwo;
+            [DataFlowOpParameter] private string theSystemProperty;
+            
+            private string theStringWithSetter;
+            
             public MyOperatorOneForge()
             {
                 Operators.Add(this);
@@ -200,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 set => theStringWithSetter = ">" + value + "<";
             }
 
-            public string TheSystemProperty { get; }
+            public string TheSystemProperty => theSystemProperty;
 
             public static IList<MyOperatorOneForge> Operators { get; } = new List<MyOperatorOneForge>();
 

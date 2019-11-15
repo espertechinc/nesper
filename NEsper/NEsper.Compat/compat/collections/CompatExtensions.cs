@@ -15,6 +15,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+using Castle.Components.DictionaryAdapter.Xml;
+using Castle.Core.Internal;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.magic;
 
@@ -38,6 +42,10 @@ namespace com.espertech.esper.compat.collections
         public static ICollection<TExt> TransformDowncast<TInt, TExt>(this ICollection<TInt> collection)
             where TExt : TInt
         {
+            if (typeof(TExt) == typeof(TInt)) {
+                return (ICollection<TExt>) collection;
+            }
+            
             return TransformInto(
                 collection,
                 e => (TInt) e,
@@ -47,6 +55,10 @@ namespace com.espertech.esper.compat.collections
         public static ICollection<TExt> TransformUpcast<TInt, TExt>(this ICollection<TInt> collection)
             where TInt : TExt
         {
+            if (typeof(TExt) == typeof(TInt)) {
+                return (ICollection<TExt>) collection;
+            }
+
             return TransformInto(
                 collection,
                 e => (TInt) e,
@@ -58,6 +70,10 @@ namespace com.espertech.esper.compat.collections
             Func<TExt, TInt> transformExtInt,
             Func<TInt, TExt> transformIntExt)
         {
+            if (typeof(TExt) == typeof(TInt)) {
+                return (ICollection<TExt>) collection;
+            }
+
             return new TransformCollection<TInt, TExt>(collection, transformExtInt, transformIntExt);
         }
 
@@ -1014,6 +1030,68 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
+        public static Array UnwrapIntoArray(
+            Type arrayType,
+            object value,
+            bool includeNullValues = true)
+        {
+            if (value == null) {
+                return null;
+            }
+
+            IEnumerable valueEnumerable;
+            
+            var valueType = value.GetType();
+            if (valueType.IsArray) {
+                var valueArray = (Array) value;
+                if (valueType == arrayType) {
+                    return valueArray;
+                }
+
+                valueEnumerable = valueArray;
+            } else if (valueType.IsGenericEnumerable()) {
+                valueEnumerable = (IEnumerable) value;
+            }
+            else {
+                throw new ArgumentException("unable to convert non-enumerable type");
+            }
+
+            var arrayElementType = arrayType.GetComponentType();
+            var arrayListType = typeof(List<>).MakeGenericType(arrayElementType);
+            if (arrayListType == null) {
+                throw new ArgumentException("unable to create generic list type for \"" + arrayElementType.CleanName() + "\"");
+            }
+
+            var arrayCtor = arrayListType.GetConstructor(new Type[0]);
+            if (arrayCtor == null) {
+                throw new ArgumentException("unable to create generic list for \"" + arrayElementType.CleanName() + "\"");
+            }
+
+            var arrayToList = arrayListType.GetMethod("ToList", new Type[0]);
+            if (arrayToList == null) {
+                throw new ArgumentException("unable to find generic list ToArray() method for \"" + arrayElementType.CleanName() + "\"");
+            }
+            
+            var arrayList = arrayCtor.Invoke(null);
+            
+            var magicList = MagicMarker.SingletonInstance
+                .GetListFactory(arrayListType)
+                .Invoke(arrayList);
+
+            var enumerator = valueEnumerable.GetEnumerator();
+            while (enumerator.MoveNext()) {
+                var current = enumerator.Current;
+                if (current == null && includeNullValues) {
+                    magicList.Add(null);
+                } else if ((arrayElementType == current.GetType()) ||
+                           (arrayElementType.IsInstanceOfType(current))) {
+                    magicList.Add(current);
+                }
+            }
+
+            return (Array) arrayToList.Invoke(arrayList, null);
+        }
+
         public static T[] UnwrapIntoArray<T>(
             this object value,
             bool includeNullValues = true)
@@ -1250,10 +1328,12 @@ namespace com.espertech.esper.compat.collections
                 return null;
             if (value is IDictionary<string, object> stringDictionary)
                 return stringDictionary;
-            if (value.GetType().IsGenericDictionary())
+            var valueType = value.GetType();
+            if (valueType.IsGenericDictionary())
                 return magicMarker.GetStringDictionary(value);
 
-            throw new ArgumentException("invalid value for string dictionary", nameof(value));
+            throw new ArgumentException(
+                $"invalid value for string dictionary [type = {valueType.FullName}]", nameof(value));
         }
 
         public static IDictionary<string, object> AsStringDictionary(this object value)
@@ -1401,6 +1481,13 @@ namespace com.espertech.esper.compat.collections
         public static int HashAll<T>(params T[] @objects)
         {
             return Hash(@objects);
+        }
+
+        public static void Debug(
+            string format,
+            params object[] formatArgs)
+        {
+            Console.WriteLine(format, formatArgs);
         }
     }
 }

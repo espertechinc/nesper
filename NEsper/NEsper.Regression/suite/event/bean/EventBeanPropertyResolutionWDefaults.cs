@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
         private static void TryEnumWithKeyword(RegressionEnvironment env)
         {
-            env.CompileDeploy("select * from LocalEventWithEnum(localEventEnum=LocalEventEnum.`NEW`)");
+            env.CompileDeploy("select * from LocalEventWithEnum(LocalEventEnum=LocalEventEnum.`NEW`)");
         }
 
         private static void TryInvalidControlCharacter(EventBean eventBean)
@@ -136,8 +136,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 // test escape in column name
                 env.CompileDeploy("@Name('s0') select TheString as `order`, TheString as `price.for.goods` from SupportBean")
                     .AddListener("s0");
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("order"));
-                Assert.AreEqual("price.for.goods", env.Statement("s0").EventType.PropertyDescriptors[1].PropertyName);
+                var eventTypeS0 = env.Statement("s0").EventType;
+                Assert.AreEqual(typeof(string), eventTypeS0.GetPropertyType("order"));
+                Assert.AreEqual("price.for.goods", eventTypeS0.PropertyDescriptors[1].PropertyName);
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 var @out = (IDictionary<string, object>) env.Listener("s0").AssertOneGetNew().Underlying;
@@ -146,7 +147,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // try control character
                 TryInvalidControlCharacter(env.Listener("s0").AssertOneGetNew());
-
                 // try enum with keyword
                 TryEnumWithKeyword(env);
 

@@ -17,7 +17,7 @@ using Antlr4.Runtime.Tree;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 using static com.espertech.esper.common.@internal.util.StringValue;
 
@@ -336,7 +336,28 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public static string UnescapeClassIdent(EsperEPL2GrammarParser.ClassIdentifierContext classIdentCtx)
         {
-            return UnescapeEscapableStr(classIdentCtx.escapableStr(), ".");
+            var unescapeEscapableResult = UnescapeEscapableStr(classIdentCtx.escapableStr(), ".");
+            var genericArgsList = classIdentCtx.classIdentifierGenericArgs();
+            if (genericArgsList != null) {
+                var genericArgRender = new StringBuilder();
+                var genericArgDelimiter = "";
+                genericArgRender.Append('<');
+
+                // Render all of the generic argument elements.
+                var genericArgElements = genericArgsList.classIdentifierGenericArgsList().classIdentifier();
+                foreach (var genericArgElement in genericArgElements) {
+                    var genericArgResult = UnescapeClassIdent(genericArgElement);
+                    genericArgRender.Append(genericArgDelimiter);
+                    genericArgRender.Append(genericArgResult);
+                    genericArgDelimiter = ",";
+                }
+                
+                genericArgRender.Append('>');
+
+                unescapeEscapableResult += genericArgRender.ToString();
+            }
+
+            return unescapeEscapableResult;
         }
 
         public static string UnescapeSlashIdentifier(EsperEPL2GrammarParser.SubstitutionSlashIdentContext ctx)

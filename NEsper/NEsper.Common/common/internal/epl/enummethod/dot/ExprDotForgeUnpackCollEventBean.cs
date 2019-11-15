@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         public ExprDotForgeUnpackCollEventBean(EventType type)
         {
-            TypeInfo = EPTypeHelper.CollectionOfSingleValue(type.UnderlyingType);
+            TypeInfo = EPTypeHelper.CollectionOfSingleValue(
+                type.UnderlyingType,
+                null);
         }
 
         public object Evaluate(
@@ -52,8 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var returnType = typeof(ICollection<object>);
             CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
+                .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
                 .AddParam(typeof(ICollection<EventBean>), "target");
 
             methodNode.Block

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLFromClauseMethod()
         {
             RegressionRunner.Run(session, EPLFromClauseMethod.Executions());

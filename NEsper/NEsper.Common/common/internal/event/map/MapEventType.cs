@@ -103,13 +103,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
-                var mapProp = (MappedProperty) property;
+            if (property is MappedProperty mapProp) {
                 return new MapEventBeanPropertyWriterMapProp(mapProp.PropertyNameAtomic, mapProp.Key);
             }
 
-            if (property is IndexedProperty) {
-                var indexedProp = (IndexedProperty) property;
+            if (property is IndexedProperty indexedProp) {
                 return new MapEventBeanPropertyWriterIndexedProp(indexedProp.PropertyNameAtomic, indexedProp.Index);
             }
 
@@ -128,13 +126,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
+            if (property is MappedProperty mapProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
@@ -146,13 +143,12 @@ namespace com.espertech.esper.common.@internal.@event.map
                     false);
             }
 
-            if (property is IndexedProperty) {
+            if (property is IndexedProperty indexedProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),

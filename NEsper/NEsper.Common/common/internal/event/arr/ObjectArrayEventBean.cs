@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventType = eventType;
         }
 
-        public EventType EventType { get; set; }
+        public EventType EventType { get; }
 
         public object Get(string property)
         {

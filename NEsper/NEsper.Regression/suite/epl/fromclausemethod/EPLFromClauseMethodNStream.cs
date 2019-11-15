@@ -131,12 +131,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy("create window AllTrades#keepall as SupportTradeEventWithSide", path);
                 env.CompileDeploy("insert into AllTrades select * from SupportTradeEventWithSide", path);
 
-                var epl = "@Name('s0') select us, them, corr.correlation as crl " +
+                var epl = "@Name('s0') select us, them, corr.Correlation as crl " +
                           "from AllTrades as us, AllTrades as them," +
                           "method:" +
                           typeof(EPLFromClauseMethodNStream).FullName +
                           ".ComputeCorrelation(us, them) as corr\n" +
-                          "where us.side != them.side and corr.correlation > 0";
+                          "where us.Side != them.Side and corr.Correlation > 0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 var one = new SupportTradeEventWithSide("T1", "B");

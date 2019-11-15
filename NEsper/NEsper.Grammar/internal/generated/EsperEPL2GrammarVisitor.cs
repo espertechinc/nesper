@@ -19,7 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
-namespace com.espertech.esper.compiler.@internal.generated {
+namespace com.espertech.esper.grammar.@internal.generated {
 
   using System;
   using System.Collections.Generic;
@@ -1426,6 +1426,18 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitClassIdentifier([NotNull] EsperEPL2GrammarParser.ClassIdentifierContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classIdentifierGenericArgs"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitClassIdentifierGenericArgs([NotNull] EsperEPL2GrammarParser.ClassIdentifierGenericArgsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classIdentifierGenericArgsList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitClassIdentifierGenericArgsList([NotNull] EsperEPL2GrammarParser.ClassIdentifierGenericArgsListContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionListWithNamed"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -1714,4 +1726,4 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitJsonpair([NotNull] EsperEPL2GrammarParser.JsonpairContext context);
 }
-} // namespace com.espertech.esper.compiler.@internal.generated
+} // namespace com.espertech.esper.grammar.@internal.generated

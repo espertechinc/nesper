@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlow " +
-                "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
+                "Emitter -> outstream:<MyOAEventType> {name:'src1'}" +
                 "DefaultSupportCaptureOp(outstream) {}");
 
             var captureOp = new DefaultSupportCaptureOp();
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
                       "  create schema SampleSchema(text string),\t// sample type\t\t\n" +
                       "\t\n" +
-                      "  Emitter -> helloworld.stream<SampleSchema> { name: 'myemitter' }\n" +
+                      "  Emitter -> helloworld.stream:<SampleSchema> { name: 'myemitter' }\n" +
                       "  LogSink(helloworld.stream) {}";
             env.CompileDeploy(epl);
             env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "HelloWorldDataFlow");

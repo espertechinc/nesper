@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -36,8 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         internal EventTypeMetadata metadata;
 
         // Nestable definition of Map contents is here
-        internal IDictionary<string, object>
-            nestableTypes; // Deep definition of the map-type, containing nested maps and objects
+        internal IDictionary<string, object> nestableTypes; // Deep definition of the map-type, containing nested maps and objects
 
         internal EventPropertyDescriptor[] propertyDescriptors;
 

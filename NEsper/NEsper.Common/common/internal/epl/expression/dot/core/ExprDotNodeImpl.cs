@@ -521,7 +521,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 EPType typeInfoX;
                 ExprDotStaticMethodWrap wrap;
                 if (variable.Type.IsArray) {
-                    typeInfoX = EPTypeHelper.CollectionOfSingleValue(variable.Type.GetElementType());
+                    typeInfoX = EPTypeHelper.CollectionOfSingleValue(
+                        variable.Type.GetElementType(),
+                        variable.Type);
                     wrap = new ExprDotStaticMethodWrapArrayScalar(variable.VariableName, variable.Type);
                 }
                 else if (variable.EventType != null) {

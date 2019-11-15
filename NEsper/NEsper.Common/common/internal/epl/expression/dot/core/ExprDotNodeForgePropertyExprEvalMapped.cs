@@ -73,6 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     "result",
                     forge.ExprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
+                .DebugStack();
+                
+            methodNode.Block
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         forge.EvaluationType,

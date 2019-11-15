@@ -88,19 +88,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
-                    new[] {typeof(int?), typeof(double?), typeof(long?), typeof(decimal), typeof(BigInteger)});
+                    new[] {
+                        typeof(int?), typeof(double?), typeof(long?), typeof(decimal?), typeof(BigInteger?)
+                    });
 
                 env.SendEventBean(new SupportBean_Container(null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, null, null, null, null});
+                    new object[] {
+                        null, null, null, null, null
+                    });
 
                 env.SendEventBean(new SupportBean_Container(Collections.GetEmptyList<SupportBean>()));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, null, null, null, null});
+                    new object[] {
+                        null, null, null, null, null
+                    });
 
                 IList<SupportBean> list = new List<SupportBean>();
                 list.Add(Make(2, 3d, 4L, 5, 6));
@@ -108,14 +114,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {2, 3d, 4L, (decimal) 5, new BigInteger(6)});
+                    new object[] {
+                        2, 3d, 4L, 5.0m, new BigInteger(6)
+                    });
 
                 list.Add(Make(4, 6d, 8L, 10, 12));
                 env.SendEventBean(new SupportBean_Container(list));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {2 + 4, 3d + 6d, 4L + 8L, (decimal) (5 + 10), new BigInteger(18)});
+                    new object[] {
+                        2 + 4, 3d + 6d, 4L + 8L, 5.0m + 10m, new BigInteger(18)
+                    });
 
                 env.UndeployAll();
             }
@@ -135,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
-                    new[] {typeof(int?), typeof(decimal)});
+                    new[] {typeof(int?), typeof(decimal?)});
 
                 env.SendEventBean(SupportCollection.MakeNumeric("1,4,5"));
                 EPAssertionUtil.AssertProps(
@@ -174,13 +184,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var fieldsLambda = new [] { "val0", "val1" };
                 var eplLambda = "@Name('s0') select " +
                                 "Strvals.sumOf(v -> extractNum(v)) as val0, " +
-                                "Strvals.sumOf(v -> extractBigDecimal(v)) as val1 " +
+                                "Strvals.sumOf(v -> extractDecimal(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fieldsLambda,
-                    new[] {typeof(int?), typeof(decimal)});
+                    new[] {typeof(int?), typeof(decimal?)});
 
                 env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
                 EPAssertionUtil.AssertProps(

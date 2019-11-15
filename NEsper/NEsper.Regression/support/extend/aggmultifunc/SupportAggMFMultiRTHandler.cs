@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 
                     case "sc":
                         return EPTypeHelper.CollectionOfSingleValue(
-                            validationContext.AllParameterExpressions[0].Forge.EvaluationType);
+                            validationContext.AllParameterExpressions[0].Forge.EvaluationType, null);
 
                     case "se1":
                     case "se2":

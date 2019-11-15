@@ -106,11 +106,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     Constant(forge.streamNumLambda + 1),
                     @Ref("indexEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("indexEvent"), "Properties"))
+                .Debug("props - assigned: {0} {1}", Ref("indexEvent"), Ref("props"))
                 .DeclareVar<int>("count", Constant(-1));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .Increment("count")
+                .Debug("props - before assigning props[0]")
                 .AssignArrayElement("props", Constant(0), @Ref("count"))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
+                .Debug("props - before assigning eps")
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
+                .Debug("props - after assigning eps");
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 forEach,
                 forge.innerExpression.EvaluationType,

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             AgentInstanceContext agentInstanceContext)
         {
-            var enumerator = (IEnumerator<EventBean>) invocationResult;
+            var enumerator = (IEnumerator) invocationResult;
             if (enumerator == null || !enumerator.MoveNext()) {
                 return Collections.GetEmptyList<EventBean>();
             }

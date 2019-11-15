@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -57,6 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .MakeChild(forge.innerReturnType, typeof(DTLocalBeanCalOpsEval), codegenClassScope)
                 .AddParam(typeof(EventBean), "target");
 
+            CodegenExpression timestamp = Ref("timestamp");
+            
             methodNode.Block.DeclareVar(
                 forge.getterReturnType,
                 "timestamp",
@@ -65,11 +68,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     forge.getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
             if (!forge.getterReturnType.IsPrimitive) {
                 methodNode.Block.IfRefNullReturnNull("timestamp");
+                if (forge.getterReturnType.IsNullable()) {
+                    timestamp = Unbox(timestamp);
+                }
             }
 
             methodNode.Block.MethodReturn(
                 forge.inner.Codegen(
-                    Ref("timestamp"),
+                    timestamp,
                     forge.getterReturnType,
                     methodNode,
                     exprSymbol,

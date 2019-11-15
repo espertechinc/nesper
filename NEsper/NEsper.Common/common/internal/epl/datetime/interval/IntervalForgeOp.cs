@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             var evaluationType = forge.ForgeTimestamp.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    evaluationType.GetBoxedType(),
+                    evaluationType,
                     "parameter",
                     forge.ForgeTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
-            if (!forge.ForgeTimestamp.EvaluationType.IsPrimitive) {
+            if (!evaluationType.IsPrimitive) {
                 block.IfRefNullReturnNull("parameter");
             }
 

@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventBeanNativeAccessor());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventBeanMappedIndexedPropertyExpression()
         {
             RegressionRunner.Run(session, new EventBeanMappedIndexedPropertyExpression());
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventBeanPrivateClass());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEventBeanPropertyIterableMapList()
         {
             RegressionRunner.Run(session, new EventBeanPropertyIterableMapList());

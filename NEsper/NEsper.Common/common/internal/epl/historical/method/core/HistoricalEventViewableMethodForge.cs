@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     }
                 };
                 var desc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                    metadata.MethodProviderClass.Name,
+                    metadata.MethodProviderClass.FullName,
                     metadata.IsStaticMethod ? null : metadata.MethodProviderClass,
                     methodStreamSpec.MethodName,
                     validatedInputParameters,

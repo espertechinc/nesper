@@ -25,19 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotStaticMethodWrapIterableScalar : ExprDotStaticMethodWrap
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly Type componentType;
 
+        private readonly Type collectionType;
+        private readonly Type componentType;
         private readonly string methodName;
 
         public ExprDotStaticMethodWrapIterableScalar(
             string methodName,
-            Type componentType)
+            Type componentType,
+            Type collectionType)
         {
             this.methodName = methodName;
             this.componentType = componentType;
+            this.collectionType = collectionType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(componentType);
+        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(componentType, collectionType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {

@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
     public class EventAvroEventBean : RegressionExecution
     {
         public static readonly RecordSchema INNER_SCHEMA = SchemaBuilder.Record(
-            "InnerSchema", Field("mymap", StringType()));
+            "InnerSchema", Field("mymap", Map(StringType())));
         public static readonly RecordSchema RECORD_SCHEMA = SchemaBuilder.Record(
             "OuterSchema", Field("i", INNER_SCHEMA));
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -63,6 +64,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => relationalOpEnum;
         }
 
+        public override void AddChildNode(ExprNode childNode)
+        {
+            base.AddChildNode(childNode);
+        }
+
+        public override void AddChildNodes(ICollection<ExprNode> childNodeColl)
+        {
+            base.AddChildNodes(childNodeColl);
+        }
+        
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes
@@ -71,18 +82,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be either numeric or string
-            Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
-            Type typeTwo = Boxing.GetBoxedType(ChildNodes[1].Forge.EvaluationType);
+            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            var typeTwo = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
 
             if ((typeOne != typeof(string)) || (typeTwo != typeof(string))) {
-                if (!TypeHelper.IsNumeric(typeOne)) {
+                if (!typeOne.IsNumeric()) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
                         (typeOne == null ? "null" : typeOne.CleanName()) +
                         "' to numeric is not allowed");
                 }
 
-                if (!TypeHelper.IsNumeric(typeTwo)) {
+                if (!typeTwo.IsNumeric()) {
                     throw new ExprValidationException(
                         "Implicit conversion from datatype '" +
                         (typeTwo == null ? "null" : typeTwo.CleanName()) +
@@ -90,9 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            Type compareType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
-            RelationalOpEnumComputer computer = relationalOpEnum.GetComputer(compareType, typeOne, typeTwo);
-            forge = new ExprRelationalOpNodeForge(this, computer);
+            var coercionType = typeOne.GetCompareToCoercionType(typeTwo);
+            var computer = relationalOpEnum.GetComputer(coercionType, typeOne, typeTwo);
+            forge = new ExprRelationalOpNodeForge(this, computer, coercionType);
             return null;
         }
 

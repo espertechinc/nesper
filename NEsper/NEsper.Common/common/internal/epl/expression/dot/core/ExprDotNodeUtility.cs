@@ -107,7 +107,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 if (info == null) {
                     var componentType = rootLambdaForge.ComponentTypeCollection;
                     if (componentType != null) {
-                        info = EPTypeHelper.CollectionOfSingleValue(rootLambdaForge.ComponentTypeCollection);
+                        info = EPTypeHelper.CollectionOfSingleValue(
+                            rootLambdaForge.ComponentTypeCollection,
+                            typeof(ICollection<>).MakeGenericType(componentType));
                     }
                 }
 
@@ -195,7 +197,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             "Property indicated indexed-type but failed to find proper collection adapter for use with enumeration methods");
                     }
 
-                    typeInfo = EPTypeHelper.CollectionOfSingleValue(desc.PropertyComponentType);
+                    typeInfo = EPTypeHelper.CollectionOfSingleValue(
+                        desc.PropertyComponentType,
+                        desc.PropertyType);
                 }
             }
 
@@ -579,16 +583,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         .Apply(Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, ConstantNull()));
                 }
                 else {
-                    block.DeclareVar(
-                        reftype,
-                        refname,
-                        forges[i]
-                            .Codegen(
-                                @Ref(currentTarget),
-                                currentTargetType,
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope));
+                    var invocation = forges[i]
+                        .Codegen(
+                            @Ref(currentTarget),
+                            currentTargetType,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope);
+
+                    // We can't assume anything about the return type.  Unfortunately, we do not know the resultant type
+                    // of the forge... I must fix this. - TBD
+                    invocation = CodegenLegoCast.CastSafeFromObjectType(reftype, invocation);
+                    
+                    block.DeclareVar(reftype, refname, invocation);
                     currentTarget = refname;
                     currentTargetType = reftype;
                     if (!reftype.IsPrimitive) {

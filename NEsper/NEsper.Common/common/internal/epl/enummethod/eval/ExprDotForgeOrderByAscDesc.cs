@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 services);
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,
@@ -56,13 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var isDescending = this.EnumMethodEnum == EnumMethodEnum.ORDERBYDESC;
 
             if (bodiesAndParameters.IsEmpty()) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumOrderByAscDescScalarForge(numStreamsIncoming, isDescending);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType == null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
+                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumOrderByAscDescScalarLambdaForge(
                     first.BodyForge,
                     first.StreamCountIncoming,

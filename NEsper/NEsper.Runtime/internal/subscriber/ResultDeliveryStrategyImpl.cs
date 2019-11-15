@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;

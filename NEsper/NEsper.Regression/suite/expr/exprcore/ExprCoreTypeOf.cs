@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 " create schema EventTwo as (key string);\n" +
                 eventRepresentationEnum.GetAnnotationText() +
                 " create schema S0 as " +
-                typeof(SupportBean_S0).Name +
+                typeof(SupportBean_S0).FullName +
                 ";\n" +
                 eventRepresentationEnum.GetAnnotationText() +
                 " create variant schema VarSchema as *;\n";
@@ -146,13 +146,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum)
         {
-            var epl = eventRepresentationEnum.GetAnnotationText() +
+            string epl;
+            string[] fields = {"t0", "t1"};
+            
+            epl = eventRepresentationEnum.GetAnnotationText() +
                       " create schema InnerSchema as (key string);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
                       " create schema MySchema as (inside InnerSchema, insidearr InnerSchema[]);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
                       " @Name('s0') select typeof(S0.inside) as t0, typeof(S0.insidearr) as t1 from MySchema as S0;\n";
-            string[] fields = {"t0", "t1"};
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
             var deploymentId = env.DeploymentId("s0");
 
@@ -241,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {"Integer", "String"});
+                new object[] {"Int32", "String"});
 
             SendSchemaEvent(env, "test", "E2");
             EPAssertionUtil.AssertProps(

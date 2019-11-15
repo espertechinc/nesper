@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "create schema AllObject System.Object," +
-                "EPStatementSource -> thedata<AllObject> {" +
+                "EPStatementSource -> thedata:<AllObject> {" +
                 "  statementDeploymentId : '" +
                 env.DeploymentId("MyStatement") +
                 "'," +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "create map schema SingleProp (Id string), " +
-                    "EPStatementSource -> thedata<SingleProp> {" +
+                    "EPStatementSource -> thedata:<SingleProp> {" +
                     "  statementDeploymentId : 'MyDeploymentId'," +
                     "  statementName : 'MyStatement'," +
                     "} " +
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
                           "\t\t\t\n" +
                           "  // ConsIder only the statement named MySelectStatement when it exists.\n" +
-                          "  EPStatementSource -> stream.one<eventbean<?>> {\n" +
+                          "  EPStatementSource -> stream.one:<eventbean<?>> {\n" +
                           "    statementDeploymentId : 'MyDeploymentABC',\n" +
                           "    statementName : 'MySelectStatement'\n" +
                           "  }\n" +
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test no statement name or statement filter provided
                 var epl = "create dataflow DF1 " +
                           "create schema AllObjects as System.Object," +
-                          "EPStatementSource -> thedata<AllObjects> {} " +
+                          "EPStatementSource -> thedata:<AllObjects> {} " +
                           "DefaultSupportCaptureOp(thedata) {}";
                 SupportDataFlowAssertionUtil.TryInvalidInstantiate(
                     env,
@@ -266,10 +266,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "create schema AllObjects as System.Object," +
-                    "EPStatementSource -> thedata<AllObjects> {} " +
+                    "EPStatementSource -> thedata:<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
 
-                var captureOp = new DefaultSupportCaptureOp<EventBean>(env.Container.LockManager());
+                var captureOp = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var options = new EPDataFlowInstantiationOptions();
                 var myFilter = new MyFilter();
                 options.WithParameterProvider(
@@ -282,7 +282,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean_B("B1"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"B1"});
 
@@ -290,7 +291,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E1", 1));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "TheString","IntPrimitive" },
                     new object[] {"E1", 1});
 
@@ -298,7 +300,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean_A("A1"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"A1"});
 
@@ -313,14 +316,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean_A("A3"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"A3"});
 
                 env.SendEventBean(new SupportBean_B("B2"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
-                    (EventBean) captureOp.GetCurrentAndReset()[0],
+                    env.Container,
+                    captureOp.GetCurrentAndReset()[0],
                     new [] { "Id" },
                     new object[] {"B2"});
 

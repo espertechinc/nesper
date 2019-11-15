@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {

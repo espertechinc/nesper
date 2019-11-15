@@ -50,9 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EnumTakeForge forge,
             EnumForgeCodegenParams args,
             CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope,
-            bool isEventBeanCollection)
+            CodegenClassScope codegenClassScope)
         {
+            var isEventBeanCollection = !forge.Scalar;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var returnType = isEventBeanCollection
                 ? typeof(ICollection<EventBean>)

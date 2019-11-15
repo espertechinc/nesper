@@ -21,13 +21,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         internal ExprForge sizeEval;
         internal int numStreams;
+        internal bool scalar;
 
         public EnumTakeLastForge(
             ExprForge sizeEval,
-            int numStreams)
+            int numStreams,
+            bool scalar)
         {
             this.sizeEval = sizeEval;
             this.numStreams = numStreams;
+            this.scalar = scalar;
         }
 
         public int StreamNumSize {

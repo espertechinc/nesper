@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         public override EPType TypeInfo =>
-            EPTypeHelper.CollectionOfSingleValue(forge.Method.ReturnType.GetElementType());
+            EPTypeHelper.CollectionOfSingleValue(
+                forge.Method.ReturnType.GetElementType(),
+                forge.Method.ReturnType);
 
         public override object Evaluate(
             object target,

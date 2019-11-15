@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.before('x') from SupportTimeStartEndA as a",
-                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'class System.String', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'System.String', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
 
                 // wrong 1st parameter - event not defined with timestamp expression
                 TryInvalidCompile(
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.before(true) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'boolean', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                    "Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'System.Boolean', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
 
                 // wrong zero parameters
                 TryInvalidCompile(
@@ -353,11 +353,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select TheString.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, DateTimeOffset or DateTime value as input or events of an event type that declares a timestamp property but received System.String");
+                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received System.String");
                 TryInvalidCompile(
                     env,
                     "select b.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, DateTimeOffset or DateTime value as input or events of an event type that declares a timestamp property");
+                    "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property");
                 TryInvalidCompile(
                     env,
                     "select a.Get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",

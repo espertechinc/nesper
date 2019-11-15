@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
 
             for (int i = 0; i < expectedTypes.Length; i++) {
-                Type actual = Boxing.GetBoxedType(providedTypes[i]);
-                Type expected = Boxing.GetBoxedType(expectedTypes[i]);
+                Type actual = providedTypes[i].GetBoxedType();
+                Type expected = expectedTypes[i].GetBoxedType();
                 if (!TypeHelper.IsSubclassOrImplementsInterface(actual, expected)) {
                     throw new ExprValidationException(
                         "Incompatible type returned by a " +
@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         " expression '" +
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) +
                         "' returns '" +
-                        TypeHelper.CleanName(actual) +
+                        actual.CleanName() +
                         "' but the table expects '" +
-                        TypeHelper.CleanName(expected) +
+                        expected.CleanName() +
                         "'");
                 }
             }

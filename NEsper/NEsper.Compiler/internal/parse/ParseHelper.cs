@@ -14,14 +14,12 @@ using System.Text;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
-using com.espertech.esper.collection;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.@event.propertyparser;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compiler.@internal.generated;
+using com.espertech.esper.grammar.@internal.generated;
+using com.espertech.esper.grammar.@internal.util;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -82,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 Log.Debug(".parse Parsing expr=" + expression);
             }
 
-            ICharStream input = new CaseInsensitiveInputStream(expression);
+            var input = new CaseInsensitiveInputStream(expression);
             var lex = NewLexer(input);
 
             var tokens = new CommonTokenStream(lex);

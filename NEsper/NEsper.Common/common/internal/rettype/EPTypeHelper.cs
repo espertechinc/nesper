@@ -117,7 +117,11 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null array component type");
             }
 
-            return new ClassMultiValuedEPType(TypeHelper.GetArrayType(arrayComponentType), arrayComponentType);
+            var arrayType = TypeHelper.GetArrayType(arrayComponentType); 
+            return new ClassMultiValuedEPType(
+                arrayType,
+                arrayComponentType,
+                arrayType);
         }
 
         /// <summary>
@@ -135,7 +139,10 @@ namespace com.espertech.esper.common.@internal.rettype
         {
             // null value allowed
             if (singleValueType != null && singleValueType.IsArray) {
-                return new ClassMultiValuedEPType(singleValueType, singleValueType.GetElementType());
+                return new ClassMultiValuedEPType(
+                    singleValueType, 
+                    singleValueType.GetElementType(),
+                    singleValueType);
             }
 
             return new ClassEPType(singleValueType);
@@ -151,17 +158,22 @@ namespace com.espertech.esper.common.@internal.rettype
         /// </summary>
         /// <param name="collectionComponentType">collection component type</param>
         /// <returns>collection of single value expression result type</returns>
-        public static EPType CollectionOfSingleValue(Type collectionComponentType)
+        public static EPType CollectionOfSingleValue(
+            Type collectionComponentType,
+            Type collectionType)
         {
             if (collectionComponentType == null) {
                 throw new ArgumentException("Invalid null collection component type");
             }
 
-            var collectionType = collectionComponentType == typeof(object[]) 
+            var containerType = collectionComponentType == typeof(object[]) 
                 ? typeof(ICollection<object[]>)
                 : typeof(ICollection<object>);
             
-            return new ClassMultiValuedEPType(collectionType, collectionComponentType);
+            return new ClassMultiValuedEPType(
+                containerType, 
+                collectionComponentType,
+                collectionType);
         }
 
         /// <summary>
@@ -209,7 +221,7 @@ namespace com.espertech.esper.common.@internal.rettype
 
             if (returnType.IsGenericCollection()) {
                 var componentType = TypeHelper.GetGenericReturnType(method, true);
-                return CollectionOfSingleValue(componentType);
+                return CollectionOfSingleValue(componentType, returnType);
             }
 
             return SingleValue(method.ReturnType.GetBoxedType());
@@ -322,7 +334,9 @@ namespace com.espertech.esper.common.@internal.rettype
 
             var enumInfo = (ExprEnumerationForge) exprNode;
             if (enumInfo.ComponentTypeCollection != null) {
-                return CollectionOfSingleValue(enumInfo.ComponentTypeCollection);
+                return CollectionOfSingleValue(
+                    enumInfo.ComponentTypeCollection,
+                    typeof(ICollection<>).MakeGenericType(enumInfo.ComponentTypeCollection));
             }
 
             var eventTypeSingle = enumInfo.GetEventTypeSingle(raw, services);

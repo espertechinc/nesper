@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumExceptForge : EnumForge
     {
         internal readonly ExprEnumerationForge evaluatorForge;
-
         internal readonly bool scalar;
 
         public EnumExceptForge(

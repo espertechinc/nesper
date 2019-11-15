@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             mapNestedOne.Put("ArrayProperty", null);
             mapNestedOne.Put("Mapped", TwoEntryMap("keyOne", 100, "keyTwo", 200));
             mapNestedOne.Put("MapProperty", null);
-            var mapOne = Collections.SingletonDataMap("item", mapNestedOne);
+            var mapOne = Collections.SingletonDataMap("Item", mapNestedOne);
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(Collections.EmptyDataMap, notExists),
                 new Pair<object, object>(
@@ -97,9 +97,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
-                    "<item>" +
-                    "<indexed>1</indexed><indexed>2</indexed><mapped Id=\"keyOne\">3</mapped><mapped Id=\"keyTwo\">4</mapped>" +
-                    "</item>",
+                    "<Item>" +
+                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped Id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>" +
+                    "</Item>",
                     new[] {Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()})
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode));
@@ -109,15 +109,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
                 .AsRecordSchema();
             var itemSchema = AvroSchemaUtil
-                .FindUnionRecordSchemaSingle(schema.GetField("item").Schema)
+                .FindUnionRecordSchemaSingle(schema.GetField("Item").Schema)
                 .AsRecordSchema();
             var datumOne = new GenericRecord(schema);
-            datumOne.Put("item", null);
+            datumOne.Put("Item", null);
             var datumItemTwo = new GenericRecord(itemSchema);
             datumItemTwo.Put("Indexed", Arrays.AsList(1, 2));
             datumItemTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
             var datumTwo = new GenericRecord(schema);
-            datumTwo.Put("item", datumItemTwo);
+            datumTwo.Put("Item", datumItemTwo);
             Pair<object, object>[] avroTests = {
                 new Pair<object, object>(new GenericRecord(schema), notExists),
                 new Pair<object, object>(datumOne, notExists),
@@ -137,18 +137,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           "item?.Indexed[0] as indexed1, " +
-                           "exists(item?.Indexed[0]) as exists_indexed1, " +
-                           "item?.Indexed[1]? as indexed2, " +
-                           "exists(item?.Indexed[1]?) as exists_indexed2, " +
-                           "item?.ArrayProperty[1]? as array, " +
-                           "exists(item?.ArrayProperty[1]?) as exists_array, " +
-                           "item?.Mapped('keyOne') as mapped1, " +
-                           "exists(item?.Mapped('keyOne')) as exists_mapped1, " +
-                           "item?.Mapped('keyTwo')? as mapped2,  " +
-                           "exists(item?.Mapped('keyTwo')?) as exists_mapped2,  " +
-                           "item?.MapProperty('xOne')? as map, " +
-                           "exists(item?.MapProperty('xOne')?) as exists_map " +
+                           "Item?.Indexed[0] as indexed1, " +
+                           "exists(Item?.Indexed[0]) as exists_indexed1, " +
+                           "Item?.Indexed[1]? as indexed2, " +
+                           "exists(Item?.Indexed[1]?) as exists_indexed2, " +
+                           "Item?.ArrayProperty[1]? as array, " +
+                           "exists(Item?.ArrayProperty[1]?) as exists_array, " +
+                           "Item?.Mapped('keyOne') as mapped1, " +
+                           "exists(Item?.Mapped('keyOne')) as exists_mapped1, " +
+                           "Item?.Mapped('keyTwo')? as mapped2,  " +
+                           "exists(Item?.Mapped('keyTwo')?) as exists_mapped2,  " +
+                           "Item?.MapProperty('xOne')? as map, " +
+                           "exists(Item?.MapProperty('xOne')?) as exists_map " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

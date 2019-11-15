@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 services);
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
+        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
             string enumMethodUsedName,
             IList<ExprDotEvalParam> bodiesAndParameters,
             EventType inputEventType,

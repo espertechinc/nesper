@@ -163,7 +163,13 @@ namespace com.espertech.esper.common.@internal.settings
                     allowEventBeanType);
             }
             catch (MethodResolverNoSuchMethodException e) {
-                throw Convert(clazz, methodName, paramTypes, e, true);
+                var method = MethodResolver.ResolveExtensionMethod(
+                    clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanType);
+                if (method == null) {
+                    throw Convert(clazz, methodName, paramTypes, e, true);
+                }
+
+                return method;
             }
         }
 

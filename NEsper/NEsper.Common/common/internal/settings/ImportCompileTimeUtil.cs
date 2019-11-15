@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.settings
         private static string Unescape(string name)
         {
             if (name.StartsWith("`") && name.EndsWith("`")) {
-                return name.Substring(1, name.Length - 1);
+                return name.Substring(1, name.Length - 2);
             }
 
             return name;

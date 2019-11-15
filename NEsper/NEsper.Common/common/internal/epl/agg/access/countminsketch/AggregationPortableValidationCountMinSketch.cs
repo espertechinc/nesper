@@ -65,9 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                     if (!foundMatch) {
                         throw new ExprValidationException(
                             "Mismatching parameter return type, expected any of " +
-                            CompatExtensions.RenderAny(acceptableValueTypes) +
+                            acceptableValueTypes.RenderAny() +
                             " but received " +
-                            TypeHelper.CleanName(clazz));
+                            clazz.CleanName());
                     }
                 }
             }

@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
@@ -34,7 +35,11 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         {
             var state = (SupportReferenceCountedMapState) row.GetAccessState(aggColNum);
             var lookupKey = factory.Eval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            return state.CountPerReference.Get(lookupKey);
+            if (state.CountPerReference.TryGetValue(lookupKey, out var referenceCount)) {
+                return referenceCount;
+            }
+
+            return null;
         }
 
         public ICollection<EventBean> GetValueCollectionEvents(

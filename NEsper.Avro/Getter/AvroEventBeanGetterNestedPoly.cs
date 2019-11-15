@@ -98,10 +98,11 @@ namespace NEsper.Avro.Getter
                     _getters),
                 CodegenExpressionBuilder.Cast(
                     typeof(GenericRecord),
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        underlyingExpression,
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
-                        CodegenExpressionBuilder.Constant(_top))));
+                        underlyingExpression,
+                        CodegenExpressionBuilder.Constant(_top.Name))));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -116,10 +117,11 @@ namespace NEsper.Avro.Getter
                     _getters),
                 CodegenExpressionBuilder.Cast(
                     typeof(GenericRecord),
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        underlyingExpression,
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
-                        CodegenExpressionBuilder.Constant(_top))));
+                        underlyingExpression,
+                        CodegenExpressionBuilder.Constant(_top.Name))));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -134,10 +136,11 @@ namespace NEsper.Avro.Getter
                     _getters),
                 CodegenExpressionBuilder.Cast(
                     typeof(GenericRecord),
-                    CodegenExpressionBuilder.ExprDotMethod(
-                        underlyingExpression,
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
                         "Get",
-                        CodegenExpressionBuilder.Constant(_top))));
+                        underlyingExpression,
+                        CodegenExpressionBuilder.Constant(_top.Name))));
         }
     }
 } // end of namespace

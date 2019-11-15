@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return ExprDotEvalSumMethodFactoryBigInteger.INSTANCE;
             }
 
-            if (evalType.GetBoxedType() == typeof(long)) {
+            if (evalType.GetBoxedType() == typeof(long?)) {
                 return ExprDotEvalSumMethodFactoryLong.INSTANCE;
             }
 

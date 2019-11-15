@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.support.util
             FactoryContexts.Add(context);
             var handler = new SupportExceptionHandler();
             Handlers.Add(handler);
-            return handler.HandleInboundPoolUnassociated;
+            return handler.Handle;
         }
 
         public class SupportExceptionHandler // ExceptionHandlerInboundPool
@@ -34,16 +34,16 @@ namespace com.espertech.esper.regressionlib.support.util
             public IList<ExceptionHandlerContextUnassociated> InboundPoolContexts { get; } =
                 new List<ExceptionHandlerContextUnassociated>();
 
-            public void Handle(ExceptionHandlerContext context)
-            {
-                Contexts.Add(context);
-            }
-
-            public void HandleInboundPoolUnassociated(
+            public void Handle(
                 object sender,
                 ExceptionHandlerEventArgs args)
             {
-                InboundPoolContexts.Add(args.InboundPoolContext);
+                if (args.IsInboundPoolException) {
+                    InboundPoolContexts.Add(args.InboundPoolContext);
+                }
+                else {
+                    Contexts.Add(args.Context);
+                }
             }
         }
     }

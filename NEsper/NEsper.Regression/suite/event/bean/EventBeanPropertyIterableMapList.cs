@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
@@ -62,25 +63,30 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         [Serializable]
         public class MyEventWithMethod
         {
-            private readonly IDictionary<string, OtherEvent> otherEventsMap;
+            private readonly IEnumerable<OtherEvent> _otherEventsIterable;
+            private readonly IDictionary<string, OtherEvent> _otherEventsMap;
+            private readonly IList<OtherEvent> _otherEventsList;
 
             public MyEventWithMethod(
                 IEnumerable<OtherEvent> otherEventsIterable,
                 IDictionary<string, OtherEvent> otherEventsMap,
                 IList<OtherEvent> otherEventsList)
             {
-                OtherEventsIterable = otherEventsIterable;
-                this.otherEventsMap = otherEventsMap;
-                OtherEventsList = otherEventsList;
+                _otherEventsIterable = otherEventsIterable;
+                _otherEventsMap = otherEventsMap;
+                _otherEventsList = otherEventsList;
             }
 
-            public IEnumerable<OtherEvent> OtherEventsIterable { get; }
+            [PropertyName("otherEventsIterable")]
+            public IEnumerable<OtherEvent> OtherEventsIterable => _otherEventsIterable;
 
-            public IList<OtherEvent> OtherEventsList { get; }
+            [PropertyName("otherEventsList")]
+            public IList<OtherEvent> OtherEventsList => _otherEventsList;
 
+            [PropertyName("otherEventsMap")]
             public IDictionary<string, OtherEvent> GetOtherEventsMap()
             {
-                return otherEventsMap;
+                return _otherEventsMap;
             }
         }
 
