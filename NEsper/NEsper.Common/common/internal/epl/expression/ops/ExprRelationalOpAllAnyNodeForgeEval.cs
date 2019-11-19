@@ -383,7 +383,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (!TypeHelper.IsSubclassOrImplementsInterface(
                     Boxing.GetBoxedType(reftype),
                     typeof(object))) {
-                    if (!reftype.IsPrimitive) {
+                    if (reftype.CanBeNull()) {
                         block.IfRefNullReturnNull(refname);
                     }
 
@@ -393,7 +393,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                 }
                 else {
-                    if (reftype.IsPrimitive) {
+                    if (reftype.CanNotBeNull()) {
                         block.AssignRef("hasNonNullRow", ConstantTrue());
                         block.IfCondition(
                                 NotOptional(
@@ -426,7 +426,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             block.IfCondition(Not(Ref("hasNonNullRow")))
                 .BlockReturn(ConstantNull());
-            if (!valueLeftType.IsPrimitive) {
+            if (valueLeftType.CanBeNull()) {
                 block.IfRefNullReturnNull("valueLeft");
             }
 

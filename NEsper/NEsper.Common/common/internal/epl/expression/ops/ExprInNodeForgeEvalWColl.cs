@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 if (reftype.IsArray) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (!leftTypeUncoerced.IsPrimitive) {
+                        if (leftTypeUncoerced.CanBeNull()) {
                             ifRightNotNull.IfCondition(
                                     And(
                                         Relational(ArrayLength(Ref(refname)), GT, Constant(0)),
@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 ArrayAtIndex(Ref(refname), Ref("index")));
                             forLoop.DeclareVar<bool>(
                                 "itemNull",
-                                reftype.GetElementType().IsPrimitive ? ConstantFalse() : EqualsNull(Ref("item")));
+                                reftype.GetElementType().CanNotBeNull() ? ConstantFalse() : EqualsNull(Ref("item")));
                             var itemNotNull = forLoop.IfCondition(Ref("itemNull"))
                                 .AssignRef("hasNullRow", ConstantTrue())
                                 .IfElse();
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype.IsGenericDictionary()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (!leftTypeUncoerced.IsPrimitive) {
+                        if (leftTypeUncoerced.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype.IsGenericCollection()) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        if (!leftTypeUncoerced.IsPrimitive) {
+                        if (leftTypeUncoerced.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
@@ -269,14 +269,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
                         
                         ifRightNotNull
-                            .IfCondition(ExprDotMethod(Ref(refname), "Contains", leftWithBoxing))
+                            .IfCondition(ExprDotMethod(Ref(refname), "ContainsChecked", leftWithBoxing))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }
                 else {
-                    var ifRightNotNull = reftype.IsPrimitive ? block : block.IfRefNotNull(refname);
+                    var ifRightNotNull = reftype.CanNotBeNull() ? block : block.IfRefNotNull(refname);
                     {
-                        if (!leftTypeUncoerced.IsPrimitive) {
+                        if (leftTypeUncoerced.CanBeNull()) {
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
@@ -299,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }
                     }
-                    if (!reftype.IsPrimitive) {
+                    if (reftype.CanBeNull()) {
                         block.IfRefNull(refname).AssignRef("hasNullRow", ConstantTrue());
                     }
                 }

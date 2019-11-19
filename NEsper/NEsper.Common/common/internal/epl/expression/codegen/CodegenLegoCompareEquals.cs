@@ -25,18 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenExpression rhs,
             Type rhsType)
         {
-            if (lhsType.IsPrimitive &&
-                rhsType.IsPrimitive &&
+            if (lhsType.IsValueType &&
+                rhsType.IsValueType &&
                 !TypeHelper.IsFloatingPointClass(lhsType) &&
                 !TypeHelper.IsFloatingPointClass(rhsType)) {
                 return EqualsIdentity(lhs, rhs);
             }
 
-            if (lhsType.IsPrimitive && rhsType.IsPrimitive) {
+            if (lhsType.IsValueType && rhsType.IsValueType) {
                 return Op(rhs, "==", lhs);
             }
 
-            if (lhsType.IsPrimitive) {
+            if (lhsType.IsValueType) {
                 return ExprDotMethod(rhs, "Equals", lhs);
             }
 

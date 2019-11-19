@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -85,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var field = Constant(forge.field);
             var evaluationType = forge.valueExpr.EvaluationType;
-            if (evaluationType.IsPrimitive) {
+            if (evaluationType.CanNotBeNull()) {
                 var valueExpr = forge.valueExpr
                     .EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
                 return ExprDotMethod(dateTimeEx, "SetFieldValue", field, valueExpr);

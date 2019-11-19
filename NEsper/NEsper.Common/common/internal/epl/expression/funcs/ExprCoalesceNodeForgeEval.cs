@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         refname,
                         node.Forge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
-                    if (reftype.IsPrimitive) {
+                    if (reftype.CanNotBeNull()) {
                         if (!forge.IsNumericCoercion[num]) {
                             block.MethodReturn(Ref(refname));
                             doneWithReturn = true;

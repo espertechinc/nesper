@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeWhileLastIndexScalarForgeEval : EnumEval
     {
-        public const string METHOD_TAKEWHILELASTSCALARTOARRAY = "takeWhileLastScalarToArray";
+        public const string METHOD_TAKEWHILELASTSCALARTOARRAY = "TakeWhileLastScalarToArray";
 
         private readonly EnumTakeWhileLastIndexScalarForge forge;
         private readonly ExprEvaluator innerExpression;
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumTakeWhileLastIndexScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
             var innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
             var block = methodNode.Block
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "GetEmptyList"));
+                StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(object) }));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
             block

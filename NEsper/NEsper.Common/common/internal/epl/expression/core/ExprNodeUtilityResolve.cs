@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -142,6 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var parameterTypes = method.GetParameterTypes();
+            
             // rewrite those evaluator that should return the event itself
             if (CollectionUtil.IsAnySet(allowEventBeanType)) {
                 for (var i = 0; i < parameters.Count; i++) {

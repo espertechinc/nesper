@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression param,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
@@ -49,34 +49,50 @@ namespace com.espertech.esper.common.@internal.util
                     typeof(int?),
                     "AsInt",
                     param,
-                    valueTypeMustNumeric,
+                    valueType,
                     codegenMethodScope,
                     typeof(CoercerInt),
                     codegenClassScope);
             }
 
             public static CodegenExpression CodegenInt(
-                CodegenExpression param,
-                Type type)
+                CodegenExpression value,
+                Type valueType)
             {
-                return CodegenCoerceNonNull(typeof(int), typeof(int), "AsInt", param, type);
+                return ((valueType != typeof(short)) &&
+                        (valueType != typeof(int)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsInt")
+                    : value;
+
+//                return CodegenCoerceNonNull(
+//                    typeof(int), 
+//                    typeof(int?), 
+//                    "AsInt", 
+//                    param, 
+//                    type);
             }
 
             public static CodegenExpression CoerceCodegenMayNull(
-                CodegenExpression param,
-                Type type,
+                CodegenExpression value,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(int),
-                    typeof(int?),
-                    "AsInt",
-                    param,
-                    type,
-                    codegenMethodScope,
-                    typeof(CoercerInt),
-                    codegenClassScope);
+                return ((valueType != typeof(short)) &&
+                        (valueType != typeof(int)) &&
+                        (valueType != typeof(int?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt")
+                    : value;
+                
+//                return CodegenCoerceMayNull(
+//                    typeof(int),
+//                    typeof(int?),
+//                    "AsInt",
+//                    param,
+//                    type,
+//                    codegenMethodScope,
+//                    typeof(CoercerInt),
+//                    codegenClassScope);
             }
         }
     }

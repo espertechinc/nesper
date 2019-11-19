@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -78,15 +79,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             foreach (var callable in callables) {
-                callable.Shutdown = true;
+                callable.Shutdown();
             }
 
             lock (sendLock) {
                 Monitor.PulseAll(sendLock);
             }
-
+            
             executor.Shutdown();
-            SupportCompileDeployUtil.ExecutorAwait(executor, 10, TimeUnit.SECONDS);
+            SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
 
             for (var i = 0; i < numEvents; i++) {
                 Assert.IsTrue(listener[i].AssertOneGetNewAndReset().Get("a") is SupportBean);

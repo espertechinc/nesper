@@ -654,7 +654,7 @@ namespace com.espertech.esper.common.@internal.util
                 .AddParam(arrayType, "array")
                 .Block
                 .IfRefNullReturnNull("array");
-            if (!arrayType.GetElementType().IsPrimitive) {
+            if (!arrayType.GetElementType().IsValueType) {
                 return LocalMethodBuild(
                         block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Ref("array"))))
                     .Pass(array)

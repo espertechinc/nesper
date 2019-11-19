@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         ConstantNull(),
                         ConstantTrue(),
                         ConstantNull()));
-                if (!evalType.IsPrimitive) {
+                if (evalType.CanBeNull()) {
                     method.Block.IfRefNullReturnNull("indexResult");
                 }
 

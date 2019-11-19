@@ -307,25 +307,25 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[] {
                         "E7", 64,
                         new[] {
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=null,f1_value=0"
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=\"E7\",f0_value=64,f1_string=null,f1_value=null"
                         }
                     },
                     new object[] {
                         "E8", 78,
                         new[] {
-                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=0",
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=0",
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=null,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=null",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=null,f0_string=\"E8\",f0_value=78,f1_string=null,f1_value=null",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
                         }
                     },
                     new object[] {
                         "E9", 84,
                         new[] {
-                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
-                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=0",
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=0",
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=0,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
-                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=0,c1_string=null,c1_value=0,c2_string=null,c2_value=0,d_string=\"E6\",d_value=49,e0_string=null,e0_value=0,e1_string=null,e1_value=0,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=null,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
+                            "a_string=\"E3\",a_value=75,b_string=\"E4\",b_value=61,c0_string=\"E5\",c0_value=50,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=null",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=\"E8\",e1_value=78,f0_string=\"E9\",f0_value=84,f1_string=null,f1_value=null",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=\"E7\",e0_value=64,e1_string=null,e1_value=null,f0_string=\"E8\",f0_value=78,f1_string=\"E9\",f1_value=84",
+                            "a_string=\"E4\",a_value=61,b_string=\"E5\",b_value=50,c0_string=null,c0_value=null,c1_string=null,c1_value=null,c2_string=null,c2_value=null,d_string=\"E6\",d_value=49,e0_string=null,e0_value=null,e1_string=null,e1_value=null,f0_string=\"E7\",f0_value=64,f1_string=\"E8\",f1_value=78"
                         }
                     }
                 };

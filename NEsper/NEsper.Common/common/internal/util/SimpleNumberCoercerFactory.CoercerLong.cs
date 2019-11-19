@@ -40,35 +40,48 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression param,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenLongMayNullBox(param, valueTypeMustNumeric, codegenMethodScope, codegenClassScope);
+                return CodegenLongMayNullBox(param, valueType, codegenMethodScope, codegenClassScope);
             }
 
             public static CodegenExpression CodegenLong(
-                CodegenExpression param,
-                Type type)
+                CodegenExpression value,
+                Type valueType)
             {
-                return CodegenCoerceNonNull(typeof(long), typeof(long), "AsLong", param, type);
+                return ((valueType != typeof(short)) &&
+                        (valueType != typeof(int)) &&
+                        (valueType != typeof(long)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsLong")
+                    : value;
+
+                //return CodegenCoerceNonNull(typeof(long), typeof(long), "AsLong", param, type);
             }
 
             public static CodegenExpression CodegenLongMayNullBox(
-                CodegenExpression param,
-                Type type,
+                CodegenExpression value,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(long),
-                    typeof(long?),
-                    "AsLong",
-                    param,
-                    type,
-                    codegenMethodScope,
-                    typeof(CoercerLong),
-                    codegenClassScope);
+                return ((valueType != typeof(short)) &&
+                        (valueType != typeof(int)) &&
+                        (valueType != typeof(long)) &&
+                        (valueType != typeof(long?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedLong")
+                    : value;
+
+//                return CodegenCoerceMayNull(
+//                    typeof(long),
+//                    typeof(long?),
+//                    "AsLong",
+//                    param,
+//                    type,
+//                    codegenMethodScope,
+//                    typeof(CoercerLong),
+//                    codegenClassScope);
             }
         }
     }

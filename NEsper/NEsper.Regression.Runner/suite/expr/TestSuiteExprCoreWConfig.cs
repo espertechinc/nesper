@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprCoreMathDivisionRules()
         {
             RegressionSession session = RegressionRunner.Session();

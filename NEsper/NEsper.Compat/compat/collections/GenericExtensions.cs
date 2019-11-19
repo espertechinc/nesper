@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml;
 
+using Castle.Core.Internal;
+
 namespace com.espertech.esper.compat.collections
 {
     public static class GenericExtensions
@@ -20,6 +22,20 @@ namespace com.espertech.esper.compat.collections
             return Nullable.GetUnderlyingType(t) != null;
         }
 
+        public static bool CanNotBeNull(this Type t)
+        {
+            return !CanBeNull(t);
+        }
+        
+        public static bool CanBeNull(this Type t)
+        {
+            if (t.IsNullable()) {
+                return true;
+            }
+            
+            return !t.IsValueType;
+        }
+        
         public static bool IsAssignableIndex(this Type t)
         {
             if (t == null)

@@ -577,7 +577,7 @@ namespace com.espertech.esper.compat
             {
                 return false;
             }
-            if (clazz.IsPrimitive)
+            if (clazz.IsValueType)
             {
                 return false;
             }

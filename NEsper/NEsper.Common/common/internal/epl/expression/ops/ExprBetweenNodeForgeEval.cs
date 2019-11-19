@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 valueType,
                 "value",
                 value.EvaluateCodegen(valueType, methodNode, exprSymbol, codegenClassScope));
-            if (!valueType.IsPrimitive) {
+            if (valueType.CanBeNull()) {
                 block.IfRefNullReturnFalse("value");
             }
 
@@ -88,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 lowerType,
                 "lower",
                 lower.EvaluateCodegen(lowerType, methodNode, exprSymbol, codegenClassScope));
-            if (!lowerType.IsPrimitive) {
+            if (lowerType.CanBeNull()) {
                 block.IfRefNull("lower").BlockReturn(Constant(isNot));
             }
 
@@ -97,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 higherType,
                 "higher",
                 higher.EvaluateCodegen(higherType, methodNode, exprSymbol, codegenClassScope));
-            if (!higher.EvaluationType.IsPrimitive) {
+            if (higher.EvaluationType.CanBeNull()) {
                 block.IfRefNull("higher").BlockReturn(Constant(isNot));
             }
 

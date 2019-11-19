@@ -12,6 +12,7 @@ using System.Numerics;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -54,28 +55,28 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression value,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                if (valueTypeMustNumeric == null) {
+                if (valueType == null) {
                     return value;
                 }
 
-                if (valueTypeMustNumeric.IsPrimitive) {
-                    return CodegenBigInt(value, valueTypeMustNumeric);
+                if (valueType.IsValueType && valueType.CanNotBeNull()) {
+                    return CodegenBigInt(value, valueType);
                 }
 
-                if (valueTypeMustNumeric.IsBigInteger()) {
+                if (valueType.IsBigInteger()) {
                     return value;
                 }
 
                 var method = codegenMethodScope
                     .MakeChild(typeof(BigInteger), typeof(CoercerBigInt), codegenClassScope)
-                    .AddParam(valueTypeMustNumeric, "value")
+                    .AddParam(valueType, "value")
                     .Block
                     .IfRefNullReturnNull("value")
-                    .MethodReturn(CodegenBigInt(CodegenExpressionBuilder.Ref("value"), valueTypeMustNumeric));
+                    .MethodReturn(CodegenBigInt(CodegenExpressionBuilder.Ref("value"), valueType));
                 return CodegenExpressionBuilder.LocalMethod(method, value);
             }
 
@@ -87,10 +88,7 @@ namespace com.espertech.esper.common.@internal.util
                     return value;
                 }
 
-                return CodegenExpressionBuilder.StaticMethod(
-                    typeof(TypeExtensions),
-                    "AsBigInteger",
-                    value);
+                return CodegenExpressionBuilder.ExprDotMethod(value, "AsBigInteger");
             }
         }
     }

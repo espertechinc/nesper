@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -111,8 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                             Ref("events"),
                             ConstantTrue(),
                             ExprDotMethod(Ref("context"), "GetAgentInstanceContext")));
-                if (!parameter.Forge.EvaluationType.IsPrimitive) {
-                    computeDelta.Block.IfRefNull("result")
+                if (parameter.Forge.EvaluationType.CanBeNull()) {
+                    computeDelta.Block
+                        .IfRefNull("result")
                         .BlockThrow(
                             NewInstance<EPException>(Constant("Null value returned for guard expression")));
                 }

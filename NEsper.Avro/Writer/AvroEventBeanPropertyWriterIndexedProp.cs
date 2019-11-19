@@ -37,7 +37,7 @@ namespace NEsper.Avro.Writer
             object value,
             GenericRecord record)
         {
-            AvroWriteIndexedProp(value, record, index, _indexTarget);
+            AvroWriteIndexedProp(value, record, index.Name, _indexTarget);
         }
 
         public override CodegenExpression WriteCodegen(
@@ -49,10 +49,10 @@ namespace NEsper.Avro.Writer
         {
             return CodegenExpressionBuilder.StaticMethod(
                 typeof(AvroEventBeanPropertyWriterIndexedProp),
-                "avroWriteIndexedProp",
+                "AvroWriteIndexedProp",
                 assigned,
                 und,
-                CodegenExpressionBuilder.Constant(index),
+                CodegenExpressionBuilder.Constant(index.Name),
                 CodegenExpressionBuilder.Constant(_indexTarget));
         }
 
@@ -66,7 +66,7 @@ namespace NEsper.Avro.Writer
         public static void AvroWriteIndexedProp(
             object value,
             GenericRecord record,
-            Field index,
+            string index,
             int indexTarget)
         {
             var val = record.Get(index);

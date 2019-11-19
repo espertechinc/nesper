@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression F1 alias for {10}", path);
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                           "select total, total+1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "total","total+1" };
+                var fields = new[] {"total", "total+1"};
                 foreach (var field in fields) {
                     Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(field));
                 }

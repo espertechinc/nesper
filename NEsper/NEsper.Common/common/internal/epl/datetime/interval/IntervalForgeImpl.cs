@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -688,7 +689,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     evaluationType,
                     "paramEndTs",
                     forgeEndTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
-                if (!evaluationType.IsPrimitive) {
+                if (evaluationType.CanBeNull()) {
                     methodNode.Block.IfRefNullReturnNull("paramEndTs");
                 }
 

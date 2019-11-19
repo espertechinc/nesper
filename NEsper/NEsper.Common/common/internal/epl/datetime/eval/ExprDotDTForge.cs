@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenExpression targetValue = Unbox(Ref("target"), innerType);
 
             var block = methodNode.Block;
-            if (!innerType.IsPrimitive) {
+            if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
 

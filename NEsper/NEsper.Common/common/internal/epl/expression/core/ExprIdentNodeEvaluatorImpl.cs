@@ -15,9 +15,12 @@ using com.espertech.esper.common.@internal.@event.variant;
 
 using System;
 
+using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+using Constant = System.Reflection.Metadata.Constant;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -42,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             this.streamNum = streamNum;
             this.propertyGetter = propertyGetter;
-            this.returnType = returnType;
+            // Ident nodes when evaluated can return a value or null (if for example the underlying object is null).  Because of this,
+            // we want to ensure that the return type is boxed so that we can always return null.  This means that primitives may need
+            // to be unboxed elsewhere.
+            this.returnType = returnType.GetBoxedType();
             this.identNode = identNode;
             this.eventType = eventType;
             this.optionalEvent = optionalEvent;
@@ -68,7 +74,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public Type GetCodegenReturnType(Type requiredType)
         {
-            return requiredType == typeof(object) ? typeof(object) : returnType;
+            if (requiredType == typeof(object)) {
+                return typeof(object);
+            } else if (requiredType == returnType) {
+                return returnType;
+            } else if (requiredType.IsBoxedType() && requiredType == returnType) { // returnType is always boxed
+                return requiredType;
+            } else if (returnType == requiredType.GetBoxedType()) { // returnType is always boxed
+                return returnType;
+            }
+
+            throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
         }
 
         public CodegenExpression Codegen(
@@ -81,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return CodegenGet(requiredType, parent, symbols, classScope);
             }
 
-            var targetType = GetCodegenReturnType(requiredType).GetBoxedType();
+            var targetType = GetCodegenReturnType(requiredType);
             var method = parent.MakeChild(targetType, this.GetType(), classScope);
             method.Block
                 .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
@@ -124,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var method = codegenMethodScope.MakeChild(
-                castTargetType.GetBoxedType(), this.GetType(), codegenClassScope);
+                castTargetType, this.GetType(), codegenClassScope);
             var block = method.Block;
 
             if (useUnderlying) {
@@ -133,17 +149,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     streamNum,
                     eventType,
                     true);
-                block.IfRefNullReturnNull(underlying)
-                    .MethodReturn(
-                        CodegenLegoCast.CastSafeFromObjectType(
-                            castTargetType.GetBoxedType(),
-                            propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
+
+                if (!requiredType.IsBoxedType()) {
+#if THROW_VALUE_ON_NULL
+                    block.IfRefNullThrowException(underlying);
+#else
+                    block.IfRefNull(underlying).MethodReturn(new CodegenExpressionDefault(requiredType));
+#endif
+                }
+                else {
+                    block.IfRefNullReturnNull(underlying);
+                }
+
+                block.MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        castTargetType,
+                        propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
             else {
                 var refEPS = exprSymbol.GetAddEPS(method);
                 method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)));
                 if (optionalEvent) {
-                    block.IfRefNullReturnNull("@event");
+                    if (!requiredType.IsBoxedType()) {
+#if THROW_VALUE_ON_NULL
+                        block.IfRefNullThrowException(Ref("@event"));
+#else
+                        block.IfRefNull(Ref("@event")).MethodReturn(new CodegenExpressionDefault(requiredType));
+#endif
+                    }
+                    else {
+                        block.IfRefNullReturnNull(Ref("@event"));
+                    }
                 }
 
                 block.MethodReturn(

@@ -14,6 +14,7 @@ using System.Text;
 
 using Castle.Core.Internal;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
@@ -467,6 +468,25 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock IfRefNullThrowException(
+            CodegenExpressionRef @ref,
+            CodegenExpression exceptionGenerator)
+        {
+            return IfRefNull(@ref).BlockThrow(exceptionGenerator);
+        }
+
+        public CodegenBlock IfRefNullThrowException(
+            CodegenExpressionRef @ref,
+            string message)
+        {
+            return IfRefNullThrowException(@ref, NewInstance<EPException>(Constant(message)));
+        }
+
+        public CodegenBlock IfRefNullThrowException(CodegenExpressionRef @ref)
+        {
+            return IfRefNullThrowException(@ref, "Null value encountered - not expected or allowed");
+        }
+        
         public CodegenBlock BlockReturn(CodegenExpression expression)
         {
             if (parentWBlock == null) {
@@ -851,7 +871,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             params CodegenExpression[] @params)
         {
             var passThroughParams = new CodegenExpression[@params.Length + 1];
-            passThroughParams[0] = Constant("DEBUG: " + formatString);
+            passThroughParams[0] = Constant(formatString);
             Array.Copy(@params, 0, passThroughParams, 1, @params.Length);
             // Console.WriteLine -
             return StaticMethod(typeof(CompatExtensions), "Debug", passThroughParams);

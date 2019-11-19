@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var block = methodNode.Block;
 
-            if (!innerType.IsPrimitive && returnType != typeof(void)) {
+            if (innerType.CanBeNull() && returnType != typeof(void)) {
                 block.IfRefNullReturnNull("target");
             }
 
@@ -106,7 +106,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var tryBlock = block.TryCatch();
-            var invocation = ExprDotMethod(Ref("target"), forge.Method.Name, args);
+            var invocation = forge.Method.IsStatic
+                ? StaticMethod(forge.Method.DeclaringType, forge.Method.Name, args) 
+                : ExprDotMethod(Ref("target"), forge.Method.Name, args);
          
             CodegenStatementTryCatch tryCatch;
             if (returnType == typeof(void)) {

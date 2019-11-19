@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -85,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .AddParam(innerType, "target");
 
             CodegenBlock block = methodNode.Block;
-            if (!innerType.IsPrimitive) {
+            if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
 

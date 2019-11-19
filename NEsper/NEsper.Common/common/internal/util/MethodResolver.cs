@@ -412,7 +412,7 @@ namespace com.espertech.esper.common.@internal.util
             bool[] allowEventBeanType,
             bool[] allowEventBeanCollType)
         {
-            var extensionMethods = TypeHelper.GetExtensionMethods(declaringClass)
+            var extensionMethods = MethodExtensions.GetExtensionMethods(declaringClass)
                 .Where(m => m.Name == methodName);
             foreach (var method in extensionMethods) {
                 var parameterTypes = method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray();
@@ -480,7 +480,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var parametersMethod = bestMatch.GetParameters().Select(p => p.ParameterType).ToArray();
             for (int i = 0; i < parametersMethod.Length; i++) {
-                if (!parametersMethod[i].IsPrimitive) {
+                if (parametersMethod[i].CanBeNull()) {
                     continue;
                 }
 
@@ -723,7 +723,7 @@ namespace com.espertech.esper.common.@internal.util
             Type genericParameterType,
             AtomicLong conversionCount)
         {
-            if ((invocationParameter == null) && !(declarationParameter.IsPrimitive)) {
+            if ((invocationParameter == null) && !(declarationParameter.IsValueType)) {
                 return true;
             }
 
@@ -762,7 +762,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (invocationType == null) {
-                return !declarationType.IsPrimitive;
+                return declarationType.CanBeNull();
             }
 
             return declarationType.IsAssignableFrom(invocationType);

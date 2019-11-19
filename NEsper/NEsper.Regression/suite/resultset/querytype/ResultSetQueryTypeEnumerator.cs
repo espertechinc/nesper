@@ -18,7 +18,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
-    public class ResultSetQueryTypeIterator
+    public class ResultSetQueryTypeEnumerator
     {
         public static IList<RegressionExecution> Executions()
         {

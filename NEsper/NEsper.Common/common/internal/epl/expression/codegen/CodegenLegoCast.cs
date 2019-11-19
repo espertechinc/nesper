@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 type,
                 holder,
                 forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
-            if (!type.IsPrimitive) {
+            if (type.CanBeNull()) {
                 block.IfRefNullReturnNull(holder);
             }
 

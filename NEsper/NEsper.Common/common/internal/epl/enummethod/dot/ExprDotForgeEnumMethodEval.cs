@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
             var methodNode = codegenMethodScope
-                .MakeChild(returnType.GetBoxedType(), typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
+                .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
 
             methodNode.Block.DebugStack();

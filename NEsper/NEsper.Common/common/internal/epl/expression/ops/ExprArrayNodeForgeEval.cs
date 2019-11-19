@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     refname,
                     child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
 
-                if (child.EvaluationType.IsPrimitive) {
+                if (child.EvaluationType.CanNotBeNull()) {
                     if (!forge.IsMustCoerce) {
                         block.AssignArrayElement("array", Constant(i), Ref(refname));
                     }
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     returnType,
                     refname,
                     childForge.EvaluateCodegen(returnType, methodNode, exprSymbol, codegenClassScope));
-                var nonNullTest = returnType.IsPrimitive ? ConstantTrue() : NotEqualsNull(Ref(refname));
+                var nonNullTest = returnType.CanNotBeNull() ? ConstantTrue() : NotEqualsNull(Ref(refname));
                 var blockIfNotNull = block.IfCondition(nonNullTest);
                 CodegenExpression added = Ref(refname);
                 if (forge.IsMustCoerce) {

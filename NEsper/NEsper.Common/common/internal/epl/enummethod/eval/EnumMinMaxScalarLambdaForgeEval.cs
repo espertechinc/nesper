@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -114,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     innerTypeBoxed,
                     "value",
                     forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope));
-            if (!innerType.IsPrimitive) {
+            if (innerType.CanBeNull()) {
                 forEach.IfRefNull("value").BlockContinue();
             }
 

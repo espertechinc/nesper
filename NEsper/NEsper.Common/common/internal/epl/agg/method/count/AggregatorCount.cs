@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 evalType,
                 "value",
                 forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
-            if (!evalType.IsPrimitive) {
+            if (evalType.CanBeNull()) {
                 method.Block.IfRefNull("value").BlockReturnNoValue();
             }
 
@@ -128,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
                 evalType,
                 "value",
                 forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
-            if (!evalType.IsPrimitive) {
+            if (evalType.CanBeNull()) {
                 method.Block.IfRefNull("value").BlockReturnNoValue();
             }
 

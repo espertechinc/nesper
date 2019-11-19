@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
                 writeMembersReflection[i] = properties[i].WriteMember;
-                primitiveType[i] = properties[i].PropertyType.IsPrimitive;
+                primitiveType[i] = properties[i].PropertyType.IsValueType;
                 primitiveTypeCheck |= primitiveType[i];
             }
 

@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     innerType,
                     "num",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
-            if (!innerType.IsPrimitive) {
+            if (innerType.CanBeNull()) {
                 forEach.IfRefNull("num").BlockContinue();
             }
 

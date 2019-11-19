@@ -41,8 +41,8 @@ namespace com.espertech.esper.regressionlib.support.multithread
             this.sendLock = sendLock;
         }
 
-        public bool Shutdown {
-            set => isShutdown = value;
+        public void Shutdown() {
+            isShutdown = true;
         }
 
         public object Call()

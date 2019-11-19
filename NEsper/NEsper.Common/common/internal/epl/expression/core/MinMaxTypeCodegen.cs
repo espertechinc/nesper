@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 r0Type,
                 "r0",
                 nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r0Type.IsPrimitive)
+            if (r0Type.CanBeNull())
             {
                 block.IfRefNullReturnNull("r0");
             }
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 r1Type,
                 "r1",
                 nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r1Type.IsPrimitive)
+            if (r1Type.CanBeNull())
             {
                 block.IfRefNullReturnNull("r1");
             }
@@ -81,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     nodeType,
                     refname,
                     nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                if (!nodeType.IsPrimitive)
+                if (nodeType.CanBeNull())
                 {
                     block.IfRefNullReturnNull(refname);
                 }

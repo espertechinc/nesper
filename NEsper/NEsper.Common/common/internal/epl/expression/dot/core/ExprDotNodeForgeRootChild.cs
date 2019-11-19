@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 else {
                     var returnType = rootNodeForge.EvaluationType;
                     if (hasEnumerationMethod && returnType.IsArray) {
-                        if (returnType.GetElementType().IsPrimitive) {
+                        if (returnType.GetElementType().CanNotBeNull()) {
                             innerForge = new InnerDotArrPrimitiveToCollForge(rootNodeForge);
                         }
                         else {

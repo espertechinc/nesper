@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.bean.instantiator;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             _primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
                 _writeMembersReflection[i] = properties[i].WriteMember;
-                _primitiveType[i] = properties[i].PropertyType.IsPrimitive;
+                _primitiveType[i] = properties[i].PropertyType.IsValueType && properties[i].PropertyType.CanNotBeNull();
                 primitiveTypeCheck |= _primitiveType[i];
             }
 
@@ -145,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 }
 
                 CodegenExpression value;
-                //if (targetType.IsPrimitive) {
+                //if (targetType.IsValueType) {
                 //    var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);
                 //    value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
                 //}

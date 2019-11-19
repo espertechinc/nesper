@@ -35,7 +35,7 @@ namespace NEsper.Avro.Writer
             object value,
             GenericRecord record)
         {
-            AvroWriteMapProp(value, record, _key, index);
+            AvroWriteMapProp(value, record, _key, index.Name);
         }
 
         public override CodegenExpression WriteCodegen(
@@ -51,7 +51,7 @@ namespace NEsper.Avro.Writer
                 assigned,
                 und,
                 CodegenExpressionBuilder.Constant(_key),
-                CodegenExpressionBuilder.Constant(index));
+                CodegenExpressionBuilder.Constant(index.Name));
         }
 
         /// <summary>
@@ -65,11 +65,10 @@ namespace NEsper.Avro.Writer
             object value,
             GenericRecord record,
             string key,
-            Field index)
+            string index)
         {
             object val = record.Get(index);
-            if (val != null && val is IDictionary<string, object>) {
-                var map = (IDictionary<string, object>) val;
+            if (val != null && val is IDictionary<string, object> map) {
                 map.Put(key, value);
             }
         }

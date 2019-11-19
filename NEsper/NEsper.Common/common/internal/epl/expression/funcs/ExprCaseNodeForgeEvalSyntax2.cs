@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.funcs.ExprCaseNodeForgeEvalSyntax1;
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return EqualsNull(lhs);
             }
 
-            if (lhsType.IsPrimitive && rhsType.IsPrimitive && !forge.IsMustCoerce) {
+            if (lhsType.CanNotBeNull() && rhsType.CanNotBeNull() && !forge.IsMustCoerce) {
                 return CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(lhs, lhsType, rhs, rhsType);
             }
 
@@ -182,9 +183,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 .AddParam(lhsType, "leftResult")
                 .AddParam(rhsType, "rightResult")
                 .Block;
-            if (!lhsType.IsPrimitive) {
+            if (lhsType.CanBeNull()) {
                 var ifBlock = block.IfCondition(EqualsNull(Ref("leftResult")));
-                if (rhsType.IsPrimitive) {
+                if (rhsType.CanNotBeNull()) {
                     ifBlock.BlockReturn(ConstantFalse());
                 }
                 else {
@@ -192,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            if (!rhsType.IsPrimitive) {
+            if (rhsType.CanBeNull()) {
                 block.IfCondition(EqualsNull(Ref("rightResult"))).BlockReturn(ConstantFalse());
             }
 

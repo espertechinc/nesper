@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            if (ComponentTypeCollection.IsPrimitive) {
+            if (ComponentTypeCollection.IsValueType) {
                 return value.Unwrap<object>(); // new ArrayWrappingCollection(value);
             }
 
@@ -246,7 +246,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("value");
             CodegenMethod method;
-            if (ComponentTypeCollection.IsPrimitive || ComponentTypeCollection.GetUnboxedType().IsPrimitive) {
+            if (ComponentTypeCollection.CanNotBeNull() ||
+                ComponentTypeCollection.GetUnboxedType().CanNotBeNull()) {
                 method = block.MethodReturn(NewInstance<ArrayWrappingCollection>(Ref("value")));
             }
             else {

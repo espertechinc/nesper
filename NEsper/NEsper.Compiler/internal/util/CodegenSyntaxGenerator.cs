@@ -83,7 +83,7 @@ namespace com.espertech.esper.compiler.@internal.util
         private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
         {
             var typeList = types
-                .Where(type => type != null && type != typeof(void) && !type.IsPrimitive)
+                .Where(type => type != null && type != typeof(void))
                 .ToList();
 
             ISet<ImportDecl> imports = new SortedSet<ImportDecl>();

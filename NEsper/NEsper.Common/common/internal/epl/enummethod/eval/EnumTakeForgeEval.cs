@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     sizeType,
                     "size",
                     forge.SizeEval.EvaluateCodegen(sizeType, methodNode, scope, codegenClassScope));
-            if (!sizeType.IsPrimitive) {
+            if (sizeType.CanBeNull()) {
                 block.IfRefNullReturnNull("size");
             }
 

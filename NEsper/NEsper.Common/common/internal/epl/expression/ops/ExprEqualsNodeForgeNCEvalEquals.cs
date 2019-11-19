@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.CodegenLegoCompareEquals;
@@ -57,8 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForge lhs,
             ExprForge rhs)
         {
-            var lhsType = lhs.EvaluationType.GetBoxedType();
-            var rhsType = rhs.EvaluationType.GetBoxedType();
+            var lhsType = lhs.EvaluationType;
+            var rhsType = rhs.EvaluationType;
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
@@ -68,11 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
-            if (!lhsType.IsPrimitive) {
+            if (lhsType.CanBeNull()) {
                 block.IfRefNullReturnNull("left");
             }
 
-            if (!rhsType.IsPrimitive) {
+            if (rhsType.CanBeNull()) {
                 block.IfRefNullReturnNull("right");
             }
 

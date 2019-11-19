@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (columnType == null) {
-                if (writeablePropertyType.IsPrimitive) {
+                if (writeablePropertyType.CanNotBeNull()) {
                     var message = "Invalid assignment of column '" +
                                   columnName +
                                   "' of null type to event property '" +
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (allowObjectArrayToCollectionConversion &&
                     columnTypeBoxed.IsArray &&
-                    !columnTypeBoxed.GetElementType().IsPrimitive &&
+                    !columnTypeBoxed.GetElementType().IsValueType &&
                     targetTypeBoxed.IsImplementsInterface(typeof(ICollection<object>))) {
                     return OBJECT_ARRAY_TO_COLLECTION_COERCER;
                 }
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static TypeWidenerSPI GetArrayToCollectionCoercer(Type componentType)
         {
-            if (!componentType.IsPrimitive) {
+            if (componentType.CanBeNull()) {
                 return OBJECT_ARRAY_TO_COLLECTION_COERCER;
             }
 

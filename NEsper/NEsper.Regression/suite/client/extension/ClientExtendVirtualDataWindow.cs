@@ -33,9 +33,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
     {
         public void Run(RegressionEnvironment env)
         {
+            #if false
             RunAssertionInsertConsume(env);
             RunAssertionOnMerge(env);
             RunAssertionLimitation(env);
+            #endif
             RunAssertionJoinAndLifecyle(env);
             RunAssertionContextWJoin(env);
             RunAssertionFireAndForget(env);

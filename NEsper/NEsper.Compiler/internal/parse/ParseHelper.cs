@@ -127,10 +127,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                     throw ExceptionConvertor.ConvertStatement(recognitionException, eplStatementErrorMsg, addPleaseCheck, parser);
                 }
-                else
-                {
-                    throw e;
-                }
+
+                throw;
             }
 
             // if we are re-writing scripts and contain a script, then rewrite
@@ -358,7 +356,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     if (t.Type == EsperEPL2GrammarParser.QUOTED_STRING_LITERAL && i > current.First && i < current.Second)
                     {
                         writer.Write("\\'");
-                        writer.Write(t.Text.Substring(1, t.Text.Length - 1));
+                        writer.Write(t.Text.Substring(1, t.Text.Length - 2));
                         writer.Write("\\'");
                     }
                     else

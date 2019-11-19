@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -132,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     innerType,
                     "inner",
                     forge.innerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope));
-            if (!innerType.IsPrimitive && evaluationType != typeof(void)) {
+            if (innerType.CanBeNull() && evaluationType != typeof(void)) {
                 block.IfRefNullReturnNull("inner");
             }
 

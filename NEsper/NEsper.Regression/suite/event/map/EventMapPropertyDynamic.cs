@@ -31,35 +31,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         private void RunAssertionMapWithinMap(RegressionEnvironment env)
         {
             var statementText = "@Name('s0') select " +
-                                "innermap.int? as t0, " +
-                                "innermap.innerTwo?.Nested as t1, " +
-                                "innermap.innerTwo?.innerThree.NestedTwo as t2, " +
-                                "dynamicOne? as t3, " +
-                                "dynamicTwo? as t4, " +
-                                "indexed[1]? as t5, " +
-                                "mapped('keyOne')? as t6, " +
-                                "innermap.IndexedTwo[0]? as t7, " +
-                                "innermap.mappedTwo('keyTwo')? as t8 " +
+                                "Innermap.Int? as t0, " +
+                                "Innermap.InnerTwo?.Nested as t1, " +
+                                "Innermap.InnerTwo?.InnerThree.NestedTwo as t2, " +
+                                "DynamicOne? as t3, " +
+                                "DynamicTwo? as t4, " +
+                                "Indexed[1]? as t5, " +
+                                "Mapped('keyOne')? as t6, " +
+                                "Innermap.IndexedTwo[0]? as t7, " +
+                                "Innermap.MappedTwo('keyTwo')? as t8 " +
                                 "from MyLevel2#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var map = new Dictionary<string, object>();
-            map.Put("dynamicTwo", 20L);
-            map.Put(
-                "innermap",
-                MakeMap(
-                    "int",
-                    10,
-                    "IndexedTwo",
-                    new[] {-10},
-                    "MappedTwo",
-                    MakeMap("keyTwo", "def"),
-                    "innerTwo",
-                    MakeMap(
-                        "nested", 
-                        30d, 
-                        "innerThree",
-                        MakeMap("nestedTwo", 99))));
+            map.Put("DynamicTwo", 20L);
+            map.Put("Innermap", MakeMap(
+                "Int", 10,
+                "IndexedTwo", new[] {-10},
+                "MappedTwo", MakeMap("keyTwo", "def"),
+                "InnerTwo", MakeMap(
+                    "Nested", 30d,
+                    "InnerThree", MakeMap("NestedTwo", 99))));
             map.Put("Indexed", new float[] {-1, -2, -3});
             map.Put("Mapped", MakeMap("keyOne", "abc"));
             env.SendEventMap(map, "MyLevel2");
@@ -68,15 +60,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 new object[] {10, 30d, 99, null, 20L, -2.0f, "abc", -10, "def"});
 
             map = new Dictionary<string, object>();
-            map.Put(
-                "innermap",
-                MakeMap(
-                    "IndexedTwo",
-                    new int[] { },
-                    "MappedTwo",
-                    MakeMap("yyy", "xxx"),
-                    "innerTwo",
-                    null));
+            map.Put("Innermap", MakeMap(
+                "IndexedTwo", new int[] { },
+                "MappedTwo", MakeMap("yyy", "xxx"),
+                "InnerTwo", null));
             map.Put("Indexed", new float[] { });
             map.Put("Mapped", MakeMap("xxx", "yyy"));
             env.SendEventMap(map, "MyLevel2");
@@ -90,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 new object[] {null, null, null, null, null, null, null, null, null});
 
             map = new Dictionary<string, object>();
-            map.Put("innermap", "xxx");
+            map.Put("Innermap", "xxx");
             map.Put("Indexed", null);
             map.Put("Mapped", "xxx");
             env.SendEventMap(map, "MyLevel2");
@@ -104,35 +91,35 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         private void RunAssertionMapWithinMapExists(RegressionEnvironment env)
         {
             var statementText = "@Name('s0') select " +
-                                "exists(innermap.int?) as t0, " +
-                                "exists(innermap.innerTwo?.Nested) as t1, " +
-                                "exists(innermap.innerTwo?.innerThree.NestedTwo) as t2, " +
-                                "exists(dynamicOne?) as t3, " +
-                                "exists(dynamicTwo?) as t4, " +
-                                "exists(indexed[1]?) as t5, " +
-                                "exists(mapped('keyOne')?) as t6, " +
-                                "exists(innermap.IndexedTwo[0]?) as t7, " +
-                                "exists(innermap.mappedTwo('keyTwo')?) as t8 " +
+                                "exists(Innermap.Int?) as t0, " +
+                                "exists(Innermap.InnerTwo?.Nested) as t1, " +
+                                "exists(Innermap.InnerTwo?.InnerThree.NestedTwo) as t2, " +
+                                "exists(DynamicOne?) as t3, " +
+                                "exists(DynamicTwo?) as t4, " +
+                                "exists(Indexed[1]?) as t5, " +
+                                "exists(Mapped('keyOne')?) as t6, " +
+                                "exists(Innermap.IndexedTwo[0]?) as t7, " +
+                                "exists(Innermap.MappedTwo('keyTwo')?) as t8 " +
                                 "from MyLevel2#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var map = new Dictionary<string, object>();
-            map.Put("dynamicTwo", 20L);
+            map.Put("DynamicTwo", 20L);
             map.Put(
-                "innermap",
+                "Innermap",
                 MakeMap(
-                    "int",
+                    "Int",
                     10,
                     "IndexedTwo",
                     new[] {-10},
                     "MappedTwo",
                     MakeMap("keyTwo", "def"),
-                    "innerTwo",
+                    "InnerTwo",
                     MakeMap(
-                        "nested",
+                        "Nested",
                         30d,
-                        "innerThree",
-                        MakeMap("nestedTwo", 99))));
+                        "InnerThree",
+                        MakeMap("NestedTwo", 99))));
             map.Put("Indexed", new float[] {-1, -2, -3});
             map.Put("Mapped", MakeMap("keyOne", "abc"));
             env.SendEventMap(map, "MyLevel2");
@@ -142,13 +129,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
             map = new Dictionary<string, object>();
             map.Put(
-                "innermap",
+                "Innermap",
                 MakeMap(
                     "IndexedTwo",
                     new int[] { },
                     "MappedTwo",
                     MakeMap("yyy", "xxx"),
-                    "innerTwo",
+                    "InnerTwo",
                     null));
             map.Put("Indexed", new float[] { });
             map.Put("Mapped", MakeMap("xxx", "yyy"));
@@ -163,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 new object[] {false, false, false, false, false, false, false, false, false});
 
             map = new Dictionary<string, object>();
-            map.Put("innermap", "xxx");
+            map.Put("Innermap", "xxx");
             map.Put("Indexed", null);
             map.Put("Mapped", "xxx");
             env.SendEventMap(map, "MyLevel2");
@@ -176,9 +163,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
         private void RunAssertionMapWithinMap2LevelsInvalid(RegressionEnvironment env)
         {
-            TryInvalidCompile(env, "select innermap.int as t0 from MyLevel2#length(5)", "skip");
-            TryInvalidCompile(env, "select innermap.int.inner2? as t0 from MyLevel2#length(5)", "skip");
-            TryInvalidCompile(env, "select innermap.int.inner2? as t0 from MyLevel2#length(5)", "skip");
+            TryInvalidCompile(env, "select Innermap.Int as t0 from MyLevel2#length(5)", "skip");
+            TryInvalidCompile(env, "select Innermap.Int.inner2? as t0 from MyLevel2#length(5)", "skip");
+            TryInvalidCompile(env, "select Innermap.Int.inner2? as t0 from MyLevel2#length(5)", "skip");
         }
 
         private void AssertResults(

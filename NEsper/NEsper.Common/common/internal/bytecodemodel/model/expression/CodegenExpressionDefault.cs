@@ -20,13 +20,13 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
-    public class CodegenExpressionConstant : CodegenExpression
+    public class CodegenExpressionDefault : CodegenExpression
     {
-        private readonly object _constant;
+        private readonly Type _type;
 
-        public CodegenExpressionConstant(object constant)
+        public CodegenExpressionDefault(Type type)
         {
-            _constant = constant;
+            _type = type;
         }
 
         public void Render(
@@ -35,32 +35,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            RenderConstant(builder, _constant);
+            builder.Append("default(typeof(");
+            builder.Append(_type.CleanName());
+            builder.Append("))");
         }
 
         public void MergeClasses(ISet<Type> classes)
         {
-            if (_constant == null) {
+            if (_type == null) {
                 return;
             }
-            else if (_constant is Array constantArray) {
-                classes.AddToSet(_constant.GetType().GetElementType());
-                // Add elements from type arrays to the set
-                if (constantArray is Type[] typeArray) {
-                    typeArray.ForEach(t => classes.AddToSet(t));
-                } else if (constantArray is object[] objectArray) {
-                    objectArray.OfType<Type>().For(t => classes.AddToSet(t));
-                }
-            }
-            else if (_constant.GetType().IsEnum) {
-#if DIAGNOSTICS
-                Console.WriteLine("MERGE: {0}", _constant.GetType().FullName);
-#endif
-                classes.AddToSet(_constant.GetType());
-            }
-            else if (_constant is Type constantType) {
-                classes.AddToSet(constantType);
-            }
+            classes.AddToSet(_type);
         }
     }
 } // end of namespace

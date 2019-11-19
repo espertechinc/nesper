@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     evaluationType,
                     "value",
                     forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope));
-            if (!evaluationType.IsPrimitive) {
+            if (evaluationType.CanBeNull()) {
                 block.IfRefNull("value")
                     .BlockReturn(StaticMethod(typeof(ExprNumberSetFrequency), "HandleNumberSetFreqNullValue"));
             }

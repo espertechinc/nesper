@@ -239,6 +239,34 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
         }
 
+        public override string ToString()
+        {
+            return string.Format(
+                "{0}: {1}, {2}: {3}, {4}: {5}, {6}: {7}, {8}: {9}, {10}: {11}, {12}: {13}, {14}: {15}, {16}: {17}, {18}: {19}, {20}: {21}",
+                nameof(PropertyName),
+                PropertyName,
+                nameof(PropertyType),
+                PropertyType,
+                nameof(ReadMethod),
+                ReadMethod,
+                nameof(IsSimpleReadMethod),
+                IsSimpleReadMethod,
+                nameof(IsIndexedReadMethod),
+                IsIndexedReadMethod,
+                nameof(IsMappedReadMethod),
+                IsMappedReadMethod,
+                nameof(AccessorField),
+                AccessorField,
+                nameof(AccessorProp),
+                AccessorProp,
+                nameof(ReturnType),
+                ReturnType,
+                nameof(DeclaringType),
+                DeclaringType,
+                nameof(ReturnTypeGeneric),
+                ReturnTypeGeneric);
+        }
+
         protected bool Equals(PropertyStem other)
         {
             return string.Equals(PropertyName, other.PropertyName)

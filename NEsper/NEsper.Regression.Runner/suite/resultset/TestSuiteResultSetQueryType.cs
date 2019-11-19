@@ -102,9 +102,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         }
 
         [Test]
-        public void TestResultSetQueryTypeIterator()
+        public void TestResultSetQueryTypeEnumerator()
         {
-            RegressionRunner.Run(session, ResultSetQueryTypeIterator.Executions());
+            RegressionRunner.Run(session, ResultSetQueryTypeEnumerator.Executions());
         }
 
         [Test]

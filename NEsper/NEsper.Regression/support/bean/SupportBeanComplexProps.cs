@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.suite.client.runtime;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
@@ -59,6 +60,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             _mapProperty = mapProperty;
             _arrayProperty = arrayProperty;
             _nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
+        }
+
+        public string GetSimpleProperty()
+        {
+            return _simpleProperty;
         }
 
         public string SimpleProperty {
@@ -153,6 +159,16 @@ namespace com.espertech.esper.regressionlib.support.bean
 
             public SupportBeanSpecialGetterNestedNested NestedNested { get; }
 
+            public string GetNestedValue()
+            {
+                return _nestedValue;
+            }
+
+            public SupportBeanSpecialGetterNestedNested GetNestedNested()
+            {
+                return NestedNested;
+            }
+
             public override bool Equals(object o)
             {
                 if (this == o) {
@@ -191,6 +207,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             public string NestedNestedValue {
                 get => _nestedNestedValue;
                 set => _nestedNestedValue = value;
+            }
+
+            public string GetNestedNestedValue()
+            {
+                return _nestedNestedValue;
             }
         }
     }

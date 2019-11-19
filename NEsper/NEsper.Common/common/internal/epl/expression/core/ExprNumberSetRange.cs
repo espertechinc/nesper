@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -99,14 +100,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     valueUpper.EvaluationType,
                     "valueUpper",
                     valueUpper.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope));
-            if (!valueLower.EvaluationType.IsPrimitive) {
+            if (valueLower.EvaluationType.CanBeNull()) {
                 block.IfRefNull("valueLower")
                     .StaticMethod(typeof(ExprNumberSetRange), METHOD_HANDLENUMBERSETRANGELOWERNULL)
                     .AssignRef("valueLower", Constant(0))
                     .BlockEnd();
             }
 
-            if (!valueUpper.EvaluationType.IsPrimitive) {
+            if (valueUpper.EvaluationType.CanBeNull()) {
                 block.IfRefNull("valueUpper")
                     .StaticMethod(typeof(ExprNumberSetRange), METHOD_HANDLENUMBERSETRANGEUPPERNULL)
                     .AssignRef("valueUpper", EnumValue(typeof(int), "MaxValue"))

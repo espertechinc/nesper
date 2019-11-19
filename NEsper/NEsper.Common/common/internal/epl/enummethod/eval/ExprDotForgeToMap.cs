@@ -51,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            TypeInfo = EPTypeHelper.SingleValue(typeof(IDictionary<string, object>));
+            // TBD: Look at this closer
+            // TypeInfo = EPTypeHelper.SingleValue(typeof(IDictionary<string, object>));
+            TypeInfo = EPTypeHelper.SingleValue(typeof(IDictionary<object, object>));
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             var second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
             if (inputEventType == null) {

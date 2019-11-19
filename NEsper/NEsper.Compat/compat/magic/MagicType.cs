@@ -579,6 +579,8 @@ namespace com.espertech.esper.compat.magic
                     yield return propInfo;
                 } else if (propertyType == typeof(string)) {
                     yield return propInfo;
+                } else if (propertyType.IsGenericDictionary()) {
+                    // pass
                 } else if (propertyType.IsGenericList()) {
                     yield return propInfo;
                 } else if (propertyType.IsGenericEnumerable()) {

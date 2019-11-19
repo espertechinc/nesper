@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.serde
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.MethodName, Constant(valueTypes));
+                .Add(name.MethodName, new Type[] { typeof(object) }, Constant(valueTypes));
         }
 
         public override bool Equals(object o)

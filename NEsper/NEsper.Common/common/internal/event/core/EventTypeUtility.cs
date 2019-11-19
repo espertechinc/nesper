@@ -403,7 +403,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var hasPrimitive = false;
             foreach (var entry in propertyTypesMayPrimitive) {
-                if (entry.Value is Type && ((Type) entry.Value).IsPrimitive) {
+                if (entry.Value is Type && ((Type) entry.Value).IsValueType) {
                     hasPrimitive = true;
                     break;
                 }
@@ -420,7 +420,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 var clazz = (Type) entry.Value;
-                if (!clazz.IsPrimitive) {
+                if (clazz.CanBeNull()) {
                     continue;
                 }
 

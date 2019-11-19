@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -56,25 +57,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     env,
                     "select * from method:MyConstantServiceVariable.FetchABean() as h0",
                     "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'FetchABean' in class '" +
-                    typeof(MyConstantServiceVariable).Name +
-                    "' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'int') [");
+                    typeof(MyConstantServiceVariable).FullName +
+                    "' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
 
                 // null variable value and metadata is instance method
                 TryInvalidCompile(
                     env,
-                    "select field1, field2 from method:MyNullMap.getMapData()",
+                    "select field1, field2 from method:MyNullMap.GetMapData()",
                     "Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
 
                 // variable with context and metadata is instance method
                 var path = new RegressionPath();
                 env.CompileDeploy("create context BetweenStartAndEnd start SupportBean end SupportBean", path);
                 env.CompileDeploy(
-                    "context BetweenStartAndEnd create variable " + typeof(MyMethodHandlerMap).Name + " themap",
+                    "context BetweenStartAndEnd create variable " + typeof(MyMethodHandlerMap).MaskTypeName() + " themap",
                     path);
                 TryInvalidCompile(
                     env,
                     path,
-                    "context BetweenStartAndEnd select field1, field2 from method:themap.getMapData()",
+                    "context BetweenStartAndEnd select field1, field2 from method:themap.GetMapData()",
                     "Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
 
                 env.UndeployAll();
@@ -86,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 foreach (var epl in new[] {
-                    "@Name('s0') select field1, field2 from method:MyMethodHandlerMap.getMapData()",
-                    "@Name('s0') select field1, field2 from method:MyMethodHandlerOA.getOAData()"
+                    "@Name('s0') select field1, field2 from method:MyMethodHandlerMap.GetMapData()",
+                    "@Name('s0') select field1, field2 from method:MyMethodHandlerOA.GetOAData()"
                 }) {
                     env.CompileDeploy(epl);
                     EPAssertionUtil.AssertProps(
@@ -120,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "context MyContext on SupportBean_S2(Id = context.c_s0.Id) set var.postfix=P20",
+                    "context MyContext on SupportBean_S2(Id = context.c_s0.Id) set var.Postfix=P20",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -298,7 +299,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 this.field2 = field2;
             }
 
-            public object[][] OAData => new[] {new object[] {field1, field2}};
+            public object[][] GetOAData()
+            {
+                return new[] {new object[] {field1, field2}};
+            }
 
             public static LinkedHashMap<string, object> GetOADataMetadata()
             {

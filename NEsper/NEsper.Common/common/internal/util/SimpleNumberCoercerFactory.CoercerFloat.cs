@@ -40,26 +40,35 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression value,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(float),
-                    typeof(float?),
-                    "AsFloat",
-                    value,
-                    valueTypeMustNumeric,
-                    codegenMethodScope,
-                    typeof(CoercerFloat),
-                    codegenClassScope);
+                return ((valueType != typeof(float)) &&
+                        (valueType != typeof(float?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
+                    : value;
+
+//                return CodegenCoerceMayNull(
+//                    typeof(float),
+//                    typeof(float?),
+//                    "AsFloat",
+//                    value,
+//                    valueTypeMustNumeric,
+//                    codegenMethodScope,
+//                    typeof(CoercerFloat),
+//                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenFloat(
-                CodegenExpression @ref,
-                Type type)
+                CodegenExpression value,
+                Type valueType)
             {
-                return CodegenCoerceNonNull(typeof(float), typeof(float?), "AsFloat", @ref, type);
+                return ((valueType != typeof(float)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsFloat")
+                    : value;
+
+                //return CodegenCoerceNonNull(typeof(float), typeof(float?), "AsFloat", @ref, type);
             }
         }
     }

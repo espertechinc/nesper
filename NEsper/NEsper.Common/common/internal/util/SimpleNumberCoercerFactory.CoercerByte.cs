@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -40,26 +41,39 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression value,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(byte),
-                    typeof(byte?),
-                    "AsByte",
-                    value,
-                    valueTypeMustNumeric,
-                    codegenMethodScope,
-                    typeof(CoercerByte),
-                    codegenClassScope);
+                return ((valueType != typeof(byte)) &&
+                        (valueType != typeof(byte?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedByte")
+                    : value;
+                
+//                return CodegenCoerceMayNull(
+//                    typeof(byte),
+//                    typeof(byte?),
+//                    "AsByte",
+//                    value,
+//                    valueType,
+//                    codegenMethodScope,
+//                    typeof(CoercerByte),
+//                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenByte(
                 CodegenExpression input,
                 Type inputType)
             {
-                return CodegenCoerceNonNull(typeof(byte), typeof(byte), "AsByte", input, inputType);
+                return (inputType != typeof(byte))
+                    ? CodegenExpressionBuilder.ExprDotMethod(input, "AsByte")
+                    : input;
+
+//                return CodegenCoerceNonNull(
+//                    typeof(byte), 
+//                    "AsByte", 
+//                    input, 
+//                    inputType);
             }
         }
     }

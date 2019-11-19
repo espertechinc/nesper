@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 {
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                     else {
                         var refname = "evalResult" + i;
                         block.DeclareVar(exprForges[i].EvaluationType, refname, expression);
-                        if (!exprForges[i].EvaluationType.IsPrimitive) {
+                        if (exprForges[i].EvaluationType.CanBeNull()) {
                             block.IfRefNotNull(refname)
                                 .AssignArrayElement(
                                     "values",

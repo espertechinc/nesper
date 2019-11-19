@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     innerType.GetBoxedType(),
                     "value",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
-            if (!innerType.IsPrimitive) {
+            if (innerType.CanBeNull()) {
                 forEach.IfRefNull("value").BlockContinue();
             }
 

@@ -19,19 +19,14 @@ namespace com.espertech.esper.common.@internal.rettype
     /// </summary>
     public class ClassMultiValuedEPType : EPType
     {
-        public static int _gid = 0;
-        public readonly int _id = ++_gid;
         public ClassMultiValuedEPType(
             Type container,
-            Type component,
-            Type actualType)
+            Type component)
         {
             Container = container;
             Component = component;
-            Actual = actualType;
         }
 
-        public Type Actual { get; }
         public Type Container { get; }
 
         public Type Component { get; }

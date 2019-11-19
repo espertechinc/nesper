@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -58,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
                 filterType.GetBoxedType(),
                 "pass",
                 filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
-            if (!filterType.IsPrimitive) {
+            if (filterType.CanBeNull()) {
                 method.Block.IfRefNull("pass").BlockReturnNoValue();
             }
 

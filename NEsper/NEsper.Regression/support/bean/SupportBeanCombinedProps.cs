@@ -28,6 +28,11 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public NestedLevOne[] Array { get; }
 
+        public NestedLevOne[] GetArray()
+        {
+            return Array;
+        }
+        
         public static SupportBeanCombinedProps MakeDefaultBean()
         {
             var nested = new NestedLevOne[4]; // [3] left empty on purpose
@@ -67,6 +72,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             public IDictionary<string, NestedLevTwo> Mapprop { get; } = new Dictionary<string, NestedLevTwo>();
 
             public string NestLevOneVal => "abc";
+
+            public string GetNestLevOneVal()
+            {
+                return NestLevOneVal;
+            }
 
             public NestedLevTwo GetMapped(string key)
             {

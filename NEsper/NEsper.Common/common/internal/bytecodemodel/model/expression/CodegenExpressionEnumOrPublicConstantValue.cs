@@ -60,6 +60,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void MergeClasses(ISet<Type> classes)
         {
+#if DIAGNOSTICS
+            if (enumType != null) {
+                Console.WriteLine("MERGE: Enum={0}", enumType.FullName);
+            }
+            else {
+                Console.WriteLine("MERGE: EnumTypeString={0}", enumTypeString);
+            }
+#endif
+
             classes.AddToSet(enumType);
         }
     }

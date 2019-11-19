@@ -40,28 +40,26 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
-                CodegenExpression param,
-                Type valueTypeMustNumeric,
+                CodegenExpression value,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(double),
-                    typeof(double?),
-                    "AsDouble",
-                    param,
-                    valueTypeMustNumeric,
-                    codegenMethodScope,
-                    typeof(CoercerDouble),
-                    codegenClassScope);
+                return ((valueType != typeof(float)) &&
+                        (valueType != typeof(double)) &&
+                        (valueType != typeof(double?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
+                    : value;
             }
 
             public static CodegenExpression CodegenDouble(
-                CodegenExpression param,
-                Type type)
+                CodegenExpression value,
+                Type valueType)
             {
-                return CodegenCoerceNonNull(
-                    typeof(double), typeof(double?), "AsDouble", param, type);
+                return ((valueType != typeof(float)) &&
+                        (valueType != typeof(double)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsDouble")
+                    : value;
             }
 
             public static CodegenExpression CodegenDoubleMayNullBoxedIncludeBig(
@@ -74,15 +72,9 @@ namespace com.espertech.esper.common.@internal.util
                     return CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble");
                 }
 
-                return CodegenCoerceMayNull(
-                    typeof(double),
-                    typeof(double?),
-                    "AsBoxedDouble",
-                    value,
-                    valueType,
-                    codegenMethodScope,
-                    typeof(CoercerDouble),
-                    codegenClassScope);
+                return (valueType != typeof(double) || (valueType != typeof(double?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
+                    : value;
             }
         }
     }

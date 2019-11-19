@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.type
                     return new ClassIdentifierWArray(
                         testType.GetElementType().FullName,
                         testType.GetArrayRank(),
-                        testType.GetElementType().IsPrimitive);
+                        testType.GetElementType().IsValueType);
                 }
                 else {
                     return new ClassIdentifierWArray(typeName); // Generics like Nullable show up here

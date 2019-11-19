@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 object[][] rows = {
                     new object[] {"P00", typeof(string)},
-                    new object[] {"val", typeof(int[])}
+                    new object[] {"val", typeof(int?[])}
                 };
                 for (var i = 0; i < rows.Length; i++) {
                     var message = "Failed assertion for " + rows[i][0];
@@ -64,27 +64,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 EPAssertionUtil.AssertProps(
                     @event,
                     fields,
-                    new object[] {null, new[] {5, 10, 15, 6}});
+                    new object[] {null, new int?[] {5, 10, 15, 6}});
 
                 // test named window and late start
                 env.UndeployModuleContaining("s0");
 
-                epl =
-                    "@Name('s0') select P00, (select window(IntPrimitive) from SupportWindow) as val from SupportBean_S0 as S0";
+                epl = "@Name('s0') select P00, (select window(IntPrimitive) from SupportWindow) as val from SupportBean_S0 as S0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, new[] {10, 15, 6}}); // length window 3
+                    new object[] {null, new int?[] {10, 15, 6}}); // length window 3
 
                 env.SendEventBean(new SupportBean("T1", 5));
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, new[] {15, 6, 5}}); // length window 3
+                    new object[] {null, new int?[] {15, 6, 5}}); // length window 3
 
                 env.UndeployAll();
             }

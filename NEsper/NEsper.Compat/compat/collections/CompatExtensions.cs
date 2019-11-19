@@ -9,10 +9,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using Castle.Components.DictionaryAdapter.Xml;
@@ -697,7 +699,7 @@ namespace com.espertech.esper.compat.collections
         {
             for (var curr = list.First; curr != null;) {
                 var next = curr.Next;
-                if (where.Invoke(curr.Value)) {
+                if (@where.Invoke(curr.Value)) {
                     list.Remove(curr);
                 }
 
@@ -710,7 +712,7 @@ namespace com.espertech.esper.compat.collections
             Func<T, bool> where)
         {
             for (var ii = 0; ii < list.Count;) {
-                var testItem = where.Invoke(list[ii]);
+                var testItem = @where.Invoke(list[ii]);
                 if (testItem) {
                     list.RemoveAt(ii);
                 }
@@ -728,7 +730,7 @@ namespace com.espertech.esper.compat.collections
             var count = 0;
 
             for (var ii = 0; ii < list.Count;) {
-                var testItem = where.Invoke(list[ii]);
+                var testItem = @where.Invoke(list[ii]);
                 if (testItem) {
                     count++;
                     collector.Invoke(list[ii]);
@@ -803,7 +805,7 @@ namespace com.espertech.esper.compat.collections
             this IEnumerable<KeyValuePair<TK, TV>> source,
             MagicMarker magicMarker)
         {
-            var fieldDelimiter = string.Empty;
+            var fieldDelimiter = String.Empty;
 
             using (var textWriter = new StringWriter()) {
                 textWriter.Write('[');
@@ -849,7 +851,7 @@ namespace com.espertech.esper.compat.collections
             this IEnumerable source,
             TextWriter textWriter)
         {
-            var fieldDelimiter = string.Empty;
+            var fieldDelimiter = String.Empty;
 
             if (source != null) {
                 textWriter.Write('[');
@@ -878,7 +880,7 @@ namespace com.espertech.esper.compat.collections
             this IEnumerable source,
             Func<object, string> renderEngine)
         {
-            var fieldDelimiter = string.Empty;
+            var fieldDelimiter = String.Empty;
 
             var builder = new StringBuilder();
             builder.Append('[');
@@ -986,14 +988,23 @@ namespace com.espertech.esper.compat.collections
             return outArray;
         }
 
-        public static Type[] GetParameterTypes(this MethodInfo method)
+        public static Type[] GetParameterTypes(this MethodInfo method, bool ignoreThisOnExtensionMethods = true)
         {
-            return method.GetParameters().Select(p => p.ParameterType).ToArray();
+            IEnumerable<ParameterInfo> parameters = method.GetParameters();
+            if (method.IsExtensionMethod() && ignoreThisOnExtensionMethods) {
+                parameters = parameters.Skip(1);
+            }
+            
+            return parameters
+                .Select(p => p.ParameterType)
+                .ToArray();
         }
 
         public static Type[] GetParameterTypes(this ConstructorInfo ctor)
         {
-            return ctor.GetParameters().Select(p => p.ParameterType).ToArray();
+            return ctor.GetParameters()
+                .Select(p => p.ParameterType)
+                .ToArray();
         }
 
         public static IEnumerable<int> XRange(
@@ -1465,8 +1476,8 @@ namespace com.espertech.esper.compat.collections
         {
             var result = 0;
             if (objects != null) {
-                for (int ii = 0; ii < @objects.Length; ii++) {
-                    var item = @objects[ii];
+                for (int ii = 0; ii < objects.Length; ii++) {
+                    var item = objects[ii];
                     if (item != null) {
                         int itemHash = item.GetHashCode();
                         result *= 397;
@@ -1480,14 +1491,36 @@ namespace com.espertech.esper.compat.collections
 
         public static int HashAll<T>(params T[] @objects)
         {
-            return Hash(@objects);
+            return Hash(objects);
         }
 
+        public static bool ContainsChecked<T>(
+            this ICollection<T> collection,
+            T value)
+        {
+            bool result = collection.Contains(value);
+            return result;
+        }
+        
         public static void Debug(
             string format,
             params object[] formatArgs)
         {
-            Console.WriteLine(format, formatArgs);
+            var stackTrace = new StackTrace(true);
+            var stackFrames = stackTrace.GetFrames();
+            var parent = stackFrames[1];
+            var parentMethod = parent.GetMethod();
+
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("DEBUG: ");
+            stringBuilder.Append("Method: ");
+            stringBuilder.Append(parentMethod.DeclaringType.Name);
+            stringBuilder.Append(".");
+            stringBuilder.Append(parentMethod.Name);
+            stringBuilder.Append(", ");
+            stringBuilder.AppendFormat(format, formatArgs);
+
+            Console.WriteLine(stringBuilder.ToString());
         }
     }
 }

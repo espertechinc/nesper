@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
-            return new EnumReverseForge(numStreamsIncoming);
+            return new EnumReverseForge(numStreamsIncoming, inputEventType == null);
         }
     }
 } // end of namespace

@@ -142,6 +142,11 @@ namespace com.espertech.esper.common.@internal.support
             _indexedProps[index] = value;
         }
 
+        public SupportBeanSpecialGetterNested GetNested()
+        {
+            return Nested;
+        }
+
         [Serializable]
         public class SupportBeanSpecialGetterNested
         {
@@ -162,6 +167,11 @@ namespace com.espertech.esper.common.@internal.support
 
             public SupportBeanSpecialGetterNestedNested NestedNested { get; }
 
+            public SupportBeanSpecialGetterNestedNested GetNestedNested()
+            {
+                return NestedNested;
+            }
+            
             public override bool Equals(object o)
             {
                 if (this == o) {

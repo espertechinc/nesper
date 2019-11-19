@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityQuery;
@@ -68,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 else {
                     var evalType = forges[i].EvaluationType;
-                    if (evalType.IsPrimitive) {
+                    if (evalType.CanNotBeNull()) {
                         assignment = optionalCoercers[i].CoerceCodegen(expression, evalType);
                     }
                     else {

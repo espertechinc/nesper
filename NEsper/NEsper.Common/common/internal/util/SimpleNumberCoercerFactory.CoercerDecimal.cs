@@ -41,47 +41,35 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression param,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(decimal),
-                    typeof(decimal?),
-                    "AsDecimal",
-                    param,
-                    valueTypeMustNumeric,
-                    codegenMethodScope,
-                    typeof(CoercerDecimal),
-                    codegenClassScope);
+                return ((valueType != typeof(decimal)) &&
+                        (valueType != typeof(decimal?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(param, "AsBoxedDecimal")
+                    : param;
+
+//                return CodegenCoerceMayNull(
+//                    typeof(decimal),
+//                    typeof(decimal?),
+//                    "AsDecimal",
+//                    param,
+//                    valueTypeMustNumeric,
+//                    codegenMethodScope,
+//                    typeof(CoercerDecimal),
+//                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenDecimal(
                 CodegenExpression param,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(decimal), typeof(decimal?), "AsDecimal", param, type);
-            }
+                return type != typeof(decimal)
+                    ? CodegenExpressionBuilder.ExprDotMethod(param, "AsDecimal")
+                    : param;
 
-            public static CodegenExpression CodegenDoubleMayNullBoxedIncludeBig(
-                CodegenExpression value,
-                Type valueType,
-                CodegenMethodScope codegenMethodScope,
-                CodegenClassScope codegenClassScope)
-            {
-                if (valueType.IsBigInteger() || valueType.IsDecimal()) {
-                    return CodegenExpressionBuilder.ExprDotMethod(value, "AsDecimal");
-                }
-
-                return CodegenCoerceMayNull(
-                    typeof(decimal),
-                    typeof(decimal?),
-                    "AsDecimal",
-                    value,
-                    valueType,
-                    codegenMethodScope,
-                    typeof(CoercerDecimal),
-                    codegenClassScope);
+//                return CodegenCoerceNonNull(typeof(decimal), typeof(decimal?), "AsDecimal", param, type);
             }
         }
     }

@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyPrimMapEvent", properties);
 
             Properties myLevel2 = new Properties();
-            myLevel2.Put("innermap", typeof(IDictionary<string, object>).FullName);
+            myLevel2.Put("Innermap", typeof(IDictionary<string, object>).FullName);
             configuration.Common.AddEventType("MyLevel2", myLevel2);
 
             // create a named map

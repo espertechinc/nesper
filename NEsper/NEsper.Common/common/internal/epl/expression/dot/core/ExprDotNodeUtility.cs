@@ -300,7 +300,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         continue;
                     }
 
-                    if (chainElement.Name.Equals("Get", StringComparison.InvariantCultureIgnoreCase) &&
+                    if (chainElement.Name.Equals("get", StringComparison.InvariantCultureIgnoreCase) &&
                         paramTypes.Length == 1 &&
                         Boxing.GetBoxedType(paramTypes[0]) == typeof(int?)) {
                         var componentType = Boxing.GetBoxedType(type.Component);
@@ -598,7 +598,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     block.DeclareVar(reftype, refname, invocation);
                     currentTarget = refname;
                     currentTargetType = reftype;
-                    if (!reftype.IsPrimitive) {
+                    if (reftype.CanBeNull()) {
                         block.IfRefNull(refname)
                             .Apply(
                                 Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, ConstantNull()))

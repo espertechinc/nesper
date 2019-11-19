@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
 
         CodegenExpression CoerceCodegenMayNullBoxed(
             CodegenExpression value,
-            Type valueTypeMustNumeric,
+            Type valueType,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
     }

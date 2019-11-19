@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", ExprDotName(sec, "AsDouble"))));
+            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", ExprDotMethod(sec, "AsDouble"))));
         }
 
         public long DeltaForSecondsNumber(object timeInSeconds)

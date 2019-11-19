@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -408,7 +409,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 evaluationType,
                 refname,
                 assignment.Forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
-            if (!evaluationType.IsValueType) {
+            if (evaluationType.CanBeNull()) {
                 block.IfRefNullReturnNull(refname);
             }
 

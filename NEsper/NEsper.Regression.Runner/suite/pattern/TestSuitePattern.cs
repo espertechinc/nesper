@@ -64,37 +64,37 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternOperatorNot.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternObserverTimerInterval()
         {
             RegressionRunner.Run(session, PatternObserverTimerInterval.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternGuardTimerWithin()
         {
             RegressionRunner.Run(session, PatternGuardTimerWithin.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternOperatorFollowedBy()
         {
             RegressionRunner.Run(session, PatternOperatorFollowedBy.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternOperatorEvery()
         {
             RegressionRunner.Run(session, PatternOperatorEvery.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternOperatorMatchUntil()
         {
             RegressionRunner.Run(session, PatternOperatorMatchUntil.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternOperatorEveryDistinct()
         {
             RegressionRunner.Run(session, PatternOperatorEveryDistinct.Executions());
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternGuardWhile.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternGuardTimerWithinOrMax()
         {
             RegressionRunner.Run(session, new PatternGuardTimerWithinOrMax());
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternComplexPropertyAccess.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternOperatorFollowedByMax()
         {
             RegressionRunner.Run(session, PatternOperatorFollowedByMax.Executions());
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionRunner.Run(session, PatternConsumingFilter.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestPatternConsumingPattern()
         {
             RegressionRunner.Run(session, PatternConsumingPattern.Executions());

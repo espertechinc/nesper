@@ -40,26 +40,35 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression value,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenCoerceMayNull(
-                    typeof(short),
-                    typeof(short?),
-                    "AsShort",
-                    value,
-                    valueTypeMustNumeric,
-                    codegenMethodScope,
-                    typeof(CoercerShort),
-                    codegenClassScope);
+                return ((valueType != typeof(short)) &&
+                        (valueType != typeof(short?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedShort")
+                    : value;
+
+//                return CodegenCoerceMayNull(
+//                    typeof(short),
+//                    typeof(short?),
+//                    "AsShort",
+//                    value,
+//                    valueTypeMustNumeric,
+//                    codegenMethodScope,
+//                    typeof(CoercerShort),
+//                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenShort(
                 CodegenExpression input,
                 Type inputType)
             {
-                return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsShort", input, inputType);
+                return ((inputType != typeof(short)) &&
+                        (inputType != typeof(short?)))
+                    ? CodegenExpressionBuilder.ExprDotMethod(input, "AsShort")
+                    : input;
+                //return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsShort", input, inputType);
             }
         }
     }

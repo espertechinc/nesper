@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 Type resultType = childForges[childIndex].EvaluationType;
                 varargForges[i] = childForges[childIndex];
 
-                if (resultType == null && !varargClass.IsPrimitive) {
+                if (resultType == null && varargClass.CanBeNull()) {
                     continue;
                 }
 

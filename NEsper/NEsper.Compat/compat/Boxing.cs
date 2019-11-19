@@ -116,10 +116,9 @@ namespace com.espertech.esper.compat
             return type;
         }
 
-        public static bool IsBoxedType<T>(this Type type)
+        public static bool IsBoxedType(this Type type)
         {
-            return (type.GetBoxedType() == typeof(T).GetBoxedType());
+            return (type.GetBoxedType() == type);
         }
-
     }
 }

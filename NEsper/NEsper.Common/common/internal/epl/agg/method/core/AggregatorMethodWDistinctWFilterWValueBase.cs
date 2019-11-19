@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var evaluationType = forges[0].EvaluationType.GetBoxedType();
+            var evaluationType = forges[0].EvaluationType;
             ApplyEvalValuePrefix(true, method, symbols, forges, classScope);
             ApplyEvalEnterNonNull(Ref("val"), evaluationType, method, symbols, forges, classScope);
         }
@@ -119,15 +120,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var type = forges[0].EvaluationType.GetBoxedType();
+            var type = forges[0].EvaluationType;
             var expr = forges[0].EvaluateCodegen(type, method, symbols, classScope);
             method.Block.DeclareVar(type, "val", expr);
-            if (!type.IsPrimitive) {
+            if (type.CanBeNull()) {
                 method.Block.IfRefNull("val").BlockReturnNoValue();
             }
 
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", Ref("val"))))
+                method.Block
+                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", Ref("val"))))
                     .BlockReturnNoValue();
             }
         }

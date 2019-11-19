@@ -72,8 +72,6 @@ namespace com.espertech.esper.common.@internal.util
         private static readonly Type BaseGenericDictionary =
             typeof(IDictionary<object, object>).GetGenericTypeDefinition();
 
-        private static List<MethodInfo> ExtensionMethods;
-
         /// <summary>
         ///     Initializes the <see cref="TypeHelper" /> class.
         /// </summary>
@@ -723,7 +721,7 @@ namespace com.espertech.esper.common.@internal.util
             Type fromType,
             Type targetTypeBoxed)
         {
-            if (!fromType.IsPrimitive)
+            if (fromType.CanBeNull())
             {
                 return CoerceNumberBoxedToBoxedCodegen(expr, fromType, targetTypeBoxed);
             }
@@ -3024,7 +3022,7 @@ namespace com.espertech.esper.common.@internal.util
                 var methodParameters = method.GetParameterTypes();
                 for (var i = 0; i < methodParameters.Length; i++)
                 {
-                    if (methodParameters[i].IsPrimitive && args[i] == null)
+                    if (methodParameters[i].IsValueType && args[i] == null)
                     {
                         return "NullPointerException invoking method '" + method.Name +
                                "' of class '" + classOrPropertyName +
@@ -3081,7 +3079,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 for (var i = 0; i < methodParameters.Length; i++)
                 {
-                    if (methodParameters[i].IsPrimitive && args[i] == null)
+                    if (methodParameters[i].IsValueType && args[i] == null)
                     {
                         return "NullPointerException invoking method '" + methodName +
                                "' of class '" + classOrPropertyName +
@@ -3411,38 +3409,6 @@ namespace com.espertech.esper.common.@internal.util
             return o is T1 || o is T2 || o is T3;
         }
 
-        public static void InvalidateExtensionMethodsCache()
-        {
-            ExtensionMethods = null;
-        }
-
-        public static IEnumerable<MethodInfo> GetExtensionMethods()
-        {
-            if (ExtensionMethods == null)
-            {
-                ExtensionMethods = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(
-                        assembly => assembly.GetTypes().Where(t => t.IsDefined(typeof(ExtensionAttribute), true))
-                            .SelectMany(
-                                type => type.GetMethods().Where(m => m.IsDefined(typeof(ExtensionAttribute), true))))
-                    .ToList();
-            }
-
-            return ExtensionMethods;
-        }
-
-        public static IEnumerable<MethodInfo> GetExtensionMethods(Type declaringType)
-        {
-            var extensionMethods = GetExtensionMethods()
-                .Where(m => m.GetParameters()[0].ParameterType == declaringType);
-            return extensionMethods;
-        }
-
-        public static bool IsExtensionMethod(this MethodInfo method)
-        {
-            return method.IsDefined(typeof(ExtensionAttribute), true);
-        }
-
         public static bool IsAttribute(this Type type)
         {
             return IsSubclassOrImplementsInterface<Attribute>(type);
@@ -3608,6 +3574,6 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         public string TypeName { get; }
-        public bool Handled { get; set; }
+        public bool Handled { get; }
     }
 }

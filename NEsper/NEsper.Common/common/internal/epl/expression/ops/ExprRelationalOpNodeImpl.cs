@@ -64,16 +64,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => relationalOpEnum;
         }
 
-        public override void AddChildNode(ExprNode childNode)
-        {
-            base.AddChildNode(childNode);
-        }
-
-        public override void AddChildNodes(ICollection<ExprNode> childNodeColl)
-        {
-            base.AddChildNodes(childNodeColl);
-        }
-        
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes

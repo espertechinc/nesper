@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -92,36 +93,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(bool?),
                 typeof(ExprEqualsNodeForgeNCEvalEquals),
                 codegenClassScope);
-            var block = methodNode.Block
+            var block = methodNode.Block;
+
+            block
                 .DeclareVar(lhsType, "l", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(rhsType, "r", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
             if (!forge.ForgeRenderable.IsIs) {
-                if (!lhsType.IsPrimitive) {
+                if (lhsType.CanBeNull()) {
                     block.IfRefNullReturnNull("l");
                 }
 
-                if (!rhsType.IsPrimitive) {
+                if (rhsType.CanBeNull()) {
                     block.IfRefNullReturnNull("r");
                 }
             }
             else {
-                if (!lhsType.IsPrimitive && !rhsType.IsPrimitive) {
+                if (lhsType.CanBeNull() && rhsType.CanBeNull()) {
                     block.IfRefNull("l").BlockReturn(EqualsNull(Ref("r")));
                 }
 
-                if (!rhsType.IsPrimitive) {
+                if (rhsType.CanBeNull()) {
                     block.IfRefNull("r").BlockReturn(ConstantFalse());
                 }
             }
 
-            block.DeclareVar<object>(
+            block.DeclareVar(
+                forge.NumberCoercerLHS.ReturnType,
                 "left",
-                forge.NumberCoercerLHS.CoerceCodegen(Ref("l"), lhs.Forge.EvaluationType));
-            block.DeclareVar<object>(
+                forge.NumberCoercerLHS.CoerceCodegen(Ref("l"), lhsType));
+            block.DeclareVar(
+                forge.NumberCoercerRHS.ReturnType,
                 "right",
-                forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhs.Forge.EvaluationType));
-            var compare = ExprDotMethod(Ref("left"), "Equals", Ref("right"));
+                forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhsType));
+
+            //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
+            
+            var compare = StaticMethod(typeof(object), "Equals", Ref("left"), Ref("right"));
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(compare);
             }

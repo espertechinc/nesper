@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 reflectionMethod.ReturnType,
                 "result",
                 LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()));
-            if (!reflectionMethod.ReturnType.IsPrimitive) {
+            if (reflectionMethod.ReturnType.CanBeNull()) {
                 method.Block.IfRefNull("result").BlockReturn(Constant(0));
             }
 

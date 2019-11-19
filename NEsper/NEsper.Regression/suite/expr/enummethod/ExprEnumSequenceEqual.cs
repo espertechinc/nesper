@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = new [] { "val0" };
                 var eplFragment =
-                    "@Name('s0') select Contained.selectFrom(x => Key0).sequenceEqual(Contained.selectFrom(y -> Id)) as val0 " +
+                    "@Name('s0') select Contained.selectFrom(x -> Key0).sequenceEqual(Contained.selectFrom(y -> Id)) as val0 " +
                     "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

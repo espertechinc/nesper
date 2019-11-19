@@ -53,9 +53,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
+                var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
                 var epl = "@Name('s0') select " +
                           "{1d, 2d}.sumOf() as c0," +
-                          "{BigIntegerHelper.ValueOf(1), BigIntegerHelper.ValueOf(2)}.sumOf() as c1, " +
+                          "{" + bigIntegerHelper + ".ValueOf(1), " + bigIntegerHelper + ".ValueOf(2)}.sumOf() as c1, " +
                           "{1L, 2L}.sumOf() as c2, " +
                           "{1L, 2L, null}.sumOf() as c3 " +
                           " from SupportBean";
@@ -226,11 +227,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select beans.sumof() from SupportBean_Container";
+                epl = "select Beans.sumof() from SupportBean_Container";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+                    "Failed to validate select-clause expression 'Beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
             }
         }
     }

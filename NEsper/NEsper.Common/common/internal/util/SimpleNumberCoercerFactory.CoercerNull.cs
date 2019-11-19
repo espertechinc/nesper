@@ -17,10 +17,11 @@ namespace com.espertech.esper.common.@internal.util
     {
         private class CoercerNull : SimpleNumberCoercer
         {
-            public static readonly CoercerNull INSTANCE = new CoercerNull();
+            public static readonly CoercerNull INSTANCE = new CoercerNull(typeof(object));
 
-            private CoercerNull()
+            public CoercerNull(Type returnType)
             {
+                ReturnType = returnType;
             }
 
             public object CoerceBoxed(object numToCoerce)
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce;
             }
 
-            public Type ReturnType => typeof(object);
+            public Type ReturnType { get; }
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
                 CodegenExpression value,
-                Type valueTypeMustNumeric,
+                Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgableAIFactoryProviderBase;
@@ -119,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
 
-                if (ResolvedType != null && OptionalType.IsArrayOfPrimitive && !ResolvedType.IsPrimitive) {
+                if (ResolvedType != null && OptionalType.IsArrayOfPrimitive && ResolvedType.CanBeNull()) {
                     throw new ExprValidationException(
                         "Invalid use of the '" +
                         ClassIdentifierWArray.PRIMITIVE_KEYWORD +

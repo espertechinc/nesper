@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     evaluationType,
                     "parameter",
                     forge.ForgeTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
-            if (!evaluationType.IsPrimitive) {
+            if (evaluationType.CanBeNull()) {
                 block.IfRefNullReturnNull("parameter");
             }
 

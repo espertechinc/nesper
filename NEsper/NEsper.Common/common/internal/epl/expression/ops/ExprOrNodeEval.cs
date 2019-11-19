@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             foreach (var child in parent.ChildNodes) {
                 count++;
                 var childType = child.Forge.EvaluationType;
-                if (childType.IsPrimitive) {
+                if (childType.CanNotBeNull()) {
                     block.IfCondition(
                             child.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
                         .BlockReturn(ConstantTrue());

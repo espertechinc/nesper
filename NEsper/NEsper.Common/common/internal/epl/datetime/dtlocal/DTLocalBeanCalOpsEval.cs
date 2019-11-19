@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterReturnType,
                     forge.getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
-            if (!forge.getterReturnType.IsPrimitive) {
+            if (forge.getterReturnType.CanBeNull()) {
                 methodNode.Block.IfRefNullReturnNull("timestamp");
                 if (forge.getterReturnType.IsNullable()) {
                     timestamp = Unbox(timestamp);

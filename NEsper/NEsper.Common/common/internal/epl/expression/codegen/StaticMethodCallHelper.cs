@@ -103,8 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 if (parameter.ParameterType == args[i].DeclareType) {
                     expressions[i] = Ref(args[i].BlockRefName);
                 }
-                else if ((parameter.ParameterType.IsValueType || parameter.ParameterType.IsPrimitive) &&
-                         (args[i].DeclareType.IsNullable())) {
+                else if (parameter.ParameterType.CanNotBeNull() && args[i].DeclareType.IsNullable()) {
                     expressions[i] = ExprDotName(Ref(args[i].BlockRefName), "Value");
                 }
                 else {

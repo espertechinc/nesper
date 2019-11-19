@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -233,7 +234,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     assigned = Unbox(assigned, types[i]);
                 }
 
-                if (!types[i].IsPrimitive && updateItem.IsNotNullableField) {
+                if (types[i].CanBeNull() && updateItem.IsNotNullableField) {
                     method.Block
                         .IfRefNull(@ref)
                         .StaticMethod(

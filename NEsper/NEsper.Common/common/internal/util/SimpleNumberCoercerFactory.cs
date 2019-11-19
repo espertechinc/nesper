@@ -13,6 +13,7 @@ using System.Numerics;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -108,7 +109,7 @@ namespace com.espertech.esper.common.@internal.util
             if (type == boxed) {
                 return ExprDotName(param, "Value");
             }
-            if (type.IsPrimitive) {
+            if (type.CanNotBeNull()) {
                 return Cast(primitive, param);
             }
 
@@ -133,7 +134,7 @@ namespace com.espertech.esper.common.@internal.util
                 return ConstantNull();
             }
 
-            if (type.IsPrimitive) {
+            if (type.CanNotBeNull()) {
                 return Cast(primitive, param);
             }
 

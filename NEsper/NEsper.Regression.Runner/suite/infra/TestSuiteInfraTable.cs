@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd()
         {
             RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());

@@ -22,9 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumReverseForge : EnumEval,
         EnumForge
     {
-        public EnumReverseForge(int numStreams)
+        public EnumReverseForge(
+            int numStreams,
+            bool isScalar)
         {
             StreamNumSize = numStreams;
+            IsScalar = isScalar;
         }
 
         public object EvaluateEnumMethod(
@@ -41,26 +44,36 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             result.Reverse();
             return result;
         }
-
+        
         public virtual EnumEval EnumEvaluator => this;
 
         public int StreamNumSize { get; }
+
+        public bool IsScalar { get; }
 
         public CodegenExpression Codegen(
             EnumForgeCodegenParams args,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var returnType = IsScalar
+                ? typeof(ICollection<object>)
+                : typeof(ICollection<EventBean>);
+            var namedParams = IsScalar
+                ? EnumForgeCodegenNames.PARAMS_OBJECT
+                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var collectionType = IsScalar
+                ? typeof(List<object>)
+                : typeof(List<EventBean>);
+            
             var method = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(EnumReverseForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
+                .MakeChild(returnType, typeof(EnumReverseForge), codegenClassScope)
+                .AddParam(namedParams)
                 .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar<List<object>>(
-                    "result",
-                    NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL))
-                .StaticMethod(typeof(Collections), "Reverse", Ref("result"))
+                .DeclareVar(collectionType, "result", NewInstance(collectionType, EnumForgeCodegenNames.REF_ENUMCOLL))
+                .ExprDotMethod(Ref("result"), "Reverse")
                 .MethodReturn(Ref("result"));
             return LocalMethod(method, args.Expressions);
         }

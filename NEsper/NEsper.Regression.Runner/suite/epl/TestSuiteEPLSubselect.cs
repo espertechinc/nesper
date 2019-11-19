@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectWithinHaving.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLSubselectWithinPattern()
         {
             RegressionRunner.Run(session, EPLSubselectWithinPattern.Executions());

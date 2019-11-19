@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     new [] { "a" },
                     new object[] {"yOne"});
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a"));
+                Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
 
                 env.UndeployAll();
             }

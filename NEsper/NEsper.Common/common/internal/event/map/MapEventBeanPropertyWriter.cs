@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             this.propertyName = propertyName;
         }
 
-        public void Write(
+        public virtual void Write(
             object value,
             EventBean target)
         {
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Write(value, map.Properties);
         }
 
-        public CodegenExpression WriteCodegen(
+        public virtual CodegenExpression WriteCodegen(
             CodegenExpression assigned,
             CodegenExpression und,
             CodegenExpression target,

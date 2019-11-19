@@ -37,6 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            
             execs.Add(new EPLOtherUpdateBean());
             execs.Add(new EPLOtherUpdateFieldUpdateOrder());
             execs.Add(new EPLOtherUpdateInvalid());
@@ -56,6 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             execs.Add(new EPLOtherUpdateListenerDeliveryMultiupdate());
             execs.Add(new EPLOtherUpdateListenerDeliveryMultiupdateMixed());
             execs.Add(new EPLOtherUpdateMapIndexProps());
+
             return execs;
         }
 
@@ -496,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                    "Invalid assignment of column 'LongPrimitive' of type 'System.Int64' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                    "Invalid assignment of column 'LongPrimitive' of type 'System.Nullable<System.Int64>' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -1532,7 +1534,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     RunAssertionUpdateIStreamSetMapProps(env, rep);
                 }
-
+                
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     RunAssertionNamedWindowSetMapProps(env, rep);
                 }

@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             object[][] expectedScalarArray = {
                 new object[] {"c0", typeof(string[]), null, null},
-                new object[] {"c1", typeof(int[]), null, null},
+                new object[] {"c1", typeof(int?[]), null, null},
                 new object[] {"c2", typeof(bool?), null, null},
                 new object[] {"c3", typeof(bool?), null, null}
             };

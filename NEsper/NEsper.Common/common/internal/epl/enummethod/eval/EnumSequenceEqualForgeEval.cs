@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -73,64 +75,63 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return false;
             }
 
-            if (!(otherObj is ICollection<T>)) {
-                if (otherObj is Array otherArray) {
-                    if (enumcoll.Count != otherArray.Length) {
-                        return false;
-                    }
+            if (otherObj is ICollection<T> otherCollection) {
+                if (enumcoll.Count != otherCollection.Count) {
+                    return false;
+                }
 
-                    if (enumcoll.IsEmpty()) {
-                        return true;
-                    }
-
-                    var myIterator = enumcoll.GetEnumerator();
-                    for (var i = 0; i < enumcoll.Count; i++) {
-                        var first = myIterator.Current;
-                        var second = (T) otherArray.GetValue(i);
-                        if (!Equals(first, second)) {
-                            return false;
-                        }
-                    }
-
+                if (enumcoll.IsEmpty()) {
                     return true;
                 }
-                else {
-                    Log.Warn(
-                        "Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" +
-                        otherObj.GetType() +
-                        "'");
+
+                IEnumerator oneEnum = enumcoll.GetEnumerator();
+                IEnumerator twoEnum = otherCollection.GetEnumerator();
+                return CompareSequenceImpl<T>(oneEnum, twoEnum);
+            }
+
+            if (otherObj is Array otherArray) {
+                if (enumcoll.Count != otherArray.Length) {
                     return false;
                 }
+
+                if (enumcoll.IsEmpty()) {
+                    return true;
+                }
+
+                IEnumerator oneEnum = enumcoll.GetEnumerator();
+                IEnumerator twoEnum = otherArray.GetEnumerator();
+                return CompareSequenceImpl<T>(oneEnum, twoEnum);
             }
 
-            var other = (ICollection<T>) otherObj;
-            if (enumcoll.Count != other.Count) {
-                return false;
+            var otherObjType = otherObj.GetType();
+            if (otherObjType.IsGenericCollection() && typeof(T).IsAssignableFrom(otherObjType.GetCollectionItemType())) {
+                var unwrapCollection = otherObj.Unwrap<T>();
+                if (enumcoll.Count != unwrapCollection.Count) {
+                    return false;
+                }
+
+                if (enumcoll.IsEmpty()) {
+                    return true;
+                }
+
+                IEnumerator oneEnum = enumcoll.GetEnumerator();
+                IEnumerator twoEnum = unwrapCollection.GetEnumerator();
+                return CompareSequenceImpl<T>(oneEnum, twoEnum);
             }
 
-            if (enumcoll.IsEmpty()) {
-                return true;
-            }
+            Log.Warn(
+                "Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" +
+                otherObj.GetType().CleanName() + "'");
+            return false;
+        }
 
-            var oneEnum = enumcoll.GetEnumerator();
-            var twoEnum = other.GetEnumerator();
-            for (var i = 0; i < enumcoll.Count; i++) {
+        private static bool CompareSequenceImpl<T>(IEnumerator oneEnum,
+            IEnumerator twoEnum)
+        {
+            while (oneEnum.MoveNext() && twoEnum.MoveNext()) {
                 var first = oneEnum.Current;
                 var second = twoEnum.Current;
-
-                if (first == null) {
-                    if (second != null) {
-                        return false;
-                    }
-
-                    continue;
-                }
-
-                if (second == null) {
-                    return false;
-                }
-
-                if (!first.Equals(second)) {
+                if (!Equals(first, second)) {
                     return false;
                 }
             }

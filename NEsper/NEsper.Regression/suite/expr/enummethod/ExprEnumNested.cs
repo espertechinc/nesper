@@ -24,9 +24,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
             execs.Add(new ExprEnumMinByWhere());
             execs.Add(new ExprEnumCorrelated());
+            #endif
             execs.Add(new ExprEnumAnyOf());
             return execs;
         }
@@ -117,14 +119,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 // try "in" with "Set<String> multivalues"
                 env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x=>x.Level2s.anyOf(y -> 'A' in (y.Multivalues))))")
+                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> 'A' in (y.Multivalues))))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();
 
                 // try "in" with "String singlevalue"
                 env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x=>x.Level2s.anyOf(y -> y.Singlevalue = 'A')))")
+                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> y.Singlevalue = 'A')))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();

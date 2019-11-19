@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -66,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var forgeEvaluationType = forge.EvaluationType;
-            // REVIEW: Should all generated classes be boxed to nullable to allow
+            // TBD: Should all generated classes be boxed to nullable to allow
             //    for nullable values in case we do primitive conversion?
-            if (!childType.IsPrimitive) {
+            if (childType.CanBeNull()) {
                 forgeEvaluationType = forgeEvaluationType.GetBoxedType();
             }
 
@@ -82,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     childType,
                     "result",
                     child.Forge.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
-            if (!childType.IsPrimitive) {
+            if (childType.CanBeNull()) {
                 block.IfRefNullReturnNull("result");
             }
 

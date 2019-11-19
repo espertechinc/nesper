@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -78,31 +79,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(ExprRelationalOpNodeForgeEval),
                 codegenClassScope);
 
-            if ((lhsType != rhsType) && (lhsType.GetBoxedType() != rhsType.GetBoxedType())) {
-                throw new IllegalStateException("handle coercion dynamics");
-            }
-            
             CodegenExpression lhsRef = Ref("left");
             CodegenExpression rhsRef = Ref("right");
             
             var block = methodNode.Block;
 
             block.DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
-            if (!lhsType.IsPrimitive) {
+            if (lhsType.CanBeNull()) {
                 block.IfRefNullReturnNull("left");
                 if (lhsType.IsNullable()) {
                     lhsRef = Unbox(lhsRef);
+                    lhsType = rhsType.GetUnboxedType();
                 }
             }
 
             block.DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
-            if (!rhsType.IsPrimitive) {
+            if (rhsType.CanBeNull()) {
                 block.IfRefNullReturnNull("right");
                 if (rhsType.IsNullable()) {
                     rhsRef = Unbox(rhsRef);
+                    rhsType = rhsType.GetUnboxedType();
                 }
             }
 
+            // At this point, the types should be unboxed and evaluated.  What we need to know now is if the two values
+            // are "compatible" from a relational operation standpoint.  For example, if they are both numeric we are
+            // fine.  If it's a BigInteger and a long, we have a problem.
+
+            if (lhsType != rhsType) {
+                if (lhsType.IsNumeric() && rhsType.IsNumeric()) { // Implicit conversion
+                }
+                else {
+                    throw new IllegalStateException("handle coercion dynamics");
+                }
+            }
+            
             block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType));
             return LocalMethod(methodNode);
         }

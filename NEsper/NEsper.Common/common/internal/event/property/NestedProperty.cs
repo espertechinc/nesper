@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
-                    if (result.IsArray || result.IsPrimitive || result.IsBuiltinDataType()) {
+                    if (result.IsArray || result.IsValueType || result.IsBuiltinDataType()) {
                         return null;
                     }
 

@@ -50,6 +50,21 @@ namespace com.espertech.esper.regressionlib.support.bean
             set => _id = value;
         }
 
+        public string GetSymbol()
+        {
+            return Symbol;
+        }
+
+        public double GetPrice()
+        {
+            return Price;
+        }
+
+        public long? GetVolume()
+        {
+            return Volume;
+        }
+        
         public double GetPriceTimesVolume(double factor)
         {
             return Price * Volume.GetValueOrDefault(0L) * factor;

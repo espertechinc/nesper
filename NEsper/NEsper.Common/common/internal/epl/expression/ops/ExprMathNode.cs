@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             if (MathArithTypeEnum == MathArithTypeEnum.DIVIDE && !isIntegerDivision) {
-                if (resultType != typeof(decimal?)) {
+                if (!resultType.IsDecimal()) {
                     resultType = typeof(double?);
                 }
             }

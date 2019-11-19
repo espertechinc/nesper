@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 
                     var evaluator = possibleAssignment.Second.Forge;
                     var writers = eventTypeSPI.GetWriter(propertyName);
-                    var notNullableField = writableProperty.PropertyType.IsPrimitive;
+                    var notNullableField = writableProperty.PropertyType.IsValueType;
 
                     properties.Add(propertyName);
                     TypeWidenerSPI widener;

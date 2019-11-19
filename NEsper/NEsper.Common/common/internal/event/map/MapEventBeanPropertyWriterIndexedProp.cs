@@ -9,6 +9,9 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -32,6 +35,42 @@ namespace com.espertech.esper.common.@internal.@event.map
             var arrayEntry = map.Get(propertyName) as Array;
             if (arrayEntry != null && arrayEntry.Length > _index) {
                 arrayEntry.SetValue(value, _index);
+            }
+        }
+        
+        public override CodegenExpression WriteCodegen(
+            CodegenExpression assigned, 
+            CodegenExpression und,
+            CodegenExpression target,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            return CodegenExpressionBuilder.StaticMethod(
+                this.GetBoxedType(),
+                "MapWriteSetArrayProp", 
+                CodegenExpressionBuilder.Constant(propertyName),
+                CodegenExpressionBuilder.Constant(_index),
+                und,
+                assigned);
+        }
+        
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="index"></param>
+        /// <param name="map"></param>
+        /// <param name="value"></param>
+        
+        public static void MapWriteSetArrayProp(
+            string propertyName,
+            int index,
+            IDictionary<string, object> map,
+            object value)
+        {
+            var mapValue = map.Get(propertyName);
+            if (mapValue is Array arrayValue && arrayValue.Length > index) {
+                arrayValue.SetValue(value, index);
             }
         }
     }

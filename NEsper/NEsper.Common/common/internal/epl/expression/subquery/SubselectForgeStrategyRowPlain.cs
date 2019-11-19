@@ -120,21 +120,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     if (subselect.subselectMultirowType == null) {
                         var eval = ((ExprIdentNode) subselect.SelectClause[0]).ExprEvaluatorIdent;
                         var method = parent.MakeChild(
-                            typeof(ICollection<object>),
+                            typeof(ICollection<EventBean>),
                             this.GetType(),
                             classScope);
-                        method.Block.DeclareVar<ICollection<object>>(
+                        method.Block.DeclareVar<ICollection<EventBean>>(
                             "events",
-                            NewInstance<ArrayDeque<object>>(
+                            NewInstance<ArrayDeque<EventBean>>(
                                 ExprDotName(symbols.GetAddMatchingEvents(method), "Count")));
                         var @foreach = method.Block.ForEach(
                             typeof(EventBean),
                             "@event",
                             symbols.GetAddMatchingEvents(method));
                         {
-                            @foreach.DeclareVar<object>(
+                            @foreach.DeclareVar<EventBean>(
                                     "fragment",
-                                    eval.Getter.EventBeanFragmentCodegen(@Ref("@event"), method, classScope))
+                                    CodegenLegoCast.CastSafeFromObjectType(
+                                        typeof(EventBean),
+                                        eval.Getter.EventBeanFragmentCodegen(@Ref("@event"), method, classScope)))
                                 .IfRefNull("fragment")
                                 .BlockContinue()
                                 .ExprDotMethod(@Ref("events"), "Add", @Ref("fragment"));

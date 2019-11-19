@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.UndeployAll();
 
                 // test "events" reserved keyword in package name
-                env.CompileDeploy("select " + typeof(SampleEnumInEventsPackage).Name + ".A from SupportBean");
+                env.CompileDeploy("select " + typeof(SampleEnumInEventsPackage).FullName + ".A from SupportBean");
 
                 env.UndeployAll();
             }
@@ -130,12 +130,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select " +
                           "InnerTypes('key1') as c0,\n" +
-                          "InnerTypes(key) as c1,\n" +
+                          "InnerTypes(Key) as c1,\n" +
                           "InnerTypes('key1').Ids[1] as c2,\n" +
-                          "InnerTypes(key).GetIds(subkey) as c3,\n" +
+                          "InnerTypes(Key).GetIds(Subkey) as c3,\n" +
                           "InnerTypesArray[1].Ids[1] as c4,\n" +
                           "InnerTypesArray(Subkey).GetIds(Subkey) as c5,\n" +
-                          "InnerTypesArray(Subkey).GetIds(s0, 'xyz') as c6,\n" +
+                          "InnerTypesArray(Subkey).GetIds(S0, 'xyz') as c6,\n" +
                           "InnerTypesArray(Subkey).GetIds(*, 'xyz') as c7\n" +
                           "from SupportEventTypeErasure as S0";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -179,13 +179,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     env,
                     "select abc.noSuchMethod() from SupportBean abc",
                     "Failed to validate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).CleanName() +
                     "' taking no parameters [select abc.noSuchMethod() from SupportBean abc]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                    "Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
-                    typeof(SupportChainChildOne).Name +
+                    "Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'GetChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    typeof(SupportChainChildOne).CleanName() +
                     "' taking no parameters [select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
             }
         }
@@ -218,14 +218,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "create window NodeWindow#unique(Id) as SupportEventNode;\n";
                 epl += "insert into NodeWindow select * from SupportEventNode;\n";
-                epl += "create window NodeDataWindow#unique(nodeId) as SupportEventNodeData;\n";
+                epl += "create window NodeDataWindow#unique(NodeId) as SupportEventNodeData;\n";
                 epl += "insert into NodeDataWindow select * from SupportEventNodeData;\n";
                 epl += "create schema NodeWithData(node SupportEventNode, data SupportEventNodeData);\n";
                 epl += "create window NodeWithDataWindow#unique(node.Id) as NodeWithData;\n";
                 epl += "insert into NodeWithDataWindow " +
-                       "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.nodeId;\n";
+                       "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.NodeId;\n";
                 epl +=
-                    "@Name('s0') select node.Id, data.nodeId, data.Value, node.compute(data) from NodeWithDataWindow;\n";
+                    "@Name('s0') select node.Id, data.NodeId, data.Value, node.Compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));
@@ -241,14 +241,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "nested.getNestedValue(), " +
-                          "nested.getNestedNested().getNestedNestedValue() " +
+                          "Nested.GetNestedValue(), " +
+                          "Nested.GetNestedNested().GetNestedNestedValue() " +
                           "from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var bean = SupportBeanComplexProps.MakeDefaultBean();
                 object[][] rows = {
-                    new object[] {"nested.getNestedValue()", typeof(string)}
+                    new object[] {"Nested.GetNestedValue()", typeof(string)}
                 };
                 for (var i = 0; i < rows.Length; i++) {
                     var prop = env.Statement("s0").EventType.PropertyDescriptors[i];
@@ -259,8 +259,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(bean);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "nested.getNestedValue()" },
-                    new object[] {bean.Nested.NestedValue});
+                    new [] { "Nested.GetNestedValue()" },
+                    new [] { bean.Nested.NestedValue });
 
                 env.UndeployAll();
             }
@@ -288,10 +288,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select " +
                           "(ArrayProperty).size() as size, " +
-                          "(ArrayProperty)[0] as get0, " +
-                          "(ArrayProperty)[1] as get1, " +
-                          "(ArrayProperty)[2] as get2, " +
-                          "(ArrayProperty)[3] as get3 " +
+                          "(ArrayProperty).get(0) as get0, " +
+                          "(ArrayProperty).get(1) as get1, " +
+                          "(ArrayProperty).get(2) as get2, " +
+                          "(ArrayProperty).get(3) as get3 " +
                           "from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -327,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "(abc).GetArray().Size() as size, " +
-                          "(abc).GetArray()[0].GetNestLevOneVal() as get0 " +
+                          "(abc).GetArray().size() as size, " +
+                          "(abc).GetArray().get(0).GetNestLevOneVal() as get0 " +
                           "from SupportBeanCombinedProps as abc";
                 env.CompileDeploy(epl).AddListener("s0");
 

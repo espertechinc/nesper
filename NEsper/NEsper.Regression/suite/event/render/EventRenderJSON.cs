@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -58,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                 //System.out.println(result);
                 var valuesOnly =
-                    "{ \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\", \"this\": { \"DecimalBoxed\": null, \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" } }";
+                    "{ \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\", \"This\": { \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" } }";
                 var expected = "{ \"supportBean\": " + valuesOnly + " }";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
@@ -97,11 +98,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 //System.out.println(result);
                 var expected = "{\n" +
                                "  \"outerMap\": {\n" +
-                               "    \"intarr\": [1, 2],\n" +
-                               "    \"innersimple\": {\n" +
-                               "      \"prop1\": \"\",\n" +
-                               "      \"stringarr\": [\"a\", \"b\"]\n" +
-                               "    },\n" +
                                "    \"innerarray\": [{\n" +
                                "        \"prop1\": \"\",\n" +
                                "        \"stringarr\": [\"a\", \"b\"]\n" +
@@ -110,8 +106,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                "        \"prop1\": \"abcdef\",\n" +
                                "        \"stringarr\": []\n" +
                                "      }],\n" +
+                               "    \"innersimple\": {\n" +
+                               "      \"prop1\": \"\",\n" +
+                               "      \"stringarr\": [\"a\", \"b\"]\n" +
+                               "    },\n" +
+                               "    \"intarr\": [1, 2],\n" +
                                "    \"prop0\": {\n" +
-                               "      \"id\": \"A1\"\n" +
+                               "      \"Id\": \"A1\"\n" +
                                "    }\n" +
                                "  }\n" +
                                "}";
@@ -174,6 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 this.props = props;
             }
 
+            [PropertyName("props")]
             public IDictionary<string, string> GetProps()
             {
                 return props;

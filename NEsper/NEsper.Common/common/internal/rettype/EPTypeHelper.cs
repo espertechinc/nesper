@@ -120,8 +120,7 @@ namespace com.espertech.esper.common.@internal.rettype
             var arrayType = TypeHelper.GetArrayType(arrayComponentType); 
             return new ClassMultiValuedEPType(
                 arrayType,
-                arrayComponentType,
-                arrayType);
+                arrayComponentType);
         }
 
         /// <summary>
@@ -141,8 +140,7 @@ namespace com.espertech.esper.common.@internal.rettype
             if (singleValueType != null && singleValueType.IsArray) {
                 return new ClassMultiValuedEPType(
                     singleValueType, 
-                    singleValueType.GetElementType(),
-                    singleValueType);
+                    singleValueType.GetElementType());
             }
 
             return new ClassEPType(singleValueType);
@@ -172,8 +170,7 @@ namespace com.espertech.esper.common.@internal.rettype
             
             return new ClassMultiValuedEPType(
                 containerType, 
-                collectionComponentType,
-                collectionType);
+                collectionComponentType);
         }
 
         /// <summary>
