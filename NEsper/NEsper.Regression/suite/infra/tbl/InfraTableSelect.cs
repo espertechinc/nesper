@@ -190,10 +190,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var epl = "@Name('s0') select (select * from MyTable).where(v->v.key = 'G1') as mt from SupportBean_S2";
             env.CompileDeploy(epl, path).AddListener("s0");
 
-            Assert.AreEqual(typeof(ICollection<object[]>), env.Statement("s0").EventType.GetPropertyType("mt"));
+            Assert.AreEqual(typeof(ICollection<object>), env.Statement("s0").EventType.GetPropertyType("mt"));
 
             env.SendEventBean(new SupportBean_S2(0));
-            var coll = (ICollection<object[]>) env.Listener("s0").AssertOneGetNewAndReset().Get("mt");
+            var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("mt").Unwrap<object[]>();
             AssertEventUnd(coll.First(), rowValues);
 
             env.UndeployModuleContaining("s0");

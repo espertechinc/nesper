@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -69,13 +70,21 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
+                var returnType = typeof(decimal);
+                if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
+                    returnType = typeof(decimal?);
+                }
+                
                 CodegenExpression math =
                     codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 var block = codegenMethodScope
-                    .MakeChild(typeof(decimal?), typeof(DivideDecimalWMathContext), codegenClassScope)
-                    .AddParam(typeof(decimal?), "b1")
-                    .AddParam(typeof(decimal?), "b2")
+                    .MakeChild(returnType, typeof(DivideDecimalWMathContext), codegenClassScope)
+                    //.AddParam(typeof(decimal?), "b1")
+                    //.AddParam(typeof(decimal?), "b2")
+                    .AddParam(ltype, "b1")
+                    .AddParam(rtype, "b2")
                     .Block;
+
                 var ifZero = block.IfCondition(
                     EqualsIdentity(
                         Ref("b2"),
@@ -85,7 +94,7 @@ namespace com.espertech.esper.common.@internal.type
                         ifZero.BlockReturn(ConstantNull());
                     }
                     else {
-                        ifZero.BlockReturn(Op(ExprDotName(Ref("b1"), "Value"), "/", Constant(0.0m)));
+                        ifZero.BlockReturn(Op(Unbox(Ref("b1"), ltype), "/", Constant(0.0m)));
                     }
                 }
                 var method = block.MethodReturn(

@@ -488,7 +488,7 @@ gopOut : FOLLOWED_BY gopOutItem (COMMA gopOutItem)*;
 
 gopOutItem : n=classIdentifier gopOutTypeList?;
 
-gopOutTypeList : COLON LT gopOutTypeParam (COMMA gopOutTypeParam)* GT;
+gopOutTypeList : LT gopOutTypeParam (COMMA gopOutTypeParam)* GT;
 
 gopOutTypeParam : (gopOutTypeItem | q=QUESTION);
 
@@ -984,7 +984,7 @@ classIdentifierWithDimensions : classIdentifier dimensions*;
 
 dimensions : LBRACK p=IDENT? RBRACK;
 
-classIdentifier : i1=escapableStr (DOT i2=escapableStr)* classIdentifierGenericArgs?;
+classIdentifier : i1=escapableStr (DOT i2=escapableStr)*;
 
 classIdentifierGenericArgs : LT classIdentifierGenericArgsList GT;
 

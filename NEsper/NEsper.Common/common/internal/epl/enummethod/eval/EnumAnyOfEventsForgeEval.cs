@@ -69,6 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .MakeChildWithScope(typeof(bool), typeof(EnumAnyOfEventsForgeEval), scope, codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
+            methodNode.Block.Debug("Codegen - EnumAnyOfEventsForgeEval");
+
             var block = methodNode.Block
                 .IfConditionReturnConst(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"), false);
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)

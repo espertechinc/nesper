@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                var attribute = childNode.Attributes?.GetNamedItem("Id");
+                var attribute = childNode.Attributes?.GetNamedItem("id");
                 if (attribute != null && attribute.InnerText == mapKey) {
                     return childNode;
                 }
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                var attribute = childNode.Attributes?.GetNamedItem("Id");
+                var attribute = childNode.Attributes?.GetNamedItem("id");
                 if (attribute != null && attribute.InnerText == mapKey) {
                     return true;
                 }

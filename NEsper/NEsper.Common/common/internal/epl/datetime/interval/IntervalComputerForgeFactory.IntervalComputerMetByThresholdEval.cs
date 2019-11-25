@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     {
         public class IntervalComputerMetByThresholdEval : IntervalComputerEval
         {
-            public const string METHOD_LOGWARNINGINTERVALMETBYTHRESHOLD = "logWarningIntervalMetByThreshold";
+            public const string METHOD_LOGWARNINGINTERVALMETBYTHRESHOLD = "LogWarningIntervalMetByThreshold";
 
             private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -179,6 +179,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.EvaluationType;
+            if (evaluationType != typeof(ICollection<EventBean>)) {
+                throw new IllegalStateException("ROCollectionEvents missing event collection");
+            }
+            
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprDotNodeForgeRootChildEval),

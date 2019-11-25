@@ -98,18 +98,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             else if (targetType == typeof(DateTimeOffset?)) {
                 return ExprDotMethod(value, "AsBoxedDateTimeOffset");
             }
-            else if (targetType == typeof(ICollection<object>)) {
-                return StaticMethod(typeof(TypeHelper), "AsObjectCollection", value);
+            else if (targetType == typeof(IDictionary<string, object>)) {
+                return StaticMethod(typeof(CompatExtensions), "AsStringDictionary", value);
+            }
+            else if (targetType == typeof(IDictionary<object, object>)) {
+                return StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", value);
+            }
+            else if (targetType.IsGenericDictionary()) {
+                return Cast(targetType, value);
             }
             else if (targetType.IsArray()) {
                 var elementType = targetType.GetElementType();
                 return StaticMethod(typeof(CompatExtensions), "UnwrapIntoArray", new[] {elementType}, value);
-            }
-            else if (targetType.IsGenericStringDictionary()) {
-                return StaticMethod(typeof(CompatExtensions), "AsStringDictionary", value);
-            }
-            else if (targetType.IsGenericDictionary()) {
-                return Cast(targetType, value);
             }
             else if (targetType.IsGenericList()) {
                 var elementType = GenericExtensions.GetCollectionItemType(targetType);
@@ -118,6 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             else if (targetType.IsGenericSet()) {
                 var elementType = GenericExtensions.GetCollectionItemType(targetType);
                 return StaticMethod(typeof(CompatExtensions), "UnwrapIntoSet", new [] {elementType}, value);
+            }
+            else if (targetType == typeof(ICollection<object>)) {
+                return StaticMethod(typeof(TypeHelper), "AsObjectCollection", value);
             }
             else if (targetType.IsGenericCollection()) {
                 var elementType = GenericExtensions.GetCollectionItemType(targetType);

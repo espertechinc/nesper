@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge))))
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
             if (evaluationType == typeof(void)) {
-                block.IfCondition(EqualsNull(@Ref("@event")))
+                block.IfCondition(EqualsNull(Ref("@event")))
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))
                     .BlockReturnNoValue();
             }
@@ -98,19 +98,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         codegenClassScope));
             }
 
-            block.DeclareVar(eventUndType, "inner", Cast(eventUndType, ExprDotName(@Ref("@event"), "Underlying")))
+            block.DeclareVar(eventUndType, "inner", Cast(eventUndType, ExprDotName(Ref("@event"), "Underlying")))
                 .Apply(
                     Instblock(
                         codegenClassScope,
                         "qExprDotChain",
                         typeInformation,
-                        @Ref("inner"),
+                        Ref("inner"),
                         Constant(forge.Evaluators.Length)));
             CodegenExpression invoke = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,
                 codegenClassScope,
-                @Ref("inner"),
+                Ref("inner"),
                 eventUndType,
                 forge.Evaluators,
                 null);
@@ -123,8 +123,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             else {
                 block.DeclareVar(evaluationType, "result", invoke)
                     .Apply(Instblock(codegenClassScope, "aExprDotChain"))
-                    .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", @Ref("result")))
-                    .MethodReturn(@Ref("result"));
+                    .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", Ref("result")))
+                    .MethodReturn(Ref("result"));
             }
 
             return LocalMethod(methodNode);

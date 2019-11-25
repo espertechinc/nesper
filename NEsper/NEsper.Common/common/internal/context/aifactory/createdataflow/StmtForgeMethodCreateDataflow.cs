@@ -720,7 +720,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 return;
             }
 
-            writer.Write(":<");
+            writer.Write("<");
             var typeDelimiter = "";
             foreach (var type in types) {
                 writer.Write(typeDelimiter);

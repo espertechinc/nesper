@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             EPAssertionUtil.AssertEqualsExactOrder(
                 SupportBean.GetBeansPerIndex(beans, indexesWhere),
                 (ICollection<object>) received.Get("c1"));
-            EPAssertionUtil.AssertPropsMap((IDictionary<string, object>) received.Get("c2"), mapKeys, mapValues);
+            EPAssertionUtil.AssertPropsMap((IDictionary<object, object>) received.Get("c2"), mapKeys, mapValues);
         }
 
         internal class InfraWindowUnidirectionalJoin : RegressionExecution

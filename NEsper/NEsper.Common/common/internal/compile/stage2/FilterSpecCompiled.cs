@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
-        {
+        { 
             var method = parent.MakeChild(typeof(FilterSpecActivatable), typeof(FilterSpecCompiled), classScope);
 
             if (filterCallbackId == -1) {

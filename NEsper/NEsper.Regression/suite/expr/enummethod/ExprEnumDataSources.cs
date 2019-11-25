@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         private static IDictionary<string, object> MakeBEvent(string symbol)
         {
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("a", Collections.SingletonMap("Symbol", symbol));
+            map.Put("a", Collections.SingletonDataMap("Symbol", symbol));
             return map;
         }
 
@@ -119,8 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             string[] fields,
             object[][] objects)
         {
-            var mapsColl = (ICollection<IDictionary<string, object>>) rows;
-            var maps = mapsColl.ToArray();
+            var maps = rows.UnwrapIntoArray<IDictionary<string, object>>();
             EPAssertionUtil.AssertPropsPerRow(maps, fields, objects);
         }
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl = "create schema OrderDetail(itemId string);\n" +
                           "create schema OrderEvent(details OrderDetail[]);\n" +
-                          "@Name('s0') select details.where(i -> i.ItemId = '001') as c0 from OrderEvent;\n";
+                          "@Name('s0') select details.where(i -> i.itemId = '001') as c0 from OrderEvent;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 var detailOne = CollectionUtil.PopulateNameValueMap("itemId", "002");
@@ -148,8 +148,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     CollectionUtil.PopulateNameValueMap("details", new[] {detailOne, detailTwo}),
                     "OrderEvent");
 
-                var c = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<object>();
-                EPAssertionUtil.AssertEqualsExactOrder(c, new object[] {detailTwo});
+                var c = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
+                Console.WriteLine("c = {0}", c);
+                var cArray = c.UnwrapIntoArray<object>();
+                EPAssertionUtil.AssertEqualsExactOrder(cArray, new object[] {detailTwo});
 
                 env.UndeployAll();
             }
@@ -169,9 +171,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventObjectArray(new object[] {"E2", 120}, "StockTick");
                 env.SendEventObjectArray(new object[] {"E3", 95}, "StockTick");
 
-                Assert.AreEqual(
-                    1,
-                    env.Listener("s0").AssertOneGetNewAndReset().Get("ticksLargeLess200").Unwrap<object>().Count);
+                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
+                var ticksLargeLess = theEvent.Get("ticksLargeLess200");
+                var ticksLargeLessContainer = ticksLargeLess.Unwrap<EventBean>();
+                
+                Assert.AreEqual(1, ticksLargeLessContainer.Count);
 
                 env.UndeployAll();
             }
@@ -206,14 +210,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 env.SendEventBean(new SupportBean("E3", 1));
-                AssertColl("E1,E2,E3", env.Listener("s0").AssertOneGetNewAndReset().Get("ids"));
+                AssertColl("E1,E2,E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Ids"));
 
                 env.SendEventBean(new SupportBean("E4", 1));
                 env.SendEventBean(new SupportBean("E5", 1));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 env.SendEventBean(new SupportBean("E6", 1));
-                AssertColl("E4,E5,E6", env.Listener("s0").AssertOneGetNewAndReset().Get("ids"));
+                AssertColl("E4,E5,E6", env.Listener("s0").AssertOneGetNewAndReset().Get("Ids"));
 
                 env.UndeployAll();
             }
@@ -278,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern [ a=SupportBean_ST0 until b=SupportBean => c=SupportBean(IntPrimitive > a.sumOf(i -> P00))]");
+                    "@Name('s0') select * from pattern [ a=SupportBean_ST0 until b=SupportBean -> c=SupportBean(IntPrimitive > a.sumOf(i -> P00))]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("E10", 10));
@@ -370,8 +374,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
-                          "SupportEnumTwo.ENUM_VALUE_1.getMystrings().anyOf(v -> v = Id) as c0, " +
-                          "value.getMystrings().anyOf(v -> v = '2') as c1 " +
+                          "SupportEnumTwo.ENUM_VALUE_1.GetMystrings().anyOf(v -> v = Id) as c0, " +
+                          "Value.GetMystrings().anyOf(v -> v = '2') as c1 " +
                           "from SupportEnumTwoEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -422,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') select * from SupportSelectorEvent#keepall as sel, SupportContainerEvent#keepall as cont " +
-                    "where cont.items.anyOf(i -> sel.selector = i.selected)";
+                    "where cont.Items.anyOf(i -> sel.Selector = i.Selected)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportSelectorEvent("S1", "sel1"));
@@ -437,14 +441,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select prevwindow(st0) as val0, prevwindow(st0).esperInternalNoop() as val1 " +
+                #if false
+                var epl = "@Name('s0') select prevwindow(st0) as val0, prevwindow(st0).EsperInternalNoop() as val1 " +
                           "from SupportBean_ST0#sort(3, P00 asc) as st0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val0", "val1" },
-                    new[] {typeof(SupportBean_ST0[]), typeof(ICollection<object>)});
+                    new[] {typeof(SupportBean_ST0[]), typeof(ICollection<EventBean>)});
 
                 env.SendEventBean(new SupportBean_ST0("E1", 5));
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E1");
@@ -462,6 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E5,E3,E1");
                 env.Listener("s0").Reset();
                 env.UndeployAll();
+                #endif
 
                 // Scalar version
                 string[] fields = {"val0"};
@@ -599,10 +605,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.SendEventBean(new SupportBean_ST0("B1", 10));
                 env.SendEventBean(new SupportBean("E1", 0));
+
                 AssertPropsMapRows(
                     env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<object>(),
                     fields,
-                    new[] {new object[] {"B1", 10}});
+                    new[] {
+                        new object[] {"B1", 10}
+                    });
 
                 env.SendEventBean(new SupportBean_ST0("B2", 20));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -610,7 +619,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<object>(),
                     fields,
                     new[] {
-                        new object[] {"B1", 10}, new object[] {"B2", 20}
+                        new object[] {"B1", 10},
+                        new object[] {"B2", 20}
                     });
                 env.UndeployAll();
 
@@ -723,7 +733,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string eplFragment;
                 
-                #if false
                 // test fragment type - collection inside
                 eplFragment = "@Name('s0') select Contained.allOf(x -> x.P00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
                 env.CompileDeploy(eplFragment).AddListener("s0");
@@ -734,7 +743,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("ID1,KEY1,10"));
                 Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("allOfX"));
                 env.UndeployAll();
-                #endif
 
                 // test array and iterable
                 var fields = new [] { "val0", "val1" };
@@ -758,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy("@Name('s0') select books.max(i -> i.Price) as mymax from MySchema", path);
                 env.AddListener("s0");
 
-                var @event = Collections.SingletonDataMap(
+                IDictionary<string, object> @event = Collections.SingletonDataMap(
                     "books",
                     new[] {
                         new BookDesc("1", "book1", "dave", 1.00, null)
@@ -879,9 +887,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val1","val2","val3","val4" };
+#if false
                 var epl = "@Name('s0') select " +
-                          "SupportBean_ST0_Container.makeSampleList().where(x -> x.P00 < 5) as val1, " +
-                          "SupportBean_ST0_Container.makeSampleArray().where(x -> x.P00 < 5) as val2, " +
+                          "SupportBean_ST0_Container.MakeSampleList().where(x -> x.P00 < 5) as val1, " +
+                          "SupportBean_ST0_Container.MakeSampleArray().where(x -> x.P00 < 5) as val2, " +
                           "makeSampleList().where(x -> x.P00 < 5) as val3, " +
                           "makeSampleArray().where(x -> x.P00 < 5) as val4 " +
                           "from SupportBean#length(2) as sb";
@@ -920,12 +929,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.Listener("s0").Reset();
                 env.UndeployAll();
+                #endif
 
                 // test UDF returning scalar values collection
                 fields = new [] { "val0","val1","val2","val3" };
                 var eplScalar = "@Name('s0') select " +
-                                "SupportCollection.makeSampleListString().where(x -> x != 'E1') as val0, " +
-                                "SupportCollection.makeSampleArrayString().where(x -> x != 'E1') as val1, " +
+                                "SupportCollection.MakeSampleListString().where(x -> x != 'E1') as val0, " +
+                                "SupportCollection.MakeSampleArrayString().where(x -> x != 'E1') as val1, " +
                                 "makeSampleListString().where(x -> x != 'E1') as val2, " +
                                 "makeSampleArrayString().where(x -> x != 'E1') as val3 " +
                                 "from SupportBean#length(2) as sb";

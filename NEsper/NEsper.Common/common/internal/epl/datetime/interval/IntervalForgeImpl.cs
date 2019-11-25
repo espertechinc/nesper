@@ -696,8 +696,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 var expression = CodegenEvaluate(
                     Ref("startTs"),
                     Ref("endTs"),
-                    Ref("paramStartTs"),
-                    Ref("paramEndTs"),
+                    Unbox(Ref("paramStartTs"), parameterType),
+                    Unbox(Ref("paramEndTs"), evaluationType),
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
@@ -706,11 +706,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return LocalMethod(methodNode, start, end, parameter);
             }
 
-            protected abstract CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
-                CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+            protected abstract CodegenExpression CodegenEvaluate(CodegenExpression startTs,
+                CodegenExpression endTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope);
@@ -718,8 +717,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public abstract class IntervalOpEvalDateWithEndBase : IIntervalOpEval
         {
-            protected internal readonly ExprEvaluator evaluatorEndTimestamp;
-            protected internal readonly IntervalComputerEval intervalComputer;
+            internal readonly ExprEvaluator evaluatorEndTimestamp;
+            internal readonly IntervalComputerEval intervalComputer;
 
             protected IntervalOpEvalDateWithEndBase(
                 IntervalComputerEval intervalComputer,
@@ -771,11 +770,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     forgeEndTimestamp.ExprEvaluator);
             }
 
-            protected override CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
-                CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+            protected override CodegenExpression CodegenEvaluate(CodegenExpression startTs,
+                CodegenExpression endTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
@@ -837,11 +835,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     forgeEndTimestamp.ExprEvaluator);
             }
 
-            protected override CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
-                CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+            protected override CodegenExpression CodegenEvaluate(CodegenExpression startTs,
+                CodegenExpression endTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
@@ -903,11 +900,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     forgeEndTimestamp.ExprEvaluator);
             }
 
-            protected override CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
-                CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+            protected override CodegenExpression CodegenEvaluate(CodegenExpression startTs,
+                CodegenExpression endTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
@@ -975,11 +971,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     forgeEndTimestamp.ExprEvaluator);
             }
 
-            protected override CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
-                CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+            protected override CodegenExpression CodegenEvaluate(CodegenExpression startTs,
+                CodegenExpression endTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)

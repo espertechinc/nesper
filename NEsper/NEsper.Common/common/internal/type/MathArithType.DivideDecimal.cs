@@ -60,27 +60,23 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var block = codegenMethodScope.MakeChild(typeof(decimal?), typeof(DivideDecimal), codegenClassScope)
-                    .AddParam(typeof(decimal?), "b1")
-                    .AddParam(typeof(decimal?), "b2")
+                var block = codegenMethodScope
+                    .MakeChild(typeof(decimal?), typeof(DivideDecimal), codegenClassScope)
+                    .AddParam(typeof(decimal), "b1")
+                    .AddParam(typeof(decimal), "b2")
                     .Block;
                 var ifBlock = block.IfCondition(
-                    EqualsIdentity(
-                        ExprDotName(Ref("b1"), "Value"),
-                        Constant(0.0m)));
+                    EqualsIdentity(Ref("b1"), Constant(0.0m)));
                 if (_divisionByZeroReturnsNull) {
                     ifBlock.BlockReturn(ConstantNull());
                 }
                 else {
                     ifBlock.BlockReturn(
-                        Op(ExprDotName(Ref("b1"), "Value"), "/", Constant(0.0m)));
+                        Op(Ref("b1"), "/", Constant(0.0m)));
                 }
 
                 var method = block.MethodReturn(
-                    Op(
-                        ExprDotName(Ref("b1"), "Value"),
-                        "/",
-                        ExprDotName(Ref("b2"), "Value")));
+                    Op(Ref("b1"), "/",  Ref("b2")));
                 return LocalMethod(method, left, right);
             }
         }

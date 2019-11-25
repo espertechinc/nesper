@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         codegenClassScope,
                         "qExprDotChain",
                         typeInformation,
-                        @Ref("@event"),
+                        Ref("@event"),
                         Constant(forge.Evaluators.Length)))
                 .IfRefNull("@event")
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
@@ -92,12 +92,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         methodNode,
                         exprSymbol,
                         codegenClassScope,
-                        @Ref("@event"),
+                        Ref("@event"),
                         typeof(EventBean),
                         forge.Evaluators,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
-                .MethodReturn(@Ref("result"));
+                .MethodReturn(Ref("result"));
             return LocalMethod(methodNode);
         }
     }

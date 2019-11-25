@@ -224,8 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 epl += "create window NodeWithDataWindow#unique(node.Id) as NodeWithData;\n";
                 epl += "insert into NodeWithDataWindow " +
                        "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.NodeId;\n";
-                epl +=
-                    "@Name('s0') select node.Id, data.NodeId, data.Value, node.Compute(data) from NodeWithDataWindow;\n";
+                epl += "@Name('s0') select node.Id, data.NodeId, data.Value, node.Compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));

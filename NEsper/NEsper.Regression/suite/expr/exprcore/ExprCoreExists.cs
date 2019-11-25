@@ -148,16 +148,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
-
+                var stmtText = $"select exists(Item?.IntBoxed) as t0 from {typeof(SupportMarkerInterface).Name}";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("Item?.IntBoxed"), "t0");
-                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).FullName));
+                model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportMarkerInterface).Name));
                 model = env.CopyMayFail(model);
-                Assert.That(
-                    model.ToEPL(),
-                    Is.EqualTo(
-                        $"select exists(Item?.IntBoxed) as t0 from {typeof(SupportMarkerInterface).CleanName()}")); 
+                Assert.That(model.ToEPL(), Is.EqualTo(stmtText));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");
@@ -172,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
+                var epl = "@Name('s0') select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 AssertStringAndNull(env);

@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "create dataflow MyDataFlow2\n" +
                     "create schema MyEvent as (Id string, Price double),\n" +
-                    "MyOperator -> myOutStream:<MyEvent> {\n" +
+                    "MyOperator -> myOutStream<MyEvent> {\n" +
                     "myParameter : 10\n" +
                     "}");
                 TryEpl(

@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.lrreport;
 
@@ -67,6 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.EplToModelCompileDeploy("@Name('s0') " + epl, path).UndeployModuleContaining("s0");
         }
 
+#if false
         private static Zone[] ToArrayZones(ICollection<Zone> it)
         {
             return it.ToArray();
@@ -76,6 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             return it.ToArray();
         }
+#endif
 
         internal class ExprEnumHowToUse : RegressionExecution
         {
@@ -87,8 +90,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
 
-                var items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("zeroloc"));
+                var items = env.Listener("s0")
+                    .AssertOneGetNewAndReset().Get("zeroloc")
+                    .UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P00020", items[0].AssetId);
 
@@ -99,7 +103,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
 
-                items = ToArrayItems((ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("zeroloc"));
+                items = env.Listener("s0")
+                    .AssertOneGetNewAndReset().Get("zeroloc")
+                    .UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P00020", items[0].AssetId);
 
@@ -120,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new Zone("Z2", new Rectangle(21, 21, 40, 40)));
                 env.SendEventBean(new Item("A1", new Location(10, 10)));
 
-                var zones = ToArrayZones((ICollection<Zone>) env.Listener("s0").AssertOneGetNewAndReset().Get("zones"));
+                var zones = env.Listener("s0").AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
                 Assert.AreEqual(1, zones.Length);
                 Assert.AreEqual("Z1", zones[0].Name);
 
@@ -151,27 +157,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy("create window ZoneWindow#keepall as Zone", path);
                 env.CompileDeploy("insert into ZoneWindow select * from Zone", path);
 
-                epl = "@Name('s0') select ZoneWindow.where(z -> inrect(z.rectangle, location)) as zones from Item";
+                epl = "@Name('s0') select ZoneWindow.where(z -> inrect(z.Rectangle, Location)) as zones from Item";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new Zone("Z1", new Rectangle(0, 0, 20, 20)));
                 env.SendEventBean(new Zone("Z2", new Rectangle(21, 21, 40, 40)));
                 env.SendEventBean(new Item("A1", new Location(10, 10)));
 
-                zones = ToArrayZones((ICollection<Zone>) env.Listener("s0").AssertOneGetNewAndReset().Get("zones"));
+                zones = env.Listener("s0").AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
                 Assert.AreEqual(1, zones.Length);
                 Assert.AreEqual("Z1", zones[0].Name);
 
                 env.UndeployModuleContaining("s0");
 
                 epl =
-                    "@Name('s0') select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).where(z -> inrect(z.rectangle, location)) as zones from Item";
+                    "@Name('s0') select ZoneWindow(Name in ('Z4', 'Z5', 'Z3')).where(z -> inrect(z.Rectangle, Location)) as zones from Item";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new Zone("Z3", new Rectangle(0, 0, 20, 20)));
                 env.SendEventBean(new Item("A1", new Location(10, 10)));
 
-                zones = ToArrayZones((ICollection<Zone>) env.Listener("s0").AssertOneGetNewAndReset().Get("zones"));
+                zones = env.Listener("s0").AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
                 Assert.AreEqual(1, zones.Length);
                 Assert.AreEqual("Z3", zones[0].Name);
 
@@ -185,18 +191,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') select window(*).where(p -> distance(0, 0, p.Location.X, p.Location.Y) < 20) as centeritems " +
-                    "from Item(type='P')#time(10) group by AssetId";
+                    "from Item(Type='P')#time(10) group by AssetId";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new Item("P0001", new Location(10, 10), "P", null));
-                var items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems"));
+                var items = env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P0001", items[0].AssetId);
 
                 env.SendEventBean(new Item("P0002", new Location(10, 1000), "P", null));
-                items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems"));
+                items = env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
                 Assert.AreEqual(0, items.Length);
 
                 env.UndeployAll();
@@ -209,18 +213,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') select prevwindow(items).where(p -> distance(0, 0, p.Location.X, p.Location.Y) < 20) as centeritems " +
-                    "from Item(type='P')#time(10) as items";
+                    "from Item(Type='P')#time(10) as items";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new Item("P0001", new Location(10, 10), "P", null));
-                var items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems"));
+                var items = env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P0001", items[0].AssetId);
 
                 env.SendEventBean(new Item("P0002", new Location(10, 1000), "P", null));
-                items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems"));
+                items = env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P0001", items[0].AssetId);
 
@@ -238,8 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
-                var items = ToArrayItems(
-                    (ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems"));
+                var items = env.Listener("s0").AssertOneGetNewAndReset().Get("centeritems").UnwrapIntoArray<Item>();
                 Assert.AreEqual(1, items.Length);
                 Assert.AreEqual("P00020", items[0].AssetId);
 
@@ -252,12 +253,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select ZoneFactory.getZones().where(z -> inrect(z.rectangle, item.Location)) as zones\n" +
+                    "@Name('s0') select ZoneFactory.GetZones().where(z -> inrect(z.Rectangle, item.Location)) as zones\n" +
                     "from Item as item";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new Item("A1", new Location(5, 5)));
-                var zones = ToArrayZones((ICollection<Zone>) env.Listener("s0").AssertOneGetNewAndReset().Get("zones"));
+                var zones = env.Listener("s0").AssertOneGetNewAndReset().Get("zones").UnwrapIntoArray<Zone>();
                 Assert.AreEqual(1, zones.Length);
                 Assert.AreEqual("Z1", zones[0].Name);
 
@@ -277,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(LocationReportFactory.MakeSmall());
-                var items = ToArrayItems((ICollection<Item>) env.Listener("s0").AssertOneGetNewAndReset().Get("p"));
+                var items = env.Listener("s0").AssertOneGetNewAndReset().Get("p").UnwrapIntoArray<Item>();
                 Assert.AreEqual(2, items.Length);
                 Assert.AreEqual("P00002", items[0].AssetId);
                 Assert.AreEqual("P00020", items[1].AssetId);
@@ -364,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select (select name from Zone#unique(name)).orderBy() as orderedZones from pattern [every timer:interval(30)]");
+                    "select (select Name from Zone#unique(Name)).orderBy() as orderedZones from pattern [every timer:interval(30)]");
 
                 env.CompileDeployWBusPublicType("create schema MyEvent as (seqone String[], seqtwo String[])", path);
 
@@ -385,19 +386,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.selectFrom(i -> new{AssetId,distanceCenter=distance(i.Location.X,i.Location.Y,0,0)}) as itemInfo from LocationReport");
-                AssertStmt(env, path, "select Items.leastFrequent(i -> type) as leastFreqType from LocationReport");
+                AssertStmt(env, path, "select Items.leastFrequent(i -> Type) as leastFreqType from LocationReport");
 
                 var epl = "expression myquery {itm -> " +
-                          "(select * from Zone#keepall).where(z -> inrect(z.rectangle,itm.Location))" +
+                          "(select * from Zone#keepall).where(z -> inrect(z.Rectangle,itm.Location))" +
                           "} " +
-                          "select AssetId, myquery(item) as subq, myquery(item).where(z -> z.name=\"Z01\") as assetItem " +
+                          "select AssetId, myquery(item) as subq, myquery(item).where(z -> z.Name=\"Z01\") as assetItem " +
                           "from Item as item";
                 AssertStmt(env, path, epl);
 
                 AssertStmt(
                     env,
                     path,
-                    "select za.Items.except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
+                    "select za.Items.except(zb.Items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
 
                 env.UndeployAll();
             }

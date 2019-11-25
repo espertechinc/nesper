@@ -38,10 +38,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val3"
                 };
                 var eplFragment = "@Name('s0') select " +
-                                  "DateTimeEx.set('month', 0) as val0," +
-                                  "DateTimeOffset.set('month', 0) as val1," +
-                                  "DateTime.set('month', 0) as val2," +
-                                  "LongDate.set('month', 0) as val3" +
+                                  "DateTimeEx.set('month', 1) as val0," +
+                                  "DateTimeOffset.set('month', 1) as val1," +
+                                  "DateTime.set('month', 1) as val2," +
+                                  "LongDate.set('month', 1) as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -58,10 +58,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var expectedTime = "2002-01-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    SupportDateTime.GetArrayCoerced(expectedTime, "util", "long", "dtx"));
+                var expectedResults = SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long"); 
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expectedResults);
 
                 env.UndeployAll();
             }
@@ -71,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.set('msec', 1) as val0," +
                                   "DateTimeOffset.set('sec', 2) as val1," +
@@ -79,40 +77,39 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTimeOffset.set('hour', 13) as val3," +
                                   "DateTimeOffset.set('day', 5) as val4," +
                                   "DateTimeOffset.set('month', 6) as val5," +
-                                  "DateTimeOffset.set('year', 7) as val6," +
-                                  "DateTimeOffset.set('week', 8) as val7" +
+                                  "DateTimeOffset.set('year', 7) as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
+                        typeof(DateTimeOffset?), // val0
+                        typeof(DateTimeOffset?), // val1
+                        typeof(DateTimeOffset?), // val2
+                        typeof(DateTimeOffset?), // val3
+                        typeof(DateTimeOffset?), // val4
+                        typeof(DateTimeOffset?), // val5
+                        typeof(DateTimeOffset?)  // val6
                     });
 
                 string[] expected = {
-                    "2002-05-30T09:00:00.001",
-                    "2002-05-30T09:00:02.000",
-                    "2002-05-30T09:03:00.000",
-                    "2002-05-30T13:00:00.000",
-                    "2002-05-05T09:00:00.000",
-                    "2002-07-30T09:00:00.000",
-                    "0007-05-30T09:00:00.000",
-                    "2002-02-21T09:00:00.000"
+                    "2002-05-30T09:00:00.001", // val0
+                    "2002-05-30T09:00:02.000", // val1
+                    "2002-05-30T09:03:00.000", // val2
+                    "2002-05-30T13:00:00.000", // val3
+                    "2002-05-05T09:00:00.000", // val4
+                    "2002-06-30T09:00:00.000", // val5
+                    "0007-05-30T09:00:00.000"  // val6
                 };
                 var startTime = "2002-05-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
+                var datesCoerced = SupportDateTime.GetArrayCoerced(expected, "dto");
+                
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expected, "util"));
+                    datesCoerced);
 
                 env.UndeployAll();
             }

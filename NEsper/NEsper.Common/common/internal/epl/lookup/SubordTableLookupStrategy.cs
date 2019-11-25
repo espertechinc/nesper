@@ -45,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public ICollection<EventBean> Lookup(
             EventBean[] events,
-            ExprEvaluatorContext context) => ProcLookup.Invoke(events, context);
+            ExprEvaluatorContext context)
+        {
+            return ProcLookup.Invoke(events, context);
+        }
 
         public Func<string> ProcToQueryPlan;
         public string ToQueryPlan() => ProcToQueryPlan.Invoke();

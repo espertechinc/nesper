@@ -168,6 +168,19 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
+        public static bool IsGenericObjectDictionary(this Type t)
+        {
+            if (t.IsValueType || (t == typeof(object)))
+                return false;
+
+            var dictType = FindGenericInterface(t, typeof (IDictionary<,>));
+            if (dictType != null) {
+                return dictType.GetGenericArguments()[0] == typeof(object);
+            }
+
+            return false;
+        }
+        
         public static bool IsGenericSet(this Type t)
         {
             return FindGenericInterface(t, typeof (ISet<>)) != null;

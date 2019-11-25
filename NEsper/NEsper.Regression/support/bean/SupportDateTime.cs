@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
                 case "date":
                 case "datetime":
-                    return msec.TimeFromMillis();
+                    return msec.UtcFromMillis();
 
                 case "dtx":
                     return DateTimeEx.GetInstance(TimeZoneInfo.Utc, msec.TimeFromMillis(null));

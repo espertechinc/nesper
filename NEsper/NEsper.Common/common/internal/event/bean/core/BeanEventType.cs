@@ -537,7 +537,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                    " name=" +
                    Name +
                    " clazz=" +
-                   Stem.Clazz.Name;
+                   Stem.Clazz.CleanName();
         }
 
         private PropertyInfo GetSimplePropertyInfo(string propertyName)

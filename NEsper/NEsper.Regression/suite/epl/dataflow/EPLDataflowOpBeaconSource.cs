@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource -> BeaconStream:<" + streamType + "> " +
+                "BeaconSource -> BeaconStream<" + streamType + "> " +
                 "{" +
                 "  iterations : 3," +
                 "  p0 : 'abc'," +
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource -> BeaconStream:<" +
+                "BeaconSource -> BeaconStream<" +
                 typeName +
                 "> {" +
                 "  Myfield : 'abc', iterations : 1" +
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create variable int var_iterations=3", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource -> BeaconStream:<SomeEvent> {" +
+                    "BeaconSource -> BeaconStream<SomeEvent> {" +
                     "  iterations : var_iterations" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  \n" +
                           "  // BeaconSource that produces one RFIDSchema event populating event properties\n" +
                           "  // from a user-defined function \"generateTagId\" and values.\n" +
-                          "  BeaconSource -> stream.two:<SampleSchema> {\n" +
+                          "  BeaconSource -> stream.two<SampleSchema> {\n" +
                           "    iterations : 1,\n" +
                           "    tagId : generateTagId(),\n" +
                           "    locX : 10,\n" +
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // test options-provided beacon field
                 var eplMinimal = "@Name('flow') create dataflow MyGraph " +
-                                 "BeaconSource -> outstream:<SupportBean> {iterations:1} " +
+                                 "BeaconSource -> outstream<SupportBean> {iterations:1} " +
                                  "EventBusSink(outstream) {}";
                 env.CompileDeploy(eplMinimal);
 
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create objectarray schema MyTestOAType(p1 string)", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowFive " +
-                    "BeaconSource -> BeaconStream:<MyTestOAType> {" +
+                    "BeaconSource -> BeaconStream<MyTestOAType> {" +
                     "  interval: 0.5," +
                     "  p1 : 'abc'" +
                     "}",

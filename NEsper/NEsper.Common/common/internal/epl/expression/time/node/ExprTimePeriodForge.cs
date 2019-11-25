@@ -185,10 +185,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                             typeof(ExprTimePeriodForge),
                             "MakeTimePeriodParamNullException",
                             Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
-                block.AssignRef("seconds", Op(@Ref("seconds"), "+", Adders[i].ComputeCodegen(@Ref("result"))));
+                block.AssignRef("seconds", Op(@Ref("seconds"), "+", Adders[i].ComputeCodegen(Unbox(Ref("result")))));
             }
 
-            block.Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprTimePeriod", @Ref("seconds")))
+            block
+                .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprTimePeriod", Ref("seconds")))
                 .MethodReturn(@Ref("seconds"));
             return LocalMethod(methodNode);
         }

@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
-            Assert.That(delta, Is.LessThan(1750), "delta=" + delta);
+            Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
         }
 
         private static void RunFAFQuery(

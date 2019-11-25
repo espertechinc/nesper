@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             TypeInfo = EPTypeHelper.CollectionOfSingleValue(
                 type.UnderlyingType,
-                null);
+                typeof(EventBean));
         }
 
         public object Evaluate(

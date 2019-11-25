@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -66,7 +67,8 @@ namespace com.espertech.esper.common.@internal.type
                         CodegenAsDouble(right, rtype));
                 }
 
-                var method = codegenMethodScope.MakeChild(typeof(double?), typeof(DivideDouble), codegenClassScope)
+                var method = codegenMethodScope
+                    .MakeChild(typeof(double?), typeof(DivideDouble), codegenClassScope)
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block

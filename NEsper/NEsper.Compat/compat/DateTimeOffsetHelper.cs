@@ -284,7 +284,9 @@ namespace com.espertech.esper.compat
                 case DateTimeFieldEnum.MONTH:
                     return new ValueRange<int>(1, 12);
                 case DateTimeFieldEnum.YEAR:
-                    return new ValueRange<int>(0, int.MaxValue);
+                    return new ValueRange<int>(
+                        DateTimeOffset.MinValue.Year,
+                        DateTimeOffset.MaxValue.Year);
                 default:
                     throw new NotSupportedException();
             }

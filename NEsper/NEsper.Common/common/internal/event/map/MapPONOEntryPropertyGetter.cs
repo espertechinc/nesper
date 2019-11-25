@@ -122,7 +122,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))

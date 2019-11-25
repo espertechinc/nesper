@@ -85,13 +85,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             block.MethodReturn(
-                forge.ArithTypeEnumComputer.Codegen(
-                    methodNode,
-                    codegenClassScope,
-                    Ref("left"),
-                    Ref("right"),
-                    lhsType,
-                    rhsType));
+                CodegenLegoCast.CastSafeFromObjectType(
+                    forge.EvaluationType,
+                    forge.ArithTypeEnumComputer.Codegen(
+                        methodNode,
+                        codegenClassScope,
+                        Ref("left"),
+                        Ref("right"),
+                        lhsType,
+                        rhsType)));
             return methodNode;
         }
     }

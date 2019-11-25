@@ -138,6 +138,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
+            // If ths isDivisionByZeroReturnsNull is set, it requires promotion to boxed types
+            // to support passing back null.
+            if (isDivisionByZeroReturnsNull) {
+                resultType = resultType.GetBoxedType();
+            }
+            
             var arithTypeEnumComputer = MathArithType.GetComputer(
                 MathArithTypeEnum,
                 resultType,

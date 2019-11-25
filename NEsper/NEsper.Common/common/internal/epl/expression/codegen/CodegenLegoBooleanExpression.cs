@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             var unboxPass = Unbox(Ref(PASS_NAME), evaluationType);
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            block.Debug("Pass = {0}", Ref(PASS_NAME));
+            //block.Debug("Pass = {0}", Ref(PASS_NAME));
 
             var passCheck = NotOptional(!checkFor, unboxPass);
 
@@ -70,8 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return;
             }
 
-            block.IfCondition(And(NotEqualsNull(Ref(PASS_NAME)), passCheck));
-            block.BlockReturn(Constant(resultIfCheckPasses));
+            block
+                .IfCondition(And(NotEqualsNull(Ref(PASS_NAME)), passCheck))
+                .BlockReturn(Constant(resultIfCheckPasses));
         }
 
         /// <summary>

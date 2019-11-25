@@ -121,7 +121,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 refExprEvalCtx);
             
             if (forge.cache) {
-                block.DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
+                block
+                    .DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
                         "cacheValue",
                         ExprDotMethod(Ref("cache"), "GetEnumerationMethodLastValue", forgeMember))
                     .IfCondition(NotEqualsNull(Ref("cacheValue")))
@@ -147,6 +148,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     true,
                     typeof(AtomicLong),
                     NewInstance(typeof(AtomicLong)));
+
+                var returnInvocation = forge.enumForge.Codegen(premade, methodNode, codegenClassScope);
+                
                 block
                     .DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "GetAndIncrement"))
                     .TryCatch()
@@ -159,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             "AllocateCopyEventLambda",
                             refEPS,
                             Constant(forge.enumEvalNumRequiredEvents)))
-                    .TryReturn(forge.enumForge.Codegen(premade, methodNode, codegenClassScope))
+                    .TryReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, returnInvocation))
                     .TryFinally()
                     .Expression(ExprDotMethod(Ref("cache"), "PopContext"))
                     .BlockEnd()

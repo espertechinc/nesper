@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.client.soda
                 return;
             }
 
-            writer.Write(":<");
+            writer.Write("<");
             string typeDelimiter = "";
             foreach (DataFlowOperatorOutputType type in types)
             {

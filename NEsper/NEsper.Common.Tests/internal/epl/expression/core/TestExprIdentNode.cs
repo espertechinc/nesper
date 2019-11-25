@@ -61,12 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             identNodes[2].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(2, identNodes[2].StreamId);
-            Assert.AreEqual(typeof(int), identNodes[2].Forge.EvaluationType);
+            Assert.AreEqual(typeof(int?), identNodes[2].Forge.EvaluationType);
             Assert.AreEqual("Indexed[1]", identNodes[2].ResolvedPropertyName);
 
             identNodes[3].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
             Assert.AreEqual(0, identNodes[3].StreamId);
-            Assert.AreEqual(typeof(int), identNodes[3].Forge.EvaluationType);
+            Assert.AreEqual(typeof(int?), identNodes[3].Forge.EvaluationType);
             Assert.AreEqual("IntPrimitive", identNodes[3].ResolvedPropertyName);
 
             TryInvalidValidate(new ExprIdentNodeImpl(""));

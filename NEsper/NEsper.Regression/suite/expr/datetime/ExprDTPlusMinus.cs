@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "LongDate.plus(1 hour 10 sec 20 msec) as val1e," +
 
                                   "current_timestamp.minus(1 hour 10 sec 20 msec) as val2a," +
-                                  "DateTimeEx.minus(1 hour 10 sec 20 msec) as val2b" +
+                                  "DateTimeEx.minus(1 hour 10 sec 20 msec) as val2b," +
                                   "DateTimeOffset.minus(1 hour 10 sec 20 msec) as val2c," +
                                   "DateTime.minus(1 hour 10 sec 20 msec) as val2d," +
                                   "LongDate.minus(1 hour 10 sec 20 msec) as val2e" +

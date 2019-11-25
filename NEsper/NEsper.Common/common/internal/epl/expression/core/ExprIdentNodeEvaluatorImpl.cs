@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private readonly int streamNum;
         private readonly EventPropertyGetterSPI propertyGetter;
-        internal readonly Type returnType;
+        private readonly Type identType;
+        private readonly Type returnType;
         private readonly ExprIdentNode identNode;
         private readonly EventType eventType;
         private bool optionalEvent;
@@ -45,6 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             this.streamNum = streamNum;
             this.propertyGetter = propertyGetter;
+            this.identType = returnType;
             // Ident nodes when evaluated can return a value or null (if for example the underlying object is null).  Because of this,
             // we want to ensure that the return type is boxed so that we can always return null.  This means that primitives may need
             // to be unboxed elsewhere.
@@ -81,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             } else if (requiredType.IsBoxedType() && requiredType == returnType) { // returnType is always boxed
                 return requiredType;
             } else if (returnType == requiredType.GetBoxedType()) { // returnType is always boxed
-                return returnType;
+                return requiredType; // they want the unboxed version, but we have the boxed... not sure
+                //return returnType;
             }
 
             throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
@@ -134,9 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     streamNum,
                     eventType,
                     false);
-                return CodegenLegoCast.CastSafeFromObjectType(
-                    castTargetType,
-                    propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
+                var property = propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope);
+                return CodegenLegoCast.CastSafeFromObjectType(castTargetType, property);
             }
 
             var method = codegenMethodScope.MakeChild(

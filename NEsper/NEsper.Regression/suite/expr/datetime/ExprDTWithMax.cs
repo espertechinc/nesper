@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
+                var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
                 var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.withMax('msec') as val0," +
                                   "DateTimeOffset.withMax('sec') as val1," +
@@ -74,40 +74,37 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTimeOffset.withMax('hour') as val3," +
                                   "DateTimeOffset.withMax('day') as val4," +
                                   "DateTimeOffset.withMax('month') as val5," +
-                                  "DateTimeOffset.withMax('year') as val6," +
-                                  "DateTimeOffset.withMax('week') as val7" +
+                                  "DateTimeOffset.withMax('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
+                        typeof(DateTimeOffset?), // val0
+                        typeof(DateTimeOffset?), // val1
+                        typeof(DateTimeOffset?), // val2
+                        typeof(DateTimeOffset?), // val3
+                        typeof(DateTimeOffset?), // val4
+                        typeof(DateTimeOffset?), // val5
+                        typeof(DateTimeOffset?)  // val6
                     });
 
                 string[] expected = {
-                    "2002-5-30T09:00:00.999",
-                    "2002-5-30T09:00:59.000",
-                    "2002-5-30T09:59:00.000",
-                    "2002-5-30T23:00:00.000",
-                    "2002-5-31T09:00:00.000",
-                    "2002-12-30T09:00:00.000",
-                    "292278994-5-30T09:00:00.000",
-                    "2002-12-26T09:00:00.000"
+                    "2002-05-30T09:00:00.999", // val0
+                    "2002-05-30T09:00:59.000", // val1
+                    "2002-05-30T09:59:00.000", // val2
+                    "2002-05-30T23:00:00.000", // val3
+                    "2002-05-31T09:00:00.000", // val4
+                    "2002-12-30T09:00:00.000", // val5
+                    "9999-05-30T09:00:00.000"  // val6
                 };
                 var startTime = "2002-05-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expected, "util"));
+                    SupportDateTime.GetArrayCoerced(expected, "dto"));
 
                 env.UndeployAll();
             }

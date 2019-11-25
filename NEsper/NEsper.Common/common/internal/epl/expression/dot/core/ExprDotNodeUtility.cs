@@ -544,10 +544,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     .DeclareVar(
                         currentTargetType,
                         "wrapped",
-                        optionalResultWrapLambda.CodegenConvertNonNull(@Ref("inner"), methodNode, codegenClassScope));
+                        optionalResultWrapLambda.CodegenConvertNonNull(Ref("inner"), methodNode, codegenClassScope));
             }
             else {
-                block.DeclareVar(innerType, "wrapped", @Ref("inner"));
+                block.DeclareVar(innerType, "wrapped", Ref("inner"));
                 currentTargetType = innerType;
             }
 
@@ -575,7 +575,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     block.Expression(
                             forges[i]
                                 .Codegen(
-                                    @Ref(currentTarget),
+                                    Ref(currentTarget),
                                     currentTargetType,
                                     methodNode,
                                     exprSymbol,
@@ -585,7 +585,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 else {
                     var invocation = forges[i]
                         .Codegen(
-                            @Ref(currentTarget),
+                            Ref(currentTarget),
                             currentTargetType,
                             methodNode,
                             exprSymbol,
@@ -605,7 +605,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             .BlockReturn(ConstantNull());
                     }
 
-                    block.Apply(Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, @Ref(refname)));
+                    block.Apply(Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, Ref(refname)));
                 }
             }
 
@@ -613,7 +613,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 block.MethodEnd();
             }
             else {
-                block.MethodReturn(@Ref(refname));
+                block.MethodReturn(Ref(refname));
             }
 
             return LocalMethod(methodNode, inner);

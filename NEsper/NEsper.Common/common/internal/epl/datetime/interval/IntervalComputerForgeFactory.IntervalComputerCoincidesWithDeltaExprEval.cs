@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     {
         public class IntervalComputerCoincidesWithDeltaExprEval : IntervalComputerEval
         {
-            public const string METHOD_WARNCOINCIDESTARTENDLESSZERO = "warnCoincideStartEndLessZero";
+            public const string METHOD_WARNCOINCIDESTARTENDLESSZERO = "WarnCoincideStartEndLessZero";
 
             private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

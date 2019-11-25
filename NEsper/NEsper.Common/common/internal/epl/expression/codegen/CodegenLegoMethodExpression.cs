@@ -74,7 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
             exprMethod.Block.DebugStack();
 
-            var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
+            var expression = CodegenLegoCast.CastSafeFromObjectType(
+                evaluationType,
+                forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope));
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
             exprMethod.Block.MethodReturn(expression);
             return exprMethod;

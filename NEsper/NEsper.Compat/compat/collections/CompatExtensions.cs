@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 using Castle.Components.DictionaryAdapter.Xml;
 using Castle.Core.Internal;
@@ -1494,14 +1495,6 @@ namespace com.espertech.esper.compat.collections
             return Hash(objects);
         }
 
-        public static bool ContainsChecked<T>(
-            this ICollection<T> collection,
-            T value)
-        {
-            bool result = collection.Contains(value);
-            return result;
-        }
-        
         public static void Debug(
             string format,
             params object[] formatArgs)

@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                            "    <stringarr>a&gt;b</stringarr>\n" +
                            "  </innerarray>\n" +
                            "  <innerarray/>\n" +
-                           "  <prop0 Id=\"A1\"/>\n" +
+                           "  <prop0 id=\"A1\"/>\n" +
                            "</outerMap>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 

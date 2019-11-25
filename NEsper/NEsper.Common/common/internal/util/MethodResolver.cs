@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.util
             var sbyteWrappers = InitWrappingConversions<sbyte, sbyte?>();
             var shortWrappers = InitWrappingConversions<short, short?>();
             var ushortWrappers = InitWrappingConversions<ushort, ushort?>();
-            var intWrappers = InitWrappingConversions<int, int>();
+            var intWrappers = InitWrappingConversions<int, int?>();
             var uintWrappers = InitWrappingConversions<uint, uint?>();
             var longWrappers = InitWrappingConversions<long, long?>();
             var ulongWrappers = InitWrappingConversions<ulong, ulong?>();
@@ -756,9 +756,8 @@ namespace com.espertech.esper.common.@internal.util
             Type declarationType,
             Type invocationType)
         {
-            if (WrappingConversions.ContainsKey(declarationType)) {
-                return WrappingConversions.Get(declarationType).Contains(invocationType) ||
-                       declarationType.IsAssignableFrom(invocationType);
+            if (WrappingConversions.TryGetValue(declarationType, out var wrappingConversion)) {
+                return wrappingConversion.Contains(invocationType) || declarationType.IsAssignableFrom(invocationType);
             }
 
             if (invocationType == null) {

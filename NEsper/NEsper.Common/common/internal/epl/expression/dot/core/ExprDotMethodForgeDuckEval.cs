@@ -202,11 +202,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     true,
                     allFalse,
                     allFalse);
-                if (method == null) {
-                    throw;
+                if (method != null) {
+                    return method;
                 }
 
-                return method;
+                Log.Debug("Not resolved for class '" + clazz.Name + "' method '" + methodName + "'");
             }
             catch (Exception) {
                 Log.Debug("Not resolved for class '" + clazz.Name + "' method '" + methodName + "'");

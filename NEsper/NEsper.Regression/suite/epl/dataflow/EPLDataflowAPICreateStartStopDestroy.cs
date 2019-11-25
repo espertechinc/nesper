@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MyGraph Emitter -> outstream:<?> {}";
+                var epl = "@Name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
                 var compiledGraph = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiledGraph, new DeploymentOptions().WithDeploymentId("DEP1"));
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create schema ABC as " +
                           typeof(SupportBean).FullName +
                           "," +
-                          "DefaultSupportSourceOp -> outstream:<SupportBean> {}\n" +
+                          "DefaultSupportSourceOp -> outstream<SupportBean> {}\n" +
                           "select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 

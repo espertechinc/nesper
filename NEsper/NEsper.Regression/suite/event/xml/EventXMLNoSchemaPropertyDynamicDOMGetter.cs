@@ -39,15 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),
-                    new EventPropertyDescriptor(
-                        "nested.nes2?",
-                        typeof(XmlNode),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
+                    new EventPropertyDescriptor("nested.nes2?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("map('a')?", typeof(XmlNode), null, false, false, false, false, false)
                 },
                 env.Statement("s0").EventType.PropertyDescriptors);

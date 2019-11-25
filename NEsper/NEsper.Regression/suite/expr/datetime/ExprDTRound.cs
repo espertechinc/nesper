@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expected, "util"));
+                    SupportDateTime.GetArrayCoerced(expected, "dto"));
 
                 env.UndeployAll();
             }

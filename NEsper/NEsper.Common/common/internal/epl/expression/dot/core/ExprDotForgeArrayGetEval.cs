@@ -93,9 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             block.DeclareVar<int>(
                 "index",
                 forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope));
-            block.IfCondition(Relational(ArrayLength(@Ref("target")), LE, @Ref("index")))
+            block.IfCondition(Relational(ArrayLength(Ref("target")), LE, Ref("index")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(ArrayAtIndex(@Ref("target"), @Ref("index")));
+                .MethodReturn(ArrayAtIndex(Ref("target"), Ref("index")));
             return LocalMethod(methodNode, inner);
         }
     }

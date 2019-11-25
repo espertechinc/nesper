@@ -81,6 +81,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 var delta = leftStart - rightEnd;
                 return start <= delta && delta <= end;
             }
+
+            /// <summary>
+            ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+            /// </summary>
+            /// <param name="leftStart">left end</param>
+            /// <param name="rightEnd">right</param>
+            /// <param name="start">start</param>
+            /// <param name="end">end</param>
+            /// <returns>flag</returns>
+            
+            public static bool ComputeIntervalAfter(
+                long leftStart,
+                long rightEnd,
+                long start,
+                long end)
+            {
+                var delta = leftStart - rightEnd;
+                return start <= delta && delta <= end;
+            }
+
         }
     }
 }

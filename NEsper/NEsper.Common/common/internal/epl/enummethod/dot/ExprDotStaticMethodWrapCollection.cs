@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -53,7 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return result;
+            if (componentType == typeof(object)) {
+                return result;
+            }
+
+            return CodegenExpressionBuilder.StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(object)}, result);
         }
     }
 } // end of namespace

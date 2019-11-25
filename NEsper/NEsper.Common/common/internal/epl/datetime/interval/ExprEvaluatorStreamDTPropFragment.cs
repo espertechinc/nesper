@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             return LocalMethod(methodNode);
         }
 
-        public Type EvaluationType => typeof(long);
+        public Type EvaluationType => typeof(long?);
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 

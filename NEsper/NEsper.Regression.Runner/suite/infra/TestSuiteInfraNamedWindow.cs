@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowOnDelete.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNamedWindowOnMerge()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnMerge.Executions());

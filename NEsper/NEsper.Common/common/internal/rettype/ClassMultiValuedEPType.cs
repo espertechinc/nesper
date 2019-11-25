@@ -19,6 +19,9 @@ namespace com.espertech.esper.common.@internal.rettype
     /// </summary>
     public class ClassMultiValuedEPType : EPType
     {
+        internal static int _gid = 0;
+        internal int _id = ++_gid;
+        
         public ClassMultiValuedEPType(
             Type container,
             Type component)
@@ -39,6 +42,11 @@ namespace com.espertech.esper.common.@internal.rettype
             return CodegenExpressionBuilder.NewInstance<ClassMultiValuedEPType>(
                 CodegenExpressionBuilder.Constant(Container),
                 CodegenExpressionBuilder.Constant(Component));
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Container)}: {Container}, {nameof(Component)}: {Component}";
         }
     }
 }

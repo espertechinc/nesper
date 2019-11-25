@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream:<" + typeName + ">{}\n" +
+                        "DefaultSupportSourceOp -> instream<" + typeName + ">{}\n" +
                         "select(instream as ME) -> outstream {select: (select MyString, sum(MyInt) as total from ME)}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string message)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream:<SupportBean>{}\n" +
+                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
                         "select(instream as ME) -> outstream {select: (" +
                         select +
                         "), iterate: " +
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
-                          "  BeaconSource -> instream:<SampleSchema> {}  // sample stream\n" +
-                          "  BeaconSource -> secondstream:<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> instream<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> secondstream<SampleSchema> {}  // sample stream\n" +
                           "  \n" +
                           "  // Simple continuous count of events\n" +
                           "  select(instream) -> outstream {\n" +
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "@Audit select(instream_s0 as ALIAS) -> outstream {\n" +
                             "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                             "  iterate: true" +
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                             "}\n" +
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0:<SupportBean>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                             "}\n" +
@@ -367,8 +367,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0:<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter -> instream_s1:<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
                             "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
@@ -415,9 +415,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 string fromClause)
             {
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter -> instream_s0:<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter -> instream_s1:<SupportBean_S1>{name: 'emitterS1'}\n" +
-                            "Emitter -> instream_s2:<SupportBean_S2>{name: 'emitterS2'}\n" +
+                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
                             "select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
                             "  select: (select S0.Id as S0Id, S1.Id as S1Id, S2.Id as S2Id " +
                             fromClause +
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "create objectarray schema MyEventOA(p0 string, p1 long);\n" +
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "Emitter -> instream:<MyEventOA> {name: 'E1'}" +
+                    "Emitter -> instream<MyEventOA> {name: 'E1'}" +
                     "select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne");
                 var emitter = df.StartCaptive().Emitters.Get("E1");

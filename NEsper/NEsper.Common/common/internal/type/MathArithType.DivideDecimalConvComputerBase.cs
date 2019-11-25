@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Xml.XPath;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -68,8 +70,13 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
+                var resultType = typeof(decimal);
+                if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
+                    resultType = typeof(decimal?);
+                }
+                
                 var block = codegenMethodScope
-                    .MakeChild(typeof(decimal?), typeof(DivideDecimalConvComputerBase), codegenClassScope)
+                    .MakeChild(resultType, typeof(DivideDecimalConvComputerBase), codegenClassScope)
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
@@ -88,7 +95,7 @@ namespace com.espertech.esper.common.@internal.type
                     ifZeroDivisor.BlockReturn(CodegenExpressionBuilder.ConstantNull());
                 }
                 else {
-                    ifZeroDivisor.DeclareVar<decimal?>(
+                    ifZeroDivisor.DeclareVar<decimal>(
                             "result",
                             CodegenExpressionBuilder.Op(
                                 CodegenExpressionBuilder.Ref("s1"),
@@ -102,7 +109,11 @@ namespace com.espertech.esper.common.@internal.type
                         CodegenExpressionBuilder.Ref("s1"),
                         CodegenExpressionBuilder.Ref("s2"),
                         codegenClassScope));
-                return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
+                return CodegenExpressionBuilder
+                    .LocalMethodBuild(method)
+                    .Pass(left)
+                    .Pass(right)
+                    .Call();
             }
 
             public abstract object DoDivide(

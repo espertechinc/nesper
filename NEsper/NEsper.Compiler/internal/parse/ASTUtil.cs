@@ -337,6 +337,8 @@ namespace com.espertech.esper.compiler.@internal.parse
         public static string UnescapeClassIdent(EsperEPL2GrammarParser.ClassIdentifierContext classIdentCtx)
         {
             var unescapeEscapableResult = UnescapeEscapableStr(classIdentCtx.escapableStr(), ".");
+            
+#if NOT_FUNCTIONAL
             var genericArgsList = classIdentCtx.classIdentifierGenericArgs();
             if (genericArgsList != null) {
                 var genericArgRender = new StringBuilder();
@@ -356,6 +358,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                 unescapeEscapableResult += genericArgRender.ToString();
             }
+#endif
 
             return unescapeEscapableResult;
         }

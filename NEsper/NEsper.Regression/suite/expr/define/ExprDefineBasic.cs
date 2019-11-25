@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
@@ -71,7 +72,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.Statement("s0").EventType,
                 new [] { "val1" },
                 new[] {
-                    typeof(ICollection<object>), typeof(ICollection<object>)
+                    typeof(ICollection<EventBean>),
+                    typeof(ICollection<EventBean>)
                 });
 
             env.SendEventBean(new SupportBean("E1", 2));

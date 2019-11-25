@@ -404,5 +404,29 @@ namespace com.espertech.esper.compat.collections
 	    {
 	        return new ReadOnlyList<T>(sourceList.ToArray());
 	    }
+        
+        /// <summary>
+        /// Returns true if the object provided matches the type required for the collection and exists in the collection.  One
+        /// of the truly nice things about compilation is that it allows widening and narrowing to work properly.  However, it
+        /// can affect the Contains method in ways that are not anticipated.  For example, an int will be implicitly upcast
+        /// to a long, allowing an integer to be found in a collection of longs.  This method enforces type consistency by
+        /// taking in an object, thus avoiding implicit conversion during compilation.  Jury is still out, as some (myself
+        /// included) may personally prefer to have the implicit conversion.
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool CheckedContains<T>(
+            this ICollection<T> collection,
+            object value)
+        {
+            if (value is T valueT) {
+                bool result = collection.Contains(valueT);
+                return result;
+            }
+
+            return false;
+        }
 	}
 }

@@ -163,10 +163,24 @@ namespace com.espertech.esper.common.@internal.rettype
             if (collectionComponentType == null) {
                 throw new ArgumentException("Invalid null collection component type");
             }
+            
+            Type containerType;
 
-            var containerType = collectionComponentType == typeof(object[]) 
-                ? typeof(ICollection<object[]>)
-                : typeof(ICollection<object>);
+            // Have not yet deduced the black magic of why and when we decide the type of
+            // collection.  It's not entirely clear and is a work-in-progress.
+            // TBD: fix the general determinism of this algorithm.
+            
+            if (collectionComponentType == typeof(object)) {
+                containerType = typeof(ICollection<object>);
+            } else if (collectionType == null) {
+                containerType = typeof(ICollection<object>);
+            } else if (collectionType == typeof(EventBean)) {
+                containerType = typeof(ICollection<EventBean>);
+            } else if (collectionComponentType == typeof(object[])) {
+                containerType = typeof(ICollection<object[]>);
+            } else {
+                containerType = typeof(ICollection<object>);
+            }
             
             return new ClassMultiValuedEPType(
                 containerType, 
@@ -268,24 +282,20 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public static Type GetNormalizedClass(this EPType theType)
         {
-            if (theType is EventMultiValuedEPType) {
-                var type = (EventMultiValuedEPType) theType;
-                return TypeHelper.GetArrayType(type.Component.UnderlyingType);
+            if (theType is EventMultiValuedEPType eventMultiValuedEpType) {
+                return TypeHelper.GetArrayType(eventMultiValuedEpType.Component.UnderlyingType);
             }
 
-            if (theType is EventEPType) {
-                var type = (EventEPType) theType;
-                return type.EventType.UnderlyingType;
+            if (theType is EventEPType eventEpType) {
+                return eventEpType.EventType.UnderlyingType;
             }
 
-            if (theType is ClassMultiValuedEPType) {
-                var type = (ClassMultiValuedEPType) theType;
-                return type.Container;
+            if (theType is ClassMultiValuedEPType classMultiValuedEpType) {
+                return classMultiValuedEpType.Container;
             }
 
-            if (theType is ClassEPType) {
-                var type = (ClassEPType) theType;
-                return type.Clazz;
+            if (theType is ClassEPType classEpType) {
+                return classEpType.Clazz;
             }
 
             if (theType is NullEPType) {

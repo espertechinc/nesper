@@ -299,8 +299,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(4, type.PropertyNames.Length);
                 Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int), type.GetPropertyType("b"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
                 Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
                 Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
 
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(5, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
                 Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
                 Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0stream"));
                 Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
@@ -361,8 +361,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(24, type.PropertyNames.Length);
                 Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int), type.GetPropertyType("b"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
                 Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
 
                 SendBeanEvent(env, "E1", 10);
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var type = env.Statement("s0").EventType;
                 Assert.AreEqual(7, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int), type.GetPropertyType("IntPrimitive"));
+                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
                 Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
 
                 SendBeanEvent(env, "E1", 11);

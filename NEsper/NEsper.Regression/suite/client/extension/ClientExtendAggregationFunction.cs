@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             var validContext = SupportLowerUpperCompareAggregationFunctionForge.Contexts[0];
             EPAssertionUtil.AssertEqualsExactOrder(
-                new[] {typeof(int), typeof(int), typeof(int), typeof(SupportBean)},
+                new[] {typeof(int), typeof(int), typeof(int?), typeof(SupportBean)},
                 validContext.ParameterTypes);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 10, null, null}, validContext.ConstantValues);
             EPAssertionUtil.AssertEqualsExactOrder(new[] {true, true, false, false}, validContext.IsConstantValue);

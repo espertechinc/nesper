@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string message)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream:<SupportBean>{}\n" +
+                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
                         "filter(instream as ME) -> outstream {filter: " +
                         filter +
                         "}\n" +
@@ -88,19 +88,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid: no filter
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 BeaconSource -> instream:<SupportBean> {} Filter(instream) -> abc {}",
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc {}",
                     "Failed to obtain operator 'Filter': Required parameter 'filter' providing the filter expression is not provided");
 
                 // invalid: too many output streams
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 BeaconSource -> instream:<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
                     "Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 3 streams");
 
                 // invalid: too few output streams
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 BeaconSource -> instream:<SupportBean> {} Filter(instream) { filter : true }",
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) { filter : true }",
                     "Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 0 streams");
 
                 // invalid filter expressions
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test doc sample
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\n" +
-                          "  BeaconSource -> samplestream:<SampleSchema> {}\n" +
+                          "  BeaconSource -> samplestream<SampleSchema> {}\n" +
                           "  \n" +
                           "  // Filter all events that have a tag Id of '001'\n" +
                           "  Filter(samplestream) -> tags_001 {\n" +
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test two streams
                 DefaultSupportCaptureOpStatic<object>.GetInstances().Clear();
                 var graph = "@Name('flow') create dataflow MyFilter\n" +
-                            "Emitter -> sb:<SupportBean> {name : 'e1'}\n" +
+                            "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
                             "filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
                             "DefaultSupportCaptureOpStatic(out.ok) {}" +
                             "DefaultSupportCaptureOpStatic(out.fail) {}";

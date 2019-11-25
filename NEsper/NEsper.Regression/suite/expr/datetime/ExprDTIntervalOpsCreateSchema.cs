@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = DateTimeParsingFunctions.ParseDefaultMSec(startA);
             env.EventService.SendEventBean(theEvent, "SupportBeanXXX");
-            Assert.AreEqual(4, env.Listener("s0").AssertOneGetNewAndReset().Get("val0"));
+            Assert.AreEqual(5, env.Listener("s0").AssertOneGetNewAndReset().Get("val0"));
 
             env.UndeployAll();
         }

@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.inner;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
@@ -28,6 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeRootChild : ExprDotNodeForge,
         ExprEnumerationForge
     {
+        internal static int _gid = 0;
+        internal int _uid = ++_gid;
+        
         internal readonly ExprDotForge[] forgesIteratorEventBean;
         internal readonly ExprDotForge[] forgesUnpacking;
         internal readonly ExprDotEvalRootChildInnerForge innerForge;

@@ -60,19 +60,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         classScope,
                         "qExprDotChain",
                         typeInformation,
-                        @Ref("result"),
+                        Ref("result"),
                         Constant(forge.ChainForge.Length)));
             CodegenExpression chain = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,
                 classScope,
-                @Ref("result"),
+                Ref("result"),
                 variableType,
                 forge.ChainForge,
                 forge.ResultWrapLambda);
             block.DeclareVar(forge.EvaluationType, "returned", chain)
                 .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
-                .MethodReturn(@Ref("returned"));
+                .MethodReturn(Ref("returned"));
             return LocalMethod(methodNode);
         }
     }

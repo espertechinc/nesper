@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.util
 
         public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(typeof(Collections), "GetEmptyList");
+        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(
+            typeof(Collections), "GetEmptyList", new [] { typeof(object) });
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -656,16 +657,16 @@ namespace com.espertech.esper.common.@internal.util
                 .IfRefNullReturnNull("array");
             if (!arrayType.GetElementType().IsValueType) {
                 return LocalMethodBuild(
-                        block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Ref("array"))))
+                        block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", new[] { typeof(object) }, Ref("array"))))
                     .Pass(array)
                     .Call();
             }
 
             var method = block.IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList"))
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { typeof(object) }))
                 .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
                 .BlockReturn(
-                    StaticMethod(typeof(Collections), "SingletonList", ArrayAtIndex(Ref("array"), Constant(0))))
+                    StaticMethod(typeof(Collections), "SingletonList", new[] { typeof(object) }, ArrayAtIndex(Ref("array"), Constant(0))))
                 .DeclareVar<ArrayDeque<object>>(
                     "dq",
                     NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))

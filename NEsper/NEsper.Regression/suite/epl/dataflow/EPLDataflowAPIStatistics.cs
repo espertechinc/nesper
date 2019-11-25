@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyGraph " +
-                "DefaultSupportSourceOp -> outstream:<SupportBean> {} " +
+                "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
 
             var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1), new SupportBean("E2", 2)});
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var sourceStat = stats[0];
             Assert.AreEqual("DefaultSupportSourceOp", sourceStat.OperatorName);
             Assert.AreEqual(0, sourceStat.OperatorNumber);
-            Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream:<SupportBean>", sourceStat.OperatorPrettyPrint);
+            Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", sourceStat.OperatorPrettyPrint);
             Assert.AreEqual(2, sourceStat.SubmittedOverallCount);
             EPAssertionUtil.AssertEqualsExactOrder(new[] {2L}, sourceStat.SubmittedPerPortCount);
             Assert.IsTrue(sourceStat.TimeOverall > 0);

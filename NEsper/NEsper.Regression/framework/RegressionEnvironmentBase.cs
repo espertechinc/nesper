@@ -152,7 +152,8 @@ namespace com.espertech.esper.regressionlib.framework
 
         public RegressionEnvironment SendEventBean(object @event)
         {
-            Runtime.EventService.SendEventBean(@event, @event.GetType().Name);
+            var eventTypeName = @event.GetType().Name;
+            Runtime.EventService.SendEventBean(@event, eventTypeName);
             return this;
         }
 

@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     }
 
                     // when selecting a combined output row that contains multiple fields
-                    var methodX = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
+                    var methodX = parent.MakeChild(typeof(ICollection<EventBean>), this.GetType(), classScope);
                     var fieldEventType = classScope.AddDefaultFieldUnshared(
                         true,
                         typeof(EventType),
@@ -157,9 +157,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
                     methodX.Block
-                        .DeclareVar<ICollection<object>>(
+                        .DeclareVar<ICollection<EventBean>>(
                             "result",
-                            NewInstance<ArrayDeque<object>>(
+                            NewInstance<ArrayDeque<EventBean>>(
                                 ExprDotName(symbols.GetAddMatchingEvents(methodX), "Count")))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
                     var foreachX = methodX.Block.ForEach(

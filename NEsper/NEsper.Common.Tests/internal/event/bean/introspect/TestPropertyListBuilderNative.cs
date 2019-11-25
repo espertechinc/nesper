@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             IList<PropertyStem> expected = new List<PropertyStem>();
             expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), PropertyType.SIMPLE));
-            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), PropertyType.SIMPLE));
-            EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
+            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), PropertyType.SIMPLE | PropertyType.INDEXED));
+            CollectionAssert.AreEquivalent(expected, descList);
         }
     }
 } // end of namespace

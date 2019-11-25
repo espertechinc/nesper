@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
-                          "BeaconSource -> InStream:<SchemaOne> {p1:'A1', iterations:1}\n" +
+                          "BeaconSource -> InStream<SchemaOne> {p1:'A1', iterations:1}\n" +
                           "select(InStream) -> out_1 { select: (select p1 from InStream) }\n" +
                           "select(out_1) -> out_2 { select: (select p1 from out_1) }\n" +
                           "select(out_2) -> out_3 { select: (select p1 from out_2) }\n" +
@@ -106,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "create objectarray schema SchemaTwo (p2 int),\n" +
                           "\n" +
-                          "BeaconSource -> InOne:<SchemaOne> {p1:'A1', iterations:1}\n" +
-                          "BeaconSource -> InTwo:<SchemaOne> {p1:'A2', iterations:1}\n" +
+                          "BeaconSource -> InOne<SchemaOne> {p1:'A1', iterations:1}\n" +
+                          "BeaconSource -> InTwo<SchemaOne> {p1:'A2', iterations:1}\n" +
                           "\n" +
-                          "BeaconSource -> InThree:<SchemaTwo> {p2:10, iterations:1}\n" +
-                          "BeaconSource -> InFour:<SchemaTwo> {p2:20, iterations:1}\n" +
-                          "MyCustomOp((InOne, InTwo) as S0, (InThree, InFour) as S1) -> OutOne:<SchemaTwo>, OutTwo:<SchemaOne>{}\n" +
+                          "BeaconSource -> InThree<SchemaTwo> {p2:10, iterations:1}\n" +
+                          "BeaconSource -> InFour<SchemaTwo> {p2:20, iterations:1}\n" +
+                          "MyCustomOp((InOne, InTwo) as S0, (InThree, InFour) as S1) -> OutOne<SchemaTwo>, OutTwo<SchemaOne>{}\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(OutOne) { name : 'SupportOpCountFutureOneA' }\n" +
                           "DefaultSupportCaptureOp(OutOne) { name : 'SupportOpCountFutureOneB' }\n" +
@@ -168,9 +168,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create objectarray schema TempSchema (current int, temp long),\n" +
                           "create objectarray schema FinalSchema (result long),\n" +
                           "\n" +
-                          "BeaconSource -> InputData:<InputSchema> {number:5, iterations:1}\n" +
+                          "BeaconSource -> InputData<InputSchema> {number:5, iterations:1}\n" +
                           "\n" +
-                          "MyFactorialOp(InputData as Input, TempResult as Temp) -> TempResult:<TempSchema>, FinalResult:<FinalSchema>{}\n" +
+                          "MyFactorialOp(InputData as Input, TempResult as Temp) -> TempResult<TempSchema>, FinalResult<FinalSchema>{}\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(FinalResult) {}\n";
                 env.CompileDeploy(epl);

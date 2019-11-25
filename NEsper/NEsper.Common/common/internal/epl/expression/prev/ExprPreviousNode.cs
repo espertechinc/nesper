@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .AssignArrayElement(
                         eps,
                         Constant(StreamNumber),
-                        Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "Next")))
+                        Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "Advance")))
                     .ExprDotMethod(
                         Ref("result"),
                         "Add",

@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         forge.IndexedGetter.EventBeanGetIndexedCodegen(
                             methodNode,
                             codegenClassScope,
-                            @Ref("@event"),
-                            Unbox(@Ref("index")))));
+                            Ref("@event"),
+                            Unbox(Ref("index")))));
             return LocalMethod(methodNode);
         }
     }

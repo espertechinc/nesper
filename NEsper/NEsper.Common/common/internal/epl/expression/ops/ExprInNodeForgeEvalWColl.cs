@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             Ref("left"), leftTypeUncoerced, reftype.GetCollectionItemType());
                         
                         ifRightNotNull
-                            .IfCondition(ExprDotMethod(Ref(refname), "ContainsChecked", leftWithBoxing))
+                            .IfCondition(StaticMethod(typeof(Collections), "CheckedContains", Ref(refname), leftWithBoxing))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }

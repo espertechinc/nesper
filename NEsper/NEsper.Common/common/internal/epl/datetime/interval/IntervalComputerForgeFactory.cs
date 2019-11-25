@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                                 codegenClassScope));
                         return ExprDotMethod(
                             field,
-                            "deltaAdd",
+                            "DeltaAdd",
                             reference,
                             exprSymbol.GetAddEPS(parent),
                             exprSymbol.GetAddIsNewData(parent),

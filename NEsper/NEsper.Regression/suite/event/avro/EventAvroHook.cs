@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                     env,
                     "insert into MyEvent(isodate) select DateTime from SupportEventWithDateTime",
                     "Invalid assignment of column 'isodate' of type '" +
-                    typeof(DateTime).CleanName() +
+                    typeof(DateTime?).CleanName() +
                     "' to event property 'isodate' typed as '" +
                     typeof(string).CleanName() +
                     "', column and parameter types mismatch");

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -311,7 +312,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val0" },
-                    new[] {typeof(ICollection<object>)});
+                    new[] {
+                        typeof(ICollection<EventBean>)
+                    });
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E2,E4,E5");

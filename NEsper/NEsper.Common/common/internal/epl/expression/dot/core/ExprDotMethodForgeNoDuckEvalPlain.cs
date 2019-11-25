@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -83,10 +85,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = forge.Method.ReturnType.GetBoxedType();
+            var method = forge.Method;
+            var returnType = method.ReturnType.GetBoxedType();
+            Type instanceType;
+
+            IList<Type> methodParameters;
+            
+            if (method.IsExtensionMethod()) {
+                methodParameters = method.GetParameterTypes().Skip(1).ToList();
+                instanceType = method.GetParameters()[0].ParameterType;
+            }
+            else {
+                methodParameters = method.GetParameterTypes().ToList();
+                instanceType = method.DeclaringType;
+            }
+
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
-                .AddParam(forge.Method.DeclaringType, "target");
+                .AddParam(instanceType.GetBoxedType(), "target");
 
             var block = methodNode.Block;
 
@@ -94,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 block.IfRefNullReturnNull("target");
             }
 
-            var args = new CodegenExpression[forge.Parameters.Length];
+            var args = new List<CodegenExpression>(); //[forge.Parameters.Length];
             for (var i = 0; i < forge.Parameters.Length; i++) {
                 var name = "p" + i;
                 var evaluationType = forge.Parameters[i].EvaluationType;
@@ -102,14 +118,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     evaluationType,
                     name,
                     forge.Parameters[i].EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
-                args[i] = Ref(name);
+
+                CodegenExpression reference = Ref(name);
+                if (evaluationType.IsNullable() && !methodParameters[i].IsNullable()) {
+                    reference = Unbox(reference);
+                }
+
+                args.Add(reference);
             }
 
+            CodegenExpression target = Ref("target");
+            if (instanceType != instanceType.GetBoxedType()) {
+                target = CodegenExpressionBuilder.Unbox(target);
+            }
+            
             var tryBlock = block.TryCatch();
-            var invocation = forge.Method.IsStatic
-                ? StaticMethod(forge.Method.DeclaringType, forge.Method.Name, args) 
-                : ExprDotMethod(Ref("target"), forge.Method.Name, args);
-         
+            
+            CodegenExpression invocation;
+            if (method.IsExtensionMethod()) {
+                args.Insert(0, target);
+                invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
+            }
+            else {
+                invocation = ExprDotMethod(target, method.Name, args.ToArray());
+            }
+
             CodegenStatementTryCatch tryCatch;
             if (returnType == typeof(void)) {
                 tryCatch = tryBlock.Expression(invocation).TryEnd();
@@ -130,8 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 typeof(ExprDotMethodForgeNoDuckEvalPlain),
                 METHOD_HANDLETARGETEXCEPTION,
                 Constant(forge.OptionalStatementName),
-                Constant(forge.Method.Name),
-                Constant(forge.Method.GetParameterTypes()),
+                Constant(method.Name),
+                Constant(method.GetParameterTypes()),
                 ExprDotMethodChain(Ref("target")).Add("GetType").Get("FullName"),
                 Ref("args"),
                 Ref("t"));

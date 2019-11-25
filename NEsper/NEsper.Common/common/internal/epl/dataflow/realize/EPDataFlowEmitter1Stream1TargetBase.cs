@@ -40,10 +40,6 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             this.signalHandler = signalHandler;
             this.exceptionHandler = exceptionHandler;
 
-            if (target.Binding.ConsumingBindingDesc.Method.DeclaringType.FullName == "com.espertech.esper.common.internal.epl.dataflow.util.DefaultSupportCaptureOp") {
-                Console.WriteLine("stop here");
-            }
-            
             fastMethod = target.Binding.ConsumingBindingDesc.Method;
             targetObject = target.Target;
         }
