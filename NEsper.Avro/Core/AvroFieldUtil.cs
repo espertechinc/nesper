@@ -31,11 +31,15 @@ namespace NEsper.Avro.Core
 
             if (property is IndexedProperty) {
                 var field = fieldSchema.GetField(property.PropertyNameAtomic);
-                if (field == null || field.Schema.Tag != Schema.Type.Array) {
+                if (field == null) {
                     return null;
                 }
+                else if ((field.Schema.Tag == Schema.Type.String) ||
+                         (field.Schema.Tag == Schema.Type.Array)) { 
+                    return new AvroFieldDescriptor(field, false, true, false);
+                }
 
-                return new AvroFieldDescriptor(field, false, true, false);
+                return null;
             }
 
             if (property is MappedProperty) {
@@ -80,11 +84,18 @@ namespace NEsper.Avro.Core
                     }
 
                     currentField = current.GetField(levelProperty.PropertyNameAtomic);
-                    if (currentField == null || currentField.Schema.Tag != Schema.Type.Array) {
+                    if (currentField == null) {
                         return null;
                     }
-
-                    current = currentField.Schema.AsArraySchema().ItemSchema;
+                    else if (currentField.Schema.Tag == Schema.Type.String) {
+                        return null; // schemas do not exist
+                    }
+                    else if (currentField.Schema.Tag == Schema.Type.Array) {
+                        current = currentField.Schema.AsArraySchema().ItemSchema;
+                    }
+                    else {
+                        return null;
+                    }
                 }
                 else if (levelProperty is MappedProperty) {
                     if (current.Tag != Schema.Type.Record) {

@@ -52,17 +52,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            var max = this.EnumMethodEnum == EnumMethodEnum.MAX;
+            var max = EnumMethodEnum == EnumMethodEnum.MAX;
 
             if (bodiesAndParameters.IsEmpty()) {
                 var returnTypeX = Boxing.GetBoxedType(collectionComponentType);
-                base.TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
-                return new EnumMinMaxScalarForge(numStreamsIncoming, max, base.TypeInfo);
+                TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
+                return new EnumMinMaxScalarForge(numStreamsIncoming, max, TypeInfo);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             var returnType = Boxing.GetBoxedType(first.BodyForge.EvaluationType);
-            base.TypeInfo = EPTypeHelper.SingleValue(returnType);
+            TypeInfo = EPTypeHelper.SingleValue(returnType);
 
             if (inputEventType == null) {
                 return new EnumMinMaxScalarLambdaForge(

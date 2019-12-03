@@ -110,6 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env.Runtime.EventTypeService.GetEventTypePreconfigured("SupportBean_S0"),
                     env.Runtime.EventTypeService.GetEventTypePreconfigured("SupportBean_S1")
                 };
+
                 var epl = "select * from SupportBean_S0#keepall as S0, SupportBean_S1#keepall as S1 ";
                 var planFullTableScan = SupportQueryPlanBuilder.Start(2)
                     .SetIndexFullTableScan(0, "i0")
@@ -143,7 +144,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var planEquals = SupportQueryPlanBuilder.Start(2)
                     .AddIndexHashSingleNonUnique(0, "i1", "P00")
                     .SetIndexFullTableScan(1, "i2")
-                    .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i2")))
+                    .SetLookupPlanInner(
+                        0,
+                        new FullTableScanLookupPlanForge(
+                            0,
+                            1,
+                            false,
+                            types,
+                            GetIndexKey("i2")))
                     .SetLookupPlanInner(
                         1,
                         new IndexedTableLookupPlanHashedOnlyForge(
@@ -152,34 +160,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             types,
                             GetIndexKey("i1"),
-                            new[] {SupportExprNodeFactory.MakeKeyed("P10")},
+                            new[] {
+                                SupportExprNodeFactory.MakeKeyed("P10")
+                            },
                             null,
                             null))
                     .Get();
                 var eplWithWhereEquals = epl + " where P00 = P10";
-                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamnum=0)')" + eplWithWhereEquals, planEquals);
-                TryAssertionJoin(env, "@Hint('exclude_plan(from_streamname=\"s0\")')" + eplWithWhereEquals, planEquals);
+
                 TryAssertionJoin(
                     env,
-                    "@Hint('exclude_plan(from_streamname=\"s0\")') @Hint('exclude_plan(from_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(from_streamnum=0)')" + eplWithWhereEquals,
+                    planEquals);
+                TryAssertionJoin(
+                    env,
+                    "@Hint('exclude_plan(from_streamname=\"S0\")')" + eplWithWhereEquals,
+                    planEquals);
+                TryAssertionJoin(
+                    env,
+                    "@Hint('exclude_plan(from_streamname=\"S0\")') @Hint('exclude_plan(from_streamname=\"S1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@Hint('exclude_plan(from_streamname=\"s0\")') @Hint('exclude_plan(from_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(from_streamname=\"S0\")') @Hint('exclude_plan(from_streamname=\"S1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
-                TryAssertionJoin(env, "@Hint('exclude_plan(to_streamname=\"s1\")')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(
                     env,
-                    "@Hint('exclude_plan(to_streamname=\"s0\")') @Hint('exclude_plan(to_streamname=\"s1\")')" +
+                    "@Hint('exclude_plan(to_streamname=\"S1\")')" + eplWithWhereEquals,
+                    planEquals);
+                TryAssertionJoin(
+                    env,
+                    "@Hint('exclude_plan(to_streamname=\"S0\")') @Hint('exclude_plan(to_streamname=\"S1\")')" +
                     eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
                     "@Hint('exclude_plan(from_streamnum=0 and to_streamnum =  1)')" + eplWithWhereEquals,
                     planEquals);
-                TryAssertionJoin(env, "@Hint('exclude_plan(to_streamnum=1)')" + eplWithWhereEquals, planEquals);
+                TryAssertionJoin(
+                    env,
+                    "@Hint('exclude_plan(to_streamnum=1)')" + eplWithWhereEquals,
+                    planEquals);
                 TryAssertionJoin(
                     env,
                     "@Hint('exclude_plan(to_streamnum = 1, from_streamnum = 0)')" + eplWithWhereEquals,

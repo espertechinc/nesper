@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -66,13 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var evaluationType = forge.EvaluationType.GetBoxedType();
+            var evaluationType = forge.EvaluationType; // GetBoxedType();
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var exprMethod = parent
                 .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-
-            exprMethod.Block.DebugStack();
 
             var expression = CodegenLegoCast.CastSafeFromObjectType(
                 evaluationType,

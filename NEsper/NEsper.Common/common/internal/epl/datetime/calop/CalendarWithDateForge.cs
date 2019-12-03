@@ -15,25 +15,30 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarWithDateForge : CalendarForge
     {
-        internal ExprForge day;
-        internal ExprForge month;
-
-        internal ExprForge year;
+        private readonly ExprForge _day;
+        private readonly ExprForge _month;
+        private readonly ExprForge _year;
 
         public CalendarWithDateForge(
             ExprForge year,
             ExprForge month,
             ExprForge day)
         {
-            this.year = year;
-            this.month = month;
-            this.day = day;
+            _year = year;
+            _month = month;
+            _day = day;
         }
 
+        public ExprForge Day => _day;
+
+        public ExprForge Month => _month;
+
+        public ExprForge Year => _year;
+
         public CalendarOp EvalOp => new CalendarWithDateForgeOp(
-            year.ExprEvaluator,
-            month.ExprEvaluator,
-            day.ExprEvaluator);
+            _year.ExprEvaluator,
+            _month.ExprEvaluator,
+            _day.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
             CodegenExpression dateTimeEx,
@@ -41,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithDateForgeOp.CodegenCalendar(
+            return CalendarWithDateForgeOp.CodegenDateTimeEx(
                 this,
                 dateTimeEx,
                 codegenMethodScope,

@@ -138,7 +138,7 @@ namespace NEsper.Avro.Getter
                 CodegenExpressionBuilder.ExprDotMethod(
                     underlyingExpression,
                     "Get",
-                    CodegenExpressionBuilder.Constant(_key)));
+                    CodegenExpressionBuilder.Constant(_key.Name)));
             return CodegenExpressionBuilder.StaticMethod(
                 GetType(),
                 "GetAvroIndexedValue",

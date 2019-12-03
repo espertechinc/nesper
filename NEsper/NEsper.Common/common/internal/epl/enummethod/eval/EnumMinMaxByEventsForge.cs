@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumMinMaxByEventsForgeEval(this, innerExpression.ExprEvaluator);
+            get => new EnumMinMaxByEventsForgeEval(this, InnerExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

@@ -29,6 +29,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _constant = constant;
         }
 
+        public object Constant => _constant;
+
+        public bool IsNull => _constant == null;
+
         public void Render(
             StringBuilder builder,
             bool isInnerClass,

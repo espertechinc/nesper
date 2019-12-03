@@ -89,6 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(soda, epl).AddListener("s0");
                 object[][] expectedAggType = {
                     new object[] {"c0", typeof(SupportBean)},
+                    new object[] {"c2", typeof(SupportBean)},
+                    new object[] {"c3", typeof(string)},
                     new object[] {"new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean)}
                 };
                 SupportEventTypeAssertionUtil.AssertEventTypeProperties(

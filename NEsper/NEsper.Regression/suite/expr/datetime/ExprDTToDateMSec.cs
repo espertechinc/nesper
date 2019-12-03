@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
-    public class ExprDTToDateCalMSec : RegressionExecution
+    public class ExprDTToDateMSec : RegressionExecution
     {
         public void Run(RegressionEnvironment env)
         {
@@ -105,10 +105,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
                 new[] {
-                    SupportDateTime.GetValueCoerced(startTime, "date"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "dto"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "dtx"), null, null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null, null
+                    SupportDateTime.GetValueCoerced(startTime, "date"), null, null, null, null,
+                    SupportDateTime.GetValueCoerced(startTime, "dto"), null, null, null, null,
+                    SupportDateTime.GetValueCoerced(startTime, "dtx"), null, null, null, null,
+                    SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null
                 });
 
             env.UndeployAll();

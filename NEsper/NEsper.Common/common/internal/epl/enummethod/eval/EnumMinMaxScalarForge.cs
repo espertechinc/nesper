@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         EnumForge,
         EnumEval
     {
-        private readonly bool max;
-        private readonly EPType resultType;
+        private readonly bool _max;
+        private readonly EPType _resultType;
 
         public EnumMinMaxScalarForge(
             int streamCountIncoming,
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EPType resultType)
             : base(streamCountIncoming)
         {
-            this.max = max;
-            this.resultType = resultType;
+            _max = max;
+            _resultType = resultType;
         }
 
         public override EnumEval EnumEvaluator => this;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
+            var innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(_resultType));
 
             var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var block = codegenMethodScope
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")))
                 .IfElse()
                 .IfCondition(
-                    Relational(ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")), max ? LT : GT, Constant(0)))
+                    Relational(ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
                 .AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")));
 
             var method = block.MethodReturn(Ref("minKey"));
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     minKey = (IComparable) comparable;
                 }
                 else {
-                    if (max) {
+                    if (_max) {
                         if (minKey.CompareTo(comparable) < 0) {
                             minKey = (IComparable) comparable;
                         }

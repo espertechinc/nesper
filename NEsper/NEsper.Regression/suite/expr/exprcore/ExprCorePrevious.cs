@@ -479,7 +479,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     fields,
                     new[] {
                         new object[] {
-                            "E1", null, "E1", 2L,
+                            "E1", null, 
+                            "E1", 2L,
                             new object[] {"E2", "E1"},
                             new object[] {"E2", "E1", "E1", 2L},
                             new object[] {"E2", "E1"}

@@ -22,7 +22,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new ResultSetAggregateRateDataNonWindowed());
+            #endif
             execs.Add(new ResultSetAggregateRateDataWindowed());
             return execs;
         }

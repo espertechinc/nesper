@@ -24,13 +24,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new ResultSetAggregateGroupedSortedMinMax());
             execs.Add(new ResultSetAggregateMultipleOverlappingCategories());
             execs.Add(new ResultSetAggregateMinByMaxByOverWindow());
             execs.Add(new ResultSetAggregateNoAlias());
             execs.Add(new ResultSetAggregateMultipleCriteriaSimple());
-            #endif
             execs.Add(new ResultSetAggregateMultipleCriteria());
             execs.Add(new ResultSetAggregateNoDataWindow());
             execs.Add(new ResultSetAggregateInvalid());

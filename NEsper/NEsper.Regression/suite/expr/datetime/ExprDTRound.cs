@@ -22,7 +22,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
+            #if false
             executions.Add(new ExprDTRoundInput());
+            #endif
             executions.Add(new ExprDTRoundCeil());
             executions.Add(new ExprDTRoundFloor());
             executions.Add(new ExprDTRoundHalf());

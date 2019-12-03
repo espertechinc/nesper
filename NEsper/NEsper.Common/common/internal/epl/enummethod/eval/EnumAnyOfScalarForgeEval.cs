@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAnyOfScalarForgeEval : EnumEval
     {
-        private readonly EnumAnyOfScalarForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumAnyOfScalarForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumAnyOfScalarForgeEval(
             EnumAnyOfScalarForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -48,14 +48,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return false;
             }
 
-            var evalEvent = new ObjectArrayEventBean(new object[1], forge.type);
-            eventsLambda[forge.streamNumLambda] = evalEvent;
+            var evalEvent = new ObjectArrayEventBean(new object[1], _forge.type);
+            eventsLambda[_forge.StreamNumLambda] = evalEvent;
             var props = evalEvent.Properties;
 
             foreach (var next in enumcoll) {
                 props[0] = next;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass != null && ((Boolean) pass)) {
                     return true;
                 }
@@ -90,15 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(
                         NewArrayByLength(typeof(object), Constant(1)),
                         typeMember));
-            block.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
+            block.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("evalEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
                 forEach,
-                forge.innerExpression.EvaluationType,
-                forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
+                forge.InnerExpression.EvaluationType,
+                forge.InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
                 false,
                 null,
                 true,

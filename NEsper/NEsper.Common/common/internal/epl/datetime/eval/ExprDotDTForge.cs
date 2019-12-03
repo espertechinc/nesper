@@ -97,6 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenExpression targetValue = Unbox(Ref("target"), innerType);
 
             var block = methodNode.Block;
+
+            block.Debug("Codegen: target = {0}", Ref("target"));
+            
             if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
@@ -192,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             return new DTLocalDateTimeIntervalForge(intervalForge);
                         }
 
-                        return new DTLocalCalOpsIntervalForge(calendarForges, intervalForge);
+                        return new DTLocalDtxOpsIntervalForge(calendarForges, intervalForge);
                     }
                 }
                 else { // only calendar op, nothing else

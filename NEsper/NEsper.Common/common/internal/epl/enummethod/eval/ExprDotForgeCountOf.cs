@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            base.TypeInfo = EPTypeHelper.SingleValue(typeof(int));
+            TypeInfo = EPTypeHelper.SingleValue(typeof(int));
             if (bodiesAndParameters.IsEmpty()) {
                 return new EnumCountOfForge(numStreamsIncoming);
             }

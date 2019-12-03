@@ -23,7 +23,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
     {
         public void Run(RegressionEnvironment env)
         {
-#if false
             // - duplicate value allowed, latest value wins
             // - null key & value allowed
 
@@ -61,7 +60,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 null,
                 null);
             env.UndeployAll();
-#endif
 
             // test scalar-coll with lambda
             var fields = new[] {"val0"};

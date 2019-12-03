@@ -25,10 +25,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new ResultSetAggregateBlackWhitePercent());
             execs.Add(new ResultSetAggregateCountVariations());
-            #endif
             execs.Add(new ResultSetAggregateAllAggFunctions());
             execs.Add(new ResultSetAggregateFirstLastEver());
             execs.Add(new ResultSetAggregateInvalid());

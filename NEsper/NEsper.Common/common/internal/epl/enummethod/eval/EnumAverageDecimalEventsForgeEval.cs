@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[_forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
                 var num = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (num == null) {
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
 
             CodegenExpression math =
                 codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(forge.optionalMathContext));
@@ -89,11 +89,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 "agg",
                 NewInstance<AggregatorAvgDecimal>(math));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "num",
-                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+                    forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (innerType.CanBeNull()) {
                 forEach.IfRefNull("num").BlockContinue();
             }

@@ -15,10 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarWithTimeForge : CalendarForge
     {
-        internal ExprForge hour;
-        internal ExprForge min;
-        internal ExprForge msec;
-        internal ExprForge sec;
+        private readonly ExprForge _hour;
+        private readonly ExprForge _min;
+        private readonly ExprForge _msec;
+        private readonly ExprForge _sec;
 
         public CalendarWithTimeForge(
             ExprForge hour,
@@ -26,17 +26,25 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForge sec,
             ExprForge msec)
         {
-            this.hour = hour;
-            this.min = min;
-            this.sec = sec;
-            this.msec = msec;
+            _hour = hour;
+            _min = min;
+            _sec = sec;
+            _msec = msec;
         }
 
+        public ExprForge Hour => _hour;
+
+        public ExprForge Min => _min;
+
+        public ExprForge Msec => _msec;
+
+        public ExprForge Sec => _sec;
+
         public CalendarOp EvalOp => new CalendarWithTimeForgeOp(
-            hour.ExprEvaluator,
-            min.ExprEvaluator,
-            sec.ExprEvaluator,
-            msec.ExprEvaluator);
+            _hour.ExprEvaluator,
+            _min.ExprEvaluator,
+            _sec.ExprEvaluator,
+            _msec.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
             CodegenExpression dateTimeEx,
@@ -44,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithTimeForgeOp.CodegenCalendar(
+            return CalendarWithTimeForgeOp.CodegenDateTimeEx(
                 this,
                 dateTimeEx,
                 codegenMethodScope,

@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSpatialPointRegionQuadTreeFilterIndex.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLSpatialPointRegionQuadTreeInvalid()
         {
             RegressionRunner.Run(session, EPLSpatialPointRegionQuadTreeInvalid.Executions());

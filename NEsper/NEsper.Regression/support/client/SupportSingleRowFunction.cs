@@ -164,6 +164,11 @@ namespace com.espertech.esper.regressionlib.support.client
             return ToCSV(values);
         }
 
+        public static string VarargsOnlyBoxedULong(params ulong?[] values)
+        {
+            return ToCSV(values);
+        }
+
         public static string VarargsOnlyBoxedShort(params short?[] values)
         {
             return ToCSV(values);

@@ -32,13 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             //   they are using.  In C# we have strong type checking which means we need to know.
             //   Unfortunately, this data is only known in the ExprForge.  Revisit this.
 
-            if (_enumeration is ExprForge exprForge) {
-                _evaluationType = exprForge.EvaluationType;
-            }
-            else {
-                // REFERENCE: TestSuiteClientExtensions.TestClientExtendSingleRowFunction
-                _evaluationType = typeof(ICollection<EventBean>);
-            }
+            // REFERENCE: TestSuiteClientExtensions.TestClientExtendSingleRowFunction
+            _evaluationType = typeof(ICollection<EventBean>);
         }
 
         public ExprEvaluator ExprEvaluator {

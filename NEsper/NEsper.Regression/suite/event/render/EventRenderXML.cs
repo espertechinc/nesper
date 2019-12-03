@@ -130,10 +130,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                "<outerMap>\n" +
                                "  <intarr>1</intarr>\n" +
                                "  <intarr>2</intarr>\n" +
-                               "  <innersimple>\n" +
-                               "    <prop1></prop1>\n" +
-                               "    <stringarr>a</stringarr>\n" +
-                               "  </innersimple>\n" +
                                "  <innerarray>\n" +
                                "    <prop1>abcdef</prop1>\n" +
                                "  </innerarray>\n" +
@@ -144,6 +140,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                "  </innerarray>\n" +
                                "  <innerarray>\n" +
                                "  </innerarray>\n" +
+                               "  <innersimple>\n" +
+                               "    <prop1></prop1>\n" +
+                               "    <stringarr>a</stringarr>\n" +
+                               "  </innersimple>\n" +
                                "  <prop0>\n" +
                                "    <Id>A1</Id>\n" +
                                "  </prop0>\n" +
@@ -159,16 +159,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                            "<outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
                            "  <intarr>1</intarr>\n" +
                            "  <intarr>2</intarr>\n" +
-                           "  <innersimple prop1=\"\">\n" +
-                           "    <stringarr>a</stringarr>\n" +
-                           "  </innersimple>\n" +
                            "  <innerarray prop1=\"abcdef\"/>\n" +
                            "  <innerarray prop1=\"\">\n" +
                            "    <stringarr>R&amp;R</stringarr>\n" +
                            "    <stringarr>a&gt;b</stringarr>\n" +
                            "  </innerarray>\n" +
                            "  <innerarray/>\n" +
-                           "  <prop0 id=\"A1\"/>\n" +
+                           "  <innersimple prop1=\"\">\n" +
+                           "    <stringarr>a</stringarr>\n" +
+                           "  </innersimple>\n" +
+                           "  <prop0 Id=\"A1\"/>\n" +
                            "</outerMap>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
@@ -193,9 +193,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 var result = env.Runtime.RenderEventService.RenderXML("testsqldate", theEvent);
 
                 // System.out.println(result);
-                var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                               "<testsqldate>" +
-                               "<mySqlDate>2010-01-31</mySqlDate>" +
+                var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+                               "<testsqldate> " +
+                               "<mySqlDate>2010-01-31</mySqlDate> " +
                                "</testsqldate>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 

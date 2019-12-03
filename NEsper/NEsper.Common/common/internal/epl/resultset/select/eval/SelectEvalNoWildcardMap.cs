@@ -47,6 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventBean),
                 this.GetType(),
                 codegenClassScope);
+
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
                 "props",
                 NewInstance(typeof(HashMap<string, object>)));

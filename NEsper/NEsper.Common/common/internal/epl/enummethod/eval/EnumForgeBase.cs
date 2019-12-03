@@ -19,28 +19,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public abstract class EnumForgeBase : EnumForge
     {
-        internal ExprForge innerExpression;
-        internal int streamNumLambda;
+        private readonly ExprForge _innerExpression;
+        private readonly int _streamNumLambda;
 
-        public EnumForgeBase(
+        protected EnumForgeBase(
             ExprForge innerExpression,
             int streamCountIncoming)
             : this(streamCountIncoming)
         {
-            this.innerExpression = innerExpression;
+            _innerExpression = innerExpression;
         }
 
-        public EnumForgeBase(int streamCountIncoming)
+        protected EnumForgeBase(int streamCountIncoming)
         {
-            this.streamNumLambda = streamCountIncoming;
+            _streamNumLambda = streamCountIncoming;
         }
 
         public ExprForge InnerExpression {
-            get => innerExpression;
+            get => _innerExpression;
         }
 
+        internal int StreamNumLambda => _streamNumLambda;
+
         public int StreamNumSize {
-            get => streamNumLambda + 1;
+            get => _streamNumLambda + 1;
         }
 
         public abstract EnumEval EnumEvaluator { get; }

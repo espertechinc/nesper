@@ -58,10 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 statementRawInfo,
                 services);
             if (inputEventType != null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+                TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             if (inputEventType != null) {
@@ -116,17 +116,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
             }
 
-            if (this.EnumMethodEnum == EnumMethodEnum.UNION) {
+            if (EnumMethodEnum == EnumMethodEnum.UNION) {
                 return new EnumUnionForge(numStreamsIncoming, enumSrc.Enumeration, inputEventType == null);
             }
-            else if (this.EnumMethodEnum == EnumMethodEnum.INTERSECT) {
+            else if (EnumMethodEnum == EnumMethodEnum.INTERSECT) {
                 return new EnumIntersectForge(numStreamsIncoming, enumSrc.Enumeration, inputEventType == null);
             }
-            else if (this.EnumMethodEnum == EnumMethodEnum.EXCEPT) {
+            else if (EnumMethodEnum == EnumMethodEnum.EXCEPT) {
                 return new EnumExceptForge(numStreamsIncoming, enumSrc.Enumeration, inputEventType == null);
             }
             else {
-                throw new ArgumentException("Invalid enumeration method for this factory: " + this.EnumMethodEnum);
+                throw new ArgumentException("Invalid enumeration method for this factory: " + EnumMethodEnum);
             }
         }
     }

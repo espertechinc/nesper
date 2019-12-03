@@ -1334,7 +1334,8 @@ namespace com.espertech.esper.compat.collections
 
         public static IDictionary<string, object> AsStringDictionary(
             this object value,
-            MagicMarker magicMarker)
+            MagicMarker magicMarker,
+            bool throwError)
         {
             if (value == null)
                 return null;
@@ -1344,13 +1345,20 @@ namespace com.espertech.esper.compat.collections
             if (valueType.IsGenericDictionary())
                 return magicMarker.GetStringDictionary(value);
 
-            throw new ArgumentException(
-                $"invalid value for string dictionary [type = {valueType.FullName}]", nameof(value));
+            if (throwError) {
+                throw new ArgumentException(
+                    $"invalid value for string dictionary [type = {valueType.FullName}]",
+                    nameof(value));
+            }
+
+            return null;
         }
 
-        public static IDictionary<string, object> AsStringDictionary(this object value)
+        public static IDictionary<string, object> AsStringDictionary(
+            this object value,
+            bool throwError = false)
         {
-            return AsStringDictionary(value, MagicMarker.SingletonInstance);
+            return AsStringDictionary(value, MagicMarker.SingletonInstance, throwError);
         }
 
         public static IDictionary<object, object> AsObjectDictionary(

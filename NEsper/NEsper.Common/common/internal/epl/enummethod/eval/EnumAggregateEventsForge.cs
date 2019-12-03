@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumAggregateEventsForgeEval(this, initialization.ExprEvaluator, innerExpression.ExprEvaluator);
+            get => new EnumAggregateEventsForgeEval(
+                this,
+                Initialization.ExprEvaluator,
+                InnerExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

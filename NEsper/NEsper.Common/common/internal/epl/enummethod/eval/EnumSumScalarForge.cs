@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         EnumForge,
         EnumEval
     {
-        private readonly ExprDotEvalSumMethodFactory sumMethodFactory;
+        private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
 
         public EnumSumScalarForge(
             int streamCountIncoming,
             ExprDotEvalSumMethodFactory sumMethodFactory)
             : base(streamCountIncoming)
         {
-            this.sumMethodFactory = sumMethodFactory;
+            _sumMethodFactory = sumMethodFactory;
         }
 
         public override EnumEval EnumEvaluator => this;
@@ -43,21 +43,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    sumMethodFactory.ValueType.GetBoxedType(),
+                    _sumMethodFactory.ValueType.GetBoxedType(),
                     typeof(EnumSumScalarForge),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
             var block = methodNode.Block;
 
-            sumMethodFactory.CodegenDeclare(block);
+            _sumMethodFactory.CodegenDeclare(block);
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("next")
                 .BlockContinue();
-            sumMethodFactory.CodegenEnterObjectTypedNonNull(forEach, Ref("next"));
+            _sumMethodFactory.CodegenEnterObjectTypedNonNull(forEach, Ref("next"));
 
-            sumMethodFactory.CodegenReturn(block);
+            _sumMethodFactory.CodegenReturn(block);
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var method = sumMethodFactory.SumAggregator;
+            var method = _sumMethodFactory.SumAggregator;
             foreach (var next in enumcoll) {
                 method.Enter(next);
             }

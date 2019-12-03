@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (fromType == resultBoxedType) {
-                return CoercerNull.INSTANCE;
+                return new CoercerNull(resultBoxedType);
+                //return CoercerNull.INSTANCE;
             }
 
             if (trueBoxedType == typeof(decimal?)) {

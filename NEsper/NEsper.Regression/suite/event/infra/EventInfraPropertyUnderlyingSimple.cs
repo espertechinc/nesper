@@ -13,7 +13,6 @@ using System.Xml;
 
 using Avro.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -28,6 +27,8 @@ using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
+
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyUnderlyingSimple : RegressionExecution
@@ -37,10 +38,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             int? intValue,
             string stringValue);
 
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).FullName + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).FullName + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).FullName + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "Avro";
 
         private static readonly string BEAN_TYPENAME = typeof(SupportBeanSimple).Name;
 
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env,
             a,
             b) => {
-            var xml = "<Myevent myInt=\"XXXXXX\" myString=\"YYYYYY\">\n" +
+            var xml = "<Myevent MyInt=\"XXXXXX\" MyString=\"YYYYYY\">\n" +
                       "</Myevent>\n";
             xml = xml.Replace("XXXXXX", a.ToString());
             xml = xml.Replace("YYYYYY", b);
@@ -118,6 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
 
             foreach (var pair in pairs) {
+                Console.WriteLine("Asserting type " + pair.First);
                 log.Info("Asserting type " + pair.First);
                 RunAssertionPassUnderlying(env, pair.First, pair.Second);
                 RunAssertionPropertiesWGetter(env, pair.First, pair.Second);
@@ -202,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionEventInvalidProp(EventBean @event)
         {
-            foreach (var prop in Arrays.AsList("xxxx", "MyString[1]", "MyString('a')", "x.y", "MyString.x")) {
+            foreach (var prop in Arrays.AsList("xxxx", "MyString('a')", "x.y", "MyString.x")) {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
@@ -214,9 +216,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool boxed)
         {
             var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
-
+            var intType = boxed ? typeof(int?) : typeof(int);
+            
             object[][] expectedType = {
-                new object[] {"MyInt", boxed ? typeof(int?) : typeof(int), null, null},
+                new object[] {"MyInt", intType, null, null},
                 new object[] {"MyString", typeof(string), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -228,10 +231,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             Assert.IsNotNull(eventType.GetGetter("MyInt"));
             Assert.IsTrue(eventType.IsProperty("MyInt"));
-            Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("MyInt"));
-            Assert.AreEqual(
-                new EventPropertyDescriptor("MyString", typeof(string), null, false, false, false, false, false),
-                eventType.GetPropertyDescriptor("MyString"));
+            Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
+
+            var myStringProperty = eventType.GetPropertyDescriptor("MyString");
+            
+            Assert.That(
+                eventType.GetPropertyDescriptor("MyString"),
+                Is.EqualTo(
+                    new EventPropertyDescriptor(
+                        "MyString",
+                        typeof(string),
+                        typeof(char),
+                        false,
+                        false,
+                        true,
+                        false,
+                        false)));
         }
 
         private void RunAssertionTypeInvalidProp(
@@ -243,18 +258,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             foreach (var prop in Arrays.AsList(
                 "xxxx",
-                "MyString[0]",
                 "MyString('a')",
                 "MyString.x",
                 "MyString.x.y",
                 "MyString.x")) {
-                Assert.AreEqual(false, eventType.IsProperty(prop));
+                Assert.IsFalse(eventType.IsProperty(prop), $"IsProperty: False For {prop}");
                 Type expected = null;
                 if (xml) {
-                    if (prop.Equals("MyString[0]")) {
-                        expected = typeof(string);
-                    }
-
                     if (prop.Equals("MyString.x?")) {
                         expected = typeof(XmlNode);
                     }

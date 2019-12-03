@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce.AsBigInteger();
             }
 
-            public Type ReturnType => typeof(long);
+            public Type ReturnType => typeof(BigInteger);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NEsper.Avro.Extensions;
@@ -380,7 +381,7 @@ namespace NEsper.Avro.Core
             foreach (var field in avroFields) {
                 _propertyNames[fieldNum] = field.Name;
 
-                var propertyType = AvroTypeUtil.PropertyType(field.Schema);
+                var propertyType = AvroTypeUtil.PropertyType(field.Schema).GetBoxedType();
                 Type componentType = null;
                 var indexed = false;
                 var mapped = false;
@@ -401,6 +402,10 @@ namespace NEsper.Avro.Core
                 else if (field.Schema.Tag == global::Avro.Schema.Type.Map) {
                     mapped = true;
                     componentType = AvroTypeUtil.PropertyType(field.Schema.AsMapSchema().ValueSchema);
+                }
+                else if (field.Schema.Tag == global::Avro.Schema.Type.String) {
+                    componentType = typeof(char);
+                    indexed = true;
                 }
                 else {
                     fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(

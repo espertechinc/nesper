@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 object[][] rows = {
                     new object[] {"P00", typeof(string)},
-                    new object[] {"val", typeof(int?[])}
+                    new object[] {"val", typeof(int[])}
                 };
                 for (var i = 0; i < rows.Length; i++) {
                     var message = "Failed assertion for " + rows[i][0];

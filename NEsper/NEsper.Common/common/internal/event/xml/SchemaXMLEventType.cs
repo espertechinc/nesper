@@ -90,8 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 if (complex.IsArray) {
-                    returnType =
-                        typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
+                    returnType = typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
                     propertyComponentType = typeof(XmlNode);
                 }
 
@@ -118,14 +117,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
             foreach (var simple in schemaModelRoot.SimpleElements) {
                 var propertyName = simple.Name;
                 var returnType = SchemaUtil.ToReturnType(simple);
+                var componentType = GenericExtensions.GetComponentType(returnType);
+                var isIndexed = simple.IsArray || componentType != null;
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    null,
+                    componentType,
                     false,
                     false,
-                    simple.IsArray,
+                    isIndexed,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -136,14 +137,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
             foreach (var attribute in schemaModelRoot.Attributes) {
                 var propertyName = attribute.Name;
                 var returnType = SchemaUtil.ToReturnType(attribute);
+                var componentType = GenericExtensions.GetComponentType(returnType);
+                var isIndexed = componentType != null;
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    null,
+                    componentType,
                     false,
                     false,
-                    false,
+                    isIndexed,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -237,7 +240,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     }
 
                     var indexedProp = (IndexedProperty) property;
-                    var descriptor = propertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
+                    var descriptor = PropertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
                     if (descriptor == null) {
                         return null;
                     }
@@ -290,7 +293,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             return null;
                         }
 
-                        var descriptor = propertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
+                        var descriptor = PropertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
                         if (descriptor == null) {
                             return null;
                         }
@@ -300,6 +303,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         }
 
                         if (descriptor.PropertyType == typeof(XmlNodeList)) {
+                            FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
+                                EventBeanTypedEventFactory,
+                                this,
+                                indexedProp.PropertyNameAtomic);
+                            return new XPathPropertyArrayItemGetter(getter, indexedProp.Index, fragmentFactory);
+                        } else if (descriptor.PropertyType == typeof(string)) {
                             FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
                                 EventBeanTypedEventFactory,
                                 this,

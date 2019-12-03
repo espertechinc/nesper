@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumOrderByAscDescScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumOrderByAscDescScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumOrderByAscDescScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumOrderByAscDescScalarLambdaForgeEval(
             EnumOrderByAscDescScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -48,14 +48,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var sort = new OrderedDictionary<object, object>();
             var hasColl = false;
 
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             foreach (var next in enumcoll) {
                 props[0] = next;
 
-                var comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = (IComparable) _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 var entry = sort.Get(comparable);
 
                 if (entry == null) {
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 hasColl = true;
             }
 
-            return EnumOrderByAscDescEventsForgeEval.EnumOrderBySortEval(sort, hasColl, forge.descending);
+            return EnumOrderByAscDescEventsForgeEval.EnumOrderBySortEval(sort, hasColl, _forge.descending);
         }
 
         public static CodegenExpression Codegen(
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            var innerBoxedType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerBoxedType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
 
             var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var scope = new ExprForgeCodegenSymbol(false, null);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(
                     innerBoxedType,
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
                 .DeclareVar<object>("entry", ExprDotMethod(@Ref("sort"), "Get", @Ref("value")))
                 .IfCondition(EqualsNull(@Ref("entry")))
                 .Expression(ExprDotMethod(@Ref("sort"), "Put", @Ref("value"), @Ref("next")))

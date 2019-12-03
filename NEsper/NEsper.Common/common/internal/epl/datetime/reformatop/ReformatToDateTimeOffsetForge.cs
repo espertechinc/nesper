@@ -54,17 +54,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField =
-                codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
-                .AddParam(typeof(long), "ts")
+                .AddParam(typeof(long), "ts");
+
+            methodNode
                 .Block
-                .DeclareVar<DateTimeEx>(
-                    "dateTimeEx",
-                    StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .ExprDotMethod(Ref("dateTimeEx"), "SetUtcMillis", Ref("ts"))
-                .MethodReturn(GetProperty(Ref("dateTimeEx"), "DateTime"));
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), methodNode, codegenClassScope))
+                .MethodReturn(GetProperty(Ref("dtx"), "DateTime"));
+
             return LocalMethod(methodNode, inner);
         }
 

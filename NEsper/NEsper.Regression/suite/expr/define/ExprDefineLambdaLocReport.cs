@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             var epl = "@Name('s0') " +
                       "expression lostLuggage {" +
                       "  lr => lr.Items.where(l -> l.Type='L' and " +
-                      "    lr.Items.anyof(p -> p.Type='P' and p.AssetId=l.AssetIdPassenger and LRUtil.distance(l.Location.x, l.Location.y, p.Location.x, p.Location.y) > 20))" +
+                      "    lr.Items.anyof(p -> p.Type='P' and p.AssetId=l.AssetIdPassenger and LRUtil.Distance(l.Location.X, l.Location.Y, p.Location.X, p.Location.Y) > 20))" +
                       "}" +
                       "expression passengers {" +
                       "  lr => lr.Items.where(l -> l.Type='P')" +
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                       "" +
                       "expression nearestOwner {" +
                       "  lr => lostLuggage(lr).toMap(key -> key.AssetId, " +
-                      "     value => passengers(lr).minBy(p -> LRUtil.distance(value.Location.x, value.Location.y, p.Location.x, p.Location.y)))" +
+                      "     value => passengers(lr).minBy(p -> LRUtil.Distance(value.Location.X, value.Location.Y, p.Location.X, p.Location.Y)))" +
                       "}" +
                       "" +
                       "select lostLuggage(lr) as val1, nearestOwner(lr) as val2 from LocationReport lr";
@@ -51,13 +51,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             var bean = LocationReportFactory.MakeLarge();
             env.SendEventBean(bean);
 
-            var val1 = ItemArray((ICollection<Item>) env.Listener("s0").AssertOneGetNew().Get("val1"));
+            var val1 = env.Listener("s0").AssertOneGetNew().Get("val1").UnwrapIntoArray<Item>();
             Assert.AreEqual(3, val1.Length);
             Assert.AreEqual("L00000", val1[0].AssetId);
             Assert.AreEqual("L00007", val1[1].AssetId);
             Assert.AreEqual("L00008", val1[2].AssetId);
 
-            var val2 = (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val2");
+            var val2Event = env.Listener("s0").AssertOneGetNewAndReset();
+            var val2Result = val2Event.Get("val2");
+            var val2 = val2Result.AsObjectDictionary();
             Assert.AreEqual(3, val2.Count);
             Assert.AreEqual("P00008", ((Item) val2.Get("L00000")).AssetId);
             Assert.AreEqual("P00001", ((Item) val2.Get("L00007")).AssetId);

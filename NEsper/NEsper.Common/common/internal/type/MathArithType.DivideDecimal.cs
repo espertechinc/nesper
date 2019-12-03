@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimal), codegenClassScope)
-                    .AddParam(typeof(decimal), "b1")
-                    .AddParam(typeof(decimal), "b2")
+                    .AddParam(typeof(decimal?), "b1")
+                    .AddParam(typeof(decimal?), "b2")
                     .Block;
                 var ifBlock = block.IfCondition(
                     EqualsIdentity(Ref("b1"), Constant(0.0m)));

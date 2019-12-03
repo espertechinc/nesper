@@ -139,6 +139,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 args.Insert(0, target);
                 invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
             }
+            else if (method.IsStatic) {
+                invocation = StaticMethod(method.DeclaringType, method.Name, args.ToArray());
+            }
             else {
                 invocation = ExprDotMethod(target, method.Name, args.ToArray());
             }

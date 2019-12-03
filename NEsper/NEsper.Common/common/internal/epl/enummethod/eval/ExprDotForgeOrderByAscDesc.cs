@@ -52,16 +52,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            var isDescending = this.EnumMethodEnum == EnumMethodEnum.ORDERBYDESC;
+            var isDescending = EnumMethodEnum == EnumMethodEnum.ORDERBYDESC;
 
             if (bodiesAndParameters.IsEmpty()) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumOrderByAscDescScalarForge(numStreamsIncoming, isDescending);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType == null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumOrderByAscDescScalarLambdaForge(
                     first.BodyForge,
                     first.StreamCountIncoming,
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 
-            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             return new EnumOrderByAscDescEventsForge(first.BodyForge, first.StreamCountIncoming, isDescending);
         }
     }

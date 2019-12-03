@@ -12,6 +12,7 @@ using com.espertech.esper.compat.logging;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -46,12 +47,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean[] events = new EventBean[1];
             while (enumerator.MoveNext()) {
                 events[0] = enumerator.Current;
-                var result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
-                if ((result == null) || (!((bool) result))) {
-                    continue;
-                }
 
-                eventsInWindow.Add(events[0]);
+                try {
+                    var result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
+                    if ((result == null) || (!((bool) result))) {
+                        continue;
+                    }
+
+                    eventsInWindow.Add(events[0]);
+                }
+                catch (InvalidCastException e) {
+                    Console.WriteLine("STOP");
+                }
             }
         }
 

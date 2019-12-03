@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumAverageDecimalScalarForge : EnumForgeBase,
         EnumEval
     {
-        private readonly MathContext optionalMathContext;
+        private readonly MathContext _optionalMathContext;
 
         public EnumAverageDecimalScalarForge(
             int streamCountIncoming,
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             : base(
                 streamCountIncoming)
         {
-            this.optionalMathContext = optionalMathContext;
+            _optionalMathContext = optionalMathContext;
         }
 
         public override EnumEval EnumEvaluator => this;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(optionalMathContext);
+            var agg = new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(_optionalMathContext);
 
             foreach (var next in enumcoll) {
                 var num = next;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression math =
-                codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(optionalMathContext));
+                codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_optionalMathContext));
             var method = codegenMethodScope
                 .MakeChild(typeof(decimal?), typeof(EnumAverageScalarForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)

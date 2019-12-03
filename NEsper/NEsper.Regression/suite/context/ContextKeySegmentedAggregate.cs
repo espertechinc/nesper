@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             return bean;
         }
 
-        public static object ToArray(ICollection<object> input)
+        public static object ToArray(ICollection<EventBean> input)
         {
             return input.ToArray();
         }

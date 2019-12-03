@@ -64,15 +64,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField =
+            var timeZoneField =
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            var methodNode = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
                 .AddParam(typeof(DateTime), "d");
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", ExprDotMethod(Ref("d"), "UtcMillis")))
+                .Expression(ExprDotMethod(Ref("dtx"), "Set", Ref("d")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
+            
             return LocalMethod(methodNode, inner);
         }
 
@@ -84,12 +86,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            var methodNode = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "d");
 
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", ExprDotMethod(Ref("d"), "UtcMillis")))
+                .Expression(ExprDotMethod(Ref("dtx"), "Set", Ref("d")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
         }

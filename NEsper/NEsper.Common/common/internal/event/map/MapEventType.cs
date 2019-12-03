@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.map
     {
         private static readonly EventTypeNestableGetterFactory GETTER_FACTORY = new EventTypeNestableGetterFactoryMap();
 
-        internal IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> propertyWriters;
-        internal EventPropertyDescriptor[] writablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> _propertyWriters;
+        private EventPropertyDescriptor[] _writablePropertyDescriptors;
 
         public MapEventType(
             EventTypeMetadata metadata,
@@ -56,11 +56,11 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
-                if (writablePropertyDescriptors == null) {
+                if (_writablePropertyDescriptors == null) {
                     InitializeWriters();
                 }
 
-                return writablePropertyDescriptors;
+                return _writablePropertyDescriptors;
             }
         }
 
@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             var pair = BaseNestableEventUtil.GetIndexedAndMappedProps(properties);
 
             if (pair.MapProperties.IsEmpty() && pair.ArrayProperties.IsEmpty()) {
-                return new MapEventBeanCopyMethodForge(this, beanEventTypeFactory.EventBeanTypedEventFactory);
+                return new MapEventBeanCopyMethodForge(this, BeanEventTypeFactory.EventBeanTypedEventFactory);
             }
 
             return new MapEventBeanCopyMethodWithArrayMapForge(
                 this,
-                beanEventTypeFactory.EventBeanTypedEventFactory,
+                BeanEventTypeFactory.EventBeanTypedEventFactory,
                 pair.MapProperties,
                 pair.ArrayProperties);
         }
@@ -93,11 +93,11 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.Second;
             }
@@ -116,11 +116,11 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.First;
             }
@@ -165,14 +165,14 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventBeanWriter GetWriter(string[] properties)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
             var allSimpleProps = true;
             var writers = new MapEventBeanPropertyWriter[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                var writerPair = propertyWriters.Get(properties[i]);
+                var writerPair = _propertyWriters.Get(properties[i]);
                 if (writerPair != null) {
                     writers[i] = writerPair.Second;
                 }
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             IList<EventPropertyDescriptor> writeableProps = new List<EventPropertyDescriptor>();
             IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> propertWritersMap =
                 new Dictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>>();
-            foreach (var prop in propertyDescriptors) {
+            foreach (var prop in PropertyDescriptors) {
                 writeableProps.Add(prop);
                 var propertyName = prop.PropertyName;
                 var eventPropertyWriter = new MapEventBeanPropertyWriter(propertyName);
@@ -207,8 +207,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                     new Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>(prop, eventPropertyWriter));
             }
 
-            propertyWriters = propertWritersMap;
-            writablePropertyDescriptors = writeableProps.ToArray();
+            _propertyWriters = propertWritersMap;
+            _writablePropertyDescriptors = writeableProps.ToArray();
         }
     }
 } // end of namespace

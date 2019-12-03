@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator =>
-            new EnumAverageDecimalScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+            new EnumAverageDecimalScalarLambdaForgeEval(this, InnerExpression.ExprEvaluator);
 
         public override CodegenExpression Codegen(
             EnumForgeCodegenParams premade,

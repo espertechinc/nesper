@@ -31,16 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyNestedDynamicRootedSimple : RegressionExecution
     {
-        public static readonly string XML_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedSimple).FullName + "XML";
-
-        public static readonly string MAP_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedSimple).FullName + "Map";
-
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedSimple).FullName + "OA";
-
-        public static readonly string AVRO_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedSimple).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedSimple).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedSimple).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedSimple).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedSimple).Name + "Avro";
 
         private static readonly Type BEAN_TYPE = typeof(SupportMarkerInterface);
         private static readonly ValueWithExistsFlag[] NOT_EXISTS = MultipleNotExists(3);

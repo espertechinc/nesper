@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         public const string METHOD_TAKEWHILELASTSCALARTOARRAY = "TakeWhileLastScalarToArray";
 
-        private readonly EnumTakeWhileLastIndexScalarForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumTakeWhileLastIndexScalarForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumTakeWhileLastIndexScalarForgeEval(
             EnumTakeWhileLastIndexScalarForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -51,11 +51,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            var evalEvent = new ObjectArrayEventBean(new object[1], forge.evalEventType);
-            eventsLambda[forge.streamNumLambda] = evalEvent;
+            var evalEvent = new ObjectArrayEventBean(new object[1], _forge.evalEventType);
+            eventsLambda[_forge.streamNumLambda] = evalEvent;
             var evalProps = evalEvent.Properties;
-            var indexEvent = new ObjectArrayEventBean(new object[1], forge.indexEventType);
-            eventsLambda[forge.streamNumLambda + 1] = indexEvent;
+            var indexEvent = new ObjectArrayEventBean(new object[1], _forge.indexEventType);
+            eventsLambda[_forge.streamNumLambda + 1] = indexEvent;
             var indexProps = indexEvent.Properties;
 
             if (enumcoll.Count == 1) {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 evalProps[0] = item;
                 indexProps[0] = 0;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || !(bool) pass) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 evalProps[0] = all[i];
                 indexProps[0] = index++;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || !(bool) pass) {
                     break;
                 }

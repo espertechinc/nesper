@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Linq;
+
 using Avro;
 using Avro.Generic;
 
@@ -101,8 +103,8 @@ namespace NEsper.Avro.Getter
                 typeof(AvroEventBeanGetterNestedMultiLevel),
                 "GetRecordValueTopWPath",
                 underlyingExpression,
-                CodegenExpressionBuilder.Constant(_top),
-                CodegenExpressionBuilder.Constant(_path));
+                CodegenExpressionBuilder.Constant(_top.Name),
+                CodegenExpressionBuilder.Constant(_path.Select(p => p.Name).ToArray()));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -135,6 +137,26 @@ namespace NEsper.Avro.Getter
             GenericRecord record,
             Field top,
             Field[] path)
+        {
+            var inner = (GenericRecord) record.Get(top);
+            if (inner == null) {
+                return null;
+            }
+
+            for (var i = 0; i < path.Length - 1; i++) {
+                inner = (GenericRecord) inner.Get(path[i]);
+                if (inner == null) {
+                    return null;
+                }
+            }
+
+            return inner.Get(path[path.Length - 1]);
+        }
+
+        public static object GetRecordValueTopWPath(
+            GenericRecord record,
+            string top,
+            string[] path)
         {
             var inner = (GenericRecord) record.Get(top);
             if (inner == null) {

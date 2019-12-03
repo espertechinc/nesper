@@ -47,10 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             this.streamNum = streamNum;
             this.propertyGetter = propertyGetter;
             this.identType = returnType;
-            // Ident nodes when evaluated can return a value or null (if for example the underlying object is null).  Because of this,
-            // we want to ensure that the return type is boxed so that we can always return null.  This means that primitives may need
-            // to be unboxed elsewhere.
-            this.returnType = returnType.GetBoxedType();
+            
+            // Ident nodes when evaluated can be supplied with a null underlying.  There needs to be more work done
+            // to think about how we handle these cases.  Esper doesn't explicitly deal with this because boxed and
+            // unboxed types are implicitly converted.  -- TBD
+
+            this.returnType = returnType;
             this.identNode = identNode;
             this.eventType = eventType;
             this.optionalEvent = optionalEvent;
@@ -78,16 +80,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             if (requiredType == typeof(object)) {
                 return typeof(object);
-            } else if (requiredType == returnType) {
+            }
+            else if (requiredType == returnType) {
+                // Case: TX = TX
                 return returnType;
-            } else if (requiredType.IsBoxedType() && requiredType == returnType) { // returnType is always boxed
-                return requiredType;
-            } else if (returnType == requiredType.GetBoxedType()) { // returnType is always boxed
-                return requiredType; // they want the unboxed version, but we have the boxed... not sure
-                //return returnType;
             }
 
-            throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
+            bool requiredIsBoxed = requiredType.IsBoxedType();
+            bool returnIsBoxed = returnType.IsBoxedType();
+
+            if (requiredIsBoxed && requiredType == returnType.GetBoxedType()) {
+                // Case: TX? is requested, we have TX
+                return requiredType;
+            }
+            else if (returnIsBoxed && returnType == requiredType.GetBoxedType()) {
+                // Case: TX is requested, we have TX?
+                // they want the unboxed version, but we have the boxed... not sure,
+                // we pass it along but will require the code to unbox the value.
+                return requiredType;
+            }
+
+            // Alright, maybe we're dealing with type widening here.  Normally this is
+            // validated before we get here and we're just dealing with boxing and unboxing
+            // conditions.  Unfortunately, we're leaning very heavily on the "compiler"
+            // doing the right thing rather than doing what want it to do.
+
+            return returnType;
+            
+            //throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
         }
 
         public CodegenExpression Codegen(
@@ -102,8 +122,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var targetType = GetCodegenReturnType(requiredType);
             var method = parent.MakeChild(targetType, this.GetType(), classScope);
+            var valueInitializer = CodegenGet(requiredType, method, symbols, classScope);
             method.Block
-                .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
+                .DeclareVar(targetType, "value", valueInitializer)
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                         .Get("AuditProvider")
@@ -156,7 +177,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 #if THROW_VALUE_ON_NULL
                     block.IfRefNullThrowException(underlying);
 #else
-                    block.IfRefNull(underlying).MethodReturn(new CodegenExpressionDefault(requiredType));
+                    block
+                        .IfRefNull(underlying)
+                        .BlockReturn(new CodegenExpressionDefault(requiredType));
 #endif
                 }
                 else {
@@ -176,7 +199,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 #if THROW_VALUE_ON_NULL
                         block.IfRefNullThrowException(Ref("@event"));
 #else
-                        block.IfRefNull(Ref("@event")).MethodReturn(new CodegenExpressionDefault(requiredType));
+                        block
+                            .IfRefNull(Ref("@event"))
+                            .BlockReturn(new CodegenExpressionDefault(requiredType));
 #endif
                     }
                     else {

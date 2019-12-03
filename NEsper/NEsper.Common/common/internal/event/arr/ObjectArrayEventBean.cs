@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -18,6 +20,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object[] propertyValues,
             EventType eventType)
         {
+            if (propertyValues.GetType() != typeof(object[])) {
+                throw new ArgumentException("propertyValues must adhere to strict object array");
+            }
+            
             Properties = propertyValues;
             EventType = eventType;
         }

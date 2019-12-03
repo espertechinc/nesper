@@ -54,24 +54,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             if (bodiesAndParameters.IsEmpty()) {
                 if (inputEventType != null) {
-                    base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
+                    TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
                 }
                 else {
-                    base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
+                    TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
                 }
 
-                if (this.EnumMethodEnum == EnumMethodEnum.FIRST) {
-                    return new EnumFirstOfNoPredicateForge(numStreamsIncoming, base.TypeInfo);
+                if (EnumMethodEnum == EnumMethodEnum.FIRST) {
+                    return new EnumFirstOfNoPredicateForge(numStreamsIncoming, TypeInfo);
                 }
                 else {
-                    return new EnumLastOfNoPredicateForge(numStreamsIncoming, base.TypeInfo);
+                    return new EnumLastOfNoPredicateForge(numStreamsIncoming, TypeInfo);
                 }
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType != null) {
-                base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
-                if (this.EnumMethodEnum == EnumMethodEnum.FIRST) {
+                TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
+                if (EnumMethodEnum == EnumMethodEnum.FIRST) {
                     return new EnumFirstOfPredicateEventsForge(first.BodyForge, first.StreamCountIncoming);
                 }
                 else {
@@ -79,20 +79,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
             }
 
-            base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
-            if (this.EnumMethodEnum == EnumMethodEnum.FIRST) {
+            TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
+            if (EnumMethodEnum == EnumMethodEnum.FIRST) {
                 return new EnumFirstOfPredicateScalarForge(
                     first.BodyForge,
                     first.StreamCountIncoming,
                     (ObjectArrayEventType) first.GoesToTypes[0],
-                    base.TypeInfo);
+                    TypeInfo);
             }
             else {
                 return new EnumLastOfPredicateScalarForge(
                     first.BodyForge,
                     first.StreamCountIncoming,
                     (ObjectArrayEventType) first.GoesToTypes[0],
-                    base.TypeInfo);
+                    TypeInfo);
             }
         }
     }

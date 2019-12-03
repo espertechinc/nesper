@@ -53,20 +53,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             if (bodiesAndParameters.IsEmpty()) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumDistinctScalarForge(numStreamsIncoming);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             if (inputEventType == null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
                 return new EnumDistinctScalarLambdaForge(
                     first.BodyForge,
                     first.StreamCountIncoming,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 
-            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             return new EnumDistinctEventsForge(first.BodyForge, first.StreamCountIncoming);
         }
     }

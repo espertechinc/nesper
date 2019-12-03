@@ -26,15 +26,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeWhileLastEventsForgeEval : EnumEval
     {
-        private readonly EnumTakeWhileLastEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumTakeWhileLastEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumTakeWhileLastEventsForgeEval(
             EnumTakeWhileLastEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -50,9 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var beans = (ICollection<EventBean>) enumcoll;
             if (enumcoll.Count == 1) {
                 var item = beans.First();
-                eventsLambda[forge.streamNumLambda] = item;
+                eventsLambda[_forge.StreamNumLambda] = item;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -64,9 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var result = new ArrayDeque<object>();
 
             for (var i = all.Length - 1; i >= 0; i--) {
-                eventsLambda[forge.streamNumLambda] = all[i];
+                eventsLambda[_forge.StreamNumLambda] = all[i];
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     break;
                 }
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
-            var innerValue = forge.innerExpression.EvaluateCodegen(
+            var innerValue = forge.InnerExpression.EvaluateCodegen(
                 typeof(bool?),
                 methodNode,
                 scope,
@@ -107,10 +107,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     Cast(
                         typeof(EventBean),
                         ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("item"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("item"));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
                 blockSingle,
-                forge.innerExpression.EvaluationType,
+                forge.InnerExpression.EvaluationType,
                 innerValue,
                 StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(EventBean) }));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
@@ -132,11 +132,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     Decrement("i"))
                 .AssignArrayElement(
                     EnumForgeCodegenNames.REF_EPS,
-                    Constant(forge.streamNumLambda),
+                    Constant(forge.StreamNumLambda),
                     ArrayAtIndex(@Ref("all"), @Ref("i")));
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 forEach,
-                forge.innerExpression.EvaluationType,
+                forge.InnerExpression.EvaluationType,
                 innerValue);
             forEach.Expression(ExprDotMethod(@Ref("result"), "AddFirst", ArrayAtIndex(@Ref("all"), @Ref("i"))));
             block.MethodReturn(@Ref("result"));

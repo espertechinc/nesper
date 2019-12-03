@@ -54,16 +54,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
-            base.TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
+            TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
             if (inputEventType != null) {
-                if (base.EnumMethodEnum == EnumMethodEnum.ALLOF) {
+                if (EnumMethodEnum == EnumMethodEnum.ALLOF) {
                     return new EnumAllOfEventsForge(first.BodyForge, first.StreamCountIncoming);
                 }
 
                 return new EnumAnyOfEventsForge(first.BodyForge, first.StreamCountIncoming);
             }
 
-            if (base.EnumMethodEnum == EnumMethodEnum.ALLOF) {
+            if (EnumMethodEnum == EnumMethodEnum.ALLOF) {
                 return new EnumAllOfScalarForge(
                     first.BodyForge,
                     first.StreamCountIncoming,

@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumDistinctScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumDistinctScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumDistinctScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumDistinctScalarLambdaForgeEval(
             EnumDistinctScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -52,15 +52,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             IDictionary<IComparable, object> distinct = new LinkedHashMap<IComparable, object>();
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             var values = (ICollection<object>) enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
-                var comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = (IComparable) _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (!distinct.ContainsKey(comparable)) {
                     distinct.Put(comparable, next);
                 }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            var innerType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var innerType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(
                     innerType,
                     "comparable",
-                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
                 .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "ContainsKey", @Ref("comparable"))))
                 .Expression(ExprDotMethod(@Ref("distinct"), "Put", @Ref("comparable"), @Ref("next")))
                 .BlockEnd();

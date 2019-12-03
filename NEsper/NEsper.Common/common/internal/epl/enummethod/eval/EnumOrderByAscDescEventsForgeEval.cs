@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumOrderByAscDescEventsForgeEval : EnumEval
     {
-        private readonly EnumOrderByAscDescEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumOrderByAscDescEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumOrderByAscDescEventsForgeEval(
             EnumOrderByAscDescEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -46,9 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var comparable = (IComparable) innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = (IComparable) _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 var entry = sort.Get(comparable);
 
                 if (entry == null) {
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 hasColl = true;
             }
 
-            return EnumOrderBySortEval(sort, hasColl, forge.descending);
+            return EnumOrderBySortEval(sort, hasColl, _forge.descending);
         }
 
         public static CodegenExpression Codegen(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerBoxedType = forge.innerExpression.EvaluationType.GetBoxedType();
+            var innerBoxedType = forge.InnerExpression.EvaluationType.GetBoxedType();
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
@@ -93,11 +93,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance(typeof(OrderedDictionary<object, object>)))
                 .DeclareVar<bool>("hasColl", ConstantFalse());
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerBoxedType,
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
                 .DeclareVar<object>("entry", ExprDotMethod(Ref("sort"), "Get", Ref("value")))
                 .IfCondition(EqualsNull(Ref("entry")))
                 .Expression(ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("next")))
@@ -112,10 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignRef("hasColl", ConstantTrue())
                 .BlockEnd();
             block.MethodReturn(
-                StaticMethod(
-                    typeof(CompatExtensions),
-                    "Unwrap",
-                    new[] {typeof(EventBean)},
+                Unwrap<EventBean>(
                     StaticMethod(
                         typeof(EnumOrderByAscDescEventsForgeEval),
                         "EnumOrderBySortEval",

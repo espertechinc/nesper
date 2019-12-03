@@ -140,16 +140,17 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var returnExpression = getter.UnderlyingGetCodegen(
+                Cast(typeof(Map), Ref("valueTopObj")),
+                codegenMethodScope,
+                codegenClassScope);
+            
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
                 .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
-                .MethodReturn(
-                    getter.UnderlyingGetCodegen(
-                        Cast(typeof(Map), Ref("valueTopObj")),
-                        codegenMethodScope,
-                        codegenClassScope));
+                .MethodReturn(returnExpression);
         }
 
         private CodegenMethod IsObjectArrayExistsPropertyCodegen(

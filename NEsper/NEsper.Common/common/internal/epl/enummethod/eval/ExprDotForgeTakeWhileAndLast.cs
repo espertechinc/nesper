@@ -72,16 +72,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
             if (inputEventType != null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+                TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
                 if (first.GoesToNames.Count == 1) {
-                    if (this.EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
+                    if (EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
                         return new EnumTakeWhileLastEventsForge(first.BodyForge, first.StreamCountIncoming);
                     }
 
                     return new EnumTakeWhileEventsForge(first.BodyForge, first.StreamCountIncoming);
                 }
 
-                if (this.EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
+                if (EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
                     return new EnumTakeWhileLastIndexEventsForge(
                         first.BodyForge,
                         first.StreamCountIncoming,
@@ -94,9 +94,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     (ObjectArrayEventType) first.GoesToTypes[1]);
             }
 
-            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+            TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             if (first.GoesToNames.Count == 1) {
-                if (this.EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
+                if (EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
                     return new EnumTakeWhileLastScalarForge(
                         first.BodyForge,
                         first.StreamCountIncoming,
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 
-            if (this.EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
+            if (EnumMethodEnum == EnumMethodEnum.TAKEWHILELAST) {
                 return new EnumTakeWhileLastIndexScalarForge(
                     first.BodyForge,
                     first.StreamCountIncoming,

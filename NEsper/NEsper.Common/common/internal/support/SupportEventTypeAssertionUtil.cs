@@ -466,19 +466,25 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         public static void AssertEventTypeProperties(
-            object[][] expectedArr,
+            object[][] expectedValuesArr,
             EventType eventType,
             params SupportEventTypeAssertionEnum[] assertions)
         {
-            for (var propNum = 0; propNum < expectedArr.Length; propNum++) {
+            var propertyDescriptors = eventType.PropertyDescriptors
+                .OrderBy(p => p.PropertyName)
+                .ToList();
+ 
+            for (var propNum = 0; propNum < expectedValuesArr.Length; propNum++) {
                 var message = "Failed assertion for property " + propNum;
-                var prop = eventType.PropertyDescriptors[propNum];
+                var prop = propertyDescriptors[propNum];
+                var expectedArr = expectedValuesArr[propNum];
 
                 for (var i = 0; i < assertions.Length; i++) {
                     var assertion = assertions[i];
-                    var expected = expectedArr[propNum][i];
-                    object value = assertion.GetExtractor().Invoke(prop, eventType);
-                    ScopeTestHelper.AssertEquals(message + " at assertion " + assertion, expected, value);
+                    var expected = expectedArr[i];
+                    var value = assertion.GetExtractor().Invoke(prop, eventType);
+                    ScopeTestHelper.AssertEquals(
+                        message + " at assertion " + assertion, expected, value);
                 }
             }
         }

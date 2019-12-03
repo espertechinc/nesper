@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumMostLeastFrequentScalarForge : EnumForgeBase,
         EnumEval
     {
-        private readonly bool isMostFrequent;
-        private readonly Type returnType;
+        private readonly bool _isMostFrequent;
+        private readonly Type _returnType;
 
         public EnumMostLeastFrequentScalarForge(
             int streamCountIncoming,
@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             Type returnType)
             : base(streamCountIncoming)
         {
-            this.isMostFrequent = isMostFrequent;
-            this.returnType = returnType;
+            _isMostFrequent = isMostFrequent;
+            _returnType = returnType;
         }
 
         public override EnumEval EnumEvaluator {
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 items.Put(next, existing.Value);
             }
 
-            return EnumMostLeastFrequentEventForgeEval.GetEnumMostLeastFrequentResult(items, isMostFrequent);
+            return EnumMostLeastFrequentEventForgeEval.GetEnumMostLeastFrequentResult(items, _isMostFrequent);
         }
 
         public override CodegenExpression Codegen(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
             var block = codegenMethodScope
-                .MakeChild(returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
+                .MakeChild(_returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
                 .AddParam(paramTypes)
                 .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
@@ -92,12 +92,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .ExprDotMethod(Ref("items"), "Put", Ref("next"), Unbox(Ref("existing")));
             var method = block.MethodReturn(
                 Cast(
-                    returnType,
+                    _returnType,
                     StaticMethod(
                         typeof(EnumMostLeastFrequentEventForgeEval),
                         "GetEnumMostLeastFrequentResult",
                         Ref("items"),
-                        Constant(isMostFrequent))));
+                        Constant(_isMostFrequent))));
             return LocalMethod(method, args.Expressions);
         }
     }

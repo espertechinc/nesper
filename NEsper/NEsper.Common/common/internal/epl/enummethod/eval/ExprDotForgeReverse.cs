@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             if (inputEventType != null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+                TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             return new EnumReverseForge(numStreamsIncoming, inputEventType == null);

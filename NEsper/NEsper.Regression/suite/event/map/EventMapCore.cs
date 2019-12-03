@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 }
                 catch (EPException ex) {
                     Assert.AreEqual(
-                        "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a IDictionary event type",
+                        "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a System.Collections.Generic.IDictionary<System.String, System.Object> event type",
                         ex.Message);
                 }
 
@@ -153,10 +153,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                         new EventPropertyDescriptor(
                             "MyString",
                             typeof(string),
-                            null,
+                            typeof(char),
                             false,
                             false,
-                            false,
+                            true,
                             false,
                             false),
                         new EventPropertyDescriptor(
@@ -195,8 +195,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 env.SendEventMap(map, "myMapEvent");
                 Assert.AreEqual("NestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
-                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("Indexed"));
-                Assert.AreEqual("nestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
+                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("indexed"));
+                Assert.AreEqual("NestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
 
                 env.UndeployAll();
             }
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@Name('s0') select myInt as intVal, myString as stringVal from myMapEvent#length(5)";
+                    "@Name('s0') select MyInt as intVal, MyString as stringVal from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event

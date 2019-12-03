@@ -683,6 +683,12 @@ namespace com.espertech.esper.common.@internal.util
                 return exprReturningBoxed;
             }
 
+            if ((exprReturningBoxed is CodegenExpressionConstantNull) ||
+                (exprReturningBoxed is CodegenExpressionConstant exprConstant &&
+                 exprConstant.IsNull)) {
+                return exprReturningBoxed;
+            }
+            
             if (targetTypeBoxed == typeof(double?)) {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", exprReturningBoxed);
             }
@@ -726,6 +732,12 @@ namespace com.espertech.esper.common.@internal.util
                 return CoerceNumberBoxedToBoxedCodegen(expr, fromType, targetTypeBoxed);
             }
 
+            if ((expr is CodegenExpressionConstantNull) ||
+                (expr is CodegenExpressionConstant exprConstant &&
+                 exprConstant.IsNull)) {
+                return expr;
+            }
+            
             if (targetTypeBoxed == typeof(double?))
             {
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", expr);
@@ -1194,7 +1206,7 @@ namespace com.espertech.esper.common.@internal.util
                 throw new CoercionException("Cannot coerce to numeric type " + types[0].CleanName());
             }
 
-            // Use arithmatic coercion type as the final authority, considering all types
+            // Use arithmetic coercion type as the final authority, considering all types
             var result = GetArithmaticCoercionType(types[0], types[1]);
             for (var ii = 2; ii < types.Count; ii++)
             {

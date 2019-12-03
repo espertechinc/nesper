@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumMinMaxByScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumMinMaxByScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumMinMaxByScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumMinMaxByScalarLambdaForgeEval(
             EnumMinMaxByScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -49,15 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             IComparable minKey = null;
             object result = null;
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             var values = (ICollection<object>) enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
-                var comparable = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (comparable == null) {
                     continue;
                 }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     result = next;
                 }
                 else {
-                    if (forge.max) {
+                    if (_forge.max) {
                         if (minKey.CompareTo(comparable) < 0) {
                             minKey = (IComparable) comparable;
                             result = next;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
             var innerTypeBoxed = Boxing.GetBoxedType(innerType);
             var resultTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
             var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(
                     innerTypeBoxed,
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope))
                 .IfRefNull("value")
                 .BlockContinue();
 

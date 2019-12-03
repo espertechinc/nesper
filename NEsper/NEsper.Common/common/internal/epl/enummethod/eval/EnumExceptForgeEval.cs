@@ -22,15 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumExceptForgeEval : EnumEval
     {
-        private readonly ExprEnumerationEval evaluator;
-        private readonly EnumExceptForge forge;
+        private readonly ExprEnumerationEval _evaluator;
+        private readonly EnumExceptForge _forge;
 
         public EnumExceptForgeEval(
             EnumExceptForge forge,
             ExprEnumerationEval evaluator)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
+            _forge = forge;
+            _evaluator = evaluator;
         }
 
         public object EvaluateEnumMethod(
@@ -43,12 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return null;
             }
 
-            if (forge.scalar) {
-                var set = evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
+            if (_forge.scalar) {
+                var set = _evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
                 return EnumExceptForgeEvalSet(set, enumcoll);
             }
             else {
-                var set = evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
+                var set = _evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
                 return EnumExceptForgeEvalSet(set, enumcoll.Unwrap<EventBean>());
             }
         }

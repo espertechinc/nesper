@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client.fireandforget;
@@ -946,7 +947,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 while (!idList.IsEmpty()) {
                     var first = idList.Count > 100 ? idList.SubList(0, 100) : idList;
                     env.CompileExecuteFAF(BuildDeleteQueryWithInClause("RectangleWindow", "Id", first), path);
-                    idList.RemoveAll(first);
+                    idList.RemoveAll(first.ToArray());
                 }
 
                 env.SendEventBean(new SupportSpatialAABB("", 0, 0, SIZE, SIZE));

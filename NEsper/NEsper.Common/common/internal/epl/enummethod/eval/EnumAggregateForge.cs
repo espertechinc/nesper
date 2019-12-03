@@ -16,28 +16,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public abstract class EnumAggregateForge : EnumForge
     {
-        internal ExprForge initialization;
-        internal ExprForge innerExpression;
-        internal ObjectArrayEventType resultEventType;
-        internal int streamNumLambda;
+        private ExprForge _initialization;
+        private ExprForge _innerExpression;
+        private ObjectArrayEventType _resultEventType;
+        private int _streamNumLambda;
 
-        public EnumAggregateForge(
+        protected EnumAggregateForge(
             ExprForge initialization,
             ExprForge innerExpression,
             int streamNumLambda,
             ObjectArrayEventType resultEventType)
         {
-            this.initialization = initialization;
-            this.innerExpression = innerExpression;
-            this.streamNumLambda = streamNumLambda;
-            this.resultEventType = resultEventType;
+            _initialization = initialization;
+            _innerExpression = innerExpression;
+            _streamNumLambda = streamNumLambda;
+            _resultEventType = resultEventType;
         }
 
-        public int StreamNumLambda => streamNumLambda;
+        public int StreamNumLambda => _streamNumLambda;
 
-        public ObjectArrayEventType ResultEventType => resultEventType;
+        public ObjectArrayEventType ResultEventType => _resultEventType;
 
-        public int StreamNumSize => streamNumLambda + 2;
+        public int StreamNumSize => _streamNumLambda + 2;
+
+        public ExprForge Initialization => _initialization;
+
+        public ExprForge InnerExpression => _innerExpression;
 
         public abstract EnumEval EnumEvaluator { get; }
 

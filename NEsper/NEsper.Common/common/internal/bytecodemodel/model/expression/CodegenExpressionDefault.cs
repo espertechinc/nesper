@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append("default(typeof(");
+            builder.Append("default(");
             builder.Append(_type.CleanName());
-            builder.Append("))");
+            builder.Append(")");
         }
 
         public void MergeClasses(ISet<Type> classes)

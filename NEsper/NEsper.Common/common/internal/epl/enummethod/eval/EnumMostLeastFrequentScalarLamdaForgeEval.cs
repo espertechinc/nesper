@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumMostLeastFrequentScalarLamdaForgeEval : EnumEval
     {
-        private readonly EnumMostLeastFrequentScalarLamdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumMostLeastFrequentScalarLamdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumMostLeastFrequentScalarLamdaForgeEval(
             EnumMostLeastFrequentScalarLamdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -52,14 +52,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             IDictionary<object, int> items = new LinkedHashMap<object, int>();
             var values = (ICollection<object>) enumcoll;
 
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             foreach (var next in values) {
                 props[0] = next;
 
-                var item = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var item = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 int? existing = items.Get(item);
 
                 if (existing == null) {
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 items.Put(item, existing.Value);
             }
 
-            return EnumMostLeastFrequentEventForgeEval.GetEnumMostLeastFrequentResult(items, forge.isMostFrequent);
+            return EnumMostLeastFrequentEventForgeEval.GetEnumMostLeastFrequentResult(items, _forge.isMostFrequent);
         }
 
         public static CodegenExpression Codegen(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            var returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var returnType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
@@ -106,14 +106,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar<object>(
                     "item",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>("existing", ExprDotMethod(Ref("items"), "GetBoxed", Ref("item")))
                 .IfCondition(EqualsNull(Ref("existing")))
                 .AssignRef("existing", Constant(1))

@@ -164,35 +164,6 @@ namespace com.espertech.esper.compat.magic
 #endif
         }
 
-        private bool IsIndexedType(Type type)
-        {
-            if (type == null)
-                return false;
-            if (type == typeof(string))
-                return true;
-            if (type.IsArray)
-                return true;
-            if (type.IsGenericDictionary())
-                return false;
-            if (type.IsGenericList())
-                return true;
-            if (type.IsGenericEnumerable() || type.IsImplementsInterface(typeof(IEnumerable)))
-                return true;
-
-            return false;
-        }
-
-        private bool IsMappedType(Type type)
-        {
-            if (type == null)
-                return false;
-            if (type.IsGenericStringDictionary())
-                return true;
-
-            return false;
-        }
-
-
         /// <summary>
         /// Indexes the simple properties.
         /// </summary>
@@ -203,9 +174,9 @@ namespace com.espertech.esper.compat.magic
                 var ciName = csName.ToUpper();
                 var propertyType = PropertyType.SIMPLE;
 
-                if (IsIndexedType(propertyInfo.PropertyType))
+                if (GenericExtensions.IsIndexedType(propertyInfo.PropertyType))
                     propertyType |= PropertyType.INDEXED;
-                if (IsMappedType(propertyInfo.PropertyType))
+                if (GenericExtensions.IsMappedType(propertyInfo.PropertyType))
                     propertyType |= PropertyType.MAPPED;
 
                 var prop = new SimpleMagicPropertyInfo(
@@ -224,9 +195,9 @@ namespace com.espertech.esper.compat.magic
                 var setter = GetSimpleMutator(csName, methodInfo.ReturnType);
                 var propertyType = PropertyType.SIMPLE;
 
-                if (IsIndexedType(methodInfo.ReturnType))
+                if (GenericExtensions.IsIndexedType(methodInfo.ReturnType))
                     propertyType |= PropertyType.INDEXED;
-                if (IsMappedType(methodInfo.ReturnType))
+                if (GenericExtensions.IsMappedType(methodInfo.ReturnType))
                     propertyType |= PropertyType.MAPPED;
 
                 var prop = new SimpleMagicPropertyInfo(

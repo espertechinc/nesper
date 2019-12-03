@@ -10,7 +10,10 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
@@ -37,26 +40,29 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             return null;
         }
 
-        // Aaron you haven't done this yet - do it when you get back
-
         public CodegenExpression CodegenLong(
             CodegenExpression inner,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(ReformatToDateTimeForge), codegenClassScope)
-                .AddParam(typeof(long), "ts")
+                .AddParam(typeof(long), "ts");
+                
+            methodNode
                 .Block
-                .DeclareVar<DateTime>(
-                    "dateTime",
-                    CodegenExpressionBuilder.StaticMethod(
-                        typeof(DateTimeHelper),
-                        "UtcFromMillis",
-                        CodegenExpressionBuilder.Ref("ts")))
-                .MethodReturn(CodegenExpressionBuilder.Ref("dateTime"));
-            return CodegenExpressionBuilder.LocalMethod(methodNode, inner);
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), methodNode, codegenClassScope))
+                .MethodReturn(
+                    GetProperty(
+                        GetProperty(
+                            Ref("dtx"),
+                            "DateTime"),
+                        "DateTime"));
+            
+            return LocalMethod(methodNode, inner);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -79,10 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeOffset), "input")
                 .Block
                 .MethodReturn(
-                    CodegenExpressionBuilder.GetProperty(
-                        CodegenExpressionBuilder.Ref("input"),
+                    GetProperty(
+                        Ref("input"),
                         "DateTime"));
-            return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(inner).Call();
+            return LocalMethodBuild(method).Pass(inner).Call();
         }
 
         public CodegenExpression CodegenDateTimeEx(
@@ -96,12 +102,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeEx), "input")
                 .Block
                 .MethodReturn(
-                    CodegenExpressionBuilder.GetProperty(
-                        CodegenExpressionBuilder.GetProperty(
-                            CodegenExpressionBuilder.Ref("input"),
+                    GetProperty(
+                        GetProperty(
+                            Ref("input"),
                             "DateTime"),
                         "DateTime"));
-            return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(inner).Call();
+            return LocalMethodBuild(method).Pass(inner).Call();
         }
 
         public object Evaluate(

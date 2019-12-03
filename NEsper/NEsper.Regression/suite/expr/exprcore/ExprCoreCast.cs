@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                              "cast(arr_string, string[]) as C0, " +
                              "cast(arr_primitive, int[primitive]) as C1, " +
                              "cast(arr_boxed_one, int[]) as C2, " +
-                             "cast(arr_boxed_two, System.Nullable<System.Int32>[]) as C3, " +
+                             "cast(arr_boxed_two, Int32[]) as C3, " +
                              "cast(arr_object, System.Object[]) as C4," +
                              "cast(arr_2dim_primitive, int[primitive][]) as C5," +
                              "cast(arr_2dim_object, System.Object[][]) as C6," +

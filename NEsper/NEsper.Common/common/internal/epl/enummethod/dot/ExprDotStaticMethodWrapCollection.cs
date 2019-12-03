@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return result;
             }
 
-            return CodegenExpressionBuilder.StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(object)}, result);
+            return CodegenExpressionBuilder.Unwrap<object>(result);
         }
     }
 } // end of namespace

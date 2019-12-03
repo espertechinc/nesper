@@ -24,11 +24,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
             execs.Add(new ExprEnumMinByWhere());
             execs.Add(new ExprEnumCorrelated());
-            #endif
             execs.Add(new ExprEnumAnyOf());
             return execs;
         }

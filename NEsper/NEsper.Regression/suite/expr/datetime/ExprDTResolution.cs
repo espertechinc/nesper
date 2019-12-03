@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 "@Name('s0') select * from " +
                 "MyEvent(Id='A') as a unidirectional, " +
                 "MyEvent(Id='B')#lastevent as b" +
-                " where a.withDate(2002, 4, 30).before(b)";
+                " where a.withDate(2002, 5, 30).before(b)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"B", tsB, tsB}, "MyEvent");
@@ -132,11 +132,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         select,
                         fields,
                         new object[] {
-                            dtxMod.UtcMillis,
-                            dtxMod, 4, 4, 5,
-                            dtxTime.DateTime,
-                            dtxTime,
-                            time - 1
+                            dtxMod.UtcMillis, // c0
+                            dtxMod, // c1 (dtx)
+                            5, // c2 (month)
+                            5, // c3 (month)
+                            5, // c4 (month)
+                            dtxTime.DateTime.DateTime, // c5 (dateTime)
+                            dtxTime, // c6 (dateTimeEx)
+                            time - 1 // c7
                         });
                 }
                 else {
@@ -147,11 +150,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                         select,
                         fields,
                         new object[] {
-                            dtxMod.UtcMillis * 1000 + 123,
-                            dtxMod, 4, 4, 5,
-                            dtxTime.DateTime,
-                            dtxTime,
-                            time * 1000 - 1000
+                            dtxMod.UtcMillis * 1000 + 123, // c0
+                            dtxMod, // c1 (dtx) 
+                            5, // c2 (month)
+                            5, // c3 (month)
+                            5, // c4 (month)
+                            dtxTime.DateTime.DateTime, // c5 (dateTime)
+                            dtxTime, // c6 (dateTimeEx)
+                            time * 1000 - 1000 // c7
                         });
                 }
             }

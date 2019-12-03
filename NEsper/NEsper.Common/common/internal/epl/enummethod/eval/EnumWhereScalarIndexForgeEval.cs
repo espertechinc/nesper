@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumWhereScalarIndexForgeEval : EnumEval
     {
-        private readonly EnumWhereScalarIndexForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumWhereScalarIndexForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumWhereScalarIndexForgeEval(
             EnumWhereScalarIndexForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -49,11 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             var result = new ArrayDeque<object>();
-            var evalEvent = new ObjectArrayEventBean(new object[1], forge.evalEventType);
-            eventsLambda[forge.streamNumLambda] = evalEvent;
+            var evalEvent = new ObjectArrayEventBean(new object[1], _forge.evalEventType);
+            eventsLambda[_forge.streamNumLambda] = evalEvent;
             var evalProps = evalEvent.Properties;
-            var indexEvent = new ObjectArrayEventBean(new object[1], forge.indexEventType);
-            eventsLambda[forge.streamNumLambda + 1] = indexEvent;
+            var indexEvent = new ObjectArrayEventBean(new object[1], _forge.indexEventType);
+            eventsLambda[_forge.streamNumLambda + 1] = indexEvent;
             var indexProps = indexEvent.Properties;
 
             var count = -1;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 evalProps[0] = next;
                 indexProps[0] = count;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     continue;
                 }
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumWhereScalarIndexForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))

@@ -67,7 +67,8 @@ namespace com.espertech.esper.regressionlib.support.util
 
             if (expected.Count != events.Length) {
                 var eventsNames = events
-                    .Select(v => v.Underlying.AsStringDictionary(MagicMarker.SingletonInstance))
+                    .Select(v => v.Underlying.AsStringDictionary())
+                    .Where(v => v != null)
                     .SelectMany(v => v.Values)
                     .Cast<string>()
                     .ToList();

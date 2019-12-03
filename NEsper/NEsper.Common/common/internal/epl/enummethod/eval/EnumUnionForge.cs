@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumUnionForge : EnumForge
     {
-        private readonly int numStreams;
+        private readonly int _numStreams;
         internal readonly ExprEnumerationForge evaluatorForge;
         internal readonly bool scalar;
 
@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEnumerationForge evaluatorForge,
             bool scalar)
         {
-            this.numStreams = numStreams;
+            _numStreams = numStreams;
             this.evaluatorForge = evaluatorForge;
             this.scalar = scalar;
         }
 
         public int StreamNumSize {
-            get => numStreams;
+            get => _numStreams;
         }
 
         public virtual EnumEval EnumEvaluator {

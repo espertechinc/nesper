@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarWithDateForgeOp : CalendarOp
     {
-        public const string METHOD_ACTIONSETYMDCALENDAR = "ActionSetYMDCalendar";
+        public const string METHOD_ACTIONSETYMDCALENDAR = "ActionSetYMDDateTimeEx";
 
         private readonly ExprEvaluator day;
         private readonly ExprEvaluator month;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var yearNum = GetInt(year, eventsPerStream, isNewData, context);
             var monthNum = GetInt(month, eventsPerStream, isNewData, context);
             var dayNum = GetInt(day, eventsPerStream, isNewData, context);
-            ActionSetYMDCalendar(dateTimeEx, yearNum, monthNum, dayNum);
+            ActionSetYMDDateTimeEx(dateTimeEx, yearNum, monthNum, dayNum);
             return dateTimeEx;
         }
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             return ActionSetYMDDateTime(dateTime, yearNum, monthNum, dayNum);
         }
 
-        public static CodegenExpression CodegenCalendar(
+        public static CodegenExpression CodegenDateTimeEx(
             CalendarWithDateForge forge,
             CodegenExpression dtx,
             CodegenMethodScope codegenMethodScope,
@@ -156,10 +156,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             var result = expr.Evaluate(eventsPerStream, isNewData, context);
-            if (result == null) {
-                return null;
-            }
-
             return (int?) result;
         }
 
@@ -170,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         /// <param name="year">year</param>
         /// <param name="month">month</param>
         /// <param name="day">day</param>
-        public static DateTimeEx ActionSetYMDCalendar(
+        public static DateTimeEx ActionSetYMDDateTimeEx(
             DateTimeEx dtx,
             int? year,
             int? month,
@@ -185,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             if (day != null) {
-                dtx = dtx.SetDay(month.Value);
+                dtx = dtx.SetDay(day.Value);
             }
 
             return dtx;
@@ -256,27 +252,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var yearType = forge.year.EvaluationType;
-            var monthType = forge.month.EvaluationType;
-            var dayType = forge.day.EvaluationType;
+            var yearType = forge.Year.EvaluationType;
+            var monthType = forge.Month.EvaluationType;
+            var dayType = forge.Day.EvaluationType;
             block.DeclareVar<int?>(
                     "year",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope),
                         yearType,
                         methodNode,
                         codegenClassScope))
                 .DeclareVar<int?>(
                     "month",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope),
                         monthType,
                         methodNode,
                         codegenClassScope))
                 .DeclareVar<int?>(
                     "day",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope),
                         dayType,
                         methodNode,
                         codegenClassScope));

@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumGroupByKeyValueSelectorEventsForgeEval : EnumEval
     {
-        private readonly EnumGroupByKeyValueSelectorEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
-        private readonly ExprEvaluator secondExpression;
+        private readonly EnumGroupByKeyValueSelectorEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
+        private readonly ExprEvaluator _secondExpression;
 
         public EnumGroupByKeyValueSelectorEventsForgeEval(
             EnumGroupByKeyValueSelectorEventsForge forge,
             ExprEvaluator innerExpression,
             ExprEvaluator secondExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
-            this.secondExpression = secondExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
+            _secondExpression = secondExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var key = innerExpression.Evaluate(eventsLambda, isNewData, context);
-                var entry = secondExpression.Evaluate(eventsLambda, isNewData, context);
+                var key = _innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var entry = _secondExpression.Evaluate(eventsLambda, isNewData, context);
 
                 var value = result.Get(key);
                 if (value == null) {
@@ -88,10 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }))
                 .DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(LinkedHashMap<object, object>)));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
                 .DeclareVar<object>(
                     "key",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<object>(
                     "entry",
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))

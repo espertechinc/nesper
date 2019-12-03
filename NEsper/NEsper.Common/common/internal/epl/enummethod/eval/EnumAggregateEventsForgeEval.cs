@@ -27,18 +27,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAggregateEventsForgeEval : EnumEval
     {
-        private readonly EnumAggregateEventsForge forge;
-        private readonly ExprEvaluator initialization;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumAggregateEventsForge _forge;
+        private readonly ExprEvaluator _initialization;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumAggregateEventsForgeEval(
             EnumAggregateEventsForge forge,
             ExprEvaluator initialization,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.initialization = initialization;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _initialization = initialization;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -47,21 +47,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = initialization.Evaluate(eventsLambda, isNewData, context);
+            var value = _initialization.Evaluate(eventsLambda, isNewData, context);
 
             if (enumcoll.IsEmpty()) {
                 return value;
             }
 
             var beans = (ICollection<EventBean>) enumcoll;
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.ResultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             foreach (var next in beans) {
                 props[0] = value;
-                eventsLambda[forge.streamNumLambda + 1] = next;
-                value = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                eventsLambda[_forge.StreamNumLambda + 1] = next;
+                value = _innerExpression.Evaluate(eventsLambda, isNewData, context);
             }
 
             return value;
@@ -78,26 +78,27 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
-                    EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
+                    EventTypeUtility.ResolveTypeCodegen(
+                        forge.ResultEventType, EPStatementInitServicesConstants.REF)));
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    forge.initialization.EvaluationType,
+                    forge.Initialization.EvaluationType,
                     typeof(EnumAggregateEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
 
-            var initType = forge.initialization.EvaluationType;
+            var initType = forge.Initialization.EvaluationType;
             var initTypeBoxed = initType.GetBoxedType();
             var unboxRequired = initType != initTypeBoxed;
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
 
             var block = methodNode.Block;
             block.DeclareVar(
                     initTypeBoxed,
                     "value",
-                    forge.initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
+                    forge.Initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(
                     unboxRequired
@@ -106,14 +107,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("value"))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda + 1), @Ref("next"))
                 .AssignRef(
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(
+                        innerType, methodNode, scope, codegenClassScope))
                 .BlockEnd();
             block.MethodReturn(
                 unboxRequired

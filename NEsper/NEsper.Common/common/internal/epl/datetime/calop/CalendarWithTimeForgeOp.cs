@@ -22,10 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     public class CalendarWithTimeForgeOp : CalendarOp
     {
-        private readonly ExprEvaluator hour;
-        private readonly ExprEvaluator min;
-        private readonly ExprEvaluator msec;
-        private readonly ExprEvaluator sec;
+        private readonly ExprEvaluator _hour;
+        private readonly ExprEvaluator _min;
+        private readonly ExprEvaluator _msec;
+        private readonly ExprEvaluator _sec;
 
         public CalendarWithTimeForgeOp(
             ExprEvaluator hour,
@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluator sec,
             ExprEvaluator msec)
         {
-            this.hour = hour;
-            this.min = min;
-            this.sec = sec;
-            this.msec = msec;
+            _hour = hour;
+            _min = min;
+            _sec = sec;
+            _msec = msec;
         }
 
         public DateTimeEx Evaluate(
@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var hourNum = CalendarWithDateForgeOp.GetInt(hour, eventsPerStream, isNewData, context);
-            var minNum = CalendarWithDateForgeOp.GetInt(min, eventsPerStream, isNewData, context);
-            var secNum = CalendarWithDateForgeOp.GetInt(sec, eventsPerStream, isNewData, context);
-            var msecNum = CalendarWithDateForgeOp.GetInt(msec, eventsPerStream, isNewData, context);
+            var hourNum = CalendarWithDateForgeOp.GetInt(_hour, eventsPerStream, isNewData, context);
+            var minNum = CalendarWithDateForgeOp.GetInt(_min, eventsPerStream, isNewData, context);
+            var secNum = CalendarWithDateForgeOp.GetInt(_sec, eventsPerStream, isNewData, context);
+            var msecNum = CalendarWithDateForgeOp.GetInt(_msec, eventsPerStream, isNewData, context);
             return ActionSetHMSMDateTimeEx(dateTimeEx, hourNum, minNum, secNum, msecNum);
         }
 
@@ -58,10 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var hourNum = CalendarWithDateForgeOp.GetInt(hour, eventsPerStream, isNewData, context);
-            var minNum = CalendarWithDateForgeOp.GetInt(min, eventsPerStream, isNewData, context);
-            var secNum = CalendarWithDateForgeOp.GetInt(sec, eventsPerStream, isNewData, context);
-            var msecNum = CalendarWithDateForgeOp.GetInt(msec, eventsPerStream, isNewData, context);
+            var hourNum = CalendarWithDateForgeOp.GetInt(_hour, eventsPerStream, isNewData, context);
+            var minNum = CalendarWithDateForgeOp.GetInt(_min, eventsPerStream, isNewData, context);
+            var secNum = CalendarWithDateForgeOp.GetInt(_sec, eventsPerStream, isNewData, context);
+            var msecNum = CalendarWithDateForgeOp.GetInt(_msec, eventsPerStream, isNewData, context);
             return ActionSetHMSMDateTimeOffset(dateTimeOffset, hourNum, minNum, secNum, msecNum);
         }
 
@@ -71,14 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var hourNum = CalendarWithDateForgeOp.GetInt(hour, eventsPerStream, isNewData, context);
-            var minNum = CalendarWithDateForgeOp.GetInt(min, eventsPerStream, isNewData, context);
-            var secNum = CalendarWithDateForgeOp.GetInt(sec, eventsPerStream, isNewData, context);
-            var msecNum = CalendarWithDateForgeOp.GetInt(msec, eventsPerStream, isNewData, context);
+            var hourNum = CalendarWithDateForgeOp.GetInt(_hour, eventsPerStream, isNewData, context);
+            var minNum = CalendarWithDateForgeOp.GetInt(_min, eventsPerStream, isNewData, context);
+            var secNum = CalendarWithDateForgeOp.GetInt(_sec, eventsPerStream, isNewData, context);
+            var msecNum = CalendarWithDateForgeOp.GetInt(_msec, eventsPerStream, isNewData, context);
             return ActionSetHMSMDateTime(dateTime, hourNum, minNum, secNum, msecNum);
         }
 
-        public static CodegenExpression CodegenCalendar(
+        public static CodegenExpression CodegenDateTimeEx(
             CalendarWithTimeForge forge,
             CodegenExpression dtx,
             CodegenMethodScope codegenMethodScope,
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(CalendarWithTimeForgeOp), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "dateTime");
+                .AddParam(typeof(DateTimeEx), "dtx");
 
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 StaticMethod(
                     typeof(CalendarWithTimeForgeOp),
                     "ActionSetHMSMDateTimeEx",
-                    Ref("dateTime"),
+                    Ref("dtx"),
                     Ref("hour"),
                     Ref("minute"),
                     Ref("second"),
@@ -248,36 +248,36 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var hourType = forge.hour.EvaluationType;
-            var minType = forge.min.EvaluationType;
-            var secType = forge.sec.EvaluationType;
-            var msecType = forge.msec.EvaluationType;
+            var hourType = forge.Hour.EvaluationType;
+            var minType = forge.Min.EvaluationType;
+            var secType = forge.Sec.EvaluationType;
+            var msecType = forge.Msec.EvaluationType;
             block
                 .DeclareVar<int?>(
                     "hour",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.hour.EvaluateCodegen(hourType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Hour.EvaluateCodegen(hourType, methodNode, exprSymbol, codegenClassScope),
                         hourType,
                         methodNode,
                         codegenClassScope))
                 .DeclareVar<int?>(
                     "minute",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.min.EvaluateCodegen(minType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Min.EvaluateCodegen(minType, methodNode, exprSymbol, codegenClassScope),
                         minType,
                         methodNode,
                         codegenClassScope))
                 .DeclareVar<int?>(
                     "second",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.sec.EvaluateCodegen(secType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Sec.EvaluateCodegen(secType, methodNode, exprSymbol, codegenClassScope),
                         secType,
                         methodNode,
                         codegenClassScope))
                 .DeclareVar<int?>(
                     "msec",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.msec.EvaluateCodegen(msecType, methodNode, exprSymbol, codegenClassScope),
+                        forge.Msec.EvaluateCodegen(msecType, methodNode, exprSymbol, codegenClassScope),
                         msecType,
                         methodNode,
                         codegenClassScope));

@@ -140,6 +140,20 @@ namespace NEsper.Avro.Getter
 
             return (GenericRecord) value;
         }
+        
+        public static GenericRecord GetAtIndex(
+            GenericRecord record,
+            string posTop,
+            int index)
+        {
+            var values = record.Get(posTop);
+            var value = AvroEventBeanGetterIndexed.GetAvroIndexedValue(values, index);
+            if (value == null || !(value is GenericRecord)) {
+                return null;
+            }
+
+            return (GenericRecord) value;
+        }
 
         private CodegenMethod GetCodegen(
             CodegenMethodScope codegenMethodScope,
@@ -154,7 +168,7 @@ namespace NEsper.Avro.Getter
                         GetType(),
                         "GetAtIndex",
                         CodegenExpressionBuilder.Ref("record"),
-                        CodegenExpressionBuilder.Constant(_posTop),
+                        CodegenExpressionBuilder.Constant(_posTop.Name),
                         CodegenExpressionBuilder.Constant(_index)))
                 .IfRefNullReturnNull("inner")
                 .MethodReturn(

@@ -28,14 +28,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         EnumForge,
         EnumEval
     {
-        private readonly EPType resultType;
+        private readonly EPType _resultType;
 
         public EnumFirstOfNoPredicateForge(
             int streamCountIncoming,
             EPType resultType)
             : base(streamCountIncoming)
         {
-            this.resultType = resultType;
+            _resultType = resultType;
         }
 
         public override EnumEval EnumEvaluator {
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var type = EPTypeHelper.GetCodegenReturnType(resultType);
+            var type = EPTypeHelper.GetCodegenReturnType(_resultType);
             var paramTypes = (type == typeof(EventBean))
                 ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
                 : EnumForgeCodegenNames.PARAMS_OBJECT;

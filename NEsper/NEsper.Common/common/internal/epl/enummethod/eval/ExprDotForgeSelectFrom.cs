@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
             var returnType = first.BodyForge.EvaluationType;
-            base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(returnType, typeof(ICollection<>).MakeGenericType(returnType));
+            TypeInfo = EPTypeHelper.CollectionOfSingleValue(returnType, typeof(EventBean));
             if (inputEventType == null) {
                 return new EnumSelectFromScalarLambdaForge(
                     first.BodyForge,

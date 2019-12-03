@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             ConstantValue = value;
             if (value == null) {
-                EvaluationType = valueType;
+                EvaluationType = valueType.GetBoxedType();
             }
             else {
                 EvaluationType = value.GetType().GetPrimitiveType();
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="clazz">the type of the constant null.</param>
         public ExprConstantNodeImpl(Type clazz)
         {
-            EvaluationType = Boxing.GetBoxedType(clazz);
+            EvaluationType = clazz.GetBoxedType();
             ConstantValue = null;
         }
 

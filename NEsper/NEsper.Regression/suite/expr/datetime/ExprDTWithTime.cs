@@ -42,6 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                   "DateTimeEx.withTime(varhour, varmin, varsec, varmsec) as val4" +
                   " from SupportDateTime";
             env.CompileDeploy(epl, path).AddListener("s0");
+            
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 fields,
@@ -72,13 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new[] {
-                    SupportDateTime.GetValueCoerced(expectedTime, "long"),
-                    null,
-                    null,
-                    null,
-                    null
-                });
+                SupportDateTime.GetArrayCoerced(expectedTime, "long", "long", "date", "dto", "dtx"));
 
             expectedTime = "2002-05-30T01:02:03.004";
             env.Runtime.VariableService.SetVariableValue(variablesDepId, "varhour", 1);

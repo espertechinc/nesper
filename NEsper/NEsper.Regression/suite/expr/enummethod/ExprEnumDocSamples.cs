@@ -68,18 +68,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.EplToModelCompileDeploy("@Name('s0') " + epl, path).UndeployModuleContaining("s0");
         }
 
-#if false
-        private static Zone[] ToArrayZones(ICollection<Zone> it)
-        {
-            return it.ToArray();
-        }
-
-        private static Item[] ToArrayItems(ICollection<Item> it)
-        {
-            return it.ToArray();
-        }
-#endif
-
         internal class ExprEnumHowToUse : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -292,9 +280,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                AssertStmt(env, path, "select Items.firstof().AssetId as firstcenter from LocationReport");
-                AssertStmt(env, path, "select Items.where(p -> p.Type=\"P\") from LocationReport");
-                AssertStmt(env, path, "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
+                
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.firstof().AssetId as firstcenter from LocationReport");
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.where(p -> p.Type=\"P\") from LocationReport");
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -315,7 +313,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.firstof(i -> distance(i.Location.X,i.Location.Y,0,0)<20) as firstcenter from LocationReport");
-                AssertStmt(env, path, "select Items.lastof().AssetId as firstcenter from LocationReport");
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.lastof().AssetId as firstcenter from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -324,7 +325,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.where(i -> i.Type=\"L\").groupby(i -> AssetIdPassenger) as luggagePerPerson from LocationReport");
-                AssertStmt(env, path, "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.where((p,ind) -> p.Type=\"P\" and ind>2) from LocationReport");
                 AssertStmt(
                     env,
                     path,
@@ -369,7 +373,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.CompileDeployWBusPublicType("create schema MyEvent as (seqone String[], seqtwo String[])", path);
 
-                AssertStmt(env, path, "select seqone.sequenceEqual(seqtwo) from MyEvent");
+                AssertStmt(
+                    env,
+                    path,
+                    "select seqone.sequenceEqual(seqtwo) from MyEvent");
                 AssertStmt(
                     env,
                     path,
@@ -386,7 +393,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env,
                     path,
                     "select Items.selectFrom(i -> new{AssetId,distanceCenter=distance(i.Location.X,i.Location.Y,0,0)}) as itemInfo from LocationReport");
-                AssertStmt(env, path, "select Items.leastFrequent(i -> Type) as leastFreqType from LocationReport");
+                AssertStmt(
+                    env,
+                    path,
+                    "select Items.leastFrequent(i -> Type) as leastFreqType from LocationReport");
 
                 var epl = "expression myquery {itm -> " +
                           "(select * from Zone#keepall).where(z -> inrect(z.Rectangle,itm.Location))" +

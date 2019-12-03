@@ -86,8 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode lhs,
             ExprNode rhs)
         {
-            var lhsType = lhs.Forge.EvaluationType.GetBoxedType();
-            var rhsType = rhs.Forge.EvaluationType.GetBoxedType();
+            var lhsType = lhs.Forge.EvaluationType;
+            var rhsType = rhs.Forge.EvaluationType;
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),

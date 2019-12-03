@@ -12,8 +12,6 @@ using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -90,7 +88,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
 
             for (var i = 0; i < numEvents; i++) {
-                Assert.IsTrue(listener[i].AssertOneGetNewAndReset().Get("a") is SupportBean);
+                var theEventReceived = listener[i].AssertOneGetNewAndReset();
+                Assert.NotNull(theEventReceived);
+                var theEventValue = theEventReceived.Get("a");
+                Assert.NotNull(theEventValue);
+                Assert.IsInstanceOf<SupportBean>(theEventValue);
             }
 
             env.UndeployAll();

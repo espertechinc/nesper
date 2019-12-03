@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     public class EnumOrderByAscDescScalarForge : EnumForgeBase,
         EnumEval
     {
-        private readonly bool descending;
+        private readonly bool _descending;
 
         public EnumOrderByAscDescScalarForge(
             int streamCountIncoming,
             bool descending)
             : base(streamCountIncoming)
         {
-            this.descending = descending;
+            _descending = descending;
         }
 
         public override EnumEval EnumEvaluator {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             IList<object> list = new List<object>(enumcoll);
-            if (descending) {
+            if (_descending) {
                 Collections.SortInPlace(list, Comparers.Inverse(Comparers.Default<object>()));
             }
             else {
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<IList<object>>("list", NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
-            if (descending) {
+            if (_descending) {
                 block.StaticMethod(
                     typeof(Collections),
                     "SortInPlace",

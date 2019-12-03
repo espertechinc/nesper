@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,37 +24,37 @@ namespace com.espertech.esper.common.@internal.view.keepall
     public class KeepAllView : ViewSupport,
         DataWindowView
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        private readonly KeepAllViewFactory keepAllViewFactory;
-        protected LinkedHashSet<EventBean> indexedEvents;
-        protected ViewUpdatedCollection viewUpdatedCollection;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly KeepAllViewFactory _keepAllViewFactory;
+        private readonly LinkedHashSet<EventBean> _indexedEvents;
+        private readonly ViewUpdatedCollection _viewUpdatedCollection;
 
         public KeepAllView(
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
             KeepAllViewFactory keepAllViewFactory,
             ViewUpdatedCollection viewUpdatedCollection)
         {
-            agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
-            this.keepAllViewFactory = keepAllViewFactory;
-            indexedEvents = new LinkedHashSet<EventBean>();
-            this.viewUpdatedCollection = viewUpdatedCollection;
+            _agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
+            _keepAllViewFactory = keepAllViewFactory;
+            _indexedEvents = new LinkedHashSet<EventBean>();
+            _viewUpdatedCollection = viewUpdatedCollection;
         }
 
-        public ViewFactory ViewFactory => keepAllViewFactory;
+        public ViewFactory ViewFactory => _keepAllViewFactory;
 
         /// <summary>
         ///     Returns true if the window is empty, or false if not empty.
         /// </summary>
         /// <returns>true if empty</returns>
-        public bool IsEmpty => indexedEvents.IsEmpty();
+        public bool IsEmpty => _indexedEvents.IsEmpty();
 
         /// <summary>
         ///     Returns the (optional) collection handling random access to window contents for prior or previous events.
         /// </summary>
         /// <returns>buffer for events</returns>
-        public ViewUpdatedCollection ViewUpdatedCollection => viewUpdatedCollection;
+        public ViewUpdatedCollection ViewUpdatedCollection => _viewUpdatedCollection;
 
-        public LinkedHashSet<EventBean> IndexedEvents => indexedEvents;
+        public LinkedHashSet<EventBean> IndexedEvents => _indexedEvents;
 
         public override EventType EventType => parent.EventType;
 
@@ -61,43 +62,43 @@ namespace com.espertech.esper.common.@internal.view.keepall
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, keepAllViewFactory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(keepAllViewFactory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _keepAllViewFactory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_keepAllViewFactory, newData, oldData);
 
             if (newData != null) {
                 foreach (var newEvent in newData) {
-                    indexedEvents.Add(newEvent);
+                    _indexedEvents.Add(newEvent);
                     InternalHandleAdded(newEvent);
                 }
             }
 
             if (oldData != null) {
                 foreach (var anOldData in oldData) {
-                    indexedEvents.Remove(anOldData);
+                    _indexedEvents.Remove(anOldData);
                     InternalHandleRemoved(anOldData);
                 }
             }
 
             // update event buffer for access by expressions, if any
-            if (viewUpdatedCollection != null) {
-                viewUpdatedCollection.Update(newData, oldData);
+            if (_viewUpdatedCollection != null) {
+                _viewUpdatedCollection.Update(newData, oldData);
             }
 
-            agentInstanceContext.InstrumentationProvider.QViewIndicate(keepAllViewFactory, newData, oldData);
+            _agentInstanceContext.InstrumentationProvider.QViewIndicate(_keepAllViewFactory, newData, oldData);
             child.Update(newData, oldData);
-            agentInstanceContext.InstrumentationProvider.AViewIndicate();
+            _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return indexedEvents.GetEnumerator();
+            return _indexedEvents.GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(indexedEvents, true, keepAllViewFactory.ViewName, null);
+            viewDataVisitor.VisitPrimary(_indexedEvents, true, _keepAllViewFactory.ViewName, null);
         }
 
         public void InternalHandleAdded(EventBean newEvent)

@@ -270,12 +270,20 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 });
             configuration.Common.AddEventType("MyArrayMapTwo", myArrayMapTwo);
 
-            configuration.Common.AddEventType("MapType", Collections.SingletonDataMap("im", typeof(string)));
+            configuration.Common.AddEventType(
+                "MapType", 
+                Collections.SingletonDataMap("im", typeof(string)));
+            
             configuration.Common.AddEventType(
                 "OAType",
                 new[] {"p0", "p1", "p2", "p3"},
                 new object[]
-                    {typeof(string), "MapType", "MapType[]", Collections.SingletonDataMap("om", typeof(string))});
+                {
+                    typeof(string),
+                    "MapType", 
+                    "MapType[]",
+                    Collections.SingletonDataMap("om", typeof(string))
+                });
 
             IDictionary<string, object> definition = EventMapCore.MakeMap(
                 new object[][] {
@@ -299,7 +307,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             nmwspPropertiesNested.Put("n2", nmwspPropertiesNestedNested);
 
             IDictionary<string, object> nmwspRoot = new Dictionary<string, object>();
-            nmwspRoot.Put("Nested", nmwspPropertiesNested);
+            nmwspRoot.Put("nested", nmwspPropertiesNested);
 
             configuration.Common.AddEventType("NestedMapWithSimpleProps", nmwspRoot);
         }

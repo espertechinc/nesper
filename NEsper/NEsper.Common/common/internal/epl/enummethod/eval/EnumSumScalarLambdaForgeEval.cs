@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumSumScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumSumScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumSumScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumSumScalarLambdaForgeEval(
             EnumSumScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -44,17 +44,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var method = forge.sumMethodFactory.SumAggregator;
+            var method = _forge.sumMethodFactory.SumAggregator;
 
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             var values = (ICollection<object>) enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
-                var value = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var value = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 method.Enter(value);
             }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
             var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(
                     innerType,
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+                    forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (innerType.CanBeNull()) {
                 forEach.IfRefNull("value").BlockContinue();
             }

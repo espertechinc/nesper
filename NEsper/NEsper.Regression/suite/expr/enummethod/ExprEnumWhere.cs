@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test boolean
                 eplFragment = "@Name('s0') select " +
-                              "boolvals.where(x -> x) as val0 " +
+                              "Boolvals.where(x -> x) as val0 " +
                               "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

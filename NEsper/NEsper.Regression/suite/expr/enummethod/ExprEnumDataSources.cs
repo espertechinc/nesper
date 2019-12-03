@@ -441,7 +441,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                #if false
                 var epl = "@Name('s0') select prevwindow(st0) as val0, prevwindow(st0).EsperInternalNoop() as val1 " +
                           "from SupportBean_ST0#sort(3, P00 asc) as st0";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -467,7 +466,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E5,E3,E1");
                 env.Listener("s0").Reset();
                 env.UndeployAll();
-                #endif
 
                 // Scalar version
                 string[] fields = {"val0"};
@@ -887,7 +885,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val1","val2","val3","val4" };
-#if false
                 var epl = "@Name('s0') select " +
                           "SupportBean_ST0_Container.MakeSampleList().where(x -> x.P00 < 5) as val1, " +
                           "SupportBean_ST0_Container.MakeSampleArray().where(x -> x.P00 < 5) as val2, " +
@@ -929,7 +926,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.Listener("s0").Reset();
                 env.UndeployAll();
-                #endif
 
                 // test UDF returning scalar values collection
                 fields = new [] { "val0","val1","val2","val3" };

@@ -27,14 +27,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-#if false
             execs.Add(new ExprEnumStringArrayIntersection());
             execs.Add(new ExprEnumSetLogicWithContained());
             execs.Add(new ExprEnumSetLogicWithScalar());
             execs.Add(new ExprEnumInheritance());
             execs.Add(new ExprEnumInvalid());
             execs.Add(new ExprEnumSetLogicWithEvents());
-#endif
             execs.Add(new ExprEnumUnionWhere());
             return execs;
         }

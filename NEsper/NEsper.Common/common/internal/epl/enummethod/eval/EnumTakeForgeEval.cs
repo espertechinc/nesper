@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeForgeEval : EnumEval
     {
-        private readonly ExprEvaluator sizeEval;
+        private readonly ExprEvaluator _sizeEval;
 
         public EnumTakeForgeEval(ExprEvaluator sizeEval)
         {
-            this.sizeEval = sizeEval;
+            _sizeEval = sizeEval;
         }
 
         public object EvaluateEnumMethod(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var size = sizeEval.Evaluate(eventsLambda, isNewData, context);
+            var size = _sizeEval.Evaluate(eventsLambda, isNewData, context);
             if (size == null) {
                 return null;
             }

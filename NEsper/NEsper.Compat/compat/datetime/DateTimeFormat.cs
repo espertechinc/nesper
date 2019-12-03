@@ -17,6 +17,11 @@ namespace com.espertech.esper.compat.datetime
             get;
         }
 
+        public static DateTimeFormat GetIsoDateFormat()
+        {
+            return ISO_DATE_TIME;
+        }
+        
         /// <summary>
         /// Initializes the <see cref="DateTimeFormat"/> class.
         /// </summary>

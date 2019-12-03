@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public IDictionary<string, int> PropertiesIndexes =>
-            ((EventTypeNestableGetterFactoryObjectArray) getterFactory).PropertiesIndex;
+            ((EventTypeNestableGetterFactoryObjectArray) GetterFactory).PropertiesIndex;
 
         public override Type UnderlyingType => typeof(object[]);
 
@@ -65,10 +65,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         internal override void PostUpdateNestableTypes()
         {
-            var factory = (EventTypeNestableGetterFactoryObjectArray) getterFactory;
+            var factory = (EventTypeNestableGetterFactoryObjectArray) GetterFactory;
             var indexPerProperty = factory.PropertiesIndex;
             var index = FindMax(indexPerProperty) + 1;
-            foreach (var entry in nestableTypes) {
+            foreach (var entry in NestableTypes) {
                 if (indexPerProperty.ContainsKey(entry.Key)) {
                     continue;
                 }
@@ -83,12 +83,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var pair = BaseNestableEventUtil.GetIndexedAndMappedProps(properties);
 
             if (pair.MapProperties.IsEmpty() && pair.ArrayProperties.IsEmpty()) {
-                return new ObjectArrayEventBeanCopyMethodForge(this, beanEventTypeFactory.EventBeanTypedEventFactory);
+                return new ObjectArrayEventBeanCopyMethodForge(this, BeanEventTypeFactory.EventBeanTypedEventFactory);
             }
 
             return new ObjectArrayEventBeanCopyMethodWithArrayMapForge(
                 this,
-                beanEventTypeFactory.EventBeanTypedEventFactory,
+                BeanEventTypeFactory.EventBeanTypedEventFactory,
                 pair.MapProperties,
                 pair.ArrayProperties,
                 PropertiesIndexes);
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             IList<EventPropertyDescriptor> writeableProps = new List<EventPropertyDescriptor>();
             IDictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>> propertyWritersMap =
                 new Dictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>>();
-            foreach (var prop in propertyDescriptors) {
+            foreach (var prop in PropertyDescriptors) {
                 writeableProps.Add(prop);
                 var propertyName = prop.PropertyName;
                 if (!PropertiesIndexes.TryGetValue(prop.PropertyName, out var index)) {
@@ -301,8 +301,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public bool IsDeepEqualsConsiderOrder(ObjectArrayEventType other)
         {
-            var factoryOther = (EventTypeNestableGetterFactoryObjectArray) other.getterFactory;
-            var factoryMe = (EventTypeNestableGetterFactoryObjectArray) getterFactory;
+            var factoryOther = (EventTypeNestableGetterFactoryObjectArray) other.GetterFactory;
+            var factoryMe = (EventTypeNestableGetterFactoryObjectArray) GetterFactory;
 
             if (factoryOther.PropertiesIndex.Count != factoryMe.PropertiesIndex.Count) {
                 return false;
@@ -315,9 +315,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
 
                 var propName = propMeEntry.Key;
-                var setOneType = nestableTypes.Get(propName);
-                var setTwoType = other.nestableTypes.Get(propName);
-                var setTwoTypeFound = other.nestableTypes.ContainsKey(propName);
+                var setOneType = NestableTypes.Get(propName);
+                var setTwoType = other.NestableTypes.Get(propName);
+                var setTwoTypeFound = other.NestableTypes.ContainsKey(propName);
 
                 var comparedMessage = BaseNestableEventUtil.ComparePropType(
                     propName,

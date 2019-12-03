@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumIntersectForgeEval : EnumEval
     {
-        private readonly EnumIntersectForge forge;
-        private readonly ExprEnumerationEval evaluator;
+        private readonly EnumIntersectForge _forge;
+        private readonly ExprEnumerationEval _evaluator;
 
         public EnumIntersectForgeEval(
             EnumIntersectForge forge,
             ExprEnumerationEval evaluator)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
+            _forge = forge;
+            _evaluator = evaluator;
         }
 
         public object EvaluateEnumMethod(
@@ -41,12 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (forge.scalar) {
-                var other = evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
+            if (_forge.scalar) {
+                var other = _evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
                 return EnumIntersectForgeEvalSet(other, enumcoll);
             }
             else {
-                var other = evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
+                var other = _evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context);
                 return EnumIntersectForgeEvalSet(other, enumcoll.Unwrap<EventBean>());
             }
         }

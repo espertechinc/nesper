@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -685,10 +686,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .AddParam(parameterType, "paramStartTs");
 
                 var evaluationType = forgeEndTimestamp.EvaluationType;
-                methodNode.Block.DeclareVar(
-                    evaluationType,
-                    "paramEndTs",
-                    forgeEndTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
+                methodNode.Block
+                    .DeclareVar(
+                        evaluationType,
+                        "paramEndTs",
+                        forgeEndTimestamp.EvaluateCodegen(
+                            evaluationType,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
+                
                 if (evaluationType.CanBeNull()) {
                     methodNode.Block.IfRefNullReturnNull("paramEndTs");
                 }

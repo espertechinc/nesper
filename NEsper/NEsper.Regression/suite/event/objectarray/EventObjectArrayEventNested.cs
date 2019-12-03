@@ -27,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new EventObjectArrayArrayProperty());
             execs.Add(new EventObjectArrayMappedProperty());
+            #endif
             execs.Add(new EventObjectArrayMapNamePropertyNested());
             execs.Add(new EventObjectArrayMapNameProperty());
             execs.Add(new EventObjectArrayObjectArrayNested());
@@ -41,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test map containing first-level property that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@Name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayOA");
+                    "@Name('s0') select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
                 env.AddListener("s0");
 
                 int[] p0 = {1, 2, 3};
@@ -64,11 +66,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 // test map at the second level of a nested map that is an array of primitive or Class
                 env.CompileDeploy(
                     "@Name('s0') select " +
-                    "outer.P0[0] as a, " +
-                    "outer.P0[1] as b, " +
-                    "outer.P1[0].IntPrimitive as c, " +
-                    "outer.P1[1] as d, " +
-                    "outer.P0 as e " +
+                    "outer.p0[0] as a, " +
+                    "outer.p0[1] as b, " +
+                    "outer.p1[0].IntPrimitive as c, " +
+                    "outer.p1[1] as d, " +
+                    "outer.p0 as e " +
                     "from MyArrayOAMapOuter");
                 env.AddListener("s0");
 
@@ -94,14 +96,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 // test map containing first-level property that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select P0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@Name('s0') select p0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
                 eventVal.Put("k1", "v1");
                 var theEvent = MakeMap(
                     new[] {
-                        new object[] {"P0", eventVal}
+                        new object[] {"p0", eventVal}
                     });
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
@@ -113,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.UndeployAll();
 
                 // test map at the second level of a nested map that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@Name('s0') select outer.p0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = MakeMap(
@@ -156,7 +158,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test named-map at the second level of a nested map
                 env.CompileDeploy(
-                    "@Name('s0') select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyObjectArrayMapOuter");
+                    "@Name('s0') select " +
+                    "outer.p0.n0 as a, " +
+                    "outer.p1[0].n0 as b, " +
+                    "outer.p1[1].n0 as c, " +
+                    "outer.p0 as d, " +
+                    "outer.p1 as e " +
+                    "from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(
@@ -174,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
                 var theEvent = MakeMap(
                     new[] {
-                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
+                        new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}
                     });
                 env.SendEventObjectArray(new object[] {theEvent}, "MyObjectArrayMapOuter");
 

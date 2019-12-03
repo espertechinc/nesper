@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumGroupByKeySelectorScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumGroupByKeySelectorScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumGroupByKeySelectorScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumGroupByKeySelectorScalarLambdaForgeEval(
             EnumGroupByKeySelectorScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -51,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             IDictionary<object, ICollection<object>> result = new LinkedHashMap<object, ICollection<object>>();
 
             var values = (ICollection<object>) enumcoll;
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             foreach (var next in values) {
                 props[0] = next;
 
-                var key = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var key = _innerExpression.Evaluate(eventsLambda, isNewData, context);
 
                 var value = result.Get(key);
                 if (value == null) {
@@ -101,13 +101,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
                 .DeclareVar<object>(
                     "key",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<ICollection<object>>(
                     "value",
                     Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "Get", @Ref("key"))))

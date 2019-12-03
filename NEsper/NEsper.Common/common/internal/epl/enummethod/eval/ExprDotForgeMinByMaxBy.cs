@@ -54,18 +54,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
 
-            var max = this.EnumMethodEnum == EnumMethodEnum.MAXBY;
+            var max = EnumMethodEnum == EnumMethodEnum.MAXBY;
             if (inputEventType == null) {
-                base.TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
+                TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
                 return new EnumMinMaxByScalarLambdaForge(
                     first.BodyForge,
                     first.StreamCountIncoming,
                     max,
                     (ObjectArrayEventType) first.GoesToTypes[0],
-                    base.TypeInfo);
+                    TypeInfo);
             }
 
-            base.TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
+            TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
             return new EnumMinMaxByEventsForge(first.BodyForge, first.StreamCountIncoming, max);
         }
     }

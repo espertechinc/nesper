@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumWhereIndexEventsForgeEval : EnumEval
     {
-        private readonly EnumWhereIndexEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumWhereIndexEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumWhereIndexEventsForgeEval(
             EnumWhereIndexEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             var result = new ArrayDeque<object>();
-            var indexEvent = new ObjectArrayEventBean(new object[1], forge.indexEventType);
-            eventsLambda[forge.streamNumLambda + 1] = indexEvent;
+            var indexEvent = new ObjectArrayEventBean(new object[1], _forge.indexEventType);
+            eventsLambda[_forge.streamNumLambda + 1] = indexEvent;
             var props = indexEvent.Properties;
 
             var count = -1;
@@ -59,9 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 count++;
 
                 props[0] = count;
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.streamNumLambda] = next;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     continue;
                 }
@@ -97,24 +97,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
-            block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance(typeof(ArrayDeque<EventBean>)))
-                .DeclareVar<ObjectArrayEventBean>(
-                    "indexEvent",
-                    NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(EventBean), Constant(1)), indexTypeMember))
+            
+            block
+                .DeclareVar<ArrayDeque<EventBean>>("result", NewInstance(typeof(ArrayDeque<EventBean>)))
+                .DeclareVar<ObjectArrayEventBean>("indexEvent", NewInstance<ObjectArrayEventBean>(
+                    NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
                 .AssignArrayElement(
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     @Ref("indexEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("indexEvent"), "Properties"))
-                .Debug("props - assigned: {0} {1}", Ref("indexEvent"), Ref("props"))
                 .DeclareVar<int>("count", Constant(-1));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .Increment("count")
-                .Debug("props - before assigning props[0]")
                 .AssignArrayElement("props", Constant(0), @Ref("count"))
-                .Debug("props - before assigning eps")
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
-                .Debug("props - after assigning eps");
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 forEach,
                 forge.innerExpression.EvaluationType,

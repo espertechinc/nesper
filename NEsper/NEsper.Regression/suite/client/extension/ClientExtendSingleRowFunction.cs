@@ -75,6 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 var text = "@Name('s0') select IsNullValue(*, 'TheString') as c0," +
                            typeof(ClientExtendSingleRowFunction).Name +
                            ".LocalIsNullValue(*, 'TheString') as c1 from SupportBean";
+
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));

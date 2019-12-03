@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeWhileIndexEventsForgeEval : EnumEval
     {
-        private readonly EnumTakeWhileIndexEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumTakeWhileIndexEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumTakeWhileIndexEventsForgeEval(
             EnumTakeWhileIndexEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -49,17 +49,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            var indexEvent = new ObjectArrayEventBean(new object[1], forge.indexEventType);
-            eventsLambda[forge.streamNumLambda + 1] = indexEvent;
+            var indexEvent = new ObjectArrayEventBean(new object[1], _forge.indexEventType);
+            eventsLambda[_forge.streamNumLambda + 1] = indexEvent;
             var props = indexEvent.Properties;
 
             var beans = (ICollection<EventBean>) enumcoll;
             if (enumcoll.Count == 1) {
                 var item = beans.First();
                 props[0] = 0;
-                eventsLambda[forge.streamNumLambda] = item;
+                eventsLambda[_forge.streamNumLambda] = item;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 count++;
 
                 props[0] = count;
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.streamNumLambda] = next;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     break;
                 }

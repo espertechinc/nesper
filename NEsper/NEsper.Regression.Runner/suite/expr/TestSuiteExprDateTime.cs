@@ -211,12 +211,12 @@ namespace com.espertech.esper.regressionrun.suite.expr
         }
 
         [Test, RunInApplicationDomain]
-        public void TestExprDTToDateCalMSec()
+        public void TestExprDTToDateMSec()
         {
-            RegressionRunner.Run(session, new ExprDTToDateCalMSec());
+            RegressionRunner.Run(session, new ExprDTToDateMSec());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprDTWithDate()
         {
             RegressionRunner.Run(session, new ExprDTWithDate());

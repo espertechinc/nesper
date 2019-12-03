@@ -22,15 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumGroupByKeySelectorEventsForgeEval : EnumEval
     {
-        private readonly EnumGroupByKeySelectorEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumGroupByKeySelectorEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumGroupByKeySelectorEventsForgeEval(
             EnumGroupByKeySelectorEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var key = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var key = _innerExpression.Evaluate(eventsLambda, isNewData, context);
 
                 var value = result.Get(key);
                 if (value == null) {
@@ -82,10 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }))
                 .DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(LinkedHashMap<object, object>)));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
                 .DeclareVar<object>(
                     "key",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<ICollection<object>>(
                     "value",
                     Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "Get", @Ref("key"))))

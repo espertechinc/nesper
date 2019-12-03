@@ -64,8 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return;
                 }
 
-                var evaluationTypeBoxed = evaluationType.GetBoxedType();
-                var method = parent.MakeChild(evaluationTypeBoxed, typeof(ExprForgeProxy), codegenClassScope);
+                var method = parent.MakeChild(evaluationType, typeof(ExprForgeProxy), codegenClassScope);
                 if (evaluationType == typeof(void)) {
                     method.Block
                         .Expression(forge.EvaluateCodegen(requiredType, method, symbols, codegenClassScope))
@@ -80,9 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     method.Block
                         .DebugStack()
                         .DeclareVar(
-                            evaluationTypeBoxed,
+                            evaluationType,
                             "result",
-                            forge.EvaluateCodegen(evaluationTypeBoxed, method, symbols, codegenClassScope))
+                            forge.EvaluateCodegen(evaluationType, method, symbols, codegenClassScope))
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")

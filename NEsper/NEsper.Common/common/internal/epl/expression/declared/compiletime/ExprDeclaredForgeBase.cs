@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.runtime;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -371,7 +372,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var nodeObject = GetNodeObject(codegenClassScope);
-            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
+            var evaluationType = requiredType == typeof(object) 
+                ? typeof(object)
+                : InnerForge.EvaluationType;
 
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
@@ -394,7 +397,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             if (isCache) {
                 CodegenExpression eval = ExprDotName(Ref("entry"), "Result");
                 if (evaluationType != typeof(object)) {
-                    eval = Cast(InnerForge.EvaluationType.GetBoxedType(), eval);
+                    eval = Cast(InnerForge.EvaluationType, eval);
                 }
 
                 block.DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>(
@@ -517,7 +520,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         "entry",
                         ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
-                    .BlockReturn(ExprDotName(Ref("entry"), "Result"))
+                    .BlockReturn(
+                        Unwrap<object>(ExprDotName(Ref("entry"), "Result")))
                     .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
@@ -525,7 +529,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             "SaveDeclaredExpressionLastColl",
                             nodeObject,
                             refEPS,
-                            Ref("result")));
+                            Unwrap<EventBean>(Ref("result"))));
             }
             else {
                 block.DeclareVar<ICollection<object>>("result", innerValue);

@@ -87,19 +87,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope,
-            Type targetClass,
+            ConstructorInfo targetCtor,
             ExprForge[] forges)
         {
+            var targetClass = targetCtor.DeclaringType;
             var methodNode = codegenMethodScope.MakeChild(
                 targetClass,
                 typeof(InstanceManufacturerFastCtor),
                 codegenClassScope);
 
-            var @params = new CodegenExpression[forges.Length];
+            var targetCtorParams = targetCtor.GetParameters();
+            var paramList = new CodegenExpression[forges.Length];
             for (var i = 0; i < forges.Length; i++) {
-                @params[i] = forges[i]
+                paramList[i] = forges[i]
                     .EvaluateCodegen(
-                        forges[i].EvaluationType,
+                        targetCtorParams[i].ParameterType, // forges[i].EvaluationType,
                         methodNode,
                         exprSymbol,
                         codegenClassScope);
@@ -107,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             methodNode.Block
                 .TryCatch()
-                .TryReturn(NewInstance(targetClass, @params))
+                .TryReturn(NewInstance(targetClass, paramList))
                 .AddCatch(typeof(Exception), "t")
                 .BlockThrow(
                     StaticMethod(

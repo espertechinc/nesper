@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumUnionForgeEval : EnumEval
     {
-        private readonly EnumUnionForge forge;
-        private readonly ExprEnumerationEval evaluator;
+        private readonly EnumUnionForge _forge;
+        private readonly ExprEnumerationEval _evaluator;
         internal readonly bool scalar;
 
         public EnumUnionForgeEval(
@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEnumerationEval evaluator,
             bool scalar)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
+            _forge = forge;
+            _evaluator = evaluator;
             this.scalar = scalar;
         }
 
@@ -59,14 +59,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (forge.scalar) {
+            if (_forge.scalar) {
                 return EvaluateEnumMethodInternal(
-                    evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context),
+                    _evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context),
                     enumcoll);
             }
 
             return EvaluateEnumMethodInternal(
-                evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context),
+                _evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context),
                 enumcoll);
         }
 

@@ -28,15 +28,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAverageDecimalScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumAverageDecimalScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumAverageDecimalScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumAverageDecimalScalarLambdaForgeEval(
             EnumAverageDecimalScalarLambdaForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -46,16 +46,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprEvaluatorContext context)
         {
             var agg =
-                new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(forge.optionalMathContext);
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+                new EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal(_forge.optionalMathContext);
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             var values = (ICollection<object>) enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
-                var num = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var num = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (num == null) {
                     continue;
                 }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
             var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(
                         NewArrayByLength(typeof(object), Constant(1)),
                         resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar(
                     innerType,
                     "num",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope));
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope));
             if (innerType.CanBeNull()) {
                 forEach.IfRefNull("num").BlockContinue();
             }

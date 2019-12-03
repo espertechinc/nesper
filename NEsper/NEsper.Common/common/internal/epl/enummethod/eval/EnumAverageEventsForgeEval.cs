@@ -25,15 +25,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAverageEventsForgeEval : EnumEval
     {
-        private readonly EnumAverageEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumAverageEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumAverageEventsForgeEval(
             EnumAverageEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var num = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var num = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (num == null) {
                     continue;
                 }
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
@@ -86,11 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<int>("count", Constant(0));
             var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
                 .DeclareVar(
                     innerType,
                     "num",
-                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+                    forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (innerType.CanBeNull()) {
                 forEach.IfRefNull("num").BlockContinue();
             }

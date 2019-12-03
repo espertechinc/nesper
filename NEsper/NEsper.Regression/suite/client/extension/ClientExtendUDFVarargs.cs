@@ -125,9 +125,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             RunVarargAssertion(
                 env,
                 milestone,
-                MakePair("VarargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0,2.0,null,3.0"));
-            RunVarargAssertion(env, milestone, MakePair("VarargsOnlyBoxedShort(null, cast(1, byte))", "null,1"));
-            RunVarargAssertion(env, milestone, MakePair("VarargsOnlyBoxedByte(null, cast(1, byte))", "null,1"));
+                MakePair("VarargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0f,2.0f,null,3.0f"));
+            RunVarargAssertion(
+                env,
+                milestone,
+                MakePair("VarargsOnlyBoxedShort(null, cast(1, byte))", "null,1"));
+            RunVarargAssertion(
+                env,
+                milestone,
+                MakePair("VarargsOnlyBoxedByte(null, cast(1, byte))", "null,1"));
 
             // test exact match takes priority over varargs
             RunVarargAssertion(

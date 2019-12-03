@@ -317,10 +317,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     throw;
                 }
                 catch (Exception ex) {
-                    _matchesArrayThreadLocal.GetOrCreate().Clear();
                     throw new EPException(ex);
                 }
                 finally {
+                    _matchesArrayThreadLocal.GetOrCreate().Clear();
                     if (InstrumentationHelper.ENABLED) {
                         InstrumentationHelper.Get().AEvent();
                     }
@@ -738,14 +738,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 try {
                     ProcessMatches(eventBean);
                 }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception) {
-                    _matchesArrayThreadLocal.GetOrCreate().Clear();
-                    throw;
-                }
                 finally {
+                    _matchesArrayThreadLocal.GetOrCreate().Clear();
                     insertIntoLatch.Done();
                     if (InstrumentationHelper.ENABLED) {
                         InstrumentationHelper.Get().AEvent();
@@ -769,14 +763,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 try {
                     ProcessMatches(eventBean);
                 }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception) {
-                    _matchesArrayThreadLocal.GetOrCreate().Clear();
-                    throw;
-                }
                 finally {
+                    _matchesArrayThreadLocal.GetOrCreate().Clear();
                     insertIntoLatch.Done();
                     if (InstrumentationHelper.ENABLED) {
                         InstrumentationHelper.Get().AEvent();
@@ -805,14 +793,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 try {
                     ProcessMatches(eventBean);
                 }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception) {
-                    _matchesArrayThreadLocal.GetOrCreate().Clear();
-                    throw;
-                }
                 finally {
+                    _matchesArrayThreadLocal.GetOrCreate().Clear();
                     if (InstrumentationHelper.ENABLED) {
                         InstrumentationHelper.Get().AEvent();
                     }
@@ -857,50 +839,54 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             object[] matchArray = matches.Array;
             var entryCount = matches.Count;
 
-            for (var i = 0; i < entryCount; i++) {
-                var handleCallback = (EPStatementHandleCallbackFilter) matchArray[i];
-                var handle = handleCallback.AgentInstanceHandle;
+            try {
+                for (var i = 0; i < entryCount; i++) {
+                    var handleCallback = (EPStatementHandleCallbackFilter) matchArray[i];
+                    var handle = handleCallback.AgentInstanceHandle;
 
-                // Self-joins require that the internal dispatch happens after all streams are evaluated.
-                // Priority or preemptive settings also require special ordering.
-                if (handle.IsCanSelfJoin || _isPrioritized) {
-                    var callbacks = stmtCallbacks.Get(handle);
-                    if (callbacks == null) {
-                        stmtCallbacks.Put(handle, handleCallback.FilterCallback);
+                    // Self-joins require that the internal dispatch happens after all streams are evaluated.
+                    // Priority or preemptive settings also require special ordering.
+                    if (handle.IsCanSelfJoin || _isPrioritized) {
+                        var callbacks = stmtCallbacks.Get(handle);
+                        if (callbacks == null) {
+                            stmtCallbacks.Put(handle, handleCallback.FilterCallback);
+                        }
+                        else if (callbacks is ArrayDeque<FilterHandleCallback> callbacksQueue) {
+                            callbacksQueue.Add(handleCallback.FilterCallback);
+                        }
+                        else {
+                            var q = new ArrayDeque<FilterHandleCallback>(4);
+                            q.Add((FilterHandleCallback) callbacks);
+                            q.Add(handleCallback.FilterCallback);
+                            stmtCallbacks.Put(handle, q);
+                        }
+
+                        continue;
                     }
-                    else if (callbacks is ArrayDeque<FilterHandleCallback> callbacksQueue) {
-                        callbacksQueue.Add(handleCallback.FilterCallback);
+
+                    if (handle.StatementHandle.MetricsHandle.IsEnabled) {
+                        var performanceMetric = PerformanceMetricsHelper.Call(
+                            () => ProcessStatementFilterSingle(handle, handleCallback, theEvent, version, 0));
+                        Services.MetricReportingService.AccountTime(
+                            handle.StatementHandle.MetricsHandle,
+                            performanceMetric,
+                            performanceMetric.NumInput);
                     }
                     else {
-                        var q = new ArrayDeque<FilterHandleCallback>(4);
-                        q.Add((FilterHandleCallback) callbacks);
-                        q.Add(handleCallback.FilterCallback);
-                        stmtCallbacks.Put(handle, q);
-                    }
-
-                    continue;
-                }
-
-                if (handle.StatementHandle.MetricsHandle.IsEnabled) {
-                    var performanceMetric = PerformanceMetricsHelper.Call(
-                        () => ProcessStatementFilterSingle(handle, handleCallback, theEvent, version, 0));
-                    Services.MetricReportingService.AccountTime(
-                        handle.StatementHandle.MetricsHandle,
-                        performanceMetric,
-                        performanceMetric.NumInput);
-                }
-                else {
-                    if (_routeThreading) {
-                        Services.ThreadingService.SubmitRoute(
-                            new RouteUnitSingle(this, handleCallback, theEvent, version));
-                    }
-                    else {
-                        ProcessStatementFilterSingle(handle, handleCallback, theEvent, version, 0);
+                        if (_routeThreading) {
+                            Services.ThreadingService.SubmitRoute(
+                                new RouteUnitSingle(this, handleCallback, theEvent, version));
+                        }
+                        else {
+                            ProcessStatementFilterSingle(handle, handleCallback, theEvent, version, 0);
+                        }
                     }
                 }
             }
+            finally {
+                matches.Clear();
+            }
 
-            matches.Clear();
             if (stmtCallbacks.IsEmpty()) {
                 return;
             }
@@ -1267,14 +1253,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 try {
                     ProcessScheduleHandles(handles);
                 }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception) {
-                    handles.Clear();
-                    throw;
-                }
                 finally {
+                    handles.Clear();
                     if (InstrumentationHelper.ENABLED) {
                         InstrumentationHelper.Get().ATime();
                     }

@@ -48,10 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var sizeEval = bodiesAndParameters[0].BodyForge;
 
             if (inputEventType != null) {
-                base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+                TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
             else {
-                base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
             }
 
             if (EnumMethodEnum == EnumMethodEnum.TAKE) {

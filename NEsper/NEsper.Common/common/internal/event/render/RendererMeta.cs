@@ -74,11 +74,20 @@ namespace com.espertech.esper.common.@internal.@event.render
                         continue;
                     }
 
-                    gettersIndexed.Add(
-                        new GetterPair(
-                            getter,
-                            propertyName,
-                            OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
+                    if (desc.PropertyType != typeof(string)) {
+                        gettersIndexed.Add(
+                            new GetterPair(
+                                getter,
+                                propertyName,
+                                OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
+                    }
+                    else {
+                        gettersSimple.Add(
+                            new GetterPair(
+                                getter,
+                                propertyName,
+                                OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
+                    }
                 }
 
                 if (desc.IsMapped && !desc.IsRequiresMapKey && !desc.IsFragment) {

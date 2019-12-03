@@ -211,6 +211,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 var attribute = childNode.Attributes?.GetNamedItem("id");
+                if (attribute == null) {
+                    attribute = childNode.Attributes?.GetNamedItem("Id");
+                }
+                
                 if (attribute != null && attribute.InnerText == mapKey) {
                     return childNode;
                 }
@@ -248,6 +252,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 var attribute = childNode.Attributes?.GetNamedItem("id");
+                if (attribute == null) {
+                    attribute = childNode.Attributes?.GetNamedItem("Id");
+                }
+
                 if (attribute != null && attribute.InnerText == mapKey) {
                     return true;
                 }

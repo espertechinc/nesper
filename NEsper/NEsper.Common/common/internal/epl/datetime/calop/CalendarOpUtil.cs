@@ -119,7 +119,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 throw GetFailedExpected(methodName, typeof(DateFormat), formatType);
             }
 
-            // handle jdk8 date
             if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(DateTimeFormat))) {
                 return new ReformatFormatForgeDesc(typeof(DateTimeFormat));
             }

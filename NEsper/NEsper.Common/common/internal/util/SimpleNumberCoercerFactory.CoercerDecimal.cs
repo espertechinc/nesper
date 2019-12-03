@@ -45,6 +45,12 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
+                if ((param is CodegenExpressionConstantNull) ||
+                    (param is CodegenExpressionConstant exprConstant &&
+                     exprConstant.IsNull)) {
+                    return param;
+                }
+                
                 return ((valueType != typeof(decimal)) &&
                         (valueType != typeof(decimal?)))
                     ? CodegenExpressionBuilder.ExprDotMethod(param, "AsBoxedDecimal")

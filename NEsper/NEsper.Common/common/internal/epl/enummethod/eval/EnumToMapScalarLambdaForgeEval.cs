@@ -25,18 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumToMapScalarLambdaForgeEval : EnumEval
     {
-        private readonly EnumToMapScalarLambdaForge forge;
-        private readonly ExprEvaluator innerExpression;
-        private readonly ExprEvaluator secondExpression;
+        private readonly EnumToMapScalarLambdaForge _forge;
+        private readonly ExprEvaluator _innerExpression;
+        private readonly ExprEvaluator _secondExpression;
 
         public EnumToMapScalarLambdaForgeEval(
             EnumToMapScalarLambdaForge forge,
             ExprEvaluator innerExpression,
             ExprEvaluator secondExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
-            this.secondExpression = secondExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
+            _secondExpression = secondExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -50,16 +50,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             IDictionary<object, object> map = new Dictionary<object, object>();
-            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
-            eventsLambda[forge.streamNumLambda] = resultEvent;
+            var resultEvent = new ObjectArrayEventBean(new object[1], _forge.resultEventType);
+            eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
             var values = enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
-                var key = innerExpression.Evaluate(eventsLambda, isNewData, context);
-                var value = secondExpression.Evaluate(eventsLambda, isNewData, context);
+                var key = _innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var value = _secondExpression.Evaluate(eventsLambda, isNewData, context);
                 map.Put(key, value);
             }
 
@@ -94,13 +94,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("resultEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar<object>(
                     "key",
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<object>(
                     "value",
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))

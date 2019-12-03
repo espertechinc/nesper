@@ -46,9 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            base.TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
+            TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
             var body = bodiesAndParameters[0].BodyForge;
-            return new EnumSequenceEqualForge(body, numStreamsIncoming);
+            return new EnumSequenceEqualForge(
+                body,
+                numStreamsIncoming,
+                inputEventType == null);
         }
     }
 } // end of namespace

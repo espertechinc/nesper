@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         public override EnumEval EnumEvaluator {
             get => new EnumGroupByKeyValueSelectorEventsForgeEval(
                 this,
-                innerExpression.ExprEvaluator,
+                InnerExpression.ExprEvaluator,
                 secondExpression.ExprEvaluator);
         }
 

@@ -290,7 +290,6 @@ namespace com.espertech.esper.common.@internal.@event.render
             var simpleProps = meta.SimpleProperties;
             foreach (var simpleProp in simpleProps) {
                 var value = simpleProp.Getter.Get(theEvent);
-
                 if (value == null) {
                     continue;
                 }

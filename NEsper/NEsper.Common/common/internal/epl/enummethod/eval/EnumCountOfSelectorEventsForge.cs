@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumCountOfSelectorEventsForgeEval(this, innerExpression.ExprEvaluator);
+            get => new EnumCountOfSelectorEventsForgeEval(this, InnerExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

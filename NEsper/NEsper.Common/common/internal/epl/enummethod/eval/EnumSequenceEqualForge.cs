@@ -19,15 +19,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumSequenceEqualForge : EnumForgeBase
     {
+        private readonly bool _scalar;
+
         public EnumSequenceEqualForge(
             ExprForge innerExpression,
-            int streamCountIncoming)
+            int streamCountIncoming,
+            bool scalar)
             : base(innerExpression, streamCountIncoming)
         {
+            this._scalar = scalar;
         }
 
+        public bool Scalar => _scalar;
+
         public override EnumEval EnumEvaluator {
-            get => new EnumSequenceEqualForgeEval(innerExpression.ExprEvaluator);
+            get => new EnumSequenceEqualForgeEval(InnerExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

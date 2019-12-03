@@ -93,10 +93,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                         new EventPropertyDescriptor(
                             "MyString",
                             typeof(string),
-                            null,
+                            typeof(char),
                             false,
                             false,
-                            false,
+                            true,
                             false,
                             false),
                         new EventPropertyDescriptor(

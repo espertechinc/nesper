@@ -38,14 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 forge.ChildNode,
                 context.Method,
                 context.ClassScope);
-            var childExprType = forge.ChildNode.EvaluationType.GetBoxedType();
+            var childExprType = forge.ChildNode.EvaluationType;
 
             CodegenExpression invokeChild = LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull());
             if (forge.ComponentType != childExprType) {
                 invokeChild = Unbox(invokeChild);
             }
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+            context.Method.Block
+                .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))

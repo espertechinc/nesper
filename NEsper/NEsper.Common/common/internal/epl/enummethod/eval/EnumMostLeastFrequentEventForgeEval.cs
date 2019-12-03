@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var beans = (ICollection<EventBean>) enumcoll;
 
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[forge.StreamNumLambda] = next;
 
                 var item = innerExpression.Evaluate(eventsLambda, isNewData, context);
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
+            var returnType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     returnType,
@@ -90,10 +90,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar<object>( // more type erasure bullshit!!!!
                     "item",
-                    forge.innerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>(
                     "existing",
                     ExprDotMethod(Ref("items"), "GetBoxed", Ref("item")))

@@ -77,10 +77,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             else {
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
+                var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(
+                    secondExpr, secondType);
                 method.Block.AssignCompound(
                     accumulator,
                     "+",
-                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
+                    secondValue);
             }
         }
 
@@ -94,8 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
 
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
+            var firstValue = SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType);
 
-            method.Block.AssignRef(oldest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType))
+            method.Block
+                .AssignRef(oldest, firstValue)
                 .IfCondition(Not(isSet))
                 .AssignRef(isSet, ConstantTrue());
             if (forges.Length == numFilters + 1) {
@@ -104,10 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             else {
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
-                method.Block.AssignCompound(
-                    accumulator,
-                    "-",
-                    SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType));
+                var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType);
+                method.Block.AssignCompound(accumulator, "-", secondValue);
             }
         }
 
@@ -145,7 +147,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             method.Block.IfCondition(Not(isSet))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    Op(Op(accumulator, "*", Constant(factory.TimeAbacus.OneSecond)), "/", Op(latest, "-", oldest)));
+                    Op(
+                        Op(accumulator, "*", Constant(factory.TimeAbacus.OneSecond)),
+                        "/",
+                        Op(latest, "-", oldest)));
         }
 
         protected override void WriteWODistinct(

@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumCountOfSelectorEventsForgeEval : EnumEval
     {
-        private readonly EnumCountOfSelectorEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumCountOfSelectorEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumCountOfSelectorEventsForgeEval(
             EnumCountOfSelectorEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || false.Equals(pass)) {
                     continue;
                 }
@@ -72,11 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var block = methodNode.Block
                 .DeclareVar<int>("count", Constant(0));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 forEach,
-                forge.innerExpression.EvaluationType,
-                forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+                forge.InnerExpression.EvaluationType,
+                forge.InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
             forEach.Increment("count");
             block.MethodReturn(@Ref("count"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

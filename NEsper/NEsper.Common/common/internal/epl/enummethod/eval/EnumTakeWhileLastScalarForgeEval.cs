@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumTakeWhileLastScalarForgeEval : EnumEval
     {
-        private readonly EnumTakeWhileLastScalarForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumTakeWhileLastScalarForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumTakeWhileLastScalarForgeEval(
             EnumTakeWhileLastScalarForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -51,15 +51,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return enumcoll;
             }
 
-            var evalEvent = new ObjectArrayEventBean(new object[1], forge.type);
-            eventsLambda[forge.streamNumLambda] = evalEvent;
+            var evalEvent = new ObjectArrayEventBean(new object[1], _forge.type);
+            eventsLambda[_forge.StreamNumLambda] = evalEvent;
             var props = evalEvent.Properties;
 
             if (enumcoll.Count == 1) {
                 var item = enumcoll.First();
                 props[0] = item;
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || (!(Boolean) pass)) {
                     return Collections.GetEmptyList<object>();
                 }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             for (var i = all.Length - 1; i >= 0; i--) {
                 props[0] = all[i];
 
-                var pass = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var pass = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (pass == null || (!(Boolean) pass)) {
                     break;
                 }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
 
-            var innerValue = forge.innerExpression.EvaluateCodegen(
+            var innerValue = forge.InnerExpression.EvaluateCodegen(
                 typeof(bool?),
                 methodNode,
                 scope,
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("evalEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
 
             var blockSingle = block
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement("props", Constant(0), @Ref("item"));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
                 blockSingle,
-                forge.innerExpression.EvaluationType,
+                forge.InnerExpression.EvaluationType,
                 innerValue,
                 StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(object) }));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement("props", Constant(0), ArrayAtIndex(@Ref("all"), @Ref("i")));
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 forEach,
-                forge.innerExpression.EvaluationType,
+                forge.InnerExpression.EvaluationType,
                 innerValue);
             forEach.Expression(ExprDotMethod(@Ref("result"), "AddFirst", ArrayAtIndex(@Ref("all"), @Ref("i"))));
             block.MethodReturn(@Ref("result"));

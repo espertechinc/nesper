@@ -29,10 +29,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyDynamicSimple : RegressionExecution
     {
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyDynamicSimple).FullName + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyDynamicSimple).FullName + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyDynamicSimple).FullName + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyDynamicSimple).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "Avro";
 
         public void Run(RegressionEnvironment env)
         {

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client.fireandforget;
@@ -41,11 +42,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new EPLSpatialPREventIndexUnindexed());
             execs.Add(new EPLSpatialPREventIndexUnusedOnTrigger());
             execs.Add(new EPLSpatialPREventIndexUnusedNamedWindowFireAndForget());
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(false));
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(true));
+            #endif
             execs.Add(new EPLSpatialPREventIndexOnTriggerTable());
             execs.Add(new EPLSpatialPREventIndexChoiceOfTwo());
             execs.Add(new EPLSpatialPREventIndexUnique());
@@ -895,7 +898,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     var first = ids.Count < 100 ? ids : ids.SubList(0, 99);
                     var deleteQuery = BuildDeleteQueryWithInClause("PointWindow", "Id", first);
                     env.CompileExecuteFAF(deleteQuery, path);
-                    ids.RemoveAll(first);
+                    ids.RemoveAll(first.ToArray());
                 }
 
                 env.SendEventBean(new SupportSpatialAABB("", 0, 0, SIZE, SIZE));

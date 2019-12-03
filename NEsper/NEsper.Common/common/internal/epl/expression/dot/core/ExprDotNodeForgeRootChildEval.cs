@@ -241,9 +241,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 
-            methodNode.Block.DeclareVar<ICollection<EventBean>>(
+            methodNode.Block
+                .DeclareVar<ICollection<object>>(
                     "inner",
-                    forge.innerForge.EvaluateGetROCollectionScalarCodegen(methodNode, exprSymbol, codegenClassScope))
+                    forge.innerForge.EvaluateGetROCollectionScalarCodegen(
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope))
                 .Apply(
                     InstrumentationCode.Instblock(
                         codegenClassScope,
@@ -262,11 +266,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         exprSymbol,
                         codegenClassScope,
                         Ref("inner"),
-                        typeof(ICollection<EventBean>),
+                        typeof(ICollection<object>),
                         forge.forgesIteratorEventBean,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .MethodReturn(Ref("result"));
+            
             return LocalMethod(methodNode);
         }
     }

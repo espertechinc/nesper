@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ExprEvaluator innerExpression;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumSequenceEqualForgeEval(ExprEvaluator innerExpression)
         {
-            this.innerExpression = innerExpression;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var otherObj = innerExpression.Evaluate(eventsLambda, isNewData, context);
+            var otherObj = _innerExpression.Evaluate(eventsLambda, isNewData, context);
             return EnumSequenceEqualsCompare(enumcoll, otherObj);
         }
 
@@ -53,18 +53,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var namedParams = forge.Scalar
+                ? EnumForgeCodegenNames.PARAMS_OBJECT
+                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumSequenceEqualForgeEval), scope, codegenClassScope)
-                .AddParam(paramTypes);
+                .AddParam(namedParams);
 
             methodNode.Block.MethodReturn(
                 StaticMethod(
                     typeof(EnumSequenceEqualForgeEval),
                     "EnumSequenceEqualsCompare",
                     EnumForgeCodegenNames.REF_ENUMCOLL,
-                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope)));
-            return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope)));
+            return LocalMethod(
+                methodNode,
+                args.Eps,
+                args.Enumcoll,
+                args.IsNewData,
+                args.ExprCtx);
         }
 
         public static bool EnumSequenceEqualsCompare<T>(

@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -327,11 +328,13 @@ namespace com.espertech.esper.common.@internal.@event.map
                 }
                 else if (getter is MapEventPropertyGetter) {
                     blockBean.IfElse()
-                        .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
+                        .DeclareVar<IDictionary<string, object>>(
+                            "resultMap", StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("result")))
+                        .IfRefNullReturnNull(Ref("resultMap"))
                         .AssignRef(
                             "result",
                             getter.UnderlyingGetCodegen(
-                                Cast(typeof(IDictionary<object, object>), Ref("result")),
+                                Ref("resultMap"),
                                 codegenMethodScope,
                                 codegenClassScope))
                         .BlockEnd();

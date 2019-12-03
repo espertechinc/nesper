@@ -53,12 +53,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            var result = (XmlNode) Get(eventBean);
-            if (result == null) {
-                return null;
+            var result = Get(eventBean);
+            if (result is XmlNode xmlNode) {
+                return fragmentFactory.GetEvent(xmlNode);
             }
 
-            return fragmentFactory.GetEvent(result);
+            return null;
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -131,23 +131,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="object">object</param>
+        /// <param name="value">object</param>
         /// <param name="index">index</param>
         /// <returns>value</returns>
         public static object GetXPathNodeListWCheck(
-            object @object,
+            object value,
             int index)
         {
-            if (!(@object is XmlNodeList)) {
-                return null;
+            if (value is XmlNodeList nodeList) {
+                if (nodeList.Count > index) {
+                    return nodeList.Item(index);
+                }
+            } else if (value is string stringValue) {
+                if (index <= stringValue.Length) {
+                    return stringValue[index];
+                }
             }
 
-            var nodeList = (XmlNodeList) @object;
-            if (nodeList.Count <= index) {
-                return null;
-            }
-
-            return nodeList.Item(index);
+            return null;
         }
 
         private CodegenMethod GetCodegen(

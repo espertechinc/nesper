@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 numTimeWindowAdvancements +
                 " totalReceived=" +
                 totalReceived);
-            Assert.IsTrue(totalReceived < numEventsPerThread * numThreads + numTimeWindowAdvancements + 1);
-            Assert.IsTrue(totalReceived >= numEventsPerThread * numThreads);
+            Assert.That(totalReceived, Is.LessThan(numEventsPerThread * numThreads + numTimeWindowAdvancements + 1));
+            Assert.That(totalReceived, Is.GreaterThanOrEqualTo(numEventsPerThread * numThreads));
 
             listeners = null;
             threads = null;

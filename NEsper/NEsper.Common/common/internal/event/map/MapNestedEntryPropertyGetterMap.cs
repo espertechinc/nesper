@@ -68,19 +68,18 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override object HandleNestedValueFragment(object value)
         {
-            if (!(value is IDictionary<string, object>)) {
-                if (value is EventBean) {
-                    return mapGetter.GetFragment((EventBean) value);
-                }
-
-                return null;
+            if (value is IDictionary<string, object> valueAsMap) {
+                var valueEventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
+                    valueAsMap, fragmentType);
+                return mapGetter.GetFragment(valueEventBean);
             }
 
             // If the map does not contain the key, this is allowed and represented as null
-            EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value,
-                fragmentType);
-            return mapGetter.GetFragment(eventBean);
+            if (value is EventBean eventBean) {
+                return mapGetter.GetFragment(eventBean);
+            }
+
+            return null;
         }
 
         private CodegenMethod HandleNestedValueFragmentCodegen(
@@ -90,16 +89,24 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "value")
                 .Block
-                .IfNotInstanceOf("value", typeof(IDictionary<object, object>))
-                .IfInstanceOf("value", typeof(EventBean))
-                .DeclareVarWCast(typeof(EventBean), "bean", "value")
-                .BlockReturn(mapGetter.EventBeanFragmentCodegen(Ref("bean"), codegenMethodScope, codegenClassScope))
-                .BlockReturn(ConstantNull())
-                .MethodReturn(
+
+                .IfInstanceOf("value", typeof(IDictionary<string, object>))
+                .DeclareVarWCast(typeof(IDictionary<string, object>), "valueAsMap", "value")
+                .BlockReturn(
                     mapGetter.UnderlyingFragmentCodegen(
-                        Cast(typeof(IDictionary<string, object>), Ref("value")),
+                        Ref("valueAsMap"),
                         codegenMethodScope,
-                        codegenClassScope));
+                        codegenClassScope))
+
+                .IfInstanceOf("value", typeof(EventBean))
+                .DeclareVarWCast(typeof(EventBean), "valueAsBean", "value")
+                .BlockReturn(
+                    mapGetter.EventBeanFragmentCodegen(
+                        Ref("valueAsBean"),
+                        codegenMethodScope,
+                        codegenClassScope))
+
+                .MethodReturn(ConstantNull());
         }
 
         public override CodegenExpression HandleNestedValueCodegen(

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <summary>
         ///     Descriptors for each known property.
         /// </summary>
-        internal IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
+        private IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
 
         private IDictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>> propertyFragmentTypes;
         private IDictionary<string, EventPropertyGetter> propertyGetterCodegeneratedCache;
@@ -63,6 +63,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         public EventTypeNameResolver EventTypeResolver { get; }
 
         public XMLFragmentEventTypeFactory XmlEventTypeFactory { get; }
+
+        public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap => propertyDescriptorMap;
 
         public string Name => Metadata.Name;
 
@@ -226,6 +228,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             foreach (var @explicit in explicitProperties) {
                 PropertyNames[count] = @explicit.Descriptor.PropertyName;
                 propertyGetters.Put(@explicit.Descriptor.PropertyName, @explicit.Getter);
+                
                 var desc = @explicit.Descriptor;
                 PropertyDescriptors[count] = desc;
                 propertyDescriptorMap.Put(desc.PropertyName, desc);

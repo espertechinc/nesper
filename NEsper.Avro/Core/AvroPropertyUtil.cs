@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NEsper.Avro.Extensions;
@@ -40,7 +41,12 @@ namespace NEsper.Avro.Core
 
             Schema typeSchema = desc.Field.Schema;
             if (desc.IsAccessedByIndex) {
-                typeSchema = desc.Field.Schema.AsArraySchema().ItemSchema;
+                if (desc.Field.Schema is ArraySchema arraySchema) {
+                    typeSchema = arraySchema.ItemSchema;
+                } else if (desc.Field.Schema is PrimitiveSchema primitiveSchema) {
+                    // Only happens for strings
+                    return typeof(char);
+                }
             }
             else if (desc.IsAccessedByKey) {
                 typeSchema = desc.Field.Schema.AsMapSchema().ValueSchema;
@@ -78,8 +84,13 @@ namespace NEsper.Avro.Core
             if (index == -1) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
                 if (prop is IndexedProperty indexedProp) {
-                    Field field = avroSchema.GetField(indexedProp.PropertyNameAtomic);
-                    if (field == null || field.Schema.Tag != Schema.Type.Array) {
+                    var field = avroSchema.GetField(indexedProp.PropertyNameAtomic);
+                    if (field == null) {
+                        return null;
+                    }
+
+                    if ((field.Schema.Tag != Schema.Type.Array) &&
+                        (field.Schema.Tag != Schema.Type.String)) {
                         return null;
                     }
 
@@ -165,24 +176,25 @@ namespace NEsper.Avro.Core
             }
 
             // field is known and is a record
-            if (fieldTop != null &&
-                fieldTop.Schema.Tag == Schema.Type.Array &&
-                propTop is IndexedProperty indexedProperty) {
-                var factory = new GetterNestedFactoryRootedIndexed(
-                    eventAdapterService,
-                    fieldTop,
-                    indexedProperty.Index);
-                var property = PropertyParser.ParseAndWalk(propertyNested, isRootedDynamic);
-                getter = PropertyGetterNested(
-                    factory,
-                    fieldTop.Schema.AsArraySchema().ItemSchema,
-                    property,
-                    moduleName,
-                    eventAdapterService,
-                    eventTypeAvroHandler,
-                    fragmentTypeCache);
-                MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
-                return getter;
+            if (fieldTop != null && propTop is IndexedProperty indexedProperty) {
+                if ((fieldTop.Schema.Tag == Schema.Type.Array) ||
+                    (fieldTop.Schema.Tag == Schema.Type.String)) {
+                    var factory = new GetterNestedFactoryRootedIndexed(
+                        eventAdapterService,
+                        fieldTop,
+                        indexedProperty.Index);
+                    var property = PropertyParser.ParseAndWalk(propertyNested, isRootedDynamic);
+                    getter = PropertyGetterNested(
+                        factory,
+                        fieldTop.Schema.AsArraySchema().ItemSchema,
+                        property,
+                        moduleName,
+                        eventAdapterService,
+                        eventTypeAvroHandler,
+                        fragmentTypeCache);
+                    MayAddToGetterCache(propertyName, propertyGetterCache, getter, addToCache);
+                    return getter;
+                }
             }
 
             // field is not known or is not a record
@@ -225,8 +237,13 @@ namespace NEsper.Avro.Core
             }
 
             if (property is IndexedProperty indexedProperty) {
-                Field fieldNested = fieldSchema.GetField(indexedProperty.PropertyNameAtomic);
-                if (fieldNested == null || fieldNested.Schema.Tag != Schema.Type.Array) {
+                var fieldNested = fieldSchema.GetField(indexedProperty.PropertyNameAtomic);
+                if (fieldNested == null) {
+                    return null;
+                }
+
+                if ((fieldNested.Schema.Tag != Schema.Type.Array) &&
+                    (fieldNested.Schema.Tag != Schema.Type.String)) {
                     return null;
                 }
 
@@ -236,6 +253,7 @@ namespace NEsper.Avro.Core
                     eventAdapterService,
                     eventTypeAvroHandler,
                     fragmentTypeCache);
+                
                 return factory.MakeIndexed(fieldNested, indexedProperty.Index, fragmentEventType?.FragmentType);
             }
 
@@ -324,8 +342,13 @@ namespace NEsper.Avro.Core
                     currentSchemaX = fieldNested.Schema;
                 }
                 else if (levelProperty is IndexedProperty indexed) {
-                    Field fieldIndexed = currentSchemaX.GetField(indexed.PropertyNameAtomic);
-                    if (fieldIndexed == null || fieldIndexed.Schema.Tag != Schema.Type.Array) {
+                    var fieldIndexed = currentSchemaX.GetField(indexed.PropertyNameAtomic);
+                    if (fieldIndexed == null) {
+                        return null;
+                    }
+
+                    if ((fieldIndexed.Schema.Tag != Schema.Type.Array) &&
+                        (fieldIndexed.Schema.Tag != Schema.Type.String)) {
                         return null;
                     }
 

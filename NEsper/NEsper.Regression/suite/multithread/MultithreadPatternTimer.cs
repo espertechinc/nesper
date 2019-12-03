@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -26,6 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     public class MultithreadPatternTimer : RegressionExecutionWithConfigure
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly static IDictionary<string, SupportCountListener> _supportCountListeners =
+            new Dictionary<string, SupportCountListener>();
 
         public void Configure(Configuration configuration)
         {
@@ -59,6 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     $" [ every e1=SupportByteArrEventLongId(Id={i}) -> timer:interval(1 seconds)]";
 
                 var supportCountListener = new SupportCountListener();
+                _supportCountListeners[statementName] = supportCountListener;
+                
                 env.CompileDeploy(
                     stmtText,
                     options => options.SetStatementUserObject(
@@ -121,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             env.UndeployAll();
         }
-
+        
         private long GetCount(
             RegressionEnvironment env,
             int numStatements)
@@ -129,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var total = 0L;
             for (var i = 0; i < numStatements; i++) {
                 var statement = env.Statement("s" + Convert.ToString(i));
-                var supportCountListener = (SupportCountListener) statement.UserObjectRuntime;
+                var supportCountListener = _supportCountListeners.Get(statement.Name);
                 total += supportCountListener.CountNew;
             }
 

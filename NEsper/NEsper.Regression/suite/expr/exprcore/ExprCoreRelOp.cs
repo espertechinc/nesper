@@ -23,7 +23,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
         public void Run(RegressionEnvironment env)
         {
-            #if false
             RunAssertion(
                 env,
                 "TheString",
@@ -66,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 bean => bean.DecimalBoxed = 1.0m,
                 bean => bean.DecimalBoxed = 2.0m,
                 bean => bean.DecimalBoxed = 3.0m);
-            #endif
+            
             RunAssertion(
                 env,
                 "IntPrimitive",

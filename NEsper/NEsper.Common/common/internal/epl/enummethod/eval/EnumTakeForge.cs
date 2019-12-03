@@ -26,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             int numStreams,
             bool scalar)
         {
-            this.SizeEval = sizeEval;
-            this.StreamNumSize = numStreams;
-            this.Scalar = scalar;
+            SizeEval = sizeEval;
+            StreamNumSize = numStreams;
+            Scalar = scalar;
         }
 
         public bool Scalar { get; }

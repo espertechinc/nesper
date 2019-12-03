@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 var method = codegenMethodScope.MakeChild(typeof(int?), typeof(DivideInt), codegenClassScope)
-                    .AddParam(typeof(int), "i1")
-                    .AddParam(typeof(int), "i2")
+                    .AddParam(typeof(int?), "i1")
+                    .AddParam(typeof(int?), "i2")
                     .Block
                     
                     .IfCondition(

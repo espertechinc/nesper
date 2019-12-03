@@ -29,19 +29,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         // test ObjectArray event with Map, Map[], MapType and MapType[] properties
         private void RunAssertionObjectArrayWithMap(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select p0 as c0, p1.im as c1, p2[0].im as c2, p3.om as c3 from OAType");
+            env.CompileDeploy(
+                "@Name('s0') select " +
+                "p0 as c0, " +
+                "p1.im as c1, " +
+                "p2[0].im as c2, " +
+                "p3.om as c3 " +
+                "from OAType");
             env.AddListener("s0");
 
-            env.SendEventObjectArray(
-                new object[] {
-                    "E1", Collections.SingletonMap("im", "IM1"), new[] {Collections.SingletonDataMap("im", "IM2")},
-                    Collections.SingletonMap("om", "OM1")
+            var oaValue = new object[] {
+                "E1",
+                Collections.SingletonDataMap("im", "IM1"), 
+                new[] {
+                    Collections.SingletonDataMap("im", "IM2")
                 },
+                Collections.SingletonDataMap("om", "OM1")
+            };
+            
+            env.SendEventObjectArray(
+                oaValue,
                 "OAType");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 new [] { "c0", "c1", "c2", "c3" },
-                new object[] {"E1", "IM1", "IM2", "OM1"});
+                new object[] { "E1", "IM1", "IM2", "OM1" });
 
             env.UndeployAll();
 

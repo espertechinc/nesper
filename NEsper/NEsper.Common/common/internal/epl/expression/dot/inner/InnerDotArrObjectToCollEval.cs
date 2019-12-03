@@ -63,11 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
                     forge.rootForge.EvaluateCodegen(evalType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("array")
                 .MethodReturn(
-                    StaticMethod(
-                        typeof(CompatExtensions),
-                        "Unwrap",
-                        new[] {typeof(object)},
-                        @Ref("array")));
+                    Unwrap<object>(@Ref("array")));
             return LocalMethod(methodNode);
         }
 

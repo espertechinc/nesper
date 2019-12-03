@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
+            TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             return new EnumForgeNoOp(0);
         }
     }

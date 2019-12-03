@@ -39,10 +39,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             int lvl3,
             int lvl4);
 
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedIndexed).FullName + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedIndexed).FullName + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedIndexed).FullName + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedIndexed).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedIndexed).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedIndexed).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedIndexed).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedIndexed).Name + "Avro";
         private static readonly string BEAN_TYPENAME = typeof(InfraNestedIndexPropTop).Name;
 
         private static readonly FunctionSendEvent4Int FBEAN = (
@@ -95,19 +95,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             lvl4) => {
             var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                       "<Myevent>\n" +
-                      "\t<l1 lvl1=\"${lvl1}\">\n" +
-                      "\t\t<l2 lvl2=\"${lvl2}\">\n" +
-                      "\t\t\t<l3 lvl3=\"${lvl3}\">\n" +
-                      "\t\t\t\t<l4 lvl4=\"${lvl4}\">\n" +
-                      "\t\t\t\t</l4>\n" +
-                      "\t\t\t</l3>\n" +
-                      "\t\t</l2>\n" +
-                      "\t</l1>\n" +
+                      $"\t<L1 Lvl1=\"{lvl1}\">\n" +
+                      $"\t\t<L2 Lvl2=\"{lvl2}\">\n" +
+                      $"\t\t\t<L3 Lvl3=\"{lvl3}\">\n" +
+                      $"\t\t\t\t<L4 Lvl4=\"{lvl4}\">\n" +
+                      "\t\t\t\t</L4>\n" +
+                      "\t\t\t</L3>\n" +
+                      "\t\t</L2>\n" +
+                      "\t</L1>\n" +
                       "</Myevent>";
-            xml = xml.Replace("${lvl1}", Convert.ToString(lvl1));
-            xml = xml.Replace("${lvl2}", Convert.ToString(lvl2));
-            xml = xml.Replace("${lvl3}", Convert.ToString(lvl3));
-            xml = xml.Replace("${lvl4}", Convert.ToString(lvl4));
+            //xml = xml.Replace("${lvl1}", Convert.ToString(lvl1));
+            //xml = xml.Replace("${lvl2}", Convert.ToString(lvl2));
+            //xml = xml.Replace("${lvl3}", Convert.ToString(lvl3));
+            //xml = xml.Replace("${lvl4}", Convert.ToString(lvl4));
             try {
                 SupportXML.SendXMLEvent(env, xml, XML_TYPENAME);
             }
@@ -165,10 +165,30 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 FBEAN,
                 typeof(InfraNestedIndexedPropLvl1),
                 typeof(InfraNestedIndexedPropLvl1).Name);
-            RunAssertion(env, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1");
-            RunAssertion(env, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1");
-            RunAssertion(env, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".L1");
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, typeof(GenericRecord), AVRO_TYPENAME + "_1");
+            RunAssertion(
+                env,
+                MAP_TYPENAME,
+                FMAP,
+                typeof(IDictionary<string, object>),
+                MAP_TYPENAME + "_1");
+            RunAssertion(
+                env,
+                OA_TYPENAME,
+                FOA,
+                typeof(object[]),
+                OA_TYPENAME + "_1");
+            RunAssertion(
+                env,
+                XML_TYPENAME,
+                FXML,
+                typeof(XmlNode),
+                XML_TYPENAME + ".L1");
+            RunAssertion(
+                env,
+                AVRO_TYPENAME,
+                FAVRO,
+                typeof(GenericRecord),
+                AVRO_TYPENAME + "_1");
         }
 
         private void RunAssertion(
@@ -278,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
             var arrayType = nestedClass == typeof(object[]) ? nestedClass : TypeHelper.GetArrayType(nestedClass);
-            arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection<object>) : arrayType;
+            //arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection<object>) : arrayType;
             object[][] expectedType = {
                 new object[] {"L1", arrayType, fragmentTypeName, true}
             };

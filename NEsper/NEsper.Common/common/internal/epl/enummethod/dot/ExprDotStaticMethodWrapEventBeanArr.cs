@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(EventBean)}, result);
+            return Unwrap<EventBean>(result);
         }
     }
 } // end of namespace

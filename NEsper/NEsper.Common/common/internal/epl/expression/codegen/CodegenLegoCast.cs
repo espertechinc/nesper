@@ -34,6 +34,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return value;
             }
 
+            if (value is CodegenExpressionConstantNull) {
+                return value;
+            }
+            
+            if ((value is CodegenExpressionConstant codegenExpressionConstant) &&
+                       (codegenExpressionConstant.IsNull)) {
+                return value;
+            }
+
             if (targetType == typeof(void)) {
                 throw new ArgumentException("Invalid void target type for cast");
             }
@@ -124,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else if (targetType.IsGenericCollection()) {
                 var elementType = GenericExtensions.GetCollectionItemType(targetType);
-                return StaticMethod(typeof(CompatExtensions), "Unwrap", new [] {elementType}, value);
+                return Unwrap(elementType, value);
             }
 
             return Cast(targetType, value);

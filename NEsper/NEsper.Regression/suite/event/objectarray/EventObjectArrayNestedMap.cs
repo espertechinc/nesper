@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             }
             catch (EPException ex) {
                 Assert.AreEqual(
-                    "Event type named 'MyMapNestedObjectArray' has not been defined or is not a Map-type event type, the name 'MyMapNestedObjectArray' refers to a System.Object(Array) event type",
+                    "Event type named 'MyMapNestedObjectArray' has not been defined or is not a Map-type event type, the name 'MyMapNestedObjectArray' refers to a System.Object[] event type",
                     ex.Message);
             }
 

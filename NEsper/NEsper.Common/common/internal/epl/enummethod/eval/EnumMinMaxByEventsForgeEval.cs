@@ -25,15 +25,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumMinMaxByEventsForgeEval : EnumEval
     {
-        private readonly EnumMinMaxByEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumMinMaxByEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumMinMaxByEventsForgeEval(
             EnumMinMaxByEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var comparable = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var comparable = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (comparable == null) {
                     continue;
                 }
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     result = next;
                 }
                 else {
-                    if (forge.max) {
+                    if (_forge.max) {
                         if (minKey.CompareTo(comparable) < 0) {
                             minKey = (IComparable) comparable;
                             result = next;
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerExpression.EvaluationType;
+            var innerType = forge.InnerExpression.EvaluationType;
             var innerTypeBoxed = Boxing.GetBoxedType(innerType);
             var paramTypes = EnumForgeCodegenNames.PARAMS_EVENTBEAN;
             
@@ -97,11 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<EventBean>("result", ConstantNull());
 
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
                 .DeclareVar(
                     innerTypeBoxed,
                     "value",
-                    forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope))
                 .IfRefNull("value")
                 .BlockContinue();
 

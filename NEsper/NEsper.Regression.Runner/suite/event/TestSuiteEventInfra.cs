@@ -163,10 +163,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureNestedSimple(Configuration configuration)
         {
             var mapTypeName = EventInfraPropertyNestedSimple.MAP_TYPENAME;
-            configuration.Common.AddEventType(mapTypeName + "_4", Collections.SingletonDataMap("lvl4", typeof(int)));
+            configuration.Common.AddEventType(mapTypeName + "_4", Collections.SingletonDataMap("Lvl4", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_3",
-                TwoEntryMap<string, object>("l4", mapTypeName + "_4", "Lvl3", typeof(int)));
+                TwoEntryMap<string, object>("L4", mapTypeName + "_4", "Lvl3", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_2",
                 TwoEntryMap<string, object>("L3", mapTypeName + "_3", "Lvl2", typeof(int)));
@@ -177,11 +177,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             var oaTypeName = EventInfraPropertyNestedSimple.OA_TYPENAME;
             var type_4 = oaTypeName + "_4";
-            string[] names_4 = {"lvl4"};
+            string[] names_4 = {"Lvl4"};
             object[] types_4 = {typeof(int)};
             configuration.Common.AddEventType(type_4, names_4, types_4);
             var type_3 = oaTypeName + "_3";
-            string[] names_3 = {"l4", "Lvl3"};
+            string[] names_3 = {"L4", "Lvl3"};
             object[] types_3 = {type_4, typeof(int)};
             configuration.Common.AddEventType(type_3, names_3, types_3);
             var type_2 = oaTypeName + "_2";
@@ -226,14 +226,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t<xs:element name=\"L3\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
-                         "\t\t\t\t<xs:element ref=\"esper:l4\"/>\n" +
+                         "\t\t\t\t<xs:element ref=\"esper:L4\"/>\n" +
                          "\t\t\t</xs:sequence>\n" +
                          "\t\t\t<xs:attribute name=\"Lvl3\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"l4\">\n" +
+                         "\t<xs:element name=\"L4\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"Lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -243,10 +243,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var avroTypeName = EventInfraPropertyNestedSimple.AVRO_TYPENAME;
             var s4 = SchemaBuilder.Record(
                 avroTypeName + "_4",
-                TypeBuilder.RequiredInt("lvl4"));
+                TypeBuilder.RequiredInt("Lvl4"));
             var s3 = SchemaBuilder.Record(
                 avroTypeName + "_3",
-                TypeBuilder.Field("l4", s4),
+                TypeBuilder.Field("L4", s4),
                 TypeBuilder.RequiredInt("Lvl3"));
             var s2 = SchemaBuilder.Record(
                 avroTypeName + "_2",
@@ -267,10 +267,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(typeof(EventInfraPropertyNestedIndexed.InfraNestedIndexPropTop));
 
             var mapTypeName = EventInfraPropertyNestedIndexed.MAP_TYPENAME;
-            configuration.Common.AddEventType(mapTypeName + "_4", Collections.SingletonDataMap("lvl4", typeof(int)));
+            configuration.Common.AddEventType(mapTypeName + "_4", Collections.SingletonDataMap("Lvl4", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_3",
-                TwoEntryMap<string, object>("l4", mapTypeName + "_4[]", "Lvl3", typeof(int)));
+                TwoEntryMap<string, object>("L4", mapTypeName + "_4[]", "Lvl3", typeof(int)));
             configuration.Common.AddEventType(
                 mapTypeName + "_2",
                 TwoEntryMap<string, object>("L3", mapTypeName + "_3[]", "Lvl2", typeof(int)));
@@ -281,11 +281,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             var oaTypeName = EventInfraPropertyNestedIndexed.OA_TYPENAME;
             var type_4 = oaTypeName + "_4";
-            string[] names_4 = {"lvl4"};
+            string[] names_4 = {"Lvl4"};
             object[] types_4 = {typeof(int)};
             configuration.Common.AddEventType(type_4, names_4, types_4);
             var type_3 = oaTypeName + "_3";
-            string[] names_3 = {"l4", "Lvl3"};
+            string[] names_3 = {"L4", "Lvl3"};
             object[] types_3 = {type_4 + "[]", typeof(int)};
             configuration.Common.AddEventType(type_3, names_3, types_3);
             var type_2 = oaTypeName + "_2";
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t</xs:element>\n" +
                          "\t<xs:element name=\"L4\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"Lvl4\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             var s4 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_4",
-                TypeBuilder.RequiredInt("lvl4"));
+                TypeBuilder.RequiredInt("Lvl4"));
             var s3 = SchemaBuilder.Record(
                 EventInfraPropertyNestedIndexed.AVRO_TYPENAME + "_3",
                 TypeBuilder.Field("L4", TypeBuilder.Array(s4)),

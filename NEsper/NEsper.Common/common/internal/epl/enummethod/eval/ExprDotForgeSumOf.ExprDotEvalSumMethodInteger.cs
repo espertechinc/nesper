@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         internal class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod
         {
-            private long cnt;
-            private int sum;
+            private long _cnt;
+            private int _sum;
 
             public void Enter(object @object)
             {
@@ -23,17 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     return;
                 }
 
-                cnt++;
-                sum += @object.AsInt();
+                _cnt++;
+                _sum += @object.AsInt();
             }
 
             public object Value {
                 get {
-                    if (cnt == 0) {
+                    if (_cnt == 0) {
                         return null;
                     }
 
-                    return sum;
+                    return _sum;
                 }
             }
         }

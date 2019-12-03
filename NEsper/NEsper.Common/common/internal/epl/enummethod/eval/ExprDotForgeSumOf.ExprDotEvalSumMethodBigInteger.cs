@@ -14,12 +14,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
     {
         internal class ExprDotEvalSumMethodBigInteger : ExprDotEvalSumMethod
         {
-            private long cnt;
-            private BigInteger sum;
+            private long _cnt;
+            private BigInteger _sum;
 
             public ExprDotEvalSumMethodBigInteger()
             {
-                sum = BigInteger.Zero;
+                _sum = BigInteger.Zero;
             }
 
             public void Enter(object @object)
@@ -28,17 +28,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     return;
                 }
 
-                cnt++;
-                sum = BigInteger.Add(sum, (BigInteger) @object);
+                _cnt++;
+                _sum = BigInteger.Add(_sum, (BigInteger) @object);
             }
 
             public object Value {
                 get {
-                    if (cnt == 0) {
+                    if (_cnt == 0) {
                         return null;
                     }
 
-                    return sum;
+                    return _sum;
                 }
             }
         }

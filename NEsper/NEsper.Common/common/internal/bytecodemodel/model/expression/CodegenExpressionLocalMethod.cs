@@ -13,11 +13,15 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionLocalMethod : CodegenExpression
     {
+        private static int _gid = 0;
+
+        private readonly int _id = ++_gid;
         private readonly CodegenMethod _methodNode;
         private readonly IList<CodegenExpression> _parameters;
 
@@ -68,6 +72,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public void MergeClasses(ISet<Type> classes)
         {
             _methodNode.MergeClasses(classes);
+            _parameters.For(p => p.MergeClasses(classes));
         }
     }
 } // end of namespace

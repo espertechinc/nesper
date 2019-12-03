@@ -16,6 +16,8 @@ using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
+using Constant = System.Reflection.Metadata.Constant;
+
 namespace com.espertech.esper.common.@internal.@event.util
 {
     // if (!(valueMap instanceof TYPE)) {
@@ -48,7 +50,6 @@ namespace com.espertech.esper.common.@internal.@event.util
                     codegenClassScope)
                 .AddParam(typeof(object), "value");
             var block = methodNode.Block
-                .IfNotInstanceOf("value", expectedUnderlyingType)
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value");
 
@@ -68,7 +69,12 @@ namespace com.espertech.esper.common.@internal.@event.util
                 throw new UnsupportedOperationException("Invalid access type " + accessType);
             }
 
-            block = block.BlockReturn(Constant(accessType == AccessType.EXISTS ? (bool?) false : null));
+            block = block
+                .IfNotInstanceOf("value", expectedUnderlyingType)
+                .BlockReturn(
+                    accessType == AccessType.EXISTS
+                        ? Constant(false)
+                        : ConstantNull());
 
             CodegenExpression expression;
             if (accessType == AccessType.GET) {

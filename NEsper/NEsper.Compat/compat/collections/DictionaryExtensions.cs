@@ -407,5 +407,22 @@ namespace com.espertech.esper.compat.collections
 
             throw new ArgumentException("unable to translate dictionary", "anyEntity");
         }
+
+        public static object SmartGet(
+            this object maybeDictionary,
+            string key)
+        {
+            if (maybeDictionary is IDictionary<object, object> objectDictionary) {
+                return objectDictionary.Get(key);
+            } else if (maybeDictionary is IDictionary<string, object> stringDictionary) {
+                return stringDictionary.Get(key);
+            } else if (
+                maybeDictionary.GetType().IsGenericStringDictionary() ||
+                maybeDictionary.GetType().IsGenericObjectDictionary()) {
+                return maybeDictionary.AsObjectDictionary().Get(key);
+            }
+
+            return null;
+        }
     }
 }

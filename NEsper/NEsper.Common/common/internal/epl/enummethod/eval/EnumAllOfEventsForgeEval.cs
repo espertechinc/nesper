@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class EnumAllOfEventsForgeEval : EnumEval
     {
-        private readonly EnumAllOfEventsForge forge;
-        private readonly ExprEvaluator innerExpression;
+        private readonly EnumAllOfEventsForge _forge;
+        private readonly ExprEvaluator _innerExpression;
 
         public EnumAllOfEventsForgeEval(
             EnumAllOfEventsForge forge,
             ExprEvaluator innerExpression)
         {
-            this.forge = forge;
-            this.innerExpression = innerExpression;
+            _forge = forge;
+            _innerExpression = innerExpression;
         }
 
         public object EvaluateEnumMethod(
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var beans = (ICollection<EventBean>) enumcoll;
             foreach (var next in beans) {
-                eventsLambda[forge.streamNumLambda] = next;
+                eventsLambda[_forge.StreamNumLambda] = next;
 
-                var result = innerExpression.Evaluate(eventsLambda, isNewData, context);
+                var result = _innerExpression.Evaluate(eventsLambda, isNewData, context);
                 if (result == null || (!(Boolean) result)) {
                     return false;
                 }
@@ -76,11 +76,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.IfConditionReturnConst(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"), true);
 
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
                 forEach,
-                forge.innerExpression.EvaluationType,
-                forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
+                forge.InnerExpression.EvaluationType,
+                forge.InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
                 true,
                 false,
                 false,

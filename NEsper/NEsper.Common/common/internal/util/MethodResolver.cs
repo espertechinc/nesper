@@ -61,44 +61,44 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(sbyte)
             );
             AddWideningConversion<short>(
-                typeof(byte),
-                typeof(short),
                 typeof(byte?),
-                typeof(short?),
+                typeof(byte),
                 typeof(sbyte?),
-                typeof(sbyte)
+                typeof(sbyte),
+                typeof(short?),
+                typeof(short)
             );
             AddWideningConversion<int>(
-                typeof(byte),
-                typeof(short),
-                typeof(int),
                 typeof(byte?),
-                typeof(short?),
-                typeof(int?),
+                typeof(byte),
                 typeof(sbyte?),
-                typeof(ushort?),
                 typeof(sbyte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(ushort?),
                 typeof(ushort)
             );
             AddWideningConversion<long>(
-                typeof(byte),
-                typeof(short),
-                typeof(int),
-                typeof(long),
                 typeof(byte?),
-                typeof(short?),
-                typeof(int?),
-                typeof(long?),
+                typeof(byte),
                 typeof(sbyte?),
-                typeof(ushort?),
-                typeof(uint?),
                 typeof(sbyte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(ushort?),
                 typeof(ushort),
-                typeof(uint)
+                typeof(uint?),
+                typeof(uint),
+                typeof(long?),
+                typeof(long)
             );
             AddWideningConversion<ushort>(
-                typeof(byte),
                 typeof(byte?),
+                typeof(byte),
                 typeof(ushort?),
                 typeof(ushort)
             );
@@ -106,65 +106,85 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(byte),
                 typeof(byte?),
                 typeof(ushort?),
-                typeof(uint?),
                 typeof(ushort),
+                typeof(uint?),
                 typeof(uint)
             );
             AddWideningConversion<ulong>(
-                typeof(byte),
                 typeof(byte?),
+                typeof(byte),
                 typeof(ushort?),
-                typeof(uint?),
-                typeof(ulong?),
                 typeof(ushort),
+                typeof(uint?),
                 typeof(uint),
+                typeof(ulong?),
                 typeof(ulong)
             );
             AddWideningConversion<float>(
-                typeof(byte),
-                typeof(short),
-                typeof(int),
-                typeof(long),
                 typeof(byte?),
+                typeof(byte),
                 typeof(short?),
+                typeof(short),
                 typeof(int?),
+                typeof(int),
                 typeof(long?),
+                typeof(long),
                 typeof(sbyte?),
-                typeof(float?),
-                typeof(ushort?),
-                typeof(uint?),
-                typeof(ulong?),
                 typeof(sbyte),
+                typeof(float?),
                 typeof(float),
+                typeof(ushort?),
                 typeof(ushort),
+                typeof(uint?),
                 typeof(uint),
+                typeof(ulong?),
                 typeof(ulong)
             );
             AddWideningConversion<double>(
-                typeof(byte),
-                typeof(double),
-                typeof(short),
-                typeof(int),
-                typeof(long),
                 typeof(byte?),
-                typeof(double?),
+                typeof(byte),
                 typeof(short?),
+                typeof(short),
                 typeof(int?),
+                typeof(int),
                 typeof(long?),
+                typeof(long),
                 typeof(sbyte?),
-                typeof(float?),
-                typeof(ushort?),
-                typeof(uint?),
-                typeof(ulong?),
                 typeof(sbyte),
+                typeof(float?),
                 typeof(float),
+                typeof(double?),
+                typeof(double),
+                typeof(ushort?),
                 typeof(ushort),
+                typeof(uint?),
                 typeof(uint),
+                typeof(ulong?),
                 typeof(ulong)
             );
             AddWideningConversion<decimal>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(long?),
+                typeof(long),
+                typeof(sbyte?),
+                typeof(sbyte),
+                typeof(float?),
+                typeof(float),
+                typeof(double?),
+                typeof(double),
+                typeof(decimal?),
                 typeof(decimal),
-                typeof(decimal?)
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(uint?),
+                typeof(uint),
+                typeof(ulong?),
+                typeof(ulong)
             );
             AddWideningConversion<char>(
                 typeof(byte),
@@ -181,41 +201,128 @@ namespace com.espertech.esper.common.@internal.util
                 typeof(sbyte)
             );
             AddWideningConversion<short?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(sbyte?),
+                typeof(sbyte),
                 typeof(short),
                 typeof(short?)
             );
-            AddWideningConversion<long?>(
-                typeof(int),
-                typeof(long),
-                typeof(long?)
-            );
             AddWideningConversion<int?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(sbyte?),
+                typeof(sbyte),
+                typeof(short?),
+                typeof(short),
+                typeof(ushort?),
+                typeof(ushort),
                 typeof(int),
                 typeof(int?)
             );
+            AddWideningConversion<long?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(sbyte?),
+                typeof(sbyte),
+                typeof(short?),
+                typeof(short),
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(int?),
+                typeof(int),
+                typeof(long?),
+                typeof(long)
+            );
             AddWideningConversion<ushort?>(
+                typeof(byte?),
+                typeof(byte),
                 typeof(ushort?),
                 typeof(ushort)
             );
             AddWideningConversion<uint?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(ushort?),
+                typeof(ushort),
                 typeof(uint?),
                 typeof(uint)
             );
             AddWideningConversion<ulong?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(uint?),
+                typeof(uint),
                 typeof(ulong?),
                 typeof(ulong)
             );
             AddWideningConversion<float?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(long?),
+                typeof(long),
+                typeof(sbyte?),
+                typeof(sbyte),
                 typeof(float?),
-                typeof(float)
+                typeof(float),
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(uint?),
+                typeof(uint),
+                typeof(ulong?),
+                typeof(ulong)
             );
             AddWideningConversion<double?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(long?),
+                typeof(long),
+                typeof(sbyte?),
+                typeof(sbyte),
+                typeof(float?),
+                typeof(float),
+                typeof(double?),
                 typeof(double),
-                typeof(double?)
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(uint?),
+                typeof(uint),
+                typeof(ulong?),
+                typeof(ulong)
             );
             AddWideningConversion<decimal?>(
+                typeof(byte?),
+                typeof(byte),
+                typeof(short?),
+                typeof(short),
+                typeof(int?),
+                typeof(int),
+                typeof(long?),
+                typeof(long),
+                typeof(sbyte?),
+                typeof(sbyte),
+                typeof(float?),
+                typeof(float),
+                typeof(double?),
+                typeof(double),
+                typeof(decimal?),
                 typeof(decimal),
-                typeof(decimal?)
+                typeof(ushort?),
+                typeof(ushort),
+                typeof(uint?),
+                typeof(uint),
+                typeof(ulong?),
+                typeof(ulong)
             );
 
             // Initialize the map of wrapper conversions
@@ -681,8 +788,8 @@ namespace com.espertech.esper.common.@internal.util
                     var compatible = CompareParameterTypeCompatible(
                         invocationParameters[i],
                         varargDeclarationParameter,
-                        optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
-                        optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                        optionalAllowEventBeanType?[i],
+                        optionalAllowEventBeanCollType?[i],
                         varargGenericParameterTypes,
                         conversionCount);
                     if (!compatible) {
@@ -703,8 +810,8 @@ namespace com.espertech.esper.common.@internal.util
                 var compatible = CompareParameterTypeCompatible(
                     invocationParameters[i],
                     declarationParameters[i],
-                    optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
-                    optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                    optionalAllowEventBeanType?[i],
+                    optionalAllowEventBeanCollType?[i],
                     genericParameterTypes[i],
                     conversionCount);
                 if (!compatible) {
@@ -723,7 +830,7 @@ namespace com.espertech.esper.common.@internal.util
             Type genericParameterType,
             AtomicLong conversionCount)
         {
-            if ((invocationParameter == null) && !(declarationParameter.IsValueType)) {
+            if ((invocationParameter == null) && declarationParameter.CanBeNull()) {
                 return true;
             }
 

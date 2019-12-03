@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             var expectedTime = "2004-09-03T09:00:00.000";
             env.Runtime.VariableService.SetVariableValue(deployId, "varyear", 2004);
-            env.Runtime.VariableService.SetVariableValue(deployId, "varmonth", 8);
+            env.Runtime.VariableService.SetVariableValue(deployId, "varmonth", 9);
             env.Runtime.VariableService.SetVariableValue(deployId, "varday", 3);
             env.SendEventBean(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             expectedTime = "2002-09-30T09:00:00.000";
             env.Runtime.VariableService.SetVariableValue(deployId, "varyear", null);
-            env.Runtime.VariableService.SetVariableValue(deployId, "varmonth", 8);
+            env.Runtime.VariableService.SetVariableValue(deployId, "varmonth", 9);
             env.Runtime.VariableService.SetVariableValue(deployId, "varday", null);
             env.SendEventBean(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(

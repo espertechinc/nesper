@@ -32,17 +32,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyNestedDynamicRootedNonSimple : RegressionExecution
     {
-        public static readonly string XML_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedNonSimple).FullName + "XML";
-
-        public static readonly string MAP_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedNonSimple).FullName + "Map";
-
-        public static readonly string OA_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedNonSimple).FullName + "OA";
-
-        public static readonly string AVRO_TYPENAME =
-            typeof(EventInfraPropertyNestedDynamicRootedNonSimple).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedNonSimple).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedNonSimple).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedNonSimple).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedDynamicRootedNonSimple).Name + "Avro";
 
         private static readonly Type BEAN_TYPE = typeof(SupportBeanDynRoot);
 
@@ -92,13 +85,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(oaOne, AllExist(1, 2, 2000, 100, 200, "abc"))
             };
             RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object));
-
+            
             // XML
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
                     "<Item>" +
-                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped Id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>" +
+                    "<Indexed>1</Indexed>" +
+                    "<Indexed>2</Indexed>" +
+                    "<Mapped Id=\"keyOne\">3</Mapped>" + 
+                    "<Mapped Id=\"keyTwo\">4</Mapped>" +
                     "</Item>",
                     new[] {Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()})
             };

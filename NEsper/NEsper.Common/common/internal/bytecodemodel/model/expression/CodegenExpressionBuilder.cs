@@ -372,6 +372,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
+        public static CodegenExpression Unwrap<T>(
+            CodegenExpression expression)
+        {
+            return Unwrap(typeof(T), expression);
+        }
+        
+        public static CodegenExpression Unwrap(
+            Type elementType,
+            CodegenExpression expression)
+        {
+            return StaticMethod(
+                typeof(CompatExtensions),
+                "Unwrap",
+                new[] { elementType },
+                expression);
+        }
+
+        
         public static CodegenExpression ClassMethod(
             string method,
             params CodegenExpression[] @params)

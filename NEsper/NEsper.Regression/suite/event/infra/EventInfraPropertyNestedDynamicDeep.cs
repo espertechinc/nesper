@@ -34,10 +34,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyNestedDynamicDeep : RegressionExecution
     {
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).FullName + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).FullName + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).FullName + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).FullName + "Avro";
+        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).Name + "XML";
+        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).Name + "Map";
+        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).Name + "OA";
+        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyNestedDynamicDeep).Name + "Avro";
 
         private static readonly FunctionSendEvent FAVRO = (
             env,

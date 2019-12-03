@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumDistinctScalarLambdaForgeEval(this, innerExpression.ExprEvaluator);
+            get => new EnumDistinctScalarLambdaForgeEval(this, InnerExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

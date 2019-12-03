@@ -77,19 +77,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 });
 
             env.SendEventBean(new SupportBean("E1", 2));
-            var outArray = ToArray(
-                env.Listener("s0")
+            var outArray = env.Listener("s0")
                     .AssertOneGetNewAndReset()
                     .Get("val1")
-                    .Unwrap<object>());
+                    .UnwrapIntoArray<SupportBean>();
+            
             Assert.AreEqual(0, outArray.Length);
 
             env.SendEventBean(new SupportBean("E2", 3));
-            outArray = ToArray(
-                env.Listener("s0")
+            outArray = env.Listener("s0")
                     .AssertOneGetNewAndReset()
                     .Get("val1")
-                    .Unwrap<object>());
+                    .UnwrapIntoArray<SupportBean>();
 
             Assert.AreEqual(1, outArray.Length);
             Assert.AreEqual("E2", outArray[0].TheString);
@@ -104,16 +103,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             var b = new SupportBean(null, intPrimitive);
             b.IntBoxed = intBoxed;
             return b;
-        }
-
-        private static SupportBean[] ToArray(ICollection<object> items)
-        {
-            IList<SupportBean> result = new List<SupportBean>();
-            foreach (var item in items) {
-                result.Add((SupportBean) item);
-            }
-
-            return result.ToArray();
         }
 
         private static IDictionary<string, object>[] ToArrayMap(ICollection<object> items)
@@ -469,20 +458,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var eplDeclare = "@Name('s0') " +
                                  "expression subq {" +
-                                 " x -> (select IntPrimitive from SupportBean#keepall where TheString = x.pcommon)" + // a common field
+                                 " x -> (select IntPrimitive from SupportBean#keepall where TheString = x.Pcommon)" + // a common field
                                  "} " +
                                  "select subq(one) as val1, subq(two) as val2 " +
                                  "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 TryAssertionSubqueryJoinSameField(env, eplDeclare);
 
                 var eplAlias = "@Name('s0') " +
-                               "expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = pcommon) }" +
+                               "expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = Pcommon) }" +
                                "select subq as val1, subq as val2 " +
                                "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 TryInvalidCompile(
                     env,
                     eplAlias,
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=pcommon': Property named 'pcommon' is ambiguous as is valid for more then one stream");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=Pcommon': Property named 'Pcommon' is ambiguous as is valid for more then one stream");
             }
 
             private void TryAssertionSubqueryJoinSameField(
@@ -664,7 +653,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fieldsSelected,
-                    new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
+                    new[] {
+                        typeof(ICollection<EventBean>),
+                        typeof(ICollection<EventBean>)
+                    });
 
                 env.SendEventBean(new SupportBean("E0", 0));
                 env.SendEventBean(new SupportBean_ST0("ID0", 0));
@@ -773,7 +765,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fieldSelected,
-                    new[] {typeof(ICollection<object>)});
+                    new[] {
+                        typeof(ICollection<EventBean>)
+                    });
 
                 env.SendEventBean(new SupportBean("E0", 0));
                 env.SendEventBean(new SupportBean_ST0("ID0", "x", 0));
@@ -923,7 +917,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryAssertionScalarReturn(env, eplScalarAlias);
 
                 // test with cast and with on-select and where-clause use
-                var inner = "case when myEvent.one = 'X' then 0 else cast(myEvent.one, long) end ";
+                var inner = "case when myEvent.One = 'X' then 0 else cast(myEvent.One, long) end ";
                 var eplCaseDeclare = "@Name('s0') expression theExpression { myEvent -> " +
                                      inner +
                                      "} " +
@@ -1070,19 +1064,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var eplDeclare = "" +
                                  "@Name('s0') expression one {x1 => x1.Contained.where(y -> y.P00 < 10) } " +
                                  "expression two {x2 => one(x2).where(y -> y.P00 > 1)  } " +
-                                 "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as S0c";
+                                 "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplDeclare);
 
                 var eplAliasWParen = "" +
                                      "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
                                      "expression two alias for {one().where(y -> y.P00 > 1)}" +
-                                     "select one as val1, two as val2 from SupportBean_ST0_Container as S0c";
+                                     "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasWParen);
 
                 var eplAliasNoParen = "" +
                                       "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
                                       "expression two alias for {one.where(y -> y.P00 > 1)}" +
-                                      "select one as val1, two as val2 from SupportBean_ST0_Container as S0c";
+                                      "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasNoParen);
             }
 
@@ -1096,13 +1090,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     env.Statement("s0").EventType,
                     new [] { "val1","val2" },
                     new[] {
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>)
+                        typeof(ICollection<EventBean>),
+                        typeof(ICollection<EventBean>)
                     });
 
                 var theEvent = SupportBean_ST0_Container.Make3Value("E1,K1,1", "E2,K2,2", "E20,K20,20");
                 env.SendEventBean(theEvent);
-                var resultVal1 = env.Listener("s0").LastNewData[0].Get("val1").Unwrap<object>().ToArray();
+                var resultVal1 = env.Listener("s0")
+                    .LastNewData[0]
+                    .Get("val1")
+                    .UnwrapIntoArray<object>();
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new object[] {
                         theEvent.Contained[0],

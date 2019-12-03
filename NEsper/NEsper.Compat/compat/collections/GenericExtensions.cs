@@ -326,5 +326,55 @@ namespace com.espertech.esper.compat.collections
             }
 
         }
+        
+        
+        public static bool IsMappedType(Type type)
+        {
+            if (type == null)
+                return false;
+            if (type.IsGenericStringDictionary())
+                return true;
+
+            return false;
+        }
+
+        
+        public static bool IsIndexedType(Type type)
+        {
+            if (type == null)
+                return false;
+            if (type == typeof(string))
+                return true;
+            if (type.IsArray)
+                return true;
+            if (type.IsGenericDictionary())
+                return false;
+            if (type.IsGenericList())
+                return true;
+            if (type.IsGenericEnumerable() || type.IsImplementsInterface(typeof(System.Collections.IEnumerable)))
+                return true;
+
+            return false;
+        }
+
+        public static Type GetComponentType(Type type)
+        {
+            if (type == null)
+                return null;
+            if (type == typeof(string))
+                return typeof(char);
+            if (type.IsArray)
+                return type.GetElementType();
+            if (type.IsGenericDictionary())
+                return null;
+            if (type.IsGenericList())
+                return type.GetCollectionItemType();
+            if (type.IsGenericEnumerable())
+                return type.GetCollectionItemType();
+            if (type.IsImplementsInterface(typeof(System.Collections.IEnumerable)))
+                return typeof(object);
+
+            return null;
+        }
     }
 }
