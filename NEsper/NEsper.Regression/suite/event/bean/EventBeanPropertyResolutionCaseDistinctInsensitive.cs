@@ -26,14 +26,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             var result = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual("upper", result.Get("MYPROPERTY"));
             Assert.AreEqual("lower", result.Get("myproperty"));
-            Assert.IsTrue(
-                result.Get("myProperty").Equals("lowercamel") ||
-                result.Get("myProperty").Equals("uppercamel")); // JDK6 versus JDK7 JavaBean inspector
+            Assert.AreEqual("lowercamel", result.Get("myProperty"));
 
             TryInvalidCompile(
                 env,
-                "select MyProperty from SupportBeanDupProperty",
-                "Unable to determine which property to use for \"MyProperty\" because more than one property matched [");
+                "select mYpropertY from SupportBeanDupProperty",
+                "Unable to determine which property to use for \"mYpropertY\" because more than one property matched [");
 
             env.UndeployAll();
         }

@@ -428,5 +428,28 @@ namespace com.espertech.esper.compat.collections
 
             return false;
         }
-	}
+        /// <summary>
+        /// Returns true if the object provided matches the type required for the collection and exists as a key in the dictionary.
+        /// One of the truly nice things about compilation is that it allows widening and narrowing to work properly.  However, it
+        /// can affect the Contains method in ways that are not anticipated.  For example, an int will be implicitly upcast
+        /// to a long, allowing an integer to be found in a collection of longs.  This method enforces type consistency by
+        /// taking in an object, thus avoiding implicit conversion during compilation.  Jury is still out, as some (myself
+        /// included) may personally prefer to have the implicit conversion.
+        /// </summary>
+        /// <param name="dictionary"></param>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static bool CheckedContainsKey<TK,TV>(
+            this IDictionary<TK,TV> dictionary,
+            object key)
+        {
+            if (key is TK keyT) {
+                bool result = dictionary.ContainsKey(keyT);
+                return result;
+            }
+
+            return false;
+        }
+    }
 }

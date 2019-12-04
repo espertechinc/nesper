@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -59,8 +61,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var chsType = forge.CoercionType;
-            
             var lhs = forge.ForgeRenderable.ChildNodes[0].Forge;
             var rhs = forge.ForgeRenderable.ChildNodes[1].Forge;
             
@@ -74,6 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return ConstantNull();
             }
 
+            var chsType = forge.CoercionType;
+            
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprRelationalOpNodeForgeEval),
@@ -84,36 +86,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             
             var block = methodNode.Block;
 
-            block.DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
-            if (lhsType.CanBeNull()) {
+            block.DeclareVar(chsType, "left", lhs.EvaluateCodegen(chsType, methodNode, exprSymbol, codegenClassScope));
+            if (chsType.CanBeNull()) {
                 block.IfRefNullReturnNull("left");
-                if (lhsType.IsNullable()) {
+                if (chsType.IsNullable()) {
                     lhsRef = Unbox(lhsRef);
                     lhsType = rhsType.GetUnboxedType();
                 }
             }
 
-            block.DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
-            if (rhsType.CanBeNull()) {
+            block.DeclareVar(chsType, "right", rhs.EvaluateCodegen(chsType, methodNode, exprSymbol, codegenClassScope));
+            if (chsType.CanBeNull()) {
                 block.IfRefNullReturnNull("right");
-                if (rhsType.IsNullable()) {
+                if (chsType.IsNullable()) {
                     rhsRef = Unbox(rhsRef);
                     rhsType = rhsType.GetUnboxedType();
                 }
             }
 
-            // At this point, the types should be unboxed and evaluated.  What we need to know now is if the two values
-            // are "compatible" from a relational operation standpoint.  For example, if they are both numeric we are
-            // fine.  If it's a BigInteger and a long, we have a problem.
-
-            if (lhsType != rhsType) {
-                if (lhsType.IsNumeric() && rhsType.IsNumeric()) { // Implicit conversion
-                }
-                else {
-                    throw new IllegalStateException("handle coercion dynamics");
-                }
-            }
-            
             block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType));
             return LocalMethod(methodNode);
         }

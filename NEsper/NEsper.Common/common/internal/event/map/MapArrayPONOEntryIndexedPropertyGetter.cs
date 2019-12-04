@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "ContainsKey", Constant(propertyMap));
+            return ExprDotMethod(underlyingExpression, "CheckedContainsKey", Constant(propertyMap));
         }
 
         public object Get(

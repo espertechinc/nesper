@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return ExprDotMethod(
                 CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
-                "ContainsKey",
+                "CheckedContainsKey",
                 Constant(propertyName));
         }
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "ContainsKey", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "CheckedContainsKey", Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

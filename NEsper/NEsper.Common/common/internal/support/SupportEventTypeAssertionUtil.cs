@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static void AssertConsistency(EventBean eventBean)
         {
-            AssertConsistencyRecusive(eventBean, new HashSet<EventType>());
+            AssertConsistencyRecursive(eventBean, new HashSet<EventType>());
         }
 
         public static void AssertConsistency(EventType eventType)
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.support
             }
         }
 
-        private static void AssertConsistencyRecusive(
+        private static void AssertConsistencyRecursive(
             EventBean eventBean,
             ISet<EventType> alreadySeenTypes)
         {
@@ -300,11 +300,12 @@ namespace com.espertech.esper.common.@internal.support
                             ScopeTestHelper.AssertTrue(properties[i].IsFragment);
                         }
                         else {
-                            ScopeTestHelper.AssertTrue(
-                                failedMessage,
-                                TypeHelper.IsSubclassOrImplementsInterface(
-                                    resultGet.GetType(),
-                                    properties[i].PropertyType.GetBoxedType()));
+                            var resultType = resultGet.GetType();
+                            var propertyType = properties[i].PropertyType.GetBoxedType();
+                            if ((resultType != propertyType) &&
+                                !TypeHelper.IsSubclassOrImplementsInterface(resultType, propertyType)) {
+                                ScopeTestHelper.Fail(failedMessage);
+                            }
                         }
                     }
                 }
@@ -324,14 +325,14 @@ namespace com.espertech.esper.common.@internal.support
                 if (!fragmentType.IsIndexed) {
                     ScopeTestHelper.AssertTrue(failedMessage, fragment is EventBean);
                     var fragmentEvent = (EventBean) fragment;
-                    AssertConsistencyRecusive(fragmentEvent, alreadySeenTypes);
+                    AssertConsistencyRecursive(fragmentEvent, alreadySeenTypes);
                 }
                 else {
                     ScopeTestHelper.AssertTrue(failedMessage, fragment is EventBean[]);
                     var events = (EventBean[]) fragment;
                     ScopeTestHelper.AssertTrue(failedMessage, events.Length > 0);
                     foreach (var theEvent in events) {
-                        AssertConsistencyRecusive(theEvent, alreadySeenTypes);
+                        AssertConsistencyRecursive(theEvent, alreadySeenTypes);
                     }
                 }
             }

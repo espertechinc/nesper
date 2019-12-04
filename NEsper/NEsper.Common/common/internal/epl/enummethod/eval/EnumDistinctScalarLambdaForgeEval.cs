@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     innerType,
                     "comparable",
                     forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
-                .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "ContainsKey", @Ref("comparable"))))
+                .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "CheckedContainsKey", @Ref("comparable"))))
                 .Expression(ExprDotMethod(@Ref("distinct"), "Put", @Ref("comparable"), @Ref("next")))
                 .BlockEnd();
             block.MethodReturn(ExprDotName(@Ref("distinct"), "Values"));

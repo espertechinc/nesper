@@ -543,7 +543,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .IfRefNullReturnNull("indexResult")
                     .DeclareVar<int>(
                         "index",
-                        ExprDotMethod(Cast(typeof(object), Ref("indexResult")), "IntValue"));
+                        ExprDotMethod(Ref("indexResult"), "AsInt"));
             }
 
             var randomAccess = method.Block.IfCondition(InstanceOf(Ref("strategy"), typeof(RandomAccessByIndexGetter)));

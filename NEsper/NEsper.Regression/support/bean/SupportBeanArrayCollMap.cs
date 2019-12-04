@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.support.bean
                 return null;
             }
 
-            var longMap = new Dictionary<long?, string>();
+            var longMap = new HashMap<long?, string>();
             foreach (var along in longArr) {
                 longMap.Put(along, "");
             }

@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "Contains", leftWithBoxing)))
+                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "CheckedContains", leftWithBoxing)))
                         .BlockReturn(ConstantTrue());
                 }
                 else if (reftype != null && reftype.IsGenericDictionary()) {
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing)))
+                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "CheckedContainsKey", leftWithBoxing)))
                         .BlockReturn(ConstantTrue());
                 }
                 else {

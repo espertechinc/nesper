@@ -254,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
                             Ref("left"), leftTypeUncoerced, reftype.GetDictionaryKeyType());
                         
-                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "ContainsKey", leftWithBoxing))
+                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "CheckedContainsKey", leftWithBoxing))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }

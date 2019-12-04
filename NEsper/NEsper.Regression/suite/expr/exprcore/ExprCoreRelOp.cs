@@ -23,6 +23,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
         public void Run(RegressionEnvironment env)
         {
+            var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
+            
             RunAssertion(
                 env,
                 "TheString",
@@ -76,14 +78,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             RunAssertion(
                 env,
                 "BigInteger",
-                "BigIntegerHelper.ValueOf(2)",
+                $"{bigIntegerHelper}.ValueOf(2)",
                 bean => bean.BigInteger = new BigInteger(1),
                 bean => bean.BigInteger = new BigInteger(2),
                 bean => bean.BigInteger = new BigInteger(3));
             RunAssertion(
                 env,
                 "IntPrimitive",
-                "BigIntegerHelper.ValueOf(2)",
+                $"{bigIntegerHelper}.ValueOf(2)",
                 bean => bean.IntPrimitive = 1,
                 bean => bean.IntPrimitive = 2,
                 bean => bean.IntPrimitive = 3);

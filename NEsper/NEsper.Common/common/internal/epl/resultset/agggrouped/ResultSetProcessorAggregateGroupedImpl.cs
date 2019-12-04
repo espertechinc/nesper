@@ -1683,7 +1683,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "entry",
                         ExprDotName(Ref("entryEnumerator"), "Current"))
                     .IfCondition(
-                        Not(ExprDotMethod(Ref("workCollection"), "ContainsKey", ExprDotName(Ref("entry"), "Key"))))
+                        Not(ExprDotMethod(Ref("workCollection"), "CheckedContainsKey", ExprDotName(Ref("entry"), "Key"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
@@ -2344,7 +2344,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "entry",
                         ExprDotName(Ref("entryEnumerator"), "Current"))
                     .IfCondition(
-                        Not(ExprDotMethod(Ref("workCollection"), "ContainsKey", ExprDotName(Ref("entry"), "Key"))))
+                        Not(ExprDotMethod(Ref("workCollection"), "CheckedContainsKey", ExprDotName(Ref("entry"), "Key"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),

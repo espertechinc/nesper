@@ -43,7 +43,7 @@ namespace com.espertech.esper.compat.magic
             if (true) {
                 var eParam1 = Expression.Parameter(typeof(object), "o");
                 var eParam2 = Expression.Parameter(typeof(string), "k");
-                var rMethod = dictionaryType.GetMethod("ContainsKey", BindingFlags.Public | BindingFlags.Instance);
+                var rMethod = dictionaryType.GetMethod("CheckedContainsKey", BindingFlags.Public | BindingFlags.Instance);
                 var eDictionary = Expression.Convert(eParam1, dictionaryType);
                 var eInvoke = Expression.Call(eDictionary, rMethod, eParam2);
                 var eLambda = Expression.Lambda<Func<object, string, bool>>(eInvoke, eParam1, eParam2);

@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 using NEsper.Avro.Extensions;
 
@@ -34,7 +35,7 @@ namespace NEsper.Avro.Getter
             string key)
         {
             var record = (GenericRecord) @event.Underlying;
-            var values = (IDictionary<string, object>) record.Get(_pos);
+            var values = record.Get(_pos).UnwrapStringDictionary();
             return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(values, key);
         }
 
@@ -58,13 +59,13 @@ namespace NEsper.Avro.Getter
                         CodegenExpressionBuilder.Ref("@event")))
                 .DeclareVar<IDictionary<string, object>>(
                     "values",
-                    CodegenExpressionBuilder.Cast(
-                        typeof(IDictionary<string, object>),
+                    CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(GenericRecordExtensions),
                             "Get",
                             CodegenExpressionBuilder.Ref("record"),
-                            CodegenExpressionBuilder.Constant(_pos.Name))))
+                            CodegenExpressionBuilder.Constant(_pos.Name)),
+                        "UnwrapStringDictionary"))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterMapped),

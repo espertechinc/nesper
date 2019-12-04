@@ -19,7 +19,6 @@ namespace com.espertech.esper.compat.collections
     /// <typeparam name="TV"></typeparam>
     [Serializable]
     public class HashMap<TK, TV> : BaseMap<TK, TV>
-        where TK : class
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HashMap{K,V}" /> class.

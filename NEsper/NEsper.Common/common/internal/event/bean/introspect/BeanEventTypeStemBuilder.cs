@@ -176,7 +176,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
                     if (desc.ReadMethod != null) {
                         isRequiresMapkey = desc.ReadMethod.GetParameters().Length > 0;
-                        componentType = desc.ReadMethod.ReturnType;
+                        if (isRequiresMapkey) {
+                            componentType = desc.ReadMethod.GetParameters()[0].ParameterType;
+                        }
+                        else {
+                            CheckComponentType();
+                        }
                     }
                     else if (desc.AccessorProp != null) {
                         isRequiresMapkey = false; // not required, you can "get" the property

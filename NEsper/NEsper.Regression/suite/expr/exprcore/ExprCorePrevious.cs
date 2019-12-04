@@ -73,7 +73,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevcount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevwindow);
+            
+            CollectionAssert.AreEqual(prevwindow, (IEnumerable) eventBean.Get("prevWindowPrice"));
+            //EPAssertionUtil.AssertEqualsExactOrder((object[]) eventBean.Get("prevWindowPrice"), prevwindow);
         }
 
         private static void AssertNewEvents(
@@ -146,9 +148,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevCount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(
-                prevWindow.Unwrap<object>(), 
-                eventBean.Get("prevWindowPrice").Unwrap<object>());
+            
+            CollectionAssert.AreEqual(prevWindow, (IEnumerable) eventBean.Get("prevWindowPrice"));
+            //EPAssertionUtil.AssertEqualsExactOrder(
+            //    prevWindow.Unwrap<object>(), 
+            //    eventBean.Get("prevWindowPrice").Unwrap<object>());
 
             env.Listener("s0").Reset();
         }
@@ -278,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("prevTail0Price"));
             Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("prevTail1Price"));
             Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("countPrice"));
-            Assert.AreEqual(typeof(double[]), env.Statement("s0").EventType.GetPropertyType("windowPrice"));
+            Assert.AreEqual(typeof(double?[]), env.Statement("s0").EventType.GetPropertyType("windowPrice"));
 
             SendMarketEvent(env, "IBM", 75);
             AssertReceived(env, "IBM", null, null, 75d, null, 1L, SplitDoubles("75d"));
@@ -351,7 +355,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail0Price, theEvent.Get("prevTail0Price"));
             Assert.AreEqual(prevTail1Price, theEvent.Get("prevTail1Price"));
             Assert.AreEqual(countPrice, theEvent.Get("countPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (object[]) theEvent.Get("windowPrice"));
+
+            CollectionAssert.AreEqual(windowPrice, (IEnumerable) theEvent.Get("windowPrice"));
+            //EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (object[]) theEvent.Get("windowPrice"));
         }
 
         private static void AssertCountAndPrice(
@@ -477,15 +483,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertPropsPerRow(
                     newEvents,
                     fields,
-                    new[] {
-                        new object[] {
-                            "E1", null, 
-                            "E1", 2L,
-                            new object[] {"E2", "E1"},
-                            new object[] {"E2", "E1", "E1", 2L},
-                            new object[] {"E2", "E1"}
-                        }
-                    });
+                    new object[][] {
+                        new object[] {"E1", null, "E1", 2L, new object[] {"E2", "E1"}},
+                        new object[] {"E2", "E1", "E1", 2L, new object[] {"E2", "E1"}}
+                    }
+                );
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
 
@@ -508,13 +510,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     env.Listener("s0").NewDataListFlattened,
                     fields,
                     new[] {
-                        new object[] {"E3", null, "E3", 3L, win}, new object[] {"E4", "E3", "E3", 3L, win},
+                        new object[] {"E3", null, "E3", 3L, win},
+                        new object[] {"E4", "E3", "E3", 3L, win},
                         new object[] {"E5", "E4", "E3", 3L, win}
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
                     fields,
-                    new[] {new object[] {"E1", null, null, null, null}, new object[] {"E2", null, null, null, null}});
+                    new[] {
+                        new object[] {"E1", null, null, null, null},
+                        new object[] {"E2", null, null, null, null}
+                    });
                 env.Listener("s0").Reset();
 
                 env.UndeployAll();
@@ -557,7 +563,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     Assert.AreEqual(rows[i][0], prop.PropertyName, message);
                     Assert.AreEqual(rows[i][1], prop.PropertyType, message);
                     var result = resultBean.Get(prop.PropertyName);
-                    Assert.AreEqual(prop.PropertyType, result.GetType(), message);
+                    Assert.AreEqual(prop.PropertyType.GetBoxedType(), result.GetType().GetBoxedType(), message);
                 }
 
                 env.UndeployAll();
@@ -623,8 +629,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select irstream count(*) as total, " +
                           "prev(" +
-                          typeof(ExprCorePrevious).Name +
-                          ".intToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
+                          typeof(ExprCorePrevious).FullName +
+                          ".IntToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 AssertPrevCount(env);
@@ -659,7 +665,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "from SupportMarketDataBean#groupwin(Symbol, Feed)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "symbol","Feed","prevPrice","tailPrice","countPrice","windowPrice" };
+                var fields = new [] { "Symbol","Feed","prevPrice","tailPrice","countPrice","windowPrice" };
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10, 0L, "F1"));
                 EPAssertionUtil.AssertProps(
@@ -760,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 // descending sort
                 var epl = "@Name('s0')select " +
-                          "symbol, " +
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -777,7 +783,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("prevTail0Price"));
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("prevTail1Price"));
                 Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("countPrice"));
-                Assert.AreEqual(typeof(double[]), env.Statement("s0").EventType.GetPropertyType("windowPrice"));
+                Assert.AreEqual(typeof(double?[]), env.Statement("s0").EventType.GetPropertyType("windowPrice"));
 
                 SendMarketEvent(env, "IBM", 75);
                 AssertReceived(env, "IBM", null, null, 75d, null, 1L, SplitDoubles("75d"));
@@ -830,7 +836,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SendTimer(env, 0);
 
                 var epl = "@Name('s0')select " +
-                          "symbol, " +
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -891,7 +897,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 // Also testing the alternative syntax here of "prev(property)" and "prev(property, index)" versus "prev(index, property)"
                 var epl = "@Name('s0')select irstream " +
-                          "symbol, " +
+                          "Symbol, " +
                           "prev(Price) as prevPrice, " +
                           "prev(Price, 2) as prevPrevPrice, " +
                           "prevtail(Price, 0) as prevTail0Price, " +
@@ -967,7 +973,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0')select " +
-                          "symbol, " +
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -984,7 +990,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0')select " +
-                          "symbol, " +
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +

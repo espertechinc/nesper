@@ -913,7 +913,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             .BlockContinue();
                     }
 
-                    whileLoop.IfCondition(ExprDotMethod(Ref("priorSeenGroups"), "Contains", Ref("groupKey")))
+                    whileLoop.IfCondition(ExprDotMethod(Ref("priorSeenGroups"), "CheckedContains", Ref("groupKey")))
                         .BlockContinue();
 
                     whileLoop.ExprDotMethod(Ref("priorSeenGroups"), "Add", Ref("groupKey"))

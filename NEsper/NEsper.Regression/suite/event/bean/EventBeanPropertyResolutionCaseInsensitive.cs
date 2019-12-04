@@ -23,12 +23,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
             env.SendEventBean(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
             var result = env.Listener("s0").AssertOneGetNewAndReset();
+
             Assert.AreEqual("upper", result.Get("MYPROPERTY"));
             Assert.AreEqual("lower", result.Get("myproperty"));
-            Assert.IsTrue(
-                result.Get("myProperty").Equals("lowercamel") ||
-                result.Get("myProperty").Equals("uppercamel")); // JDK6 versus JDK7 JavaBean inspector
-            Assert.AreEqual("upper", result.Get("MyProperty"));
+            Assert.AreEqual("lowercamel", result.Get("myProperty"));
+            Assert.AreEqual("uppercamel", result.Get("MyProperty"));
+
             env.UndeployAll();
 
             env.CompileDeploy(
