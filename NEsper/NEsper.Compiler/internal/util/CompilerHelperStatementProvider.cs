@@ -27,7 +27,7 @@ using com.espertech.esper.common.@internal.context.aifactory.createtable;
 using com.espertech.esper.common.@internal.context.aifactory.createvariable;
 using com.espertech.esper.common.@internal.context.aifactory.createwindow;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
-using com.espertech.esper.common.@internal.context.aifactory.@select;
+using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.context.aifactory.update;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;

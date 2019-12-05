@@ -71,10 +71,7 @@ namespace com.espertech.esper.compat.threading.locks
         public bool Trace { get; set; }
 #endif
 
-        public bool IsWriterLockHeld
-        {
-            get { return _rwLock.IsWriterLockHeld; }
-        }
+        public bool IsWriterLockHeld => _rwLock.IsWriterLockHeld;
 
         /// <summary>
         /// Acquires the reader lock.

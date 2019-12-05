@@ -17,7 +17,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <summary>
         /// Default number of milliseconds for default timeouts.
         /// </summary>
-        public const int DefaultTimeout = 5000;
+        public const int DefaultTimeout = 10000;
 
         /// <summary>
         /// Number of milliseconds until read locks timeout

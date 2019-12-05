@@ -94,9 +94,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value>
         /// The is writer lock held.
         /// </value>
-        public bool IsWriterLockHeld {
-            get { return _subLock.IsWriterLockHeld; }
-        }
+        public bool IsWriterLockHeld => _subLock.IsWriterLockHeld;
 
 #if DEBUG
         /// <summary>

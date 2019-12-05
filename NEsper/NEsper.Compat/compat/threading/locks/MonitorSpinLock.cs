@@ -18,10 +18,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         /// <value>The lock timeout.</value>
 
-        public int LockTimeout
-        {
-            get { return _uLockTimeout; }
-        }
+        public int LockTimeout => _uLockTimeout;
 
         /// <summary>
         /// Uniquely identifies the lock.
@@ -52,10 +49,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         /// <value>The lock depth.</value>
 
-        public int LockDepth
-        {
-            get { return _uLockDepth; }
-        }
+        public int LockDepth => _uLockDepth;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MonitorSpinLock"/> class.
@@ -81,10 +75,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value>
         /// 	<c>true</c> if this instance is held by current thread; otherwise, <c>false</c>.
         /// </value>
-        public bool IsHeldByCurrentThread
-        {
-            get { return _uLockObj.IsHeldByCurrentThread; }
-        }
+        public bool IsHeldByCurrentThread => _uLockObj.IsHeldByCurrentThread;
 
         /// <summary>
         /// Acquires a lock against this instance.

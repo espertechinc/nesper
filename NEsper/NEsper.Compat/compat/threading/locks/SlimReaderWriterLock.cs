@@ -145,10 +145,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value>
         /// The is writer lock held.
         /// </value>
-        public bool IsWriterLockHeld
-        {
-            get { return _rwLock.IsWriteLockHeld; }
-        }
+        public bool IsWriterLockHeld => _rwLock.IsWriteLockHeld;
 
 #if DEBUG
         /// <summary>

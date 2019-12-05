@@ -370,6 +370,8 @@ namespace NEsper.Avro.Core
 
         public Schema SchemaAvro => _avroSchema;
 
+        public string SchemaAsJson => _avroSchema.ToJsonObject().ToString();
+
         private void Init()
         {
             var avroFields = _avroSchema.GetFields();

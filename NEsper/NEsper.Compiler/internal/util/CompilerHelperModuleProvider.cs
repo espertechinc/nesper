@@ -307,12 +307,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 NewInstance(typeof(List<StatementProvider>), Constant(statementClassNames.Count)));
             foreach (var statementClassName in statementClassNames) {
                 statementsProp.GetterBlock.ExprDotMethod(
-                    @Ref("statements"),
+                    Ref("statements"),
                     "Add",
                     NewInstance(statementClassName));
             }
 
-            statementsProp.GetterBlock.BlockReturn(@Ref("statements"));
+            statementsProp.GetterBlock.BlockReturn(Ref("statements"));
 
             // build stack
             CodegenStackGenerator.RecursiveBuildStack(moduleNameProp, "ModuleName", methods, properties);
@@ -420,13 +420,13 @@ namespace com.espertech.esper.compiler.@internal.util
                 NewInstance(typeof(Dictionary<ModuleProperty, object>)));
             foreach (var entry in props) {
                 property.GetterBlock.ExprDotMethod(
-                    @Ref("props"),
+                    Ref("props"),
                     "Put",
                     MakeModulePropKey(entry.Key),
                     MakeModulePropValue(entry.Value));
             }
 
-            property.GetterBlock.BlockReturn(@Ref("props"));
+            property.GetterBlock.BlockReturn(Ref("props"));
         }
 
         private static CodegenExpression MakeModulePropKey(ModuleProperty key)
@@ -475,7 +475,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPModuleExprDeclaredInitServicesConstants.GETEXPRDECLAREDCOLLECTOR)
-                        .Add("RegisterExprDeclared", Constant(expression.Key), @Ref("detail")));
+                        .Add("RegisterExprDeclared", Constant(expression.Key), Ref("detail")));
             return method;
         }
 
@@ -516,7 +516,7 @@ namespace com.espertech.esper.compiler.@internal.util
                         .Add(
                             "RegisterNamedWindow",
                             Constant(namedWindow.Key),
-                            @Ref("detail")));
+                            Ref("detail")));
             return method;
         }
 
@@ -535,7 +535,7 @@ namespace com.espertech.esper.compiler.@internal.util
                         .Add(
                             "RegisterTable",
                             Constant(table.Key),
-                            @Ref("detail")));
+                            Ref("detail")));
             return method;
         }
 
@@ -552,7 +552,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPModuleIndexInitServicesConstants.INDEXCOLLECTOR)
-                        .Add("RegisterIndex", @Ref("key"), @Ref("detail")));
+                        .Add("RegisterIndex", Ref("key"), Ref("detail")));
             return method;
         }
 
@@ -568,7 +568,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPModuleContextInitServicesConstants.GETCONTEXTCOLLECTOR)
-                        .Add("RegisterContext", Constant(context.Key), @Ref("detail")));
+                        .Add("RegisterContext", Constant(context.Key), Ref("detail")));
             return method;
         }
 
@@ -584,7 +584,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPModuleVariableInitServicesConstants.GETVARIABLECOLLECTOR)
-                        .Add("RegisterVariable", Constant(variable.Key), @Ref("detail")));
+                        .Add("RegisterVariable", Constant(variable.Key), Ref("detail")));
             return method;
         }
 
@@ -624,8 +624,8 @@ namespace com.espertech.esper.compiler.@internal.util
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
                             .Add(
                                 registerMethodName,
-                                @Ref("metadata"),
-                                @Ref("props"),
+                                Ref("metadata"),
+                                Ref("props"),
                                 Constant(superTypeNames),
                                 Constant(baseNestable.StartTimestampPropertyName),
                                 Constant(baseNestable.EndTimestampPropertyName)));
@@ -647,7 +647,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     .Expression(
                         ExprDotMethodChain(symbols.GetAddInitSvc(method))
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                            .Add("RegisterWrapper", @Ref("metadata"), @Ref("inner"), @Ref("props")));
+                            .Add("RegisterWrapper", Ref("metadata"), Ref("inner"), Ref("props")));
             }
             else if (eventType is BeanEventType beanType) {
                 var superTypes = MakeSupertypes(beanType.SuperTypes, symbols.GetAddInitSvc(method));
@@ -658,7 +658,7 @@ namespace com.espertech.esper.compiler.@internal.util
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
                             .Add(
                                 "RegisterBean",
-                                @Ref("metadata"),
+                                Ref("metadata"),
                                 Typeof(beanType.UnderlyingType),
                                 Constant(beanType.StartTimestampPropertyName),
                                 Constant(beanType.EndTimestampPropertyName),
@@ -672,19 +672,18 @@ namespace com.espertech.esper.compiler.@internal.util
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
                             .Add(
                                 "RegisterXML",
-                                @Ref("metadata"),
+                                Ref("metadata"),
                                 Constant(xmlType.RepresentsFragmentOfProperty),
                                 Constant(xmlType.RepresentsOriginalTypeName)));
             }
             else if (eventType is AvroSchemaEventType avroType) {
+                var avroTypeSchema = avroType.SchemaAsJson;
+                
                 method.Block
                     .Expression(
                         ExprDotMethodChain(symbols.GetAddInitSvc(method))
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                            .Add(
-                                "RegisterAvro",
-                                @Ref("metadata"),
-                                Constant(avroType.Schema.ToString())));
+                            .Add("RegisterAvro", Ref("metadata"), Constant(avroTypeSchema)));
             }
             else if (eventType is VariantEventType variantEventType) {
                 method.Block
@@ -693,7 +692,7 @@ namespace com.espertech.esper.compiler.@internal.util
                             .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
                             .Add(
                                 "RegisterVariant",
-                                @Ref("metadata"),
+                                Ref("metadata"),
                                 EventTypeUtility.ResolveTypeArrayCodegen(
                                     variantEventType.Variants,
                                     symbols.GetAddInitSvc(method)),
@@ -738,7 +737,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 method.Block.ExprDotMethod(dstRef, "Add", valueToAdd);
             }
 
-            method.Block.MethodReturn(@Ref("dst"));
+            method.Block.MethodReturn(Ref("dst"));
             return LocalMethod(method);
         }
 
@@ -825,10 +824,10 @@ namespace com.espertech.esper.compiler.@internal.util
                     throw new IllegalStateException("Unrecognized type '" + type + "'");
                 }
 
-                method.Block.ExprDotMethod(@Ref("props"), "Put", Constant(entry.Key), typeResolver);
+                method.Block.ExprDotMethod(Ref("props"), "Put", Constant(entry.Key), typeResolver);
             }
 
-            method.Block.MethodReturn(@Ref("props"));
+            method.Block.MethodReturn(Ref("props"));
             return method;
         }
 

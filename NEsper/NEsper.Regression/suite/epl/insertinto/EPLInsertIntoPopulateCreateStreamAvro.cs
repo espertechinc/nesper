@@ -20,6 +20,8 @@ using NEsper.Avro.Util.Support;
 
 using NUnit.Framework;
 
+using static NEsper.Avro.Extensions.TypeBuilder;
+
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
     public class EPLInsertIntoPopulateCreateStreamAvro
@@ -27,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            //execs.Add(new EPLInsertIntoCompatExisting());
+            execs.Add(new EPLInsertIntoCompatExisting());
             execs.Add(new EPLInsertIntoNewSchema());
             return execs;
         }
@@ -76,14 +78,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
+                var insertInto = typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName;
                 var epl = "@Name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           " select 1 as myInt," +
                           "{1L, 2L} as myLongArray," +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName +
-                          ".MakeByteArray() as myByteArray, " +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName +
-                          ".MakeMapStringString() as myMap " +
+                          $"{insertInto}.MakeByteArray() as myByteArray, " +
+                          $"{insertInto}.MakeMapStringString() as myMap " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -100,24 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var designSchema = SchemaBuilder.Record(
                     "name",
-                    TypeBuilder.RequiredInt("myInt"),
-                    TypeBuilder.Field(
-                        "myLongArray",
-                        TypeBuilder.Array(
-                            TypeBuilder.Union(
-                                TypeBuilder.NullType(),
-                                TypeBuilder.LongType()))),
-                    TypeBuilder.Field(
-                        "myByteArray",
-                        TypeBuilder.BytesType()),
-                    TypeBuilder.Field(
-                        "myMap",
-                        TypeBuilder.Map(
-                            TypeBuilder.StringType(
-                                TypeBuilder.Property(
-                                    AvroConstant.PROP_STRING_KEY,
-                                    AvroConstant.PROP_STRING_VALUE))))
-                );
+                    RequiredInt("myInt"),
+                    Field("myLongArray", Array(Union(NullType(), LongType()))),
+                    Field("myByteArray", BytesType()),
+                    Field("myMap", Map(StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))));
+                
                 var assembledSchema = ((AvroEventType) @event.EventType).SchemaAvro;
                 var compareMsg = SupportAvroUtil.CompareSchemas(designSchema, assembledSchema);
                 Assert.IsNull(compareMsg, compareMsg);

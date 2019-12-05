@@ -57,13 +57,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // Wait for completion
-            try {
-                foreach (var thread in threads) {
-                    thread.Join();
-                }
-            }
-            catch (ThreadInterruptedException) {
-                //ex.PrintStackTrace();
+            foreach (var thread in threads) {
+                thread.Join();
             }
 
             var endTime = PerformanceObserver.MilliTime;
@@ -122,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // Create threads to send events
             var runnables = new TimeWinRunnable[threads.Length];
-            ILockable @lock = new MonitorSlimLock();
+            var @lock = new MonitorSpinLock();
             for (var i = 0; i < threads.Length; i++) {
                 runnables[i] = new TimeWinRunnable(i, env, @lock, symbols, numEvents);
                 threads[i] = new Thread(runnables[i].Run) {

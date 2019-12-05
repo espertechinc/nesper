@@ -13,5 +13,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
     public interface AvroSchemaEventType : EventType
     {
         object Schema { get; }
+        
+        string SchemaAsJson { get; }
     }
 } // end of namespace

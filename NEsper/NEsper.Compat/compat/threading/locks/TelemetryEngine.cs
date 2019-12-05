@@ -21,19 +21,13 @@ namespace com.espertech.esper.compat.threading.locks
         /// Gets the categories.
         /// </summary>
         /// <value>The categories.</value>
-        public IEnumerable<TelemetryLockCategory> Categories
-        {
-            get { return _categoryDictionary.Values; }
-        }
-        
+        public IEnumerable<TelemetryLockCategory> Categories => _categoryDictionary.Values;
+
         /// <summary>
         /// Gets the category dictionary.
         /// </summary>
         /// <value>The category dictionary.</value>
-        public IDictionary<string, TelemetryLockCategory> CategoryDictionary
-        {
-            get { return _categoryDictionary; }
-        }
+        public IDictionary<string, TelemetryLockCategory> CategoryDictionary => _categoryDictionary;
 
         /// <summary>
         /// Gets the category.

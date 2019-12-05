@@ -18,10 +18,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         /// <value>The lock timeout.</value>
 
-        public int LockTimeout
-        {
-            get { return _uLockTimeout; }
-        }
+        public int LockTimeout => _uLockTimeout;
 
         /// <summary>
         /// Uniquely identifies the lock.
@@ -58,10 +55,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         /// <value>The lock depth.</value>
 
-        public int LockDepth
-        {
-            get { return _uLockDepth; }
-        }
+        public int LockDepth => _uLockDepth;
 
         public MonitorSlimLock() : this(LockConstants.DefaultTimeout)
         {
@@ -84,10 +78,7 @@ namespace com.espertech.esper.compat.threading.locks
         /// <value>
         /// 	<c>true</c> if this instance is held by current thread; otherwise, <c>false</c>.
         /// </value>
-        public bool IsHeldByCurrentThread
-        {
-            get { return _uLockOwner == Thread.CurrentThread; }
-        }
+        public bool IsHeldByCurrentThread => _uLockOwner == Thread.CurrentThread;
 
         /// <summary>
         /// Acquires a lock against this instance.
@@ -156,13 +147,12 @@ namespace com.espertech.esper.compat.threading.locks
             }
             else
             {
-                if (_uLockObj.Enter(lockTimeout))
-                {
+                if (_uLockObj.Enter(lockTimeout)) {
                     _uLockOwner = Thread.CurrentThread;
                     _uLockDepth = 1;
                 }
                 else {
-                    throw new TimeoutException("Unable to obtain lock before timeout occurred");
+                    throw new TimeoutException($"Unable to obtain lock before timeout occurred");
                 }
             }
         }

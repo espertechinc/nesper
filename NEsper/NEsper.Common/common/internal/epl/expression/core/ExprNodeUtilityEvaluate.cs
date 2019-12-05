@@ -57,7 +57,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     eventsInWindow.Add(events[0]);
                 }
                 catch (InvalidCastException e) {
-                    Console.WriteLine("STOP");
                 }
             }
         }

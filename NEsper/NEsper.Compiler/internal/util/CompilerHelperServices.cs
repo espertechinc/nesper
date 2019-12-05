@@ -51,7 +51,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilerHelperServices
     {
-        protected internal static ModuleCompileTimeServices GetCompileTimeServices(
+        internal static ModuleCompileTimeServices GetCompileTimeServices(
             CompilerArguments arguments,
             string moduleName,
             ICollection<string> moduleUses)
@@ -476,14 +476,14 @@ namespace com.espertech.esper.compiler.@internal.util
         }
 
 
-        protected internal static ScriptServiceCompileTime MakeScriptService(Configuration configuration)
+        internal static ScriptServiceCompileTime MakeScriptService(Configuration configuration)
         {
             var scriptService = new ScriptServiceCompileTimeImpl();
             scriptService.DiscoverEngines(configuration.Container);
             return scriptService;
         }
 
-        protected internal static ImportServiceCompileTime MakeImportService(Configuration configuration)
+        internal static ImportServiceCompileTime MakeImportService(Configuration configuration)
         {
             var timeAbacus = TimeAbacusFactory.Make(configuration.Common.TimeSource.TimeUnit);
             var expression = configuration.Compiler.Expression;

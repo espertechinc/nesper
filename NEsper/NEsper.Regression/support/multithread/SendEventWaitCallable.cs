@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                     ThreadLogUtil.Info("sending event");
                     var @event = events.Current;
-                    runtime.EventService.SendEventBean(@event, @event.GetType().FullName);
+                    runtime.EventService.SendEventBean(@event, @event.GetType().Name);
                 }
             }
             catch (Exception ex) {

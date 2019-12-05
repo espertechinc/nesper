@@ -444,16 +444,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         if (!isDuckTyping) {
                             throw new ExprValidationException(e.Message, e);
                         }
-                        else {
-                            var duck = new ExprDotMethodForgeDuck(
-                                validationContext.StatementName,
-                                validationContext.ImportService,
-                                chainElement.Name,
-                                paramTypes,
-                                paramForges);
-                            methodForges.Add(duck);
-                            currentInputType = duck.TypeInfo;
-                        }
+
+                        var duck = new ExprDotMethodForgeDuck(
+                            validationContext.StatementName,
+                            validationContext.ImportService,
+                            chainElement.Name,
+                            paramTypes,
+                            paramForges);
+                        methodForges.Add(duck);
+                        currentInputType = duck.TypeInfo;
                     }
 
                     continue;
