@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public void ValidateWithoutContext()
         {
-            if (this.ChildNodes.Length < 2) {
+            if (ChildNodes.Length < 2) {
                 throw new ExprValidationException("The IN operator requires at least 2 child expressions");
             }
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             bool hasCollectionOrArray = false;
-            for (int i = 0; i < this.ChildNodes.Length - 1; i++) {
+            for (int i = 0; i < ChildNodes.Length - 1; i++) {
                 Type propType = ChildNodes[i + 1].Forge.EvaluationType;
                 if (propType == null) {
                     continue;
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Check if we need to coerce
             bool mustCoerce = false;
-            SimpleNumberCoercer coercer = null;
+            Coercer coercer = null;
             if (TypeHelper.IsNumeric(coercionType)) {
                 foreach (Type compareType in comparedTypes) {
                     if (coercionType != Boxing.GetBoxedType(compareType)) {
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             ExprInNodeImpl other = (ExprInNodeImpl) node;
-            return other.isNotIn == this.isNotIn;
+            return other.isNotIn == isNotIn;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

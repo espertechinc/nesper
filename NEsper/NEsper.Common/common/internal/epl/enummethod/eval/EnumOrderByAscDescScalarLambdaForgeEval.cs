@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -92,10 +93,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             var innerBoxedType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
 
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(FlexCollection),
                     typeof(EnumOrderByAscDescScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
@@ -109,35 +110,36 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerBoxedType,
                     "value",
                     forge.InnerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
-                .DeclareVar<object>("entry", ExprDotMethod(@Ref("sort"), "Get", @Ref("value")))
-                .IfCondition(EqualsNull(@Ref("entry")))
-                .Expression(ExprDotMethod(@Ref("sort"), "Put", @Ref("value"), @Ref("next")))
+                .DeclareVar<object>("entry", ExprDotMethod(Ref("sort"), "Get", Ref("value")))
+                .IfCondition(EqualsNull(Ref("entry")))
+                .Expression(ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("next")))
                 .BlockContinue()
-                .IfCondition(InstanceOf(@Ref("entry"), typeof(ICollection<object>)))
-                .ExprDotMethod(Cast(typeof(ICollection<object>), @Ref("entry")), "Add", @Ref("next"))
+                .IfCondition(InstanceOf(Ref("entry"), typeof(ICollection<object>)))
+                .ExprDotMethod(Cast(typeof(ICollection<object>), Ref("entry")), "Add", Ref("next"))
                 .BlockContinue()
                 .DeclareVar<Deque<object>>("coll", NewInstance<ArrayDeque<object>>(Constant(2)))
-                .ExprDotMethod(@Ref("coll"), "Add", @Ref("entry"))
-                .ExprDotMethod(@Ref("coll"), "Add", @Ref("next"))
-                .ExprDotMethod(@Ref("sort"), "Put", @Ref("value"), @Ref("coll"))
+                .ExprDotMethod(Ref("coll"), "Add", Ref("entry"))
+                .ExprDotMethod(Ref("coll"), "Add", Ref("next"))
+                .ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("coll"))
                 .AssignRef("hasColl", ConstantTrue())
                 .BlockEnd();
             block.MethodReturn(
-                StaticMethod(
-                    typeof(EnumOrderByAscDescEventsForgeEval),
-                    "EnumOrderBySortEval",
-                    @Ref("sort"),
-                    @Ref("hasColl"),
-                    Constant(forge.descending)));
+                FlexWrap(
+                    StaticMethod(
+                        typeof(EnumOrderByAscDescEventsForgeEval),
+                        "EnumOrderBySortEval",
+                        Ref("sort"),
+                        Ref("hasColl"),
+                        Constant(forge.descending))));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

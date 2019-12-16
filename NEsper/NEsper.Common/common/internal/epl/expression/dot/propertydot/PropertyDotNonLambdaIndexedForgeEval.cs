@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                 return null;
             }
 
-            var key = paramEval.Evaluate(eventsPerStream, isNewData, context).AsInt();
+            var key = paramEval.Evaluate(eventsPerStream, isNewData, context).AsInt32();
             return forge.IndexedGetter.Get(@event, key);
         }
 
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                     forge.IndexedGetter.EventBeanGetIndexedCodegen(
                         methodNode,
                         codegenClassScope,
-                        @Ref("@event"),
-                        @Ref("key")));
+                        Ref("@event"),
+                        Ref("key")));
             return LocalMethod(methodNode);
         }
     }

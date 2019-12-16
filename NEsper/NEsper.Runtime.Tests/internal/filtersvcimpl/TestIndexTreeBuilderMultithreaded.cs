@@ -197,7 +197,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreaded()
         {
             var topNode = new FilterHandleSetNode(new SlimReaderWriterLock());
@@ -211,7 +211,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             PerformMultithreadedTest(new FilterHandleSetNode(new SlimReaderWriterLock()), 4, 1000, 1);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestVerifyFilterSpecSet()
         {
             // Add all the above filter definitions

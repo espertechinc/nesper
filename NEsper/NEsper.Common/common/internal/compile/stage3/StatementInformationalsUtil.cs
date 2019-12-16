@@ -18,7 +18,7 @@ using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;

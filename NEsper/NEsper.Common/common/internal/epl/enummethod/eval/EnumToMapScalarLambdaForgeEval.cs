@@ -80,23 +80,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var methodNode = codegenMethodScope.MakeChildWithScope(
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(
                     typeof(IDictionary<object, object>),
                     typeof(EnumToMapScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }));
-            block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)))
+            block
+                .DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)))
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
-            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block
+                .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar<object>(
                     "key",

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             ExprForge havingEval)
             : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
                 eps,
                 ConstantTrue(),
                 evalCtx);
@@ -75,13 +75,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.IfCondition(ExprDotMethod(left, "Equals", @Ref("rhs"))).BlockReturn(Constant(!isNotIn));
+                method.Block.IfCondition(ExprDotMethod(left, "Equals", Ref("rhs"))).BlockReturn(Constant(!isNotIn));
             }
             else {
                 method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                    .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), rightEvalType))
-                    .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "Equals", @Ref("right")))
-                    .IfCondition(@Ref("eq"))
+                    .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), rightEvalType))
+                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")))
+                    .IfCondition(Ref("eq"))
                     .BlockReturn(Constant(!isNotIn));
             }
 

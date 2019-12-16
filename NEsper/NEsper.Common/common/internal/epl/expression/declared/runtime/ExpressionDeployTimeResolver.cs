@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                         EPStatementInitServicesConstants.REF))
                 .MethodReturn(
                     NewInstance<ExprDeclaredCacheKeyGlobal>(
-                        @Ref("deploymentId"),
+                        Ref("deploymentId"),
                         Constant(expression.Name)));
 
             return classScope.NamespaceScope.AddInstanceFieldUnshared(

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            return forge.IndexedGetter.Get(@event, index.AsInt());
+            return forge.IndexedGetter.Get(@event, index.AsInt32());
         }
 
         public static CodegenExpression Codegen(

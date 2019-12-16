@@ -459,9 +459,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     return false;
                 }
 
-                var valueD = value.AsLong();
-                var lowerD = lower.AsLong();
-                var upperD = upper.AsLong();
+                var valueD = value.AsInt64();
+                var lowerD = lower.AsInt64();
+                var upperD = upper.AsInt64();
 
                 if (lowerD > upperD) {
                     var temp = upperD;

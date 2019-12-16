@@ -13,7 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
-using com.espertech.esper.common.@internal.epl.resultset.@select.eval;
+using com.espertech.esper.common.@internal.epl.resultset.select.eval;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.core;

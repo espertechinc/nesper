@@ -113,7 +113,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddTwice()
         {
             service.Add(100, callbacks[0], slots[0][0]);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
                 slots[0][0]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIncorrectRemove()
         {
             var evaluator = new SchedulingServiceImpl(new TimeSourceServiceImpl());
@@ -138,7 +138,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             evaluator.Remove(callback, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTrigger()
         {
             long startTime = 0;
@@ -207,7 +207,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             CheckCallbacks(callbacks, new[] { 0, 0, 0, 0, 0 });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestWaitAndSpecTogether()
         {
             var dateTimeEx = DateTimeEx.GetInstance(

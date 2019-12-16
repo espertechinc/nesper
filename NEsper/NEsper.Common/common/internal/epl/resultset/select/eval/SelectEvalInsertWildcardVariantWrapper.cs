@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 eventBeanFactory,
                 "AdapterForTypedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
-                @Ref("props"),
+                Ref("props"),
                 innerType);
             return ExprDotMethod(type, "GetValueAddEventBean", wrapped);
         }

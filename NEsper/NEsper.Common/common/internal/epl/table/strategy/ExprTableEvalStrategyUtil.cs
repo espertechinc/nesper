@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
                 //    entry.Value.Make(method, symbols, classScope));
             }
 
-            method.Block.MethodReturn(@Ref("ta"));
+            method.Block.MethodReturn(Ref("ta"));
             return LocalMethod(method);
         }
 

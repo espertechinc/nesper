@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public abstract class ScriptEvaluatorBase : ScriptEvaluator
     {
-        internal readonly SimpleNumberCoercer coercer;
+        internal readonly Coercer coercer;
         internal readonly string[] parameterNames;
         internal readonly ExprEvaluator[] parameters;
 
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             string scriptName,
             string[] parameterNames,
             ExprEvaluator[] parameters,
-            SimpleNumberCoercer coercer)
+            Coercer coercer)
         {
             this.scriptName = scriptName;
             this.parameterNames = parameterNames;

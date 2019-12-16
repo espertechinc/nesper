@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     {
         public const string NAME_MATCHINGEVENTS = "matchingEvents";
 
-        public static readonly CodegenExpressionRef REF_MATCHINGEVENTS = @Ref(NAME_MATCHINGEVENTS);
+        public static readonly CodegenExpressionRef REF_MATCHINGEVENTS = Ref(NAME_MATCHINGEVENTS);
 
         private CodegenExpressionRef optionalMatchingEventRef;
 
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public override void Provide(IDictionary<string, Type> symbols)
         {
             if (optionalMatchingEventRef != null) {
-                symbols.Put(optionalMatchingEventRef.Ref, typeof(ICollection<EventBean>));
+                symbols.Put(optionalMatchingEventRef.Ref, typeof(FlexCollection));
             }
 
             base.Provide(symbols);

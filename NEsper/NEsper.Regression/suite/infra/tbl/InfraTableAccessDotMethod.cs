@@ -266,8 +266,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var output = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     output,
-                    new [] { "c0","c1","c3" },
-                    new object[] {55, "x", "p0value"});
+                    new [] {
+                        "c0","c1","c3"
+                    },
+                    new object[] {
+                        55, "x", "p0value"
+                    });
                 Assert.AreEqual(1, ((ICollection<object>) output.Get("c2")).Count);
                 Assert.AreEqual("[\"0_p0\", \"1_p0\"]", output.Get("c4").RenderAny());
 

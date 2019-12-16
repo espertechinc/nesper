@@ -27,12 +27,12 @@ namespace com.espertech.esper.common.@internal.view.core
                 throw new EPException(GetSizeValidationMsg(viewName, size));
             }
 
-            return size.AsInt();
+            return size.AsInt32();
         }
 
         private static bool ValidateSize(object size)
         {
-            return !(size == null || size.AsInt() <= 0);
+            return !(size == null || size.AsInt32() <= 0);
         }
 
         private static string GetSizeValidationMsg(

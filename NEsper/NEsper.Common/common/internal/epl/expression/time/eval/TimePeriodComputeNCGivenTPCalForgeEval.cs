@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var added = new int[Evaluators.Length];
             for (var i = 0; i < Evaluators.Length; i++) {
-                added[i] = Evaluators[i].Evaluate(null, true, context).AsInt();
+                added[i] = Evaluators[i].Evaluate(null, true, context).AsInt32();
             }
 
             return new TimePeriodComputeConstGivenCalAddEval(Adders, added, TimeAbacus, IndexMicroseconds, TimeZone);
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
 
             var usec = 0;
             for (var i = 0; i < Adders.Length; i++) {
-                var value = Evaluators[i].Evaluate(eventsPerStream, newData, context).AsInt();
+                var value = Evaluators[i].Evaluate(eventsPerStream, newData, context).AsInt32();
                 if (i == IndexMicroseconds) {
                     usec = value;
                 }

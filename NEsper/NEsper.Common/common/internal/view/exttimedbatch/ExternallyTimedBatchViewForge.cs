@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                         "Externally-timed batch view requires a Long-typed reference point in msec as a third parameter");
                 }
 
-                optionalReferencePoint = constant.AsLong();
+                optionalReferencePoint = constant.AsInt64();
             }
 
             eventType = parentEventType;

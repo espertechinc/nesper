@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", @Ref("result"), resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", Ref("result"), resultEventType));
             return methodNode;
         }
     }

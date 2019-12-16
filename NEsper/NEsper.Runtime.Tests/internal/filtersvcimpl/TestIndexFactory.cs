@@ -35,7 +35,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 .CreateBeanType(typeof(SupportBean));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCreateIndex()
         {
             // Create a "greater" index

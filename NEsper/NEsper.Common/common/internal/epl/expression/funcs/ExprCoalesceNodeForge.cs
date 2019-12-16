@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool[] isNumericCoercion)
         {
             ForgeRenderable = parent;
-            EvaluationType = resultType;
+            EvaluationType = resultType.GetBoxedType(); // Coalescence is a boxed return
             IsNumericCoercion = isNumericCoercion;
         }
 

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                 Ref("eval"),
                 "TimeAbacus",
                 classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE));
-            method.Block.MethodReturn(@Ref("eval"));
+            method.Block.MethodReturn(Ref("eval"));
 
             return LocalMethod(method);
         }

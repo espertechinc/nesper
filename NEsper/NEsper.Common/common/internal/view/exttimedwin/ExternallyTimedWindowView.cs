@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         {
             eventsPerStream[0] = obj;
             var num = factory.timestampEval.Evaluate(eventsPerStream, true, agentInstanceViewFactoryContext);
-            return num.AsLong();
+            return num.AsInt64();
         }
 
         /// <summary>

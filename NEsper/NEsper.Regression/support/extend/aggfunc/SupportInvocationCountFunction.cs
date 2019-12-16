@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 
         public void Enter(object value)
         {
-            var amount = value.AsInt();
+            var amount = value.AsInt32();
             sum += amount;
         }
 

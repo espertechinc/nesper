@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 
         public void Enter(object value)
         {
-            values.Add(value.AsInt());
+            values.Add(value.AsInt32());
         }
 
         public void Leave(object value)

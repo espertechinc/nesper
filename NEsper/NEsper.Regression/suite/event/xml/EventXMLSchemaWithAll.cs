@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             var type = env.CompileDeploy("@Name('s1') select * from PageVisitEvent").Statement("s1").EventType;
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("sessionId", typeof(XmlNode), null, false, false, false, false, true),
                     new EventPropertyDescriptor("customerId", typeof(XmlNode), null, false, false, false, false, true),

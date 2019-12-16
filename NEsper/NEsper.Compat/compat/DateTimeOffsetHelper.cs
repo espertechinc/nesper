@@ -238,12 +238,12 @@ namespace com.espertech.esper.compat
 
         // --------------------------------------------------------------------------------
 
-        public static DateTimeOffset TruncatedTo(this DateTimeOffset dto, DateTimeFieldEnum field)
+        public static DateTimeOffset Truncate(this DateTimeOffset dto, DateTimeFieldEnum field)
         {
             switch (field)
             {
                 case DateTimeFieldEnum.MILLISEC:
-                    return dto;
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, dto.Millisecond, dto.Offset);
                 case DateTimeFieldEnum.SECOND:
                     return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, 0, dto.Offset);
                 case DateTimeFieldEnum.MINUTE:
@@ -261,9 +261,127 @@ namespace com.espertech.esper.compat
                     throw new NotSupportedException();
             }
         }
+        
+        // --------------------------------------------------------------------------------
+
+        public static DateTimeOffset Round(this DateTimeOffset dto, DateTimeFieldEnum field)
+        {
+            switch (field) {
+                case DateTimeFieldEnum.MILLISEC: {
+                    dto = dto.AddTicks(5000);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, dto.Millisecond, dto.Offset);
+                }
+                case DateTimeFieldEnum.SECOND: {
+                    dto = dto.AddMilliseconds(500);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.MINUTE: {
+                    dto = dto.AddSeconds(30);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.HOUR: {
+                    dto = dto.AddMinutes(30);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, 0, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.DAY:
+                case DateTimeFieldEnum.DATE: {
+                    dto = dto.Add(TimeSpan.FromSeconds(43200));
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.MONTH: {
+                    var stMonth = dto.Month;
+                    var stYear = dto.Year;
+                    var stDate = new DateTimeOffset(stYear, stMonth, 1, 0, 0, 0, 0, dto.Offset);
+
+                    var edMonth = stMonth == 12 ? 1 : stMonth + 1;
+                    var edYear = stMonth == 12 ? stYear + 1 : stYear;
+                    var edDate = new DateTimeOffset(edYear, edMonth, 1, 0, 0, 0, 0, dto.Offset);
+
+                    var ticksInHalfMonth = (edDate.Ticks - stDate.Ticks) / 2;
+
+                    dto = dto.AddTicks(ticksInHalfMonth);
+                    return new DateTimeOffset(dto.Year, dto.Month, 1, 0, 0, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.YEAR: {
+                    var stYear = dto.Year;
+                    var stDate = new DateTimeOffset(stYear, 1, 1, 0, 0, 0, 0, dto.Offset);
+                    var edDate = new DateTimeOffset(stYear + 1, 1, 1, 0, 0, 0, 0, dto.Offset);
+
+                    var ticksInHalfYear = (edDate.Ticks - stDate.Ticks) / 2;
+
+                    dto = dto.AddTicks(ticksInHalfYear);
+                    return new DateTimeOffset(dto.Year, 1, 1, 0, 0, 0, 0, dto.Offset);
+                }
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
 
         // --------------------------------------------------------------------------------
 
+        public static DateTimeOffset Ceiling(this DateTimeOffset dto, DateTimeFieldEnum field)
+        {
+            switch (field) {
+                case DateTimeFieldEnum.MILLISEC: {
+                    dto = dto.AddTicks(9999);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, dto.Millisecond, dto.Offset);
+                }
+                case DateTimeFieldEnum.SECOND: {
+                    dto = dto.AddMilliseconds(999);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.MINUTE: {
+                    dto = dto.AddSeconds(59);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.HOUR: {
+                    dto = dto.AddMinutes(59);
+                    return new DateTimeOffset(dto.Year, dto.Month, dto.Day, dto.Hour, 0, 0, 0, dto.Offset);
+                }
+
+                case DateTimeFieldEnum.DAY:
+                case DateTimeFieldEnum.DATE: {
+                    var baseDto = new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, 0, dto.Offset);
+                    if (baseDto == dto) {
+                        return baseDto;
+                    }
+
+                    return baseDto.AddDays(1);
+                }
+
+                case DateTimeFieldEnum.MONTH: {
+                    var baseDto = new DateTimeOffset(dto.Year, dto.Month, 1, 0, 0, 0, 0, dto.Offset);
+                    if (baseDto == dto) {
+                        return baseDto;
+                    }
+
+                    return baseDto.AddMonths(1);
+                }
+
+                case DateTimeFieldEnum.YEAR: {
+                    var baseDto = new DateTimeOffset(dto.Year, 1, 1, 0, 0, 0, 0, dto.Offset);
+                    if (baseDto == dto) {
+                        return baseDto;
+                    }
+
+                    return baseDto.AddYears(1);
+                }
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        // --------------------------------------------------------------------------------
+        
         public static ValueRange<int> Range(
             this DateTimeOffset dt,
             DateTimeFieldEnum field)

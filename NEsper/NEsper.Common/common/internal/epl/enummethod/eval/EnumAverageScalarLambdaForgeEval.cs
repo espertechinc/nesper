@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAverageEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .DeclareVar<double>("sum", Constant(0d))
@@ -101,11 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(
                         NewArrayByLength(typeof(object), Constant(1)),
                         resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "num",
@@ -118,13 +118,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignRef(
                     "sum",
                     Op(
-                        @Ref("sum"),
+                        Ref("sum"),
                         "+",
-                        SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref("num"), innerType)))
+                        SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref("num"), innerType)))
                 .BlockEnd();
-            block.IfCondition(EqualsIdentity(@Ref("count"), Constant(0)))
+            block.IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Op(@Ref("sum"), "/", @Ref("count")));
+                .MethodReturn(Op(Ref("sum"), "/", Ref("count")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

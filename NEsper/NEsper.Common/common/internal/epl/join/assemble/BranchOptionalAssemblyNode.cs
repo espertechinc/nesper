@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.epl.@join.rep;
+using com.espertech.esper.common.@internal.epl.join.rep;
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble

@@ -58,7 +58,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 false);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFindIndex()
         {
             IList<FilterParamIndexBase> indexes = new List<FilterParamIndexBase>();
@@ -96,7 +96,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.AreEqual(indexThree, pair.Second);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFindParameter()
         {
             var indexOne = IndexFactory.CreateIndex(MakeLookupable("BoolPrimitive"), lockFactory, FilterOperator.EQUAL);

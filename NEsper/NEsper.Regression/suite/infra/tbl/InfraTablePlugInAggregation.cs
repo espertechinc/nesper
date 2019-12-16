@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, words[i]));
                 var listener = env.Listener("s0");
                 var theEvent = listener.AssertOneGetNewAndReset();
-                var count = theEvent.Get("c0").AsBoxedInt();
+                var count = theEvent.Get("c0").AsBoxedInt32();
                 Assert.AreEqual(counts[i], count, "failed for word '" + words[i] + "'");
             }
         }

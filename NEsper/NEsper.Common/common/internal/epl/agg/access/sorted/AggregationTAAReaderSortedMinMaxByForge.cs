@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     "strat",
                     NewInstance(typeof(AggregationTAAReaderSortedMinMaxBy)))
                 .SetProperty(Ref("strat"), "Max", Constant(max))
-                .MethodReturn(@Ref("strat"));
+                .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }
     }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -169,7 +170,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             else {
                 var desc = EventTypeUtility.GetNestablePropertyDescriptor(streamType, propertyName);
                 if (desc != null && desc.IsIndexed && !desc.IsRequiresIndex && desc.PropertyComponentType != null) {
-                    if (propertyType.IsArray) {
+                    if (propertyType == typeof(string)) {
+                        enumEvaluator = new PropertyDotScalarStringForge(
+                            propertyName,
+                            streamId,
+                            getter);
+                    }
+                    else if (propertyType.IsArray) {
                         enumEvaluator = new PropertyDotScalarArrayForge(
                             propertyName,
                             streamId,
@@ -538,12 +545,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             Type currentTargetType;
             if (optionalResultWrapLambda != null) {
                 currentTargetType = EPTypeHelper.GetCodegenReturnType(optionalResultWrapLambda.TypeInfo);
+
+                var wrapped = optionalResultWrapLambda.CodegenConvertNonNull(Ref("inner"), methodNode, codegenClassScope);
+                if (currentTargetType == typeof(FlexCollection)) {
+                    wrapped = FlexWrap(wrapped);
+                }
+                
                 block
                     .IfRefNullReturnNull("inner")
-                    .DeclareVar(
-                        currentTargetType,
-                        "wrapped",
-                        optionalResultWrapLambda.CodegenConvertNonNull(Ref("inner"), methodNode, codegenClassScope));
+                    .DeclareVar(currentTargetType, "wrapped", wrapped);
+            }
+            else if (innerType == typeof(FlexCollection)) {
+                block.DeclareVar(innerType, "wrapped", FlexWrap(Ref("inner")));
+                currentTargetType = innerType;
             }
             else {
                 block.DeclareVar(innerType, "wrapped", Ref("inner"));
@@ -569,7 +583,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         new EPTypeCodegenSharable(forges[i].TypeInfo, codegenClassScope));
                 }
 
-                var reftype = EPTypeHelper.GetCodegenReturnType(forges[i].TypeInfo).GetBoxedType();
+                var reftype = forges[i].TypeInfo.GetCodegenReturnType().GetBoxedType();
                 if (reftype == typeof(void)) {
                     block.Expression(
                             forges[i]

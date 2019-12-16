@@ -30,12 +30,12 @@ namespace com.espertech.esper.common.@internal.type
                     return null;
                 }
 
-                var i2int = i2.AsInt();
+                var i2int = i2.AsInt32();
                 if (i2int == 0) {
                     return null;
                 }
 
-                return i1.AsInt() / i2int;
+                return i1.AsInt32() / i2int;
             }
 
             public CodegenExpression Codegen(

@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var delta = end - start;
 
 #if DEBUG // DEBUG builds are a little slower
-            Assert.That(delta, Is.LessThan(2500), "delta=" + delta);
+            Assert.That(delta, Is.LessThan(2750), "delta=" + delta);
 #else
             Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
 #endif

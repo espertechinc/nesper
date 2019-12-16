@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.access;

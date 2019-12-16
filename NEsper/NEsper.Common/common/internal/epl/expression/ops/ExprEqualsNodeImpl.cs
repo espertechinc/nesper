@@ -103,14 +103,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge = new ExprEqualsNodeForgeNC(this);
             }
             else {
+                if (typeOne.IsArray && typeTwo.IsArray) {
+                    var typeOneElement = typeOne.GetElementType();
+                    var typeTwoElement = typeTwo.GetElementType();
+                    // Check to see if we have a "boxed" element trying to compare against an unboxed element.  We can
+                    // coerce this with a custom widener.
+                    if (typeOneElement.GetBoxedType() == typeTwoElement.GetBoxedType()) {
+                        coercionType = typeOneElement.GetBoxedType().MakeArrayType();
+                        var coercerLhs = ArrayCoercerFactory.GetCoercer(typeOne, coercionType);
+                        var coercerRhs = ArrayCoercerFactory.GetCoercer(typeTwo, coercionType);
+                        forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs);
+                        return null;
+                    }
+                }
+
                 if (!coercionType.IsNumeric()) {
                     throw new ExprValidationException(
                         "Cannot convert datatype '" +
-                        coercionType.Name +
+                        coercionType.CleanName() +
                         "' to a value that fits both type '" +
-                        typeOne.Name +
+                        typeOne.CleanName() +
                         "' and type '" +
-                        typeTwo.Name +
+                        typeTwo.CleanName() +
                         "'");
                 }
 

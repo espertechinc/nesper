@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var value = param.Evaluate(eventsPerStream, isNewData, context);
             if (value.IsNumber()) {
-                return ActionCalendarPlusMinusNumber(dateTimeEx, factor, value.AsLong());
+                return ActionCalendarPlusMinusNumber(dateTimeEx, factor, value.AsInt64());
             }
             else {
                 return ActionCalendarPlusMinusTimePeriod(dateTimeEx, factor, (TimePeriod) value);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var value = param.Evaluate(eventsPerStream, isNewData, context);
             if (value.IsNumber()) {
-                return ActionLDTPlusMinusNumber(dateTimeOffset, factor, value.AsLong());
+                return ActionLDTPlusMinusNumber(dateTimeOffset, factor, value.AsInt64());
             }
 
             return ActionLDTPlusMinusTimePeriod(dateTimeOffset, factor, (TimePeriod) value);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var value = param.Evaluate(eventsPerStream, isNewData, context);
             if (value.IsNumber()) {
-                return ActionZDTPlusMinusNumber(dateTime, factor, value.AsLong());
+                return ActionZDTPlusMinusNumber(dateTime, factor, value.AsInt64());
             }
 
             return ActionZDTPlusMinusTimePeriod(dateTime, factor, (TimePeriod) value);

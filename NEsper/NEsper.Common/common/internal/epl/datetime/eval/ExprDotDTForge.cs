@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             return new DTLocalDateTimeReformatForge(reformatForge);
                         }
 
-                        return new DTLocalCalOpsReformatForge(calendarForges, reformatForge);
+                        return new DTLocalDateTimeOpsReformatForge(calendarForges, reformatForge);
                     }
                 }
                 else if (intervalForge != null) {
@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             return new DTLocalDateTimeIntervalForge(intervalForge);
                         }
 
-                        return new DTLocalDtxOpsIntervalForge(calendarForges, intervalForge);
+                        return new DTLocalDateTimeOpsIntervalForge(calendarForges, intervalForge);
                     }
                 }
                 else { // only calendar op, nothing else

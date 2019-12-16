@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     .CompileExecuteFAF("select count(*) as cnt from " + windowName, path)
                     .Array[0]
                     .Get("cnt")
-                    .AsLong();
+                    .AsInt64();
             }
 
             return SupportInfraUtil.GetDataWindowCountNoContext(env, statementName, windowName);

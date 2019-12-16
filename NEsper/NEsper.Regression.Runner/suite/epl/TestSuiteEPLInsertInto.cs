@@ -51,13 +51,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertInto()
         {
             RegressionRunner.Run(session, EPLInsertInto.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoEmptyPropType()
         {
             RegressionRunner.Run(session, EPLInsertIntoEmptyPropType.Executions());
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLInsertIntoIRStreamFunc());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLInsertIntoPopulateCreateStream()
         {
             RegressionRunner.Run(session, new EPLInsertIntoPopulateCreateStream());
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLInsertIntoPopulateCreateStreamAvro.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateEventTypeColumn()
         {
             RegressionRunner.Run(session, EPLInsertIntoPopulateEventTypeColumn.Executions());
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLInsertIntoPopulateUnderlying.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLInsertIntoPopulateUndStreamSelect()
         {
             RegressionRunner.Run(session, EPLInsertIntoPopulateUndStreamSelect.Executions());

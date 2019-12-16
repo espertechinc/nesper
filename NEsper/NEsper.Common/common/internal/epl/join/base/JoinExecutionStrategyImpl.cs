@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.epl.@join.@base.JoinSetComposerUtil;
+using static com.espertech.esper.common.@internal.epl.join.@base.JoinSetComposerUtil;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
 {

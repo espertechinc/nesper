@@ -495,7 +495,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return ((EventType[]) prop)[0];
         }
 
-        private static SimpleNumberCoercer GetNumberCoercer(
+        private static Coercer GetNumberCoercer(
             Type leftType,
             Type rightType,
             string expression)
@@ -813,7 +813,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     else if (subNode is ExprContextPropertyNode) {
                         var contextPropertyNode = (ExprContextPropertyNode) subNode;
                         var returnType = contextPropertyNode.Type;
-                        SimpleNumberCoercer coercer;
+                        Coercer coercer;
                         if (returnType.IsCollectionMapOrArray()) {
                             CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
                             coercer = null;
@@ -837,7 +837,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                              subNode is ExprNodeDeployTimeConst) {
                         var deployTimeConst = (ExprNodeDeployTimeConst) subNode;
                         var returnType = subNode.Forge.EvaluationType;
-                        SimpleNumberCoercer coercer;
+                        Coercer coercer;
                         if (returnType.IsCollectionMapOrArray()) {
                             CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
                             coercer = null;

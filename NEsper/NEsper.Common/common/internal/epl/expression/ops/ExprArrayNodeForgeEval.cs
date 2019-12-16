@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -170,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(FlexCollection),
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block
@@ -201,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 blockIfNotNull.Expression(ExprDotMethod(Ref("resultList"), "Add", added));
             }
 
-            block.MethodReturn(Ref("resultList"));
+            block.MethodReturn(FlexWrap(Ref("resultList")));
             return LocalMethod(methodNode);
         }
     }

@@ -46,10 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeOffset), typeof(DTLocalDtxOpsDtoEval), codegenClassScope)
                 .AddParam(typeof(DateTimeOffset), "target");
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             DTLocalUtil.EvaluateCalOpsDtoCodegen(
                 block,
                 "target",
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.MethodReturn(@Ref("target"));
+            block.MethodReturn(Ref("target"));
             return LocalMethod(methodNode, inner);
         }
     }

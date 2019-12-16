@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     return null;
                 }
 
-                index = (indexResult).AsInt();
+                index = (indexResult).AsInt32();
             }
 
             // access based on index returned

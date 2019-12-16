@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNot,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             ExprForge havingEval,
             bool isAll)
             : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
@@ -63,21 +63,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", @Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(@Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", @Ref("groupKeys"));
+            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
                 forEach.IfCondition(EqualsNull(left))
                     .BlockReturn(ConstantNull())
                     .ExprDotMethod(
                         Ref("aggregationService"),
                         "SetCurrentAccess",
-                        @Ref("groupKey"),
-                        @Ref("cpid"),
+                        Ref("groupKey"),
+                        Ref("cpid"),
                         ConstantNull());
 
                 if (havingEval != null) {
@@ -103,40 +103,40 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
-                var ifRightNotNull = forEach.IfCondition(EqualsNull(@Ref("valueRight")))
+                var ifRightNotNull = forEach.IfCondition(EqualsNull(Ref("valueRight")))
                     .AssignRef("hasNullRow", ConstantTrue())
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", @Ref("valueRight")));
+                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
                     }
                     else {
                         ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "Equals", @Ref("right")));
+                            .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     if (isNot) {
                         if (isAll) {
-                            ifRightNotNull.IfCondition(@Ref("eq")).BlockReturn(ConstantFalse());
+                            ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                         }
                         else {
-                            ifRightNotNull.IfCondition(Not(@Ref("eq"))).BlockReturn(ConstantTrue());
+                            ifRightNotNull.IfCondition(Not(Ref("eq"))).BlockReturn(ConstantTrue());
                         }
                     }
                     else {
                         if (isAll) {
-                            ifRightNotNull.IfCondition(Not(@Ref("eq"))).BlockReturn(ConstantFalse());
+                            ifRightNotNull.IfCondition(Not(Ref("eq"))).BlockReturn(ConstantFalse());
                         }
                         else {
-                            ifRightNotNull.IfCondition(@Ref("eq")).BlockReturn(ConstantTrue());
+                            ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(ConstantTrue());
                         }
                     }
                 }
             }
 
             method.Block
-                .IfCondition(@Ref("hasNullRow"))
+                .IfCondition(Ref("hasNullRow"))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(isAll ? ConstantTrue() : ConstantFalse());
 

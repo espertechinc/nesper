@@ -9,8 +9,10 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -48,22 +50,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             if (targetType == typeof(int)) {
-                return ExprDotMethod(value, "AsInt");
+                return ExprDotMethod(value, "AsInt32");
             }
             else if (targetType == typeof(int?)) {
-                return ExprDotMethod(value, "AsBoxedInt");
+                return ExprDotMethod(value, "AsBoxedInt32");
             }
             else if (targetType == typeof(long)) {
-                return ExprDotMethod(value, "AsLong");
+                return ExprDotMethod(value, "AsInt64");
             }
             else if (targetType == typeof(long?)) {
-                return ExprDotMethod(value, "AsBoxedLong");
+                return ExprDotMethod(value, "AsBoxedInt64");
             }
             else if (targetType == typeof(short)) {
-                return ExprDotMethod(value, "AsShort");
+                return ExprDotMethod(value, "AsInt16");
             }
             else if (targetType == typeof(short?)) {
-                return ExprDotMethod(value, "AsBoxedShort");
+                return ExprDotMethod(value, "AsBoxedInt16");
             }
             else if (targetType == typeof(byte)) {
                 return ExprDotMethod(value, "AsByte");
@@ -106,6 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else if (targetType == typeof(DateTimeOffset?)) {
                 return ExprDotMethod(value, "AsBoxedDateTimeOffset");
+            }
+            else if (targetType == typeof(FlexCollection)) {
+                return StaticMethod(typeof(FlexCollection), "Of", value);
             }
             else if (targetType == typeof(IDictionary<string, object>)) {
                 return StaticMethod(typeof(CompatExtensions), "AsStringDictionary", value);
@@ -167,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
             block.DeclareVar<double>(
                 variable,
-                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref(holder), type));
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref(holder), type));
         }
     }
 } // end of namespace

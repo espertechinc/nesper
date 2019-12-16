@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new EventPropertyDescriptor[] {
                         new EventPropertyDescriptor("MyString", typeof(string), typeof(char), false, false, true, false, false),
                         new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
-                        new EventPropertyDescriptor("concat", typeof(string), null, false, false, false, false, false)
+                        new EventPropertyDescriptor("concat", typeof(string), typeof(char), false, false, true, false, false)
                     },
                     env.Statement("s0").EventType.PropertyDescriptors);
 

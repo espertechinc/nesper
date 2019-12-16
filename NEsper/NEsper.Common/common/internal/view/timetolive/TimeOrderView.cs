@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                                      1;
                 var oldestEvent = long.MaxValue;
                 if (!sortedEvents.IsEmpty()) {
-                    oldestEvent = sortedEvents.First().Key.AsLong();
+                    oldestEvent = sortedEvents.First().Key.AsInt64();
                 }
 
                 var addedOlderEvent = false;
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     else {
                         // We may need to reschedule, and older event may have been added
                         if (addedOlderEvent) {
-                            oldestEvent = sortedEvents.First().Key.AsLong();
+                            oldestEvent = sortedEvents.First().Key.AsInt64();
                             var callbackWait = oldestEvent - windowTailTime + 1;
                             agentInstanceContext.AuditProvider.ScheduleRemove(
                                 agentInstanceContext,

@@ -24,9 +24,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // try array property in select
             env.CompileDeploy("@Name('s0') select * from TestNested2#lastevent").AddListener("s0");
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop3", typeof(int?[]), null, false, false, true, false, false)
+                    new EventPropertyDescriptor("prop3", typeof(int?[]), typeof(int?), false, false, true, false, false)
                 },
                 env.Statement("s0").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);

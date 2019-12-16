@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public abstract class SubselectForgeNREqualsBase : SubselectForgeNRBase
     {
-        internal readonly SimpleNumberCoercer coercer;
+        internal readonly Coercer coercer;
         internal readonly bool isNot;
 
         public SubselectForgeNREqualsBase(
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNot,
-            SimpleNumberCoercer coercer)
+            Coercer coercer)
             : base(
                 subselect,
                 valueEval,

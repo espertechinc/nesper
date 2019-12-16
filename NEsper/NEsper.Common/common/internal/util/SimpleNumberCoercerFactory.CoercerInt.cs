@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerInt : SimpleNumberCoercer
+        public class CoercerInt : Coercer
         {
             public static readonly CoercerInt INSTANCE = new CoercerInt();
 
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsInt();
+                return value.AsInt32();
             }
 
             public Type ReturnType => typeof(int);
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(int),
                     typeof(int?),
-                    "AsInt",
+                    "AsInt32",
                     param,
                     valueType,
                     codegenMethodScope,
@@ -61,13 +61,13 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return ((valueType != typeof(short)) &&
                         (valueType != typeof(int)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsInt")
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsInt32")
                     : value;
 
 //                return CodegenCoerceNonNull(
 //                    typeof(int), 
 //                    typeof(int?), 
-//                    "AsInt", 
+//                    "AsInt32", 
 //                    param, 
 //                    type);
             }
@@ -81,13 +81,13 @@ namespace com.espertech.esper.common.@internal.util
                 return ((valueType != typeof(short)) &&
                         (valueType != typeof(int)) &&
                         (valueType != typeof(int?)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt")
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt32")
                     : value;
                 
 //                return CodegenCoerceMayNull(
 //                    typeof(int),
 //                    typeof(int?),
-//                    "AsInt",
+//                    "AsInt32",
 //                    param,
 //                    type,
 //                    codegenMethodScope,

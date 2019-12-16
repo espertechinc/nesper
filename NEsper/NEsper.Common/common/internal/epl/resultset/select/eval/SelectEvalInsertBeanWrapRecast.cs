@@ -76,13 +76,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     ExprDotMethod(
                         eventBeanFactory,
                         "AdapterForTypedObject",
-                        ExprDotUnderlying(@Ref("theEvent")),
+                        ExprDotUnderlying(Ref("theEvent")),
                         memberUndType))
                 .MethodReturn(
                     ExprDotMethod(
                         eventBeanFactory,
                         "AdapterForTypedWrapper",
-                        @Ref("recast"),
+                        Ref("recast"),
                         StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }),
                         resultEventType));
             return methodNode;

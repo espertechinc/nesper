@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.resultset.@select.eval;
+using com.espertech.esper.common.@internal.epl.resultset.select.eval;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.settings;

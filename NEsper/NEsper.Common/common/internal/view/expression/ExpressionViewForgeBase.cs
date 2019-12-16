@@ -253,10 +253,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(PARAMS);
-            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(
-                expiryExpression.Forge,
-                evalMethod,
-                classScope);
+            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(expiryExpression.Forge, evalMethod, classScope, true);
             evalMethod.Block.MethodReturn(LocalMethod(evalMethodCall, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 
             var assignMethod = CodegenMethod

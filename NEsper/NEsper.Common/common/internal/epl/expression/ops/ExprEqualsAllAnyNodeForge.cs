@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprEqualsAllAnyNodeForge(
             ExprEqualsAllAnyNode parent,
             bool mustCoerce,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             Type coercionTypeBoxed,
             bool hasCollectionOrArray)
         {
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsMustCoerce { get; }
 
-        public SimpleNumberCoercer Coercer { get; }
+        public Coercer Coercer { get; }
 
         public Type CoercionTypeBoxed { get; }
 

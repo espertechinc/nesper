@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.settings

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -51,16 +52,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 CodegenMethod firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
-                    .DeclareVar<ICollection<EventBean>>(
+                    .DeclareVar<FlexCollection>(
                         "events",
                         enumerationForge.EvaluateGetROCollectionEventsCodegen(
                             firstMethodNode,
                             exprSymbol,
                             codegenClassScope))
                     .IfRefNullReturnNull("events")
-                    .IfCondition(EqualsIdentity(ExprDotName(@Ref("events"), "Count"), Constant(0)))
+                    .IfCondition(EqualsIdentity(ExprDotName(Ref("events"), "Count"), Constant(0)))
                     .BlockReturn(ConstantNull())
-                    .MethodReturn(StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", @Ref("events")));
+                    .MethodReturn(StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", Ref("events")));
                 return LocalMethod(firstMethodNode);
             }
 
@@ -69,13 +70,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationCollForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<ICollection<EventBean>>(
+                .DeclareVar<FlexCollection>(
                     "events",
-                    enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
+                    FlexWrap(enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
                 .IfRefNullReturnNull("events")
-                .MethodReturn(
-                    Cast<EventBean[]>(
-                        ExprDotMethod(@Ref("events"), "ToArray")));
+                .MethodReturn(ExprDotMethod(ExprDotName(Ref("events"), "EventBeanCollection"), "ToArray"));
             return LocalMethod(methodNode);
         }
 

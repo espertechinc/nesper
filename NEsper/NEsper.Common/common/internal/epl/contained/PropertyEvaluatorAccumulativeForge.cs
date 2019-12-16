@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 .SetProperty(Ref("pe"), "WhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
                 .SetProperty(Ref("pe"), "PropertyNames", Constant(propertyNames.ToArray()))
                 .SetProperty(Ref("pe"), "FragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
-                .MethodReturn(@Ref("pe"));
+                .MethodReturn(Ref("pe"));
             return LocalMethod(method);
         }
 

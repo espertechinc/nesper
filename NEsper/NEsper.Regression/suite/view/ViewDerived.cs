@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             ViewFieldEnum field,
             EventBean values)
         {
-            return values.Get(field.GetName()).AsLong();
+            return values.Get(field.GetName()).AsInt64();
         }
 
         private static SupportMarketDataBean MakeBean(

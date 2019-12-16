@@ -25,11 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
-            #if false
             executions.Add(new ExprCoreAnyAllSomeEqualsAll());
             executions.Add(new ExprCoreEqualsAllArray());
             executions.Add(new ExprCoreEqualsAny());
-            #endif
             executions.Add(new ExprCoreEqualsAnyBigInt());
             executions.Add(new ExprCoreEqualsAnyArray());
             executions.Add(new ExprCoreRelationalOpAllArray());

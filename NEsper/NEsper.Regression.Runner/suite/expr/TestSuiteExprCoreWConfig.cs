@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreBigNumberSupportMathContext()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprCoreMathDivisionRules()
         {
             RegressionSession session = RegressionRunner.Session();

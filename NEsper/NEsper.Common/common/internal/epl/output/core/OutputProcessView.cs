@@ -13,7 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.statement.dispatch;
 using com.espertech.esper.common.@internal.view.core;

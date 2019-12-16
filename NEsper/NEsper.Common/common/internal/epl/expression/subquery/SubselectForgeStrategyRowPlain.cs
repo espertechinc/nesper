@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -74,11 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     "@event",
                     symbols.GetAddMatchingEvents(method));
                 {
-                    @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
-                    var filter = CodegenLegoMethodExpression.CodegenExpression(
-                        subselect.FilterExpr,
-                        method,
-                        classScope);
+                    @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
+                    var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                         @foreach,
                         typeof(bool?),
@@ -87,19 +85,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             REF_EVENTS_SHIFTED,
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method)));
-                    @foreach.IfCondition(NotEqualsNull(@Ref("filtered")))
+                    @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
                         .BlockReturn(ConstantNull())
-                        .AssignRef("filtered", @Ref("@event"));
+                        .AssignRef("filtered", Ref("@event"));
                 }
 
                 if (subselect.SelectClause == null) {
                     method.Block.IfRefNullReturnNull("filtered")
-                        .MethodReturn(Cast(subselect.EvaluationType, ExprDotUnderlying(@Ref("filtered"))));
+                        .MethodReturn(Cast(subselect.EvaluationType, ExprDotUnderlying(Ref("filtered"))));
                     return LocalMethod(method);
                 }
 
                 method.Block.IfRefNullReturnNull("filtered")
-                    .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("filtered"));
+                    .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("filtered"));
             }
 
             var selectClause = GetSelectClauseExpr(method, symbols, classScope);
@@ -120,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     if (subselect.subselectMultirowType == null) {
                         var eval = ((ExprIdentNode) subselect.SelectClause[0]).ExprEvaluatorIdent;
                         var method = parent.MakeChild(
-                            typeof(ICollection<EventBean>),
+                            typeof(FlexCollection),
                             this.GetType(),
                             classScope);
                         method.Block.DeclareVar<ICollection<EventBean>>(
@@ -136,17 +134,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                                     "fragment",
                                     CodegenLegoCast.CastSafeFromObjectType(
                                         typeof(EventBean),
-                                        eval.Getter.EventBeanFragmentCodegen(@Ref("@event"), method, classScope)))
+                                        eval.Getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope)))
                                 .IfRefNull("fragment")
                                 .BlockContinue()
-                                .ExprDotMethod(@Ref("events"), "Add", @Ref("fragment"));
+                                .ExprDotMethod(Ref("events"), "Add", Ref("fragment"));
                         }
-                        method.Block.MethodReturn(@Ref("events"));
+                        method.Block.MethodReturn(FlexWrap(Ref("events")));
                         return LocalMethod(method);
                     }
 
                     // when selecting a combined output row that contains multiple fields
-                    var methodX = parent.MakeChild(typeof(ICollection<EventBean>), this.GetType(), classScope);
+                    var methodX = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
                     var fieldEventType = classScope.AddDefaultFieldUnshared(
                         true,
                         typeof(EventType),
@@ -167,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         "@event",
                         symbols.GetAddMatchingEvents(methodX));
                     {
-                        foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"))
+                        foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                             .DeclareVar<IDictionary<string, object>>(
                                 "row",
                                 LocalMethod(
@@ -177,10 +175,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                                     symbols.GetAddExprEvalCtx(methodX)))
                             .DeclareVar<EventBean>(
                                 "rowEvent",
-                                ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), fieldEventType))
-                            .ExprDotMethod(@Ref("result"), "Add", @Ref("rowEvent"));
+                                ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), fieldEventType))
+                            .ExprDotMethod(Ref("result"), "Add", Ref("rowEvent"));
                     }
-                    methodX.Block.MethodReturn(@Ref("result"));
+                    methodX.Block.MethodReturn(FlexWrap(Ref("result")));
                     return LocalMethod(methodX);
                 }
             }
@@ -190,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             // handle filtered
-            var methodY = parent.MakeChild(typeof(ICollection<EventBean>), this.GetType(), classScope);
+            var methodY = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
 
             methodY.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, methodY, symbols);
 
@@ -200,11 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 "@event",
                 symbols.GetAddMatchingEvents(methodY));
             {
-                foreachY.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
-                var filter = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.FilterExpr,
-                    methodY,
-                    classScope);
+                foreachY.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
+                var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodY, classScope, true);
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     foreachY,
                     typeof(bool?),
@@ -213,13 +208,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         REF_EVENTS_SHIFTED,
                         symbols.GetAddIsNewData(methodY),
                         symbols.GetAddExprEvalCtx(methodY)));
-                foreachY.IfCondition(EqualsNull(@Ref("filtered")))
+                foreachY.IfCondition(EqualsNull(Ref("filtered")))
                     .AssignRef("filtered", NewInstance(typeof(ArrayDeque<EventBean>)))
                     .BlockEnd()
-                    .ExprDotMethod(@Ref("filtered"), "Add", @Ref("@event"));
+                    .ExprDotMethod(Ref("filtered"), "Add", Ref("@event"));
             }
 
-            methodY.Block.MethodReturn(@Ref("filtered"));
+            methodY.Block.MethodReturn(FlexWrap(Ref("filtered")));
             return LocalMethod(methodY);
         }
 
@@ -233,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     return ConstantNull();
                 }
                 else {
-                    var method = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
+                    var method = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
                     method.Block
                         .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
@@ -243,11 +238,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         "@event",
                         symbols.GetAddMatchingEvents(method));
                     {
-                        @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"))
+                        @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                             .DeclareVar<object>("value", selectClause)
-                            .ExprDotMethod(@Ref("result"), "Add", @Ref("value"));
+                            .ExprDotMethod(Ref("result"), "Add", Ref("value"));
                     }
-                    method.Block.MethodReturn(@Ref("result"));
+                    method.Block.MethodReturn(FlexWrap(Ref("result")));
                     return LocalMethod(method);
                 }
             }
@@ -256,19 +251,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 return ConstantNull();
             }
 
-            var methodX = parent.MakeChild(typeof(ICollection<object>), this.GetType(), classScope);
+            var methodX = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
             methodX.Block
                 .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
             var selectClauseX = GetSelectClauseExpr(methodX, symbols, classScope);
-            var filter =
-                CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodX, classScope);
+            var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodX, classScope, true);
             var foreachX = methodX.Block.ForEach(
                 typeof(EventBean),
                 "@event",
                 symbols.GetAddMatchingEvents(methodX));
             {
-                foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
+                foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     foreachX,
                     typeof(bool?),
@@ -278,9 +272,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddIsNewData(methodX),
                         symbols.GetAddExprEvalCtx(methodX)));
                 foreachX.DeclareVar<object>("value", selectClauseX)
-                    .ExprDotMethod(@Ref("result"), "Add", @Ref("value"));
+                    .ExprDotMethod(Ref("result"), "Add", Ref("value"));
             }
-            methodX.Block.MethodReturn(@Ref("result"));
+            methodX.Block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodX);
         }
 
@@ -322,8 +316,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddExprEvalCtx(method)))
                     .DeclareVar<EventBean>(
                         "bean",
-                        ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), typeMember))
-                    .MethodReturn(@Ref("bean"));
+                        ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), typeMember))
+                    .MethodReturn(Ref("bean"));
                 return LocalMethod(method);
             }
 
@@ -354,8 +348,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
                     "bean",
-                    ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), typeMember))
-                .MethodReturn(@Ref("bean"));
+                    ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), typeMember))
+                .MethodReturn(Ref("bean"));
             return LocalMethod(method);
         }
 
@@ -365,10 +359,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[0].Forge,
-                    method,
-                    classScope);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
                 return LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method));
             }
 

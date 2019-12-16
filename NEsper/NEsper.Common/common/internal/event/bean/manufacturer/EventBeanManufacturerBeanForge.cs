@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.instantiator;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -151,7 +152,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 //    value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
                 //}
                 //else {
-                value = Cast(targetType, Ref("value"));
+
+                var caster = SimpleTypeCasterFactory.GetCaster(typeof(object), targetType);
+                value = caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope);
+
                 //}
 
                 CodegenExpression set = null;

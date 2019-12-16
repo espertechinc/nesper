@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             object[][] objects)
         {
             foreach (var @object in objects) {
-                env.SendEventBean(new SupportBean((string) @object[0], @object[1].AsInt()));
+                env.SendEventBean(new SupportBean((string) @object[0], @object[1].AsInt32()));
             }
         }
 

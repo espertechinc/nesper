@@ -15,7 +15,7 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.epl.updatehelper;
 using com.espertech.esper.common.@internal.util;

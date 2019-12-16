@@ -377,7 +377,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool isNewData,
                 ExprEvaluatorContext context)
             {
-                var time = parameter.AsLong();
+                var time = parameter.AsInt64();
                 return intervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
             }
 
@@ -818,8 +818,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return intervalComputer.Compute(
                     startTs,
                     endTs,
-                    parameterStartTs.AsLong(),
-                    parameterEndTs.AsLong(),
+                    parameterStartTs.AsInt64(),
+                    parameterEndTs.AsInt64(),
                     eventsPerStream,
                     isNewData,
                     context);

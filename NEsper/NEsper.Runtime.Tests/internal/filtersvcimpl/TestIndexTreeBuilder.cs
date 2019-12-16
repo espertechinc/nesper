@@ -58,7 +58,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildWithMatch()
         {
             var topNode = new FilterHandleSetNode(new SlimReaderWriterLock());
@@ -180,7 +180,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             matches.Clear();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildMatchRemove()
         {
             var top = new FilterHandleSetNode(new SlimReaderWriterLock());

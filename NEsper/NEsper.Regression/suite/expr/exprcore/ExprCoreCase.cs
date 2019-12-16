@@ -210,8 +210,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertEqualsExactOrder(
-                    (int?[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c1"),
-                    new int?[] {1, 2});
+                    (int[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c1"),
+                    new int[] {1, 2});
 
                 env.UndeployAll();
             }

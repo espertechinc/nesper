@@ -16,71 +16,71 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
     public class ReformatBetweenNonConstantParamsForge : ReformatForge
     {
-        private readonly ExprNode end;
-        private readonly DatetimeLongCoercer secondCoercer;
+        private readonly ExprNode _end;
+        private readonly DatetimeLongCoercer _secondCoercer;
 
-        private readonly ExprNode start;
-        private readonly DatetimeLongCoercer startCoercer;
-        private ExprForge forgeIncludeHigh;
-        private ExprForge forgeIncludeLow;
+        private readonly ExprNode _start;
+        private readonly DatetimeLongCoercer _startCoercer;
+        private ExprForge _forgeIncludeHigh;
+        private ExprForge _forgeIncludeLow;
 
-        private bool includeBoth;
-        private bool? includeHigh;
-        private bool? includeLow;
+        private bool _includeBoth;
+        private bool? _includeHigh;
+        private bool? _includeLow;
 
-        public ExprNode End => end;
+        public ExprNode End => _end;
 
-        public DatetimeLongCoercer SecondCoercer => secondCoercer;
+        public DatetimeLongCoercer SecondCoercer => _secondCoercer;
 
-        public ExprNode Start => start;
+        public ExprNode Start => _start;
 
-        public DatetimeLongCoercer StartCoercer => startCoercer;
+        public DatetimeLongCoercer StartCoercer => _startCoercer;
 
-        public ExprForge ForgeIncludeHigh => forgeIncludeHigh;
+        public ExprForge ForgeIncludeHigh => _forgeIncludeHigh;
 
-        public ExprForge ForgeIncludeLow => forgeIncludeLow;
+        public ExprForge ForgeIncludeLow => _forgeIncludeLow;
 
-        public bool IncludeBoth => includeBoth;
+        public bool IncludeBoth => _includeBoth;
 
-        public bool? IncludeHigh => includeHigh;
+        public bool? IncludeHigh => _includeHigh;
 
-        public bool? IncludeLow => includeLow;
+        public bool? IncludeLow => _includeLow;
 
         public ReformatBetweenNonConstantParamsForge(IList<ExprNode> parameters)
         {
-            start = parameters[0];
-            startCoercer = DatetimeLongCoercerFactory.GetCoercer(start.Forge.EvaluationType);
-            end = parameters[1];
-            secondCoercer = DatetimeLongCoercerFactory.GetCoercer(end.Forge.EvaluationType);
+            _start = parameters[0];
+            _startCoercer = DatetimeLongCoercerFactory.GetCoercer(_start.Forge.EvaluationType);
+            _end = parameters[1];
+            _secondCoercer = DatetimeLongCoercerFactory.GetCoercer(_end.Forge.EvaluationType);
 
             if (parameters.Count == 2) {
-                includeBoth = true;
-                includeLow = true;
-                includeHigh = true;
+                _includeBoth = true;
+                _includeLow = true;
+                _includeHigh = true;
             }
             else {
                 if (parameters[2].Forge.ForgeConstantType.IsCompileTimeConstant) {
-                    includeLow = GetBooleanValue(parameters[2]);
+                    _includeLow = GetBooleanValue(parameters[2]);
                 }
                 else {
-                    forgeIncludeLow = parameters[2].Forge;
+                    _forgeIncludeLow = parameters[2].Forge;
                 }
 
                 if (parameters[3].Forge.ForgeConstantType.IsCompileTimeConstant) {
-                    includeHigh = GetBooleanValue(parameters[3]);
+                    _includeHigh = GetBooleanValue(parameters[3]);
                 }
                 else {
-                    forgeIncludeHigh = parameters[3].Forge;
+                    _forgeIncludeHigh = parameters[3].Forge;
                 }
 
-                if (includeLow.GetValueOrDefault(false) && includeHigh.GetValueOrDefault(false)) {
-                    includeBoth = true;
+                if (_includeLow.GetValueOrDefault(false) && _includeHigh.GetValueOrDefault(false)) {
+                    _includeBoth = true;
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
-            if (includeLow == null || includeHigh == null) {
+            if (_includeLow == null || _includeHigh == null) {
                 return null;
             }
 
@@ -174,18 +174,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 typesPerStream,
                 targetStreamNum,
                 targetProperty,
-                start,
-                end,
-                includeLow.Value,
-                includeHigh.Value);
+                _start,
+                _end,
+                _includeLow.Value,
+                _includeHigh.Value);
         }
 
         public ReformatOp Op => new ReformatBetweenNonConstantParamsForgeOp(
             this,
-            start.Forge.ExprEvaluator,
-            end.Forge.ExprEvaluator,
-            forgeIncludeLow?.ExprEvaluator,
-            forgeIncludeHigh?.ExprEvaluator);
+            _start.Forge.ExprEvaluator,
+            _end.Forge.ExprEvaluator,
+            _forgeIncludeLow?.ExprEvaluator,
+            _forgeIncludeHigh?.ExprEvaluator);
 
         private bool GetBooleanValue(ExprNode exprNode)
         {

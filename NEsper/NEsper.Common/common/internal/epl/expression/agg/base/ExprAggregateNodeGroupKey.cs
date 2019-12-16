@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     .MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
                             returnType,
-                            ArrayAtIndex(ExprDotName(@Ref("mk"), "Keys"), Constant(groupKeyIndex))));
+                            ArrayAtIndex(ExprDotName(Ref("mk"), "Keys"), Constant(groupKeyIndex))));
             }
 
             return LocalMethod(method);

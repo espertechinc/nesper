@@ -13,7 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;

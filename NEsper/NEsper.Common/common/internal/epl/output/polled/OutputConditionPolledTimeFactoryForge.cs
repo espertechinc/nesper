@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 .DeclareVar<TimePeriodCompute>(
                     "delta",
                     timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
-                .MethodReturn(NewInstance<OutputConditionPolledTimeFactory>(@Ref("delta")));
+                .MethodReturn(NewInstance<OutputConditionPolledTimeFactory>(Ref("delta")));
             return LocalMethod(method);
         }
     }

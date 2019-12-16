@@ -38,7 +38,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.beaconsource
 
         public DataFlowOperator Operator(DataFlowOpInitializeContext context)
         {
-            var iterationsCount = DataFlowParameterResolution.ResolveNumber("iterations", Iterations, 0, context).AsLong();
+            var iterationsCount = DataFlowParameterResolution.ResolveNumber("iterations", Iterations, 0, context).AsInt64();
             var initialDelaySec = DataFlowParameterResolution.ResolveNumber("initialDelay", InitialDelay, 0, context).AsDouble();
             var initialDelayMSec = (long) (initialDelaySec * 1000);
             var intervalSec = DataFlowParameterResolution.ResolveNumber("interval", Interval, 0, context).AsDouble();

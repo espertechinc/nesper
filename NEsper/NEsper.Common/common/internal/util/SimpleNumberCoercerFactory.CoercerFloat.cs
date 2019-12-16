@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerFloat : SimpleNumberCoercer
+        public class CoercerFloat : Coercer
         {
             public static readonly CoercerFloat INSTANCE = new CoercerFloat();
 
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsFloat();
+                return value.AsFloat();
             }
 
             public Type ReturnType => typeof(float?);

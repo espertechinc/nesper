@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
-namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
+namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public partial class SelectExprInsertEventBeanFactory
     {

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -62,10 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.HavingExpr,
-                    method,
-                    classScope);
+                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr,
                     REF_EVENTS_SHIFTED,
@@ -96,10 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ConstantNull());
 
             if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[0].Forge,
-                    method,
-                    classScope);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
@@ -137,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     subselect.subselectMultirowType,
                     EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
+            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
@@ -157,10 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.HavingExpr,
-                    method,
-                    classScope);
+                var havingExpr = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
                 CodegenExpression havingCall = LocalMethod(
                     havingExpr,
                     REF_EVENTS_SHIFTED,
@@ -188,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ExprDotMethod(factory, "AdapterForTypedMap", Ref("row"), subselectMultirowType))
                     .ExprDotMethod(Ref("result"), "Add", Ref("@event"));
             }
-            method.Block.MethodReturn(Ref("result"));
+            method.Block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(method);
         }
 

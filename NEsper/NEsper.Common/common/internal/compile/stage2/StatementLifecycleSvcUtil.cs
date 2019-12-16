@@ -11,7 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

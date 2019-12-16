@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     [TestFixture]
     public class TestFilterServiceMT : AbstractRuntimeTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFilterService()
         {
             var rwLockManager = container.RWLockManager();

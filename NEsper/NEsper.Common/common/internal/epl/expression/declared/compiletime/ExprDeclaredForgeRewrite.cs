@@ -65,10 +65,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 block.AssignArrayElement(
                     "events",
                     Constant(i),
-                    ArrayAtIndex(@Ref("eps"), Constant(streamAssignments[i])));
+                    ArrayAtIndex(Ref("eps"), Constant(streamAssignments[i])));
             }
 
-            return LocalMethodBuild(block.MethodReturn(@Ref("events"))).Pass(eventsPerStream).Call();
+            return LocalMethodBuild(block.MethodReturn(Ref("events"))).Pass(eventsPerStream).Call();
         }
     }
 } // end of namespace

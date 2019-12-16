@@ -24,13 +24,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprNodeRenderable
     {
         private readonly ExprForge[] forges;
-        internal readonly SimpleNumberCoercer[] optionalCoercers;
+        internal readonly Coercer[] optionalCoercers;
         internal readonly Type varargClass;
 
         public ExprNodeVarargOnlyArrayForge(
             ExprForge[] forges,
             Type varargClass,
-            SimpleNumberCoercer[] optionalCoercers)
+            Coercer[] optionalCoercers)
         {
             this.forges = forges;
             this.varargClass = varargClass;

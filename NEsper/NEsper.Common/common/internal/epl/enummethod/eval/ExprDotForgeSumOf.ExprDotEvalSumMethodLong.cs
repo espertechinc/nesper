@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
 
                 _cnt++;
-                _sum += @object.AsLong();
+                _sum += @object.AsInt64();
             }
 
             public object Value {

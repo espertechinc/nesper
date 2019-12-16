@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherCreateSchema.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherDistinct()
         {
             RegressionRunner.Run(session, EPLOtherDistinct.Executions());
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherPatternQueries.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherPlanExcludeHint()
         {
             RegressionRunner.Run(session, EPLOtherPlanExcludeHint.Executions());
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLOtherStaticFunctions.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherStreamExpr()
         {
             RegressionRunner.Run(session, EPLOtherStreamExpr.Executions());
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLOtherUnaryMinus());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLOtherUpdateIStream()
         {
             RegressionRunner.Run(session, EPLOtherUpdateIStream.Executions());

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.Increment("cnt");
-                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsInt", value));
+                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsInt32", value));
             }
 
             public void CodegenReturn(CodegenBlock block)

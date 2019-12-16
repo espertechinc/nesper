@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     bean.EnumValue = (SupportEnum) testValue;
                 }
                 else {
-                    bean.ShortBoxed = testValue.AsShort();
+                    bean.ShortBoxed = testValue.AsInt16();
                 }
 
                 var expected = (bool) testdata[i][1];
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from MyVariableCustomEvent(name=my_variable_custom_typed)")
+                env.CompileDeploy("@Name('s0') select * from MyVariableCustomEvent(Name=my_variable_custom_typed)")
                     .AddListener("s0");
 
                 env.SendEventBean(new MyVariableCustomEvent(MyVariableCustomType.Of("abc")));
@@ -961,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var stmtTextSet =
-                    "@Name('s0') on SupportBean_S0 as S0str set var1SS = (select P10 from SupportBean_S1#lastevent), var2SS = (select P11||s0str.P01 from SupportBean_S1#lastevent)";
+                    "@Name('s0') on SupportBean_S0 as S0str set var1SS = (select P10 from SupportBean_S1#lastevent), var2SS = (select P11||S0str.P01 from SupportBean_S1#lastevent)";
                 env.CompileDeploy(stmtTextSet);
                 string[] fieldsVar = {"var1SS", "var2SS"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -1680,7 +1680,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fieldsSelect,
-                    new[] {new object[] {null, null, null, "A1"}});
+                    new[] {
+                        new object[] {null, null, null, "A1"}
+                    });
 
                 SendSupportBean(env, "S1", 1, 2);
                 EPAssertionUtil.AssertProps(
@@ -1690,7 +1692,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("set"),
                     fieldsVar,
-                    new[] {new object[] {1f, 1d, 2L}});
+                    new[] {
+                        new object[] {1f, 1d, 2L}
+                    });
 
                 env.Milestone(0);
 
@@ -1702,7 +1706,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fieldsSelect,
-                    new[] {new object[] {1f, 1d, 2L, "A1"}, new object[] {1f, 1d, 2L, "A2"}});
+                    new[] {
+                        new object[] {1f, 1d, 2L, "A1"},
+                        new object[] {1f, 1d, 2L, "A2"}
+                    });
 
                 SendSupportBean(env, "S1", 10, 20);
                 EPAssertionUtil.AssertProps(
@@ -1712,7 +1719,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("set"),
                     fieldsVar,
-                    new[] {new object[] {10f, 10d, 20L}});
+                    new[] {
+                        new object[] {10f, 10d, 20L}
+                    });
 
                 SendSupportBean_A(env, "A3");
                 EPAssertionUtil.AssertProps(
@@ -1726,7 +1735,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fieldsSelect,
-                    new[] {new object[] {10f, 10d, 20L, "A2"}, new object[] {10f, 10d, 20L, "A3"}});
+                    new[] {
+                        new object[] {10f, 10d, 20L, "A2"},
+                        new object[] {10f, 10d, 20L, "A3"}
+                    });
 
                 env.UndeployAll();
             }
@@ -1744,17 +1756,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var1IS = 1",
-                    "Variable 'var1IS' of declared type System.String cannot be assigned a value of type int");
+                    "Variable 'var1IS' of declared type System.String cannot be assigned a value of type System.Int32");
 
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = 'abc'",
-                    "Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.String");
+                    "Variable 'var3IS' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String");
 
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = DoublePrimitive",
-                    "Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Double");
+                    "Variable 'var3IS' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.Double");
 
                 TryInvalidCompile(env, "on SupportBean set var2IS = 'false'", "skip");
                 TryInvalidCompile(env, "on SupportBean set var3IS = 1.1", "skip");

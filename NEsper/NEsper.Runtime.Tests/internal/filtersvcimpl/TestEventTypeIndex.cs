@@ -50,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             testIndex.Add(testEventType, handleSetNode);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMatch()
         {
             IList<FilterHandle> matchesList = new List<FilterHandle>();
@@ -62,7 +62,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.AreEqual(filterCallback, matchesList[0]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidSecondAdd()
         {
             try
@@ -76,7 +76,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(handleSetNode, testIndex.Get(testEventType));

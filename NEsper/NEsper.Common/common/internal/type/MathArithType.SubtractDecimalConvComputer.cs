@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.type
         [Serializable]
         public class SubtractDecimalConvComputer : Computer
         {
-            private readonly SimpleNumberCoercer convOne;
-            private readonly SimpleNumberCoercer convTwo;
+            private readonly Coercer convOne;
+            private readonly Coercer convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="convOne">convertor for LHS</param>
             /// <param name="convTwo">convertor for RHS</param>
             public SubtractDecimalConvComputer(
-                SimpleNumberCoercer convOne,
-                SimpleNumberCoercer convTwo)
+                Coercer convOne,
+                Coercer convTwo)
             {
                 this.convOne = convOne;
                 this.convTwo = convTwo;

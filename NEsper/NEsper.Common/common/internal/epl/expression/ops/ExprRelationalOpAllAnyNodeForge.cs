@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(),
+                    GetType(),
                     this,
                     "ExprRelOpAnyOrAll",
                     requiredType,

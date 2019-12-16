@@ -126,19 +126,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprDTBetween.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTDataSources()
         {
             RegressionRunner.Run(session, ExprDTDataSources.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTDocSamples()
         {
             RegressionRunner.Run(session, new ExprDTDocSamples());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTFormat()
         {
             RegressionRunner.Run(session, ExprDTFormat.Executions());
@@ -150,13 +150,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprDTGet.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTIntervalOps()
         {
             RegressionRunner.Run(session, ExprDTIntervalOps.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTIntervalOpsCreateSchema()
         {
             RegressionRunner.Run(session, new ExprDTIntervalOpsCreateSchema());
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTNested());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprDTPerfBetween()
         {
             RegressionRunner.Run(session, new ExprDTPerfBetween());
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTPerfIntervalOps());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTPlusMinus()
         {
             RegressionRunner.Run(session, ExprDTPlusMinus.Executions());
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, new ExprDTToDateMSec());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDTWithDate()
         {
             RegressionRunner.Run(session, new ExprDTWithDate());

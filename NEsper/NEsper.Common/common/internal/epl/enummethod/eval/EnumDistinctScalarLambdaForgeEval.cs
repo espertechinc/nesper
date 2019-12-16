@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
-            var values = (ICollection<object>) enumcoll;
+            var values = enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
@@ -86,11 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(FlexCollection),
                     typeof(EnumDistinctScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
@@ -99,19 +100,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "comparable",
                     forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
-                .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "CheckedContainsKey", @Ref("comparable"))))
-                .Expression(ExprDotMethod(@Ref("distinct"), "Put", @Ref("comparable"), @Ref("next")))
+                .IfCondition(Not(ExprDotMethod(Ref("distinct"), "CheckedContainsKey", Ref("comparable"))))
+                .Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")))
                 .BlockEnd();
-            block.MethodReturn(ExprDotName(@Ref("distinct"), "Values"));
+            block.MethodReturn(FlexWrap(ExprDotName(Ref("distinct"), "Values")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

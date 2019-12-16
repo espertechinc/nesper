@@ -27,14 +27,14 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterForEvalContextPropForge : FilterSpecParamInValueForge
     {
         [NonSerialized] private readonly EventPropertyGetterSPI _getter;
-        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        [NonSerialized] private readonly Coercer _numberCoercer;
         private readonly string _propertyName;
         [NonSerialized] private readonly Type _returnType;
 
         public FilterForEvalContextPropForge(
             string propertyName,
             EventPropertyGetterSPI getter,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             Type returnType)
         {
             _propertyName = propertyName;

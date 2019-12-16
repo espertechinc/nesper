@@ -21,9 +21,9 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
         {
             var parameters = (object[]) value;
             LastEnterParameters = parameters;
-            var lower = parameters[0].AsInt();
-            var upper = parameters[1].AsInt();
-            var val = parameters[2].AsInt();
+            var lower = parameters[0].AsInt32();
+            var upper = parameters[1].AsInt32();
+            var val = parameters[2].AsInt32();
             if (val >= lower && val <= upper) {
                 count++;
             }
@@ -32,9 +32,9 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
         public void Leave(object value)
         {
             var parameters = (object[]) value;
-            var lower = parameters[0].AsInt();
-            var upper = parameters[1].AsInt();
-            var val = parameters[2].AsInt();
+            var lower = parameters[0].AsInt32();
+            var upper = parameters[1].AsInt32();
+            var val = parameters[2].AsInt32();
             if (val >= lower && val <= upper) {
                 count--;
             }

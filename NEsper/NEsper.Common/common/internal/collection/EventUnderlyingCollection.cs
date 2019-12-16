@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -19,6 +20,11 @@ namespace com.espertech.esper.common.@internal.collection
     public class EventUnderlyingCollection : ICollection<EventBean>, ICollection<object>
     {
         private ICollection<EventBean> _underlyingCollection;
+
+        public EventUnderlyingCollection(FlexCollection flexCollection)
+        {
+            _underlyingCollection = flexCollection.EventBeanCollection;
+        }
         
         public EventUnderlyingCollection(ICollection<EventBean> events)
         {

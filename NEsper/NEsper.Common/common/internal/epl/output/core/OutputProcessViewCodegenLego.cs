@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             string name,
             string get)
         {
-            return And(NotEqualsNull(@Ref(name)), NotEqualsNull(ExprDotMethod(@Ref(name), get)));
+            return And(NotEqualsNull(Ref(name)), NotEqualsNull(ExprDotMethod(Ref(name), get)));
         }
     }
 } // end of namespace

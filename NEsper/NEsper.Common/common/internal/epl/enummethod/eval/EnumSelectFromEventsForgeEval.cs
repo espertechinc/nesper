@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Permissions;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -72,22 +73,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumSelectFromEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(Unwrap<object>(EnumForgeCodegenNames.REF_ENUMCOLL))
+                .BlockReturn(FlexEmpty())
                 .DeclareVar<ArrayDeque<object>>(
                     "result",
                     NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
-            var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+            
+            var forEach = block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar<object>(
                     "item",
                     forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .IfCondition(NotEqualsNull(@Ref("item")))
-                .Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("item")));
-            block.MethodReturn(@Ref("result"));
+                .IfCondition(NotEqualsNull(Ref("item")))
+                .Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

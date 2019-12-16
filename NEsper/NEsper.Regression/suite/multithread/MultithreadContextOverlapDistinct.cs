@@ -68,11 +68,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var sum = 0;
             long count = 0;
             foreach (var @event in listener.NewDataListFlattened) {
-                var sumBatch = @event.Get("thesum").AsBoxedInt();
+                var sumBatch = @event.Get("thesum").AsBoxedInt32();
                 // Comment-Me-In: System.out.println(EventBeanUtility.summarize(event));
                 if (sumBatch != null) { // can be null when there is nothing to deliver
                     sum += sumBatch.Value;
-                    count += @event.Get("thecnt").AsLong();
+                    count += @event.Get("thecnt").AsInt64();
                 }
             }
 

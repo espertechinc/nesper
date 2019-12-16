@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 if (constantIndexNumber == null) {
                     var constantNode = ChildNodes[1];
                     var value = constantNode.Forge.ExprEvaluator.Evaluate(null, false, null);
-                    constantIndexNumber = value.AsInt();
+                    constantIndexNumber = value.AsInt32();
                 }
 
                 return constantIndexNumber.Value;
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));
 
-            var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope);
+            var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope, true);
 
             method.Block
                 .DeclareVar<RowRecogStateRandomAccess>(
@@ -145,13 +145,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     "Match-Recognize Previous expression requires an integer index parameter or expression as the second parameter");
             }
 
-            constantIndexNumber = value.AsInt();
+            constantIndexNumber = value.AsInt32();
 
             // Determine stream number
             var identNode = (ExprIdentNode) ChildNodes[0];
             streamNumber = identNode.StreamId;
             var forge = ChildNodes[0].Forge;
-            EvaluationType = forge.EvaluationType;
+            EvaluationType = forge.EvaluationType.GetBoxedType();
             previousStrategyFieldName = validationContext.MemberNames.PreviousMatchrecognizeStrategy();
 
             return null;

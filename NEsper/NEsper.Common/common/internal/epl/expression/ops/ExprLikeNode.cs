@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="not">is true if this is a "not like", or false if just a like</param>
         public ExprLikeNode(bool not)
         {
-            this.isNot = not;
+            isNot = not;
         }
 
         public Type EvaluationType {
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if ((this.ChildNodes.Length != 2) && (this.ChildNodes.Length != 3)) {
+            if ((ChildNodes.Length != 2) && (ChildNodes.Length != 3)) {
                 throw new ExprValidationException(
                     "The 'like' operator requires 2 (no escape) or 3 (with escape) child expressions");
             }
@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // check escape character node
             bool isConstantEscape = true;
-            if (this.ChildNodes.Length == 3) {
-                if (this.ChildNodes[2].Forge.EvaluationType != typeof(string)) {
+            if (ChildNodes.Length == 3) {
+                if (ChildNodes[2].Forge.EvaluationType != typeof(string)) {
                     throw new ExprValidationException(
                         "The 'like' operator escape parameter requires a character-type value");
                 }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 string escape = "\\";
                 char? escapeCharacter = null;
-                if (this.ChildNodes.Length == 3) {
+                if (ChildNodes.Length == 3) {
                     escape = (string) ChildNodes[2].Forge.ExprEvaluator.Evaluate(null, true, null);
                 }
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             ExprLikeNode other = (ExprLikeNode) node;
-            if (this.isNot != other.isNot) {
+            if (isNot != other.isNot) {
                 return false;
             }
 
@@ -146,18 +146,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
 
             if (isNot) {
                 writer.Write(" not");
             }
 
             writer.Write(" like ");
-            this.ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence);
 
-            if (this.ChildNodes.Length == 3) {
+            if (ChildNodes.Length == 3) {
                 writer.Write(" escape ");
-                this.ChildNodes[2].ToEPL(writer, Precedence);
+                ChildNodes[2].ToEPL(writer, Precedence);
             }
         }
 

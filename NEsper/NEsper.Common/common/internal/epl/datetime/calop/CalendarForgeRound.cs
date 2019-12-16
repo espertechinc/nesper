@@ -27,23 +27,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
     {
         private readonly int code;
         private readonly DateTimeFieldEnum field;
+        private readonly DateTimeMethodEnum method;
 
         public CalendarForgeRound(
             DateTimeFieldEnum field,
             DateTimeMethodEnum method)
         {
             this.field = field;
-            if (method == DateTimeMethodEnum.ROUNDCEILING) {
-                code = ApacheCommonsDateUtils.MODIFY_CEILING;
-            }
-            else if (method == DateTimeMethodEnum.ROUNDFLOOR) {
-                code = ApacheCommonsDateUtils.MODIFY_TRUNCATE;
-            }
-            else if (method == DateTimeMethodEnum.ROUNDHALF) {
-                code = ApacheCommonsDateUtils.MODIFY_ROUND;
-            }
-            else {
-                throw new ArgumentException("Unrecognized method '" + method + "'");
+            this.method = method;
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    code = ApacheCommonsDateUtils.MODIFY_CEILING;
+                    break;
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    code = ApacheCommonsDateUtils.MODIFY_TRUNCATE;
+                    break;
+                case DateTimeMethodEnum.ROUNDHALF:
+                    code = ApacheCommonsDateUtils.MODIFY_ROUND;
+                    break;
+                default:
+                    throw new ArgumentException("Unrecognized method '" + method + "'");
             }
         }
 
@@ -55,11 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var dateTime = ApacheCommonsDateUtils.Modify(
-                dateTimeEx.DateTime.DateTime,
-                field,
-                code);
-            return DateTimeEx.GetInstance(dateTimeEx.TimeZone, dateTime);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return dateTimeEx.Truncate(field);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return dateTimeEx.Ceiling(field);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return dateTimeEx.Round(field);
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
 
         public DateTimeOffset Evaluate(
@@ -68,15 +76,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return dateTimeOffset.TruncatedTo(field);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return dateTimeOffset.Truncate(field);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return dateTimeOffset.Ceiling(field);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return dateTimeOffset.Round(field);
+                default:
+                    throw new UnsupportedOperationException();
             }
-
-            if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return dateTimeOffset.AddUsingField(field, 1).TruncatedTo(field);
-            }
-
-            throw new EPException("Round-half operation not supported for LocalDateTime");
         }
 
         public DateTime Evaluate(
@@ -85,15 +94,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return dateTime.TruncatedTo(field);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return dateTime.Truncate(field);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return dateTime.Ceiling(field);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return dateTime.Round(field);
+                default:
+                    throw new UnsupportedOperationException();
             }
-
-            if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return dateTime.AddUsingField(field, 1).TruncatedTo(field);
-            }
-
-            throw new EPException("Round-half operation not supported for ZonedDateTime");
         }
 
         public CodegenExpression CodegenDateTimeEx(
@@ -102,12 +112,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(
-                typeof(ApacheCommonsDateUtils),
-                "Modify",
-                dateTimeEx,
-                Constant(field),
-                Constant(code));
+            var dateTimeField = EnumValue(field);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return ExprDotMethod(dateTimeEx, "Truncate", dateTimeField);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return ExprDotMethod(dateTimeEx, "Ceiling", dateTimeField);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return ExprDotMethod(dateTimeEx, "Round", dateTimeField);
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -116,7 +131,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return Codegen<DateTimeOffset>(dateTimeOffset);
+            var dateTimeField = EnumValue(field);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return StaticMethod(typeof(DateTimeOffsetHelper), "Truncate", dateTimeOffset, dateTimeField);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return StaticMethod(typeof(DateTimeOffsetHelper), "Ceiling", dateTimeOffset, dateTimeField);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return StaticMethod(typeof(DateTimeOffsetHelper), "Round", dateTimeOffset, dateTimeField);
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
 
         public CodegenExpression CodegenDateTime(
@@ -125,45 +150,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return Codegen<DateTime>(dateTime);
-        }
-
-        private CodegenExpression Codegen<T>(
-            CodegenExpression val)
-        {
-            var type = typeof(T);
-
-            // 
-            Type typeHelper;
-            if (type == typeof(DateTime)) {
-                typeHelper = typeof(DateTimeHelper);
-            } else if (type == typeof(DateTimeOffset)) {
-                typeHelper = typeof(DateTimeOffsetHelper);
-            } else if (type == typeof(DateTimeEx)) {
-                throw new ArgumentException("bad place");
-            } else {
-                throw new ArgumentException("unable to determine type helper for " + type);
+            var dateTimeField = EnumValue(field);
+            switch (method) {
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                    return StaticMethod(typeof(DateTimeHelper), "Truncate", dateTime, dateTimeField);
+                case DateTimeMethodEnum.ROUNDCEILING:
+                    return StaticMethod(typeof(DateTimeHelper), "Ceiling", dateTime, dateTimeField);
+                case DateTimeMethodEnum.ROUNDHALF:
+                    return StaticMethod(typeof(DateTimeHelper), "Round", dateTime, dateTimeField);
+                default:
+                    throw new UnsupportedOperationException();
             }
-
-            var dateTimeField = EnumValue<DateTimeFieldEnum>(field);
-            if (code == ApacheCommonsDateUtils.MODIFY_TRUNCATE) {
-                return StaticMethod(typeHelper, "TruncatedTo", dateTimeField);
-            }
-
-            if (code == ApacheCommonsDateUtils.MODIFY_CEILING) {
-                return StaticMethod(
-                    typeHelper,
-                    "TruncatedTo",
-                    StaticMethod(
-                        typeof(DateTimeFieldMath),
-                        "AddUsingField",
-                        val,
-                        dateTimeField,
-                        Constant(1)),
-                    dateTimeField);
-            }
-
-            throw new EPException("Round-half operation not supported for " + type.Name);
         }
     }
 } // end of namespace

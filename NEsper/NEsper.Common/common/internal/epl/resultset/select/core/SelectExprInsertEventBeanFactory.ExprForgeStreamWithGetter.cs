@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 
-namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
+namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public partial class SelectExprInsertEventBeanFactory
     {

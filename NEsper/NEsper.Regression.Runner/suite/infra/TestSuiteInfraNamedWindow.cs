@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowInsertFrom.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowJoin()
         {
             RegressionRunner.Run(session, InfraNamedWindowJoin.Executions());
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowOnDelete.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnMerge()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnMerge.Executions());
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowOnSelect.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowOnUpdate()
         {
             RegressionRunner.Run(session, InfraNamedWindowOnUpdate.Executions());
@@ -224,13 +224,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraNamedWindowSubquery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowTypes()
         {
             RegressionRunner.Run(session, InfraNamedWindowTypes.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraNamedWindowViews()
         {
             RegressionRunner.Run(session, InfraNamedWindowViews.Executions());

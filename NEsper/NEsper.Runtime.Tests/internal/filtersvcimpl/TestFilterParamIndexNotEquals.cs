@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             matchesList = new List<FilterHandle>();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBoolean()
         {
             FilterParamIndexNotEquals index = new FilterParamIndexNotEquals(MakeLookupable("BoolPrimitive"), lockFactory.ObtainNew());
@@ -57,7 +57,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyBooleanPrimitive(index, false, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestString()
         {
             FilterParamIndexNotEquals index = new FilterParamIndexNotEquals(MakeLookupable("TheString"), lockFactory.ObtainNew());

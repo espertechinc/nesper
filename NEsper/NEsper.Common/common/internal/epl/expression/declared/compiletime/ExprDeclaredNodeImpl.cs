@@ -394,7 +394,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 var method = parent.MakeChild(exprForge.EvaluationType, GetType(), codegenClassScope)
                     .AddParam(typeof(EventBean), "bean");
                 var exprMethod =
-                    CodegenLegoMethodExpression.CodegenExpression(exprForge, method, codegenClassScope);
+                    CodegenLegoMethodExpression.CodegenExpression(exprForge, method, codegenClassScope, true);
 
                 method.Block
                     .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))

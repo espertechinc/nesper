@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                     codegenClassScope);
             }
 
-            Type evaluationType = forge.EvaluationType;
+            var evaluationType = forge.EvaluationType;
             if (evaluationType == typeof(void)) {
                 return ConstantNull();
             }
@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 .DeclareVar(evaluationType, "result", expr)
                 .Expression(
                     ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
-                        .Add("a" + qname, @Ref("result")))
-                .BlockReturn(@Ref("result"))
+                        .Add("a" + qname, Ref("result")))
+                .BlockReturn(Ref("result"))
                 .MethodReturn(expr);
             return LocalMethod(method);
         }

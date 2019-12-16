@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 throw new EPException("Timer-within-or-max second parameter evaluated to a null-value");
             }
 
-            return numCountToVal.AsInt();
+            return numCountToVal.AsInt32();
         }
     }
 } // end of namespace

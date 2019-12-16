@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -17,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerByte : SimpleNumberCoercer
+        public class CoercerByte : Coercer
         {
             public static readonly CoercerByte INSTANCE = new CoercerByte();
 
@@ -25,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsByte();
+                return value.AsByte();
             }
 
             public Type ReturnType => typeof(byte);

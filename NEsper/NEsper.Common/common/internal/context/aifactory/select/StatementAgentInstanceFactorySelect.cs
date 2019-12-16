@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.prior;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;

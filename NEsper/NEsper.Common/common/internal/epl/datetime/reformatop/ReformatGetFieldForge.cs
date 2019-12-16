@@ -18,7 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ReformatGetFieldForge : ReformatForge,
         ReformatOp
     {
-        private readonly DateTimeFieldEnum fieldNum;
-        private readonly TimeAbacus timeAbacus;
+        private readonly DateTimeFieldEnum _fieldNum;
+        private readonly TimeAbacus _timeAbacus;
 
         public ReformatGetFieldForge(
             DateTimeFieldEnum fieldNum,
             TimeAbacus timeAbacus)
         {
-            this.fieldNum = fieldNum;
-            this.timeAbacus = timeAbacus;
+            this._fieldNum = fieldNum;
+            this._timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             methodNode.Block
                 .DeclareVar<DateTimeEx>("dateTime", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dateTime"), methodNode, codegenClassScope))
+                .Expression(_timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dateTime"), methodNode, codegenClassScope))
                 .MethodReturn(CodegenGet(Ref("dateTime")));
             return LocalMethod(methodNode, inner);
         }
@@ -105,8 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dateTime = DateTimeEx.NowUtc();
-            timeAbacus.DateTimeSet(ts, dateTime);
-            return GetValueUsingFieldEnum(dateTime, fieldNum);
+            _timeAbacus.DateTimeSet(ts, dateTime);
+            return GetValueUsingFieldEnum(dateTime, _fieldNum);
         }
 
         public object Evaluate(
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return GetValueUsingFieldEnum(dateTime, fieldNum);
+            return GetValueUsingFieldEnum(dateTime, _fieldNum);
         }
 
         public object Evaluate(
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return GetValueUsingFieldEnum(dateTimeEx, fieldNum);
+            return GetValueUsingFieldEnum(dateTimeEx, _fieldNum);
         }
 
         public object Evaluate(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return GetValueUsingFieldEnum(dateTimeOffset, fieldNum);
+            return GetValueUsingFieldEnum(dateTimeOffset, _fieldNum);
         }
 
         private CodegenExpression CodegenGet(CodegenExpression dateTime)
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 typeof(ReformatGetFieldForge),
                 "GetValueUsingFieldEnum",
                 dateTime,
-                Constant(fieldNum));
+                Constant(_fieldNum));
         }
 
         public static int GetValueUsingFieldEnum(

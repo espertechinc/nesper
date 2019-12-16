@@ -20,7 +20,7 @@ using com.espertech.esper.common.@internal.epl.output.polled;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;

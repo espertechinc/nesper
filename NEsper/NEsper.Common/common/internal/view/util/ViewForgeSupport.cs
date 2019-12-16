@@ -304,7 +304,7 @@ namespace com.espertech.esper.common.@internal.view.util
 
         private static bool ValidateSize(object size)
         {
-            return !(size == null || size.AsInt() <= 0);
+            return !(size == null || size.AsInt32() <= 0);
         }
 
         private static string GetSizeValidationMsg(

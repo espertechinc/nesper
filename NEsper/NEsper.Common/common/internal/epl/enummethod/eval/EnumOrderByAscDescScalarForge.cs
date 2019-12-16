@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -64,9 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var block = codegenMethodScope.MakeChild(
-                    typeof(ICollection<object>),
+                    typeof(FlexCollection),
                     typeof(EnumOrderByAscDescScalarForge),
                     codegenClassScope)
                 .AddParam(paramTypes)
@@ -81,14 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 block.StaticMethod(
                     typeof(Collections),
                     "SortInPlace",
-                    @Ref("list"),
+                    Ref("list"),
                     StaticMethod(typeof(Comparers), "Inverse", new[] {typeof(object)}));
             }
             else {
-                block.StaticMethod(typeof(Collections), "SortInPlace", @Ref("list"));
+                block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"));
             }
 
-            var method = block.MethodReturn(@Ref("list"));
+            var method = block.MethodReturn(FlexWrap(Ref("list")));
             return LocalMethod(method, args.Expressions);
         }
     }

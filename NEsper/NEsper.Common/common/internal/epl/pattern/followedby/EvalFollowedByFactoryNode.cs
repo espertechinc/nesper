@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
             var result = cachedExpr.Evaluate(null, true, null);
             if (result != null) {
-                return result.AsInt();
+                return result.AsInt32();
             }
 
             return -1; // no limit

@@ -345,6 +345,8 @@ namespace com.espertech.esper.compat.collections
                 return false;
             if (type == typeof(string))
                 return true;
+            if (type == typeof(XmlNode))
+                return false;
             if (type.IsArray)
                 return true;
             if (type.IsGenericDictionary())
@@ -363,6 +365,8 @@ namespace com.espertech.esper.compat.collections
                 return null;
             if (type == typeof(string))
                 return typeof(char);
+            if (type == typeof(XmlNode))
+                return null;
             if (type.IsArray)
                 return type.GetElementType();
             if (type.IsGenericDictionary())

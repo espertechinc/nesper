@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                     Ref("strat"),
                     "Evaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluator(evaluator.Forge, method, this.GetType(), classScope))
-                .MethodReturn(@Ref("strat"));
+                .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }
     }

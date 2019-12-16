@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
     public class ReformatBetweenNonConstantParamsForgeOp : ReformatOp
     {
-        private readonly ExprEvaluator endEval;
-        private readonly ExprEvaluator evalIncludeHigh;
-        private readonly ExprEvaluator evalIncludeLow;
-        private readonly ReformatBetweenNonConstantParamsForge forge;
-        private readonly ExprEvaluator startEval;
+        private readonly ExprEvaluator _endEval;
+        private readonly ExprEvaluator _evalIncludeHigh;
+        private readonly ExprEvaluator _evalIncludeLow;
+        private readonly ReformatBetweenNonConstantParamsForge _forge;
+        private readonly ExprEvaluator _startEval;
 
         public ReformatBetweenNonConstantParamsForgeOp(
             ReformatBetweenNonConstantParamsForge forge,
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluator evalIncludeLow,
             ExprEvaluator evalIncludeHigh)
         {
-            this.forge = forge;
-            this.startEval = startEval;
-            this.endEval = endEval;
-            this.evalIncludeLow = evalIncludeLow;
-            this.evalIncludeHigh = evalIncludeHigh;
+            this._forge = forge;
+            this._startEval = startEval;
+            this._endEval = endEval;
+            this._evalIncludeLow = evalIncludeLow;
+            this._evalIncludeHigh = evalIncludeHigh;
         }
 
         public object Evaluate(
@@ -188,19 +188,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var firstObj = startEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
+            var firstObj = _startEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
             if (firstObj == null) {
                 return null;
             }
 
-            var secondObj = endEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
+            var secondObj = _endEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
             if (secondObj == null) {
                 return null;
             }
 
-            var first = forge.StartCoercer.Coerce(firstObj);
-            var second = forge.SecondCoercer.Coerce(secondObj);
-            if (forge.IncludeBoth) {
+            var first = _forge.StartCoercer.Coerce(firstObj);
+            var second = _forge.SecondCoercer.Coerce(secondObj);
+            if (_forge.IncludeBoth) {
                 if (first <= second) {
                     return first <= ts && ts <= second;
                 }
@@ -209,11 +209,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             bool includeLowEndpoint;
-            if (forge.IncludeLow != null) {
-                includeLowEndpoint = forge.IncludeLow.Value;
+            if (_forge.IncludeLow != null) {
+                includeLowEndpoint = _forge.IncludeLow.Value;
             }
             else {
-                var value = evalIncludeLow.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
+                var value = _evalIncludeLow.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
                 if (value == null) {
                     return null;
                 }
@@ -222,11 +222,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             bool includeHighEndpoint;
-            if (forge.IncludeHigh != null) {
-                includeHighEndpoint = forge.IncludeHigh.Value;
+            if (_forge.IncludeHigh != null) {
+                includeHighEndpoint = _forge.IncludeHigh.Value;
             }
             else {
-                var value = evalIncludeHigh.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
+                var value = _evalIncludeHigh.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
                 if (value == null) {
                     return null;
                 }

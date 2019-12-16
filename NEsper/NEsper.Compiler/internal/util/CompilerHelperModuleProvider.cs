@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -781,19 +782,21 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 var type = entry.Value;
                 CodegenExpression typeResolver;
-                if (type is Type) {
-                    typeResolver = Typeof((Type) entry.Value);
+                if (type is Type asType) {
+                    if (asType == typeof(FlexCollection)) {
+                        asType = typeof(ICollection<object>);
+                    }
+                    
+                    typeResolver = Typeof(asType);
                 }
-                else if (type is EventType) {
-                    var innerType = (EventType) type;
+                else if (type is EventType asEventType) {
                     typeResolver = EventTypeUtility.ResolveTypeCodegen(
-                        innerType,
+                        asEventType,
                         ModuleEventTypeInitializeSymbol.REF_INITSVC);
                 }
-                else if (type is EventType[]) {
-                    var innerType = (EventType[]) type;
+                else if (type is EventType[] asEventTypeArray) {
                     var typeExpr = EventTypeUtility.ResolveTypeCodegen(
-                        innerType[0],
+                        asEventTypeArray[0],
                         ModuleEventTypeInitializeSymbol.REF_INITSVC);
                     typeResolver = NewArrayWithInit(typeof(EventType), typeExpr);
                 }

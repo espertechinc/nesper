@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                     for (var i = 0; i < received.Length; i++) {
                         if (received[i].Get("TheString").Equals(threadKey)) {
-                            var sum = received[i].Get("sumLong").AsLong();
+                            var sum = received[i].Get("sumLong").AsInt64();
                             Assert.AreEqual(total, sum);
                         }
                     }

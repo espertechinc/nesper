@@ -160,8 +160,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                         // determine if the expression type can be assigned
                         if (variableType != typeof(object)) {
-                            if (expressionType.GetBoxedType() != variableType &&
-                                expressionType != null) {
+                            if ((expressionType != variableType) &&
+                                (expressionType.GetBoxedType() != variableType) &&
+                                (expressionType != null)) {
                                 if (!variableType.IsNumeric() ||
                                     !expressionType.IsNumeric()) {
                                     throw new ExprValidationException(

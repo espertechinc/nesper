@@ -49,7 +49,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             matchesList = new List<FilterHandle>();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIndex()
         {
             FilterParamIndexNotIn index = new FilterParamIndexNotIn(MakeLookupable("LongBoxed"), new SlimReaderWriterLock());

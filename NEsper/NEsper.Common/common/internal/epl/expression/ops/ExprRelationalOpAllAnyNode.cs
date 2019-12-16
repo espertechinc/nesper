@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes
-            if (this.ChildNodes.Length < 1) {
+            if (ChildNodes.Length < 1) {
                 throw new IllegalStateException("Group relational op node must have 1 or more parameters");
             }
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             bool hasCollectionOrArray = false;
-            for (int i = 0; i < this.ChildNodes.Length - 1; i++) {
+            for (int i = 0; i < ChildNodes.Length - 1; i++) {
                 Type propType = ChildNodes[i + 1].Forge.EvaluationType;
                 if (propType.IsArray) {
                     hasCollectionOrArray = true;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
             writer.Write(relationalOpEnum.GetExpressionText());
             if (isAll) {
                 writer.Write("all");
@@ -151,9 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             writer.Write("(");
             string delimiter = "";
 
-            for (int i = 0; i < this.ChildNodes.Length - 1; i++) {
+            for (int i = 0; i < ChildNodes.Length - 1; i++) {
                 writer.Write(delimiter);
-                this.ChildNodes[i + 1].ToEPL(writer, Precedence);
+                ChildNodes[i + 1].ToEPL(writer, Precedence);
                 delimiter = ",";
             }
 
@@ -174,8 +174,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             ExprRelationalOpAllAnyNode other = (ExprRelationalOpAllAnyNode) node;
 
-            if ((other.relationalOpEnum != this.relationalOpEnum) ||
-                (other.isAll != this.isAll)) {
+            if ((other.relationalOpEnum != relationalOpEnum) ||
+                (other.isAll != isAll)) {
                 return false;
             }
 

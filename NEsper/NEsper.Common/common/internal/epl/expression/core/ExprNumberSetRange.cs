@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 valueUpper = int.MaxValue;
             }
 
-            var intValueLower = valueLower.AsInt();
-            var intValueUpper = valueUpper.AsInt();
+            var intValueLower = valueLower.AsInt32();
+            var intValueUpper = valueUpper.AsInt32();
             return new RangeParameter(intValueLower, intValueUpper);
         }
 

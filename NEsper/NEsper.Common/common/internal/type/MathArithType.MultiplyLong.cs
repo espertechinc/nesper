@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                return d1.AsLong() * d2.AsLong();
+                return d1.AsInt64() * d2.AsInt64();
             }
 
             public CodegenExpression Codegen(

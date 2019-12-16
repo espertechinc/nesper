@@ -26,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly ExprInNodeImpl parent;
         private readonly bool mustCoerce;
-        private readonly SimpleNumberCoercer coercer;
+        private readonly Coercer coercer;
         private readonly Type coercionType;
         private readonly bool hasCollectionOrArray;
 
         public ExprInNodeForge(
             ExprInNodeImpl parent,
             bool mustCoerce,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             Type coercionType,
             bool hasCollectionOrArray)
         {
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(),
+                    GetType(),
                     this,
                     "ExprIn",
                     requiredType,
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => mustCoerce;
         }
 
-        public SimpleNumberCoercer Coercer {
+        public Coercer Coercer {
             get => coercer;
         }
 

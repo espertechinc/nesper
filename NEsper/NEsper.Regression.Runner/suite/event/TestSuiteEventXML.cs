@@ -388,109 +388,109 @@ namespace com.espertech.esper.regressionrun.suite.@event
             return eventTypeMeta;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaDotEscape()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaDotEscape());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaElementNode()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaElementNode());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaEventTransposeDOM()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaEventTransposeDOM());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaEventTransposeXPathConfigured()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaEventTransposeXPathConfigured());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaEventTransposeXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaEventTransposeXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaEventXML()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaEventXML());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaNamespaceXPathAbsolute()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaNamespaceXPathAbsolute());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaNamespaceXPathRelative()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaNamespaceXPathRelative());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaNestedXMLDOMGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaNestedXMLDOMGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaNestedXMLXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaNestedXMLXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaPropertyDynamicDOMGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaPropertyDynamicDOMGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaPropertyDynamicXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaPropertyDynamicXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaSimpleXMLDOMGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaSimpleXMLDOMGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaSimpleXMLXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaSimpleXMLXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaSimpleXMLXPathProperties()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaSimpleXMLXPathProperties());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaVariableAndDotMethodResolution()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaVariableAndDotMethodResolution());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLNoSchemaXPathArray()
         {
             RegressionRunner.Run(session, new EventXMLNoSchemaXPathArray());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaDOMGetterBacked()
         {
             RegressionRunner.Run(session, new EventXMLSchemaDOMGetterBacked());
@@ -502,85 +502,85 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventXMLSchemaEventObservationDOM());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventObservationXPath()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventObservationXPath());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventSender()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventSender());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTransposeDOMGetter()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTransposeDOMGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTransposeNodeArray()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTransposeNodeArray());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTransposePrimitiveArray()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTransposePrimitiveArray());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTransposeXPathConfigured()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTransposeXPathConfigured());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTransposeXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTransposeXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaEventTypes()
         {
             RegressionRunner.Run(session, new EventXMLSchemaEventTypes());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaInvalid()
         {
             RegressionRunner.Run(session, new EventXMLSchemaInvalid());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaPropertyDynamicDOMGetter()
         {
             RegressionRunner.Run(session, new EventXMLSchemaPropertyDynamicDOMGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaPropertyDynamicXPathGetter()
         {
             RegressionRunner.Run(session, new EventXMLSchemaPropertyDynamicXPathGetter());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaWithAll()
         {
             RegressionRunner.Run(session, new EventXMLSchemaWithAll());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaWithRestriction()
         {
             RegressionRunner.Run(session, new EventXMLSchemaWithRestriction());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventXMLSchemaXPathBacked()
         {
             RegressionRunner.Run(session, new EventXMLSchemaXPathBacked());

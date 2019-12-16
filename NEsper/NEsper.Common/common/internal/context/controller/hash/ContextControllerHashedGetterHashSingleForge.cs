@@ -66,15 +66,15 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
-            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
+            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope, true);
             method.Block
-                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
-                .DeclareVar<object>("code", LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull()))
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
+                .DeclareVar<object>("code", LocalMethod(methodExpr, Ref("events"), ConstantTrue(), ConstantNull()))
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterHashSingleForge),
                         "ObjectToNativeHash",
-                        @Ref("code"),
+                        Ref("code"),
                         Constant(granularity)));
 
             return LocalMethod(method, beanExpression);

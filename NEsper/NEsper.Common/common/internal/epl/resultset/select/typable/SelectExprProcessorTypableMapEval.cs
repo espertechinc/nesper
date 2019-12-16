@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 .IfRefNull("values")
                 .AssignRef("values", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }))
                 .BlockEnd()
-                .MethodReturn(ExprDotMethod(beanFactory, "AdapterForTypedMap", @Ref("values"), mapType));
+                .MethodReturn(ExprDotMethod(beanFactory, "AdapterForTypedMap", Ref("values"), mapType));
             return LocalMethod(methodNode);
         }
     }

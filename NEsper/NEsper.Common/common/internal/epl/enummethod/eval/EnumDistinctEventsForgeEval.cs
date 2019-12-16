@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -71,26 +72,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<EventBean>),
+                    typeof(FlexCollection),
                     typeof(EnumDistinctEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<IDictionary<object, EventBean>>("distinct", NewInstance(typeof(LinkedHashMap<object, EventBean>)));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "comparable",
                     forge.InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
-                .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "CheckedContainsKey", @Ref("comparable"))))
-                .Expression(ExprDotMethod(@Ref("distinct"), "Put", @Ref("comparable"), @Ref("next")))
+                .IfCondition(Not(ExprDotMethod(Ref("distinct"), "CheckedContainsKey", Ref("comparable"))))
+                .Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")))
                 .BlockEnd();
-            block.MethodReturn(ExprDotName(@Ref("distinct"), "Values"));
+            block.MethodReturn(FlexWrap(ExprDotName(Ref("distinct"), "Values")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

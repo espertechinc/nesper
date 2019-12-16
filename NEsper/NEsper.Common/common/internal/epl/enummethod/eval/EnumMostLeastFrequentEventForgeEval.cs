@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumMostLeastFrequentEventForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
@@ -91,9 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
-                .DeclareVar<object>( // more type erasure bullshit!!!!
+                .DeclareVar<object>( // type erasure issue
                     "item",
-                    forge.InnerExpression.EvaluateCodegen(typeof(string), methodNode, scope, codegenClassScope))
+                    forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>(
                     "existing",
                     ExprDotMethod(Ref("items"), "GetBoxed", Ref("item")))

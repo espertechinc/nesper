@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 object sender,
                 UpdateEventArgs eventArgs)
             {
-                var theCount = eventArgs.NewEvents[0].Get("theCount").AsLong();
+                var theCount = eventArgs.NewEvents[0].Get("theCount").AsInt64();
                 total += theCount;
                 Console.Out.WriteLine("count " + theCount + " total " + total);
             }

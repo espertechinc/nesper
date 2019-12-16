@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {

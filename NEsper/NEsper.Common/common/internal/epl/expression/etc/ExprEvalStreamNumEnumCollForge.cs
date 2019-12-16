@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -32,8 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             //   they are using.  In C# we have strong type checking which means we need to know.
             //   Unfortunately, this data is only known in the ExprForge.  Revisit this.
 
-            // REFERENCE: TestSuiteClientExtensions.TestClientExtendSingleRowFunction
-            _evaluationType = typeof(ICollection<EventBean>);
+            _evaluationType = typeof(FlexCollection);
         }
 
         public ExprEvaluator ExprEvaluator {

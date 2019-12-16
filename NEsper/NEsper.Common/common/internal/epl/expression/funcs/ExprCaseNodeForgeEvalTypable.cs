@@ -82,17 +82,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                             codegenClassScope)))
                 .DeclareVar<object[]>(
                     "row",
-                    NewArrayByLength(typeof(object), ExprDotName(@Ref("map"), "Count")));
+                    NewArrayByLength(typeof(object), ExprDotName(Ref("map"), "Count")));
             int index = -1;
             foreach (KeyValuePair<string, object> entry in forge.mapResultType) {
                 index++;
                 block.AssignArrayElement(
-                    @Ref("row"),
+                    Ref("row"),
                     Constant(index),
-                    ExprDotMethod(@Ref("map"), "Get", Constant(entry.Key)));
+                    ExprDotMethod(Ref("map"), "Get", Constant(entry.Key)));
             }
 
-            block.MethodReturn(@Ref("row"));
+            block.MethodReturn(Ref("row"));
             return LocalMethod(methodNode);
         }
 

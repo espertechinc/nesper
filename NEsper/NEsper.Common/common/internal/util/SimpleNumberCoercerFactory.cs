@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="fromType">to widen/narrow, can be null to indicate that no shortcut-coercer is used</param>
         /// <param name="resultBoxedType">type to widen/narrow to</param>
         /// <returns>widener/narrower</returns>
-        public static SimpleNumberCoercer GetCoercer(
+        public static Coercer GetCoercer(
             Type fromType,
             Type resultBoxedType)
         {

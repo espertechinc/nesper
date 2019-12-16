@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 if (hasWideners) {
                     singleMethodBlock.Expression(
                         SelectExprProcessorHelper.ApplyWidenersCodegen(
-                            @Ref("row"),
+                            Ref("row"),
                             wideners,
                             singleMethodNode,
                             codegenClassScope));
                 }
 
-                singleMethodBlock.MethodReturn(ExprDotMethod(singleMethodManufacturer, "Make", @Ref("row")));
+                singleMethodBlock.MethodReturn(ExprDotMethod(singleMethodManufacturer, "Make", Ref("row")));
                 return LocalMethod(singleMethodNode);
             }
 
@@ -107,15 +107,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             if (hasWideners) {
                 methodBlock.Expression(
                     SelectExprProcessorHelper.ApplyWidenersCodegen(
-                        @Ref("row"),
+                        Ref("row"),
                         wideners,
                         methodNode,
                         codegenClassScope));
             }
 
             methodBlock.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .AssignArrayElement("events", Constant(0), ExprDotMethod(methodManufacturer, "Make", @Ref("row")))
-                .MethodReturn(@Ref("events"));
+                .AssignArrayElement("events", Constant(0), ExprDotMethod(methodManufacturer, "Make", Ref("row")))
+                .MethodReturn(Ref("events"));
             return LocalMethod(methodNode);
         }
 

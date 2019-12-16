@@ -37,19 +37,19 @@ namespace com.espertech.esper.regressionrun.suite.client
             _session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployUndeploy()
         {
             RegressionRunner.Run(_session, ClientDeployUndeploy.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployPreconditionDependency()
         {
             RegressionRunner.Run(_session, ClientDeployPreconditionDependency.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployPreconditionDuplicate()
         {
             RegressionRunner.Run(_session, ClientDeployPreconditionDuplicate.Executions());
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientDeployResult.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientDeployRedefinition()
         {
             RegressionRunner.Run(_session, ClientDeployRedefinition.Executions());

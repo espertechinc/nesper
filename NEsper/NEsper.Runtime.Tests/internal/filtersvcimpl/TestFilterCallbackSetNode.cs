@@ -40,7 +40,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             return new ExprFilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName), false);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNodeGetSet()
         {
             FilterHandle exprOne = new SupportFilterHandle();
@@ -85,7 +85,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(testNode.IsEmpty());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNodeMatching()
         {
             var eventObject = new SupportBeanSimple("DepositEvent_1", 1);

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             if (variableReader != null) {
                 var value = variableReader.Value;
                 if (value != null) {
-                    eventRate = value.AsLong();
+                    eventRate = value.AsInt64();
                 }
             }
 

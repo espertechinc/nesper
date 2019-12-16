@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.hint;
+using com.espertech.esper.common.@internal.epl.join.hint;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;

@@ -66,14 +66,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         public static CodegenMethod CodegenExpression(
             ExprForge forge,
             CodegenMethod parent,
-            CodegenClassScope classScope)
+            CodegenClassScope classScope,
+            bool returnMissingValueAsNull)
         {
             var evaluationType = forge.EvaluationType; // GetBoxedType();
+            if (returnMissingValueAsNull) {
+                evaluationType = evaluationType.GetBoxedType();
+            }
+            
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var exprMethod = parent
                 .MakeChildWithScope(evaluationType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
+            exprMethod.Block.DebugStack();
+            
             var expression = CodegenLegoCast.CastSafeFromObjectType(
                 evaluationType,
                 forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope));

@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 typeof(StatementAgentInstanceFactoryCreateIndex),
                 this.GetType(),
                 classScope);
-            CodegenExpressionRef saiff = @Ref("saiff");
+            CodegenExpressionRef saiff = Ref("saiff");
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateIndex>(
                     saiff.Ref,

@@ -447,11 +447,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 object[][] expectedType = {
                     new object[] {"key", typeof(string)},
-                    new object[] {"totalInt", typeof(int?)},
                     new object[] {"p0", typeof(string)},
-                    new object[] {"winsb", typeof(SupportBean[])},
-                    new object[] {"totalLong", typeof(long?)},
                     new object[] {"p1", typeof(string)},
+                    new object[] {"totalInt", typeof(int?)},
+                    new object[] {"totalLong", typeof(long?)},
+                    new object[] {"winsb", typeof(SupportBean[])},
                     new object[] {"winsb0", typeof(SupportBean_S0[])}
                 };
 
@@ -479,6 +479,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S1(6, "G1", "a", "b")); // merge more values
 
                 object[] rowValues = {"G1", 10, "a", new[] {e1Sb}, 100L, "b", new[] {e2Sb0}};
+                
                 RunAssertionSubqueryWindowAgg(env, path, rowValues);
                 RunAssertionOnSelectWindowAgg(env, path, expectedType, rowValues);
                 RunAssertionSubquerySelectStar(env, path, rowValues);

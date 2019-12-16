@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Determine common denominator type
             Type arrayReturnType = null;
             var mustCoerce = false;
-            SimpleNumberCoercer coercer = null;
+            Coercer coercer = null;
             try {
                 arrayReturnType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
 

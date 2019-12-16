@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        private class CoercerNull : SimpleNumberCoercer
+        private class CoercerNull : Coercer
         {
             public static readonly CoercerNull INSTANCE = new CoercerNull(typeof(object));
 
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
                 ReturnType = returnType;
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce;
+                return value;
             }
 
             public Type ReturnType { get; }

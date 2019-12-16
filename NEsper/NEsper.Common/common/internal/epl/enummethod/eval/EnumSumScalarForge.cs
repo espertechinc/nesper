@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumSumScalarForge),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
             var block = methodNode.Block;
 
             _sumMethodFactory.CodegenDeclare(block);

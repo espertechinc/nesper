@@ -67,17 +67,17 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
-            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
+            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope, true);
             method.Block
-                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .DeclareVar<string>(
                     "code",
-                    Cast(typeof(string), LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull())))
+                    Cast(typeof(string), LocalMethod(methodExpr, Ref("events"), ConstantTrue(), ConstantNull())))
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterCRC32SingleForge),
                         "StringToCRC32Hash",
-                        @Ref("code"),
+                        Ref("code"),
                         Constant(granularity)));
 
             return LocalMethod(method, beanExpression);

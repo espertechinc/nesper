@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dtx = DateTimeEx.GetInstance(timeZone);
-            timeAbacus.DateTimeSet(target.AsLong(), dtx);
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            timeAbacus.DateTimeSet(target.AsInt64(), dtx);
+            DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(
                     forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
-            DTLocalUtil.EvaluateCalOpsCalendarCodegen(
+            DTLocalUtil.EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),

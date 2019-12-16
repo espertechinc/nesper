@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprConcatNode parent,
             ExprEvaluator[] evaluators)
         {
-            this.localBuffer = new SystemThreadLocal<StringBuilder>(() => new StringBuilder());
-            this.buffer = localBuffer.GetOrCreate();
+            localBuffer = new SystemThreadLocal<StringBuilder>(() => new StringBuilder());
+            buffer = localBuffer.GetOrCreate();
             this.parent = parent;
             this.evaluators = evaluators;
             buffer = localBuffer.GetOrCreate();

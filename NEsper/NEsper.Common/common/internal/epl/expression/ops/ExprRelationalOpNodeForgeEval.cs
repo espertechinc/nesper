@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNullReturnNull("left");
                 if (chsType.IsNullable()) {
                     lhsRef = Unbox(lhsRef);
-                    lhsType = rhsType.GetUnboxedType();
+                    lhsType = chsType.GetUnboxedType();
                 }
             }
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 block.IfRefNullReturnNull("right");
                 if (chsType.IsNullable()) {
                     rhsRef = Unbox(rhsRef);
-                    rhsType = rhsType.GetUnboxedType();
+                    rhsType = chsType.GetUnboxedType();
                 }
             }
 

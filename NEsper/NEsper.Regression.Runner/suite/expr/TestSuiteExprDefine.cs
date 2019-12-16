@@ -38,19 +38,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session = null;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDefineBasic()
         {
             RegressionRunner.Run(session, ExprDefineBasic.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDefineAliasFor()
         {
             RegressionRunner.Run(session, ExprDefineAliasFor.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprDefineLambdaLocReport()
         {
             RegressionRunner.Run(session, new ExprDefineLambdaLocReport());

@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             EventBean theEvent,
             IntSeqKey controllerPath)
         {
-            int value = item.Lookupable.Getter.Get(theEvent).AsInt();
+            int value = item.Lookupable.Getter.Get(theEvent).AsInt32();
 
             if (hashSvc.HashHasSeenPartition(controllerPath, value)) {
                 return;

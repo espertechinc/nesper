@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     optionalDate = TimerScheduleISO8601Parser.ParseDate((string) param);
                 }
                 else if (TypeHelper.IsNumber(param)) {
-                    long msec = param.AsLong();
+                    long msec = param.AsInt64();
                     optionalDate = DateTimeEx.GetInstance(timeZone);
                     optionalRemainder = timeAbacus.DateTimeSet(msec, optionalDate);
                 }
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     eventsPerStream,
                     exprEvaluatorContext);
                 if (param != null) {
-                    optionalRepeatCount = (param).AsLong();
+                    optionalRepeatCount = (param).AsInt64();
                 }
             }
 

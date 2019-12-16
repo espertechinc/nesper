@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var dtx = DateTimeEx.GetInstance(timeZone);
             var remainder = timeAbacus.DateTimeSet(longValue.Value, dtx);
 
-            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
             return timeAbacus.DateTimeGet(dtx, remainder);
         }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<long>(
                     "remainder",
                     forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
-            EvaluateCalOpsCalendarCodegen(
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),

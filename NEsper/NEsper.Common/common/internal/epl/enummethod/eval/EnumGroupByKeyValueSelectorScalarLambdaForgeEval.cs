@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     typeof(IDictionary<object, object>),
@@ -103,11 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar<object>(
                     "key",
                     forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
@@ -116,13 +116,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<ICollection<object>>(
                     "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "Get", @Ref("key"))))
+                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
                 .IfRefNull("value")
                 .AssignRef("value", NewInstance(typeof(List<object>)))
-                .Expression(ExprDotMethod(@Ref("result"), "Put", @Ref("key"), @Ref("value")))
+                .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
                 .BlockEnd()
-                .Expression(ExprDotMethod(@Ref("value"), "Add", @Ref("entry")));
-            block.MethodReturn(@Ref("result"));
+                .Expression(ExprDotMethod(Ref("value"), "Add", Ref("entry")));
+            block.MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

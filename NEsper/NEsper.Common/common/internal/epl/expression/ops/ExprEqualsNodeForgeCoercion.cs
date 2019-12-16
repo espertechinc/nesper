@@ -23,19 +23,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         public ExprEqualsNodeForgeCoercion(
             ExprEqualsNodeImpl parent,
-            SimpleNumberCoercer numberCoercerLHS,
-            SimpleNumberCoercer numberCoercerRHS)
+            Coercer coercerLhs,
+            Coercer coercerRhs)
             : base(parent)
         {
-            NumberCoercerLHS = numberCoercerLHS;
-            NumberCoercerRHS = numberCoercerRHS;
+            CoercerLHS = coercerLhs;
+            CoercerRHS = coercerRhs;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public SimpleNumberCoercer NumberCoercerLHS { get; }
+        public Coercer CoercerLHS { get; }
 
-        public SimpleNumberCoercer NumberCoercerRHS { get; }
+        public Coercer CoercerRHS { get; }
 
         public override ExprEvaluator ExprEvaluator {
             get {
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     ForgeRenderable,
                     lhs.Forge.ExprEvaluator,
                     rhs.Forge.ExprEvaluator,
-                    NumberCoercerLHS,
-                    NumberCoercerRHS);
+                    CoercerLHS,
+                    CoercerRHS);
             }
         }
 

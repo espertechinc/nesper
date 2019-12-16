@@ -15,7 +15,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.historical.lookupstrategy;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 

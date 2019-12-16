@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 "tuple", NewInstance(typeof(HashMap<string, object>)));
             for (int i = 0; i < streamNames.Length; i++) {
                 methodNode.Block.Expression(
-                    ExprDotMethod(@Ref("tuple"), "Put", Constant(streamNames[i]), ArrayAtIndex(refEPS, Constant(i))));
+                    ExprDotMethod(Ref("tuple"), "Put", Constant(streamNames[i]), ArrayAtIndex(refEPS, Constant(i))));
             }
 
-            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", @Ref("tuple"), mType));
+            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", Ref("tuple"), mType));
             return methodNode;
         }
 

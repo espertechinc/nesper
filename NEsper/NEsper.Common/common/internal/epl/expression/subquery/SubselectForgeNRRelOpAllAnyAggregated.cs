@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression rhsSide = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
                 eps,
                 ConstantTrue(),
                 evalCtx);

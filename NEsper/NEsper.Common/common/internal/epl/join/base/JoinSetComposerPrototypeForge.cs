@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         classScope));
             }
 
-            PopulateInline(@Ref("impl"), method, symbols, classScope);
+            PopulateInline(Ref("impl"), method, symbols, classScope);
 
-            method.Block.MethodReturn(@Ref("impl"));
+            method.Block.MethodReturn(Ref("impl"));
 
             return LocalMethod(method);
         }

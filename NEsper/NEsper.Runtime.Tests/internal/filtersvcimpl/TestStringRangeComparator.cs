@@ -22,7 +22,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestComparator()
         {
             var sorted = new SortedSet<StringRange>(new StringRangeComparator());

@@ -46,7 +46,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             testRange = new DoubleRange(10d, 20d);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLongBothEndpointsIncluded()
         {
             FilterParamIndexDoubleRange index = this.GetLongDataset(FilterOperator.RANGE_CLOSED);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.That(() => index.Put("a", testEvaluator), Throws.ArgumentException);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLongLowEndpointIncluded()
         {
             FilterParamIndexDoubleRange index = this.GetLongDataset(FilterOperator.RANGE_HALF_OPEN);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyLongPrimitive(index, 11, 1);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLongHighEndpointIncluded()
         {
             FilterParamIndexDoubleRange index = this.GetLongDataset(FilterOperator.RANGE_HALF_CLOSED);
@@ -111,7 +111,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyLongPrimitive(index, 11, 1);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLongNeitherEndpointIncluded()
         {
             FilterParamIndexDoubleRange index = this.GetLongDataset(FilterOperator.RANGE_OPEN);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyLongPrimitive(index, 11, 1);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDoubleBothEndpointsIncluded()
         {
             FilterParamIndexDoubleRange index = this.GetDoubleDataset(FilterOperator.RANGE_CLOSED);
@@ -150,7 +150,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyDoublePrimitive(index, 10.1, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDoubleFixedRangeSize()
         {
             FilterParamIndexDoubleRange index = MakeOne("DoublePrimitive", FilterOperator.RANGE_OPEN, testEventType);
@@ -166,7 +166,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyDoublePrimitive(index, 5001, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDoubleVariableRangeSize()
         {
             FilterParamIndexDoubleRange index = MakeOne("DoublePrimitive", FilterOperator.RANGE_CLOSED, testEventType);

@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtInsertInto());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestMultithreadStmtIterate()
         {
             RegressionRunner.Run(session, new MultithreadStmtIterate());
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtJoin());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtListenerCreateStmt()
         {
             RegressionRunner.Run(session, new MultithreadStmtListenerCreateStmt());
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtNamedWindowMultiple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowSubqueryAgg()
         {
             RegressionRunner.Run(session, new MultithreadStmtNamedWindowSubqueryAgg());
@@ -271,19 +271,19 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadStmtStateless());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtStatelessEnummethod()
         {
             RegressionRunner.Run(session, new MultithreadStmtStatelessEnummethod());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtSubquery()
         {
             RegressionRunner.Run(session, new MultithreadStmtSubquery());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtTimeWindow()
         {
             RegressionRunner.Run(session, new MultithreadStmtTimeWindow());
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.Run(session, new MultithreadVariables());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadViewTimeWindow()
         {
             RegressionRunner.Run(session, new MultithreadViewTimeWindow());

@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return env.CompileExecuteFAF("select count(*) as c0 from " + windowOrTableName, path)
                 .Array[0]
                 .Get("c0")
-                .AsLong();
+                .AsInt64();
         }
 
         internal class InfraDeleteAll : RegressionExecution

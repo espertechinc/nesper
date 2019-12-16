@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
@@ -54,8 +55,8 @@ namespace com.espertech.esper.common.@internal.util
 
         public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(
-            typeof(Collections), "GetEmptyList", new [] { typeof(object) });
+        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(
+            typeof(FlexCollection), "Empty");
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -651,29 +652,35 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             var block = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(CollectionUtil), codegenClassScope)
+                .MakeChild(typeof(FlexCollection), typeof(CollectionUtil), codegenClassScope)
                 .AddParam(arrayType, "array")
                 .Block
                 .IfRefNullReturnNull("array");
             if (!arrayType.GetElementType().IsValueType) {
                 return LocalMethodBuild(
-                        block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", new[] { typeof(object) }, Ref("array"))))
+                        block.MethodReturn(FlexWrap(Ref("array"))))
                     .Pass(array)
                     .Call();
             }
 
-            var method = block.IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { typeof(object) }))
+            var method = block
+                .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
+                .BlockReturn(EnumValue(typeof(FlexCollection), "Empty"))
                 .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
                 .BlockReturn(
-                    StaticMethod(typeof(Collections), "SingletonList", new[] { typeof(object) }, ArrayAtIndex(Ref("array"), Constant(0))))
+                    FlexWrap(
+                        StaticMethod(
+                            typeof(Collections),
+                            "SingletonList",
+                            new[] {typeof(object)},
+                            ArrayAtIndex(Ref("array"), Constant(0)))))
                 .DeclareVar<ArrayDeque<object>>(
                     "dq",
                     NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("array")))
                 .Expression(ExprDotMethod(Ref("dq"), "Add", ArrayAtIndex(Ref("array"), Ref("i"))))
                 .BlockEnd()
-                .MethodReturn(Ref("dq"));
+                .MethodReturn(FlexWrap(Ref("dq")));
             return LocalMethodBuild(method).Pass(array).Call();
         }
 

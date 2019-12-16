@@ -95,7 +95,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMatchDoubleAndGreater()
         {
             var index = MakeOne("DoublePrimitive", FilterOperator.GREATER);
@@ -122,7 +122,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 Throws.InstanceOf<InvalidOperationException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMatchDoubleAndLessOrEqualThan()
         {
             var index = MakeOne("DoubleBoxed", FilterOperator.LESS_OR_EQUAL);
@@ -140,7 +140,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyDoubleBoxed(index, 7.61, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMatchLongAndGreaterEquals()
         {
             var index = MakeOne("LongBoxed", FilterOperator.GREATER_OR_EQUAL);
@@ -167,7 +167,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 Throws.InstanceOf<InvalidOperationException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMatchLongAndLessThan()
         {
             var index = MakeOne("LongPrimitive", FilterOperator.LESS);

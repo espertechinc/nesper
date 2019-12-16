@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return NewInstance<ProxyExprEvaluator>(lambda);
             }
             else {
-                var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
+                var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope, true);
                 lambda.Block.BlockReturn(
                     LocalMethod(
                         evalMethod,
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var result = ConstantNull();
             if (forge.EvaluationType != null) {
-                var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
+                var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope, true);
                 result = LocalMethod(evalMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT);
 
                 var forgeEvaluationType = forge.EvaluationType.GetBoxedType();

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace com.espertech.esper.compat.util
@@ -21,19 +22,6 @@ namespace com.espertech.esper.compat.util
     /// </summary>
     public class CastHelper
     {
-        private static TypeParser _parseSingle = v => SimpleTypeParserFunctions.ParseFloat(v);
-        private static TypeParser _parseDouble = v => SimpleTypeParserFunctions.ParseDouble(v);
-        private static TypeParser _parseDecimal = v => SimpleTypeParserFunctions.ParseDecimal(v);
-        private static TypeParser _parseByte = v => SimpleTypeParserFunctions.ParseByte(v);
-        private static TypeParser _parseSByte = v => SimpleTypeParserFunctions.ParseSByte(v);
-        private static TypeParser _parseInt16 = v => SimpleTypeParserFunctions.ParseInt16(v);
-        private static TypeParser _parseInt32 = v => SimpleTypeParserFunctions.ParseInt32(v);
-        private static TypeParser _parseInt64 = v => SimpleTypeParserFunctions.ParseInt64(v);
-        private static TypeParser _parseUInt16 = v => SimpleTypeParserFunctions.ParseUInt16(v);
-        private static TypeParser _parseUInt32 = v => SimpleTypeParserFunctions.ParseUInt32(v);
-        private static TypeParser _parseUInt64 = v => SimpleTypeParserFunctions.ParseUInt64(v);
-        private static TypeParser _parseBigInteger = v => SimpleTypeParserFunctions.ParseBigInteger(v);
-
         public static GenericTypeCaster<T> GetCastConverter<T>()
         {
             var typeCaster = GetCastConverter(typeof(T));
@@ -54,6 +42,36 @@ namespace com.espertech.esper.compat.util
             //return typeCasterFactory.GetTypeCaster(sourceType, targetType);
         }
 
+        private static readonly IDictionary<Type, TypeCaster> TypeCasterDictionary = new Dictionary<Type, TypeCaster> {
+            [typeof(sbyte?)] = v => CastNullableSByte(v),
+            [typeof(short?)] = v => CastNullableInt16(v),
+            [typeof(int?)] = v => CastNullableInt32(v),
+            [typeof(long?)] = v => CastNullableInt64(v),
+            [typeof(byte?)] = v => CastNullableByte(v),
+            [typeof(ushort?)] = v => CastNullableUInt16(v),
+            [typeof(uint?)] = v => CastNullableUInt32(v),
+            [typeof(ulong?)] = v => CastNullableUInt64(v),
+            [typeof(char?)] = v => CastNullableChar(v),
+            [typeof(float?)] = v => CastNullableSingle(v),
+            [typeof(double?)] = v => CastNullableDouble(v),
+            [typeof(decimal?)] = v => CastNullableDecimal(v),
+            [typeof(BigInteger?)] = v => CastNullableBigInteger(v),
+
+            [typeof(sbyte)] = v => CastSByte(v),
+            [typeof(short)] = v => CastInt16(v),
+            [typeof(int)] = v => CastInt32(v),
+            [typeof(long)] = v => CastInt64(v),
+            [typeof(byte)] = v => CastByte(v),
+            [typeof(ushort)] = v => CastUInt16(v),
+            [typeof(uint)] = v => CastUInt32(v),
+            [typeof(ulong)] = v => CastUInt64(v),
+            [typeof(char)] = v => CastChar(v),
+            [typeof(float)] = v => CastSingle(v),
+            [typeof(double)] = v => CastDouble(v),
+            [typeof(decimal)] = v => CastDecimal(v),
+            [typeof(BigInteger)] = v => CastBigInteger(v)
+        };
+
         /// <summary>
         /// Gets the cast converter for the specified type.  If none is
         /// found, this method returns null.
@@ -62,65 +80,12 @@ namespace com.espertech.esper.compat.util
         /// <returns></returns>
         public static TypeCaster GetCastConverter(Type t)
         {
-            var baseT = Nullable.GetUnderlyingType(t);
-            if (baseT != null) {
-                t = baseT;
-            }
-
-            if (t == typeof(int)) {
-                return v => PrimitiveCastInt32(v);
-            }
-
-            if (t == typeof(long)) {
-                return v => PrimitiveCastInt64(v);
-            }
-
-            if (t == typeof(short)) {
-                return v => PrimitiveCastInt16(v);
-            }
-
-            if (t == typeof(sbyte)) {
-                return v => PrimitiveCastSByte(v);
-            }
-
-            if (t == typeof(float)) {
-                return v => PrimitiveCastSingle(v);
-            }
-
-            if (t == typeof(double)) {
-                return v => PrimitiveCastDouble(v);
-            }
-
-            if (t == typeof(decimal)) {
-                return v => PrimitiveCastDecimal(v);
-            }
-
-            if (t == typeof(BigInteger)) {
-                return v => PrimitiveCastBigInteger(v);
-            }
-
-            if (t == typeof(uint)) {
-                return v => PrimitiveCastUInt32(v);
-            }
-
-            if (t == typeof(ulong)) {
-                return v => PrimitiveCastUInt64(v);
-            }
-
-            if (t == typeof(ushort)) {
-                return v => PrimitiveCastUInt16(v);
-            }
-
-            if (t == typeof(char)) {
-                return v => PrimitiveCastChar(v);
-            }
-
-            if (t == typeof(byte)) {
-                return v => PrimitiveCastByte(v);
+            if (TypeCasterDictionary.TryGetValue(t, out var typeCaster)) {
+                return typeCaster;
             }
 
             if (t.IsEnum) {
-                return sourceObj => PrimitiveCastEnum(t, sourceObj);
+                return sourceObj => CastEnum(t, sourceObj);
             }
 
             return delegate(object sourceObj) {
@@ -133,25 +98,18 @@ namespace com.espertech.esper.compat.util
             };
         }
 
-        public static T WithParser<T>(
-            TypeParser parser,
-            object sourceObj)
-        {
-            try {
-                return (T) parser.Invoke((string) sourceObj);
-            }
-            catch (FormatException) {
-                return default(T);
-            }
-        }
-
         /// <summary>
         /// Casts the object to a enumerated type
         /// </summary>
-        /// <param name="enumType">The type.</param>
         /// <param name="sourceObj">The source object</param>
         /// <returns></returns>
-        public static object PrimitiveCastEnum(
+        public static T CastEnum<T>(
+            object sourceObj)
+        {
+            return (T) CastEnum(typeof(T), sourceObj);
+        }
+
+        public static object CastEnum(
             Type enumType,
             object sourceObj)
         {
@@ -164,523 +122,731 @@ namespace com.espertech.esper.compat.util
                 return sourceObj;
             }
 
-            if (sourceObj is sbyte sbyteValue) {
-                return Enum.ToObject(enumType, sbyteValue);
-            }
+            switch (sourceObj) {
+                case sbyte sbyteValue:
+                    return Enum.ToObject(enumType, sbyteValue);
 
-            if (sourceObj is byte byteValue) {
-                return Enum.ToObject(enumType, byteValue);
-            }
+                case byte byteValue:
+                    return Enum.ToObject(enumType, byteValue);
 
-            if (sourceObj is char charValue) {
-                return Enum.ToObject(enumType, charValue);
-            }
+                case char charValue:
+                    return Enum.ToObject(enumType, charValue);
 
-            if (sourceObj is short shortValue) {
-                return Enum.ToObject(enumType, shortValue);
-            }
+                case short shortValue:
+                    return Enum.ToObject(enumType, shortValue);
 
-            if (sourceObj is int intValue) {
-                return Enum.ToObject(enumType, intValue);
-            }
+                case int intValue:
+                    return Enum.ToObject(enumType, intValue);
 
-            if (sourceObj is long longValue) {
-                return Enum.ToObject(enumType, longValue);
-            }
+                case long longValue:
+                    return Enum.ToObject(enumType, longValue);
 
-            if (sourceObj is ushort ushortValue) {
-                return Enum.ToObject(enumType, ushortValue);
-            }
+                case ushort ushortValue:
+                    return Enum.ToObject(enumType, ushortValue);
 
-            if (sourceObj is uint uintValue) {
-                return Enum.ToObject(enumType, uintValue);
-            }
+                case uint uintValue:
+                    return Enum.ToObject(enumType, uintValue);
 
-            if (sourceObj is ulong ulongValue) {
-                return Enum.ToObject(enumType, ulongValue);
-            }
+                case ulong ulongValue:
+                    return Enum.ToObject(enumType, ulongValue);
 
-            if (sourceObj is float floatValue) {
-                return Enum.ToObject(enumType, floatValue);
-            }
+                case float floatValue:
+                    return Enum.ToObject(enumType, floatValue);
 
-            if (sourceObj is double doubleValue) {
-                return Enum.ToObject(enumType, doubleValue);
-            }
+                case double doubleValue:
+                    return Enum.ToObject(enumType, doubleValue);
 
-            if (sourceObj is decimal decimalValue) {
-                return Enum.ToObject(enumType, decimalValue);
-            }
+                case decimal decimalValue:
+                    return Enum.ToObject(enumType, decimalValue);
 
-            if (sourceObj is string stringValue) {
-                return Enum.ToObject(enumType, stringValue[0]);
-            }
+                case string stringValue:
+                    return Enum.ToObject(enumType, stringValue[0]);
 
-            return null;
+                default:
+                    return null;
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.SByte
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static sbyte? PrimitiveCastSByte(object sourceObj)
+        public static sbyte? CastNullableSByte(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<sbyte?>(_parseSByte, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseSByte(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            if (sourceObj is sbyte sbyteValue) {
-                return sbyteValue;
-            }
+                case sbyte sbyteValue:
+                    return sbyteValue;
 
-            if (sourceObj is byte byteValue) {
-                return (sbyte) byteValue;
-            }
+                case byte byteValue:
+                    return (sbyte) byteValue;
 
-            if (sourceObj is char charValue) {
-                return (sbyte) charValue;
-            }
+                case char charValue:
+                    return (sbyte) charValue;
 
-            if (sourceObj is short shortValue) {
-                return (sbyte) shortValue;
-            }
+                case short shortValue:
+                    return (sbyte) shortValue;
 
-            if (sourceObj is int intValue) {
-                return (sbyte) intValue;
-            }
+                case int intValue:
+                    return (sbyte) intValue;
 
-            if (sourceObj is long longValue) {
-                return (sbyte) longValue;
-            }
+                case long longValue:
+                    return (sbyte) longValue;
 
-            if (sourceObj is ushort ushortValue) {
-                return (sbyte) ushortValue;
-            }
+                case ushort ushortValue:
+                    return (sbyte) ushortValue;
 
-            if (sourceObj is uint uintValue) {
-                return (sbyte) uintValue;
-            }
+                case uint uintValue:
+                    return (sbyte) uintValue;
 
-            if (sourceObj is ulong ulongValue) {
-                return (sbyte) ulongValue;
-            }
+                case ulong ulongValue:
+                    return (sbyte) ulongValue;
 
-            if (sourceObj is float floatValue) {
-                return (sbyte) floatValue;
-            }
+                case float floatValue:
+                    return (sbyte) floatValue;
 
-            if (sourceObj is double doubleValue) {
-                return (sbyte) doubleValue;
-            }
+                case double doubleValue:
+                    return (sbyte) doubleValue;
 
-            if (sourceObj is decimal decimalValue) {
-                return (sbyte) decimalValue;
-            }
+                case decimal decimalValue:
+                    return (sbyte) decimalValue;
 
-            return null;
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        public static sbyte CastSByte(object sourceObj)
+        {
+            switch (sourceObj) {
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseSByte(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                case sbyte sbyteValue:
+                    return sbyteValue;
+
+                case byte byteValue:
+                    return (sbyte) byteValue;
+
+                case char charValue:
+                    return (sbyte) charValue;
+
+                case short shortValue:
+                    return (sbyte) shortValue;
+
+                case int intValue:
+                    return (sbyte) intValue;
+
+                case long longValue:
+                    return (sbyte) longValue;
+
+                case ushort ushortValue:
+                    return (sbyte) ushortValue;
+
+                case uint uintValue:
+                    return (sbyte) uintValue;
+
+                case ulong ulongValue:
+                    return (sbyte) ulongValue;
+
+                case float floatValue:
+                    return (sbyte) floatValue;
+
+                case double doubleValue:
+                    return (sbyte) doubleValue;
+
+                case decimal decimalValue:
+                    return (sbyte) decimalValue;
+
+                default:
+                    throw new ArgumentException();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Byte
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static byte? PrimitiveCastByte(object sourceObj)
+        public static byte? CastNullableByte(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<byte?>(_parseByte, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseByte(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            return sourceObj.AsByte();
+                default:
+                    return sourceObj.AsByte();
+            }
+        }
+
+        public static byte CastByte(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseByte(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsByte();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Char
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static char? PrimitiveCastChar(object sourceObj)
+        public static char? CastNullableChar(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is sbyte sbyteValue) {
-                return (char) sbyteValue;
-            }
+                case sbyte sbyteValue:
+                    return (char) sbyteValue;
 
-            if (sourceObj is byte byteValue) {
-                return (char) byteValue;
-            }
+                case byte byteValue:
+                    return (char) byteValue;
 
-            if (sourceObj is char charValue) {
-                return charValue;
-            }
+                case char charValue:
+                    return charValue;
 
-            if (sourceObj is short shortValue) {
-                return (char) shortValue;
-            }
+                case short shortValue:
+                    return (char) shortValue;
 
-            if (sourceObj is int intValue) {
-                return (char) intValue;
-            }
+                case int intValue:
+                    return (char) intValue;
 
-            if (sourceObj is long longValue) {
-                return (char) longValue;
-            }
+                case long longValue:
+                    return (char) longValue;
 
-            if (sourceObj is ushort ushortValue) {
-                return (char) ushortValue;
-            }
+                case ushort ushortValue:
+                    return (char) ushortValue;
 
-            if (sourceObj is uint uintValue) {
-                return (char) uintValue;
-            }
+                case uint uintValue:
+                    return (char) uintValue;
 
-            if (sourceObj is ulong ulongValue) {
-                return (char) ulongValue;
-            }
+                case ulong ulongValue:
+                    return (char) ulongValue;
 
-            if (sourceObj is float floatValue) {
-                return (char) floatValue;
-            }
+                case float floatValue:
+                    return (char) floatValue;
 
-            if (sourceObj is double doubleValue) {
-                return (char) doubleValue;
-            }
+                case double doubleValue:
+                    return (char) doubleValue;
 
-            if (sourceObj is decimal decimalValue) {
-                return (char) decimalValue;
-            }
+                case decimal decimalValue:
+                    return (char) decimalValue;
 
-            if (sourceObj is string stringValue) {
-                return stringValue[0];
-            }
+                case string stringValue:
+                    return stringValue[0];
 
-            return null;
+                default:
+                    throw new ArgumentException();
+            }
         }
+
+        public static char CastChar(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case sbyte sbyteValue:
+                    return (char) sbyteValue;
+
+                case byte byteValue:
+                    return (char) byteValue;
+
+                case char charValue:
+                    return charValue;
+
+                case short shortValue:
+                    return (char) shortValue;
+
+                case int intValue:
+                    return (char) intValue;
+
+                case long longValue:
+                    return (char) longValue;
+
+                case ushort ushortValue:
+                    return (char) ushortValue;
+
+                case uint uintValue:
+                    return (char) uintValue;
+
+                case ulong ulongValue:
+                    return (char) ulongValue;
+
+                case float floatValue:
+                    return (char) floatValue;
+
+                case double doubleValue:
+                    return (char) doubleValue;
+
+                case decimal decimalValue:
+                    return (char) decimalValue;
+
+                case string stringValue:
+                    return stringValue[0];
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        // --------------------------------------------------------------------------------
 
         /// <summary>
         /// Casts the object to the System.Int16
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static short? PrimitiveCastInt16(object sourceObj)
+        public static short? CastNullableInt16(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<short?>(_parseInt16, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt16(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            return sourceObj.AsShort();
+                default:
+                    return sourceObj.AsInt16();
+            }
+        }
+
+        public static short CastInt16(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt16(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsInt16();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Int32
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static int? PrimitiveCastInt32(object sourceObj)
+        public static int? CastNullableInt32(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<int?>(_parseInt32, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt32(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            return sourceObj.AsInt();
+                default:
+                    return sourceObj.AsInt32();
+            }
+        }
+
+        public static int CastInt32(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt32(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsInt32();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Int64
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static long? PrimitiveCastInt64(object sourceObj)
+        public static long? CastNullableInt64(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<long?>(_parseInt64, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt64(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            return sourceObj.AsLong();
+                default:
+                    return sourceObj.AsInt64();
+            }
         }
+
+        public static long CastInt64(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseInt64(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsInt64();
+            }
+        }
+
+        // --------------------------------------------------------------------------------
 
         /// <summary>
         /// Casts the object to the System.UInt16
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static ushort? PrimitiveCastUInt16(object sourceObj)
+        public static ushort? CastNullableUInt16(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<ushort?>(_parseUInt16, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt16(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            if (sourceObj is sbyte sbyteValue) {
-                return (ushort) sbyteValue;
+                default:
+                    return sourceObj.AsUInt16();
             }
+        }
 
-            if (sourceObj is byte byteValue) {
-                return byteValue;
+        public static ushort CastUInt16(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt16(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsUInt16();
             }
-
-            if (sourceObj is char charValue) {
-                return charValue;
-            }
-
-            if (sourceObj is short shortValue) {
-                return (ushort) shortValue;
-            }
-
-            if (sourceObj is int intValue) {
-                return (ushort) intValue;
-            }
-
-            if (sourceObj is long longValue) {
-                return (ushort) longValue;
-            }
-
-            if (sourceObj is ushort ushortValue) {
-                return ushortValue;
-            }
-
-            if (sourceObj is uint uintValue) {
-                return (ushort) uintValue;
-            }
-
-            if (sourceObj is ulong ulongValue) {
-                return (ushort) ulongValue;
-            }
-
-            if (sourceObj is float floatValue) {
-                return (ushort) floatValue;
-            }
-
-            if (sourceObj is double doubleValue) {
-                return (ushort) doubleValue;
-            }
-
-            if (sourceObj is decimal decimalValue) {
-                return (ushort) decimalValue;
-            }
-
-            return null;
         }
 
         /// <summary>
         /// Casts the object to the System.UInt32
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static uint? PrimitiveCastUInt32(object sourceObj)
+        public static uint? CastNullableUInt32(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<uint?>(_parseUInt32, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt32(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            if (sourceObj is sbyte sbyteValue) {
-                return (uint) sbyteValue;
+                default:
+                    return sourceObj.AsUInt32();
             }
+        }
 
-            if (sourceObj is byte byteValue) {
-                return byteValue;
+        public static uint CastUInt32(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt32(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsUInt32();
             }
-
-            if (sourceObj is char charValue) {
-                return charValue;
-            }
-
-            if (sourceObj is short shortValue) {
-                return (uint) shortValue;
-            }
-
-            if (sourceObj is int intValue) {
-                return (uint) intValue;
-            }
-
-            if (sourceObj is long longValue) {
-                return (uint) longValue;
-            }
-
-            if (sourceObj is ushort ushortValue) {
-                return ushortValue;
-            }
-
-            if (sourceObj is uint uintValue) {
-                return uintValue;
-            }
-
-            if (sourceObj is ulong ulongValue) {
-                return (uint) ulongValue;
-            }
-
-            if (sourceObj is float floatValue) {
-                return (uint) floatValue;
-            }
-
-            if (sourceObj is double doubleValue) {
-                return (uint) doubleValue;
-            }
-
-            if (sourceObj is decimal decimalValue) {
-                return (uint) decimalValue;
-            }
-
-            return null;
         }
 
         /// <summary>
         /// Casts the object to the System.UInt64
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static ulong? PrimitiveCastUInt64(object sourceObj)
+        public static ulong? CastNullableUInt64(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<ulong?>(_parseUInt64, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt64(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            if (sourceObj is sbyte sbyteValue) {
-                return (ulong) sbyteValue;
+                default:
+                    return sourceObj.AsUInt64();
             }
+        }
 
-            if (sourceObj is byte byteValue) {
-                return byteValue;
+        public static ulong CastUInt64(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseUInt64(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsUInt64();
             }
-
-            if (sourceObj is char charValue) {
-                return charValue;
-            }
-
-            if (sourceObj is short shortValue) {
-                return (ulong) shortValue;
-            }
-
-            if (sourceObj is int intValue) {
-                return (ulong) intValue;
-            }
-
-            if (sourceObj is long longValue) {
-                return (ulong) longValue;
-            }
-
-            if (sourceObj is ushort ushortValue) {
-                return ushortValue;
-            }
-
-            if (sourceObj is uint uintValue) {
-                return uintValue;
-            }
-
-            if (sourceObj is ulong ulongValue) {
-                return ulongValue;
-            }
-
-            if (sourceObj is float floatValue) {
-                return (ulong) floatValue;
-            }
-
-            if (sourceObj is double doubleValue) {
-                return (ulong) doubleValue;
-            }
-
-            if (sourceObj is decimal decimalValue) {
-                return (ulong) decimalValue;
-            }
-
-            return null;
         }
 
         /// <summary>
         /// Casts the object to the System.Single
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static float? PrimitiveCastSingle(object sourceObj)
+        public static float? CastNullableSingle(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<float?>(_parseSingle, stringValue);
-            }
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseFloat(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
 
-            return sourceObj.AsFloat();
+                default:
+                    return sourceObj.AsFloat();
+            }
+        }
+
+        public static float CastSingle(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseFloat(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsFloat();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Double
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static double? PrimitiveCastDouble(object sourceObj)
+        public static double? CastNullableDouble(object sourceObj)
         {
-            if (sourceObj == null) {
-                return null;
-            }
-
-            if (sourceObj is string stringValue) {
-                try {
-                    return WithParser<double?>(_parseDouble, stringValue);
-                }
-                catch (FormatException) {
+            switch (sourceObj) {
+                case null:
                     return null;
-                }
-            }
 
-            return sourceObj.AsDouble();
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseDouble(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsDouble();
+            }
+        }
+
+        public static double CastDouble(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseDouble(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+
+                default:
+                    return sourceObj.AsDouble();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Decimal
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static decimal? PrimitiveCastDecimal(object sourceObj)
+        public static decimal? CastNullableDecimal(object sourceObj)
         {
-            if (sourceObj == null)
-                return null;
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<decimal?>(_parseDecimal, stringValue);
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseDecimal(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsDecimal();
             }
+        }
 
-            return sourceObj.AsDecimal();
+        public static decimal CastDecimal(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseDecimal(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsDecimal();
+            }
         }
 
         /// <summary>
         /// Casts the object to the System.Numerics.BigInteger
         /// </summary>
         /// <param name="sourceObj">The source object</param>
-        public static BigInteger? PrimitiveCastBigInteger(object sourceObj)
+        public static BigInteger? CastNullableBigInteger(object sourceObj)
         {
-            if (sourceObj == null)
-                return null;
+            switch (sourceObj) {
+                case null:
+                    return null;
 
-            if (sourceObj is string stringValue) {
-                return WithParser<BigInteger?>(_parseBigInteger, stringValue);
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseBigInteger(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsBigInteger();
             }
+        }
 
-            return sourceObj.AsBigInteger();
+        public static BigInteger CastBigInteger(object sourceObj)
+        {
+            switch (sourceObj) {
+                case null:
+                    throw new ArgumentException();
+
+                case string stringValue:
+                    try {
+                        return SimpleTypeParserFunctions.ParseBigInteger(stringValue);
+                    }
+                    catch (FormatException) {
+                        return default;
+                    }
+
+                default:
+                    return sourceObj.AsBigInteger();
+            }
         }
     }
 }

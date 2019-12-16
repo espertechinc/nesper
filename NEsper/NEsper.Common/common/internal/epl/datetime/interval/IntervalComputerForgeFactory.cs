@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             string method,
             ExprOptionalConstantForge param)
         {
-            if (param.OptionalConstant != null && param.OptionalConstant.AsLong() < 0) {
+            if (param.OptionalConstant != null && param.OptionalConstant.AsInt64() < 0) {
                 throw new ExprValidationException(
                     "The " + method + " date-time method does not allow negative threshold value");
             }
@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
             if (ExprNodeUtilityQuery.IsConstant(exprNode)) {
                 var constantNode = (ExprConstantNode) exprNode;
-                var l = constantNode.ConstantValue.AsLong();
+                var l = constantNode.ConstantValue.AsInt64();
                 return new ExprOptionalConstantForge(new IntervalDeltaExprMSecConstForge(l), l);
             }
 
@@ -295,7 +295,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                                         eventsPerStream,
                                         isNewData,
                                         context)
-                                    .AsLong()
+                                    .AsInt64()
                         };
                     },
 

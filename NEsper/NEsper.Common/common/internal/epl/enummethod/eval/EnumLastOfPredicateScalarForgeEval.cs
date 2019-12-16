@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.type, EPStatementInitServicesConstants.REF)));
 
             var resultType = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(forge.resultType));
-            var paramsType = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramsType = EnumForgeCodegenNames.PARAMS;
             var scope = new ExprForgeCodegenSymbol(false, null);
             
             var methodNode = codegenMethodScope
@@ -92,17 +92,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("evalEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("evalEvent"), "Properties"));
             var forEach = block
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"));
+                .AssignArrayElement("props", Constant(0), Ref("next"));
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 forEach,
                 forge.InnerExpression.EvaluationType,
                 forge.InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-            forEach.AssignRef("result", @Ref("next"));
-            block.MethodReturn(Cast(resultType, @Ref("result")));
+            forEach.AssignRef("result", Ref("next"));
+            block.MethodReturn(Cast(resultType, Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

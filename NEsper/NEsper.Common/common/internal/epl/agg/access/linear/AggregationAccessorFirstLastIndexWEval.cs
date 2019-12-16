@@ -46,14 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
+                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .MethodReturn(
                     LocalMethod(
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope),
-                        @Ref("eventsPerStreamBuf"),
+                            context.ClassScope,
+                            true),
+                        Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()));
         }
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.NamedMethods);
             context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
                 .IfRefNullReturnNull("bean")
-                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("bean")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("bean")));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -93,19 +94,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
+                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar<object>(
                     "value",
                     LocalMethod(
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope),
-                        @Ref("eventsPerStreamBuf"),
+                            context.ClassScope,
+                            true),
+                        Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("value")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("value")));
         }
 
         public static void GetEnumerableEventCodegen(
@@ -141,7 +143,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     evalType,
                     "indexResult",
                     LocalMethod(
-                        CodegenLegoMethodExpression.CodegenExpression(forge.IndexNode, method, classScope),
+                        CodegenLegoMethodExpression.CodegenExpression(
+                            forge.IndexNode,
+                            method, 
+                            classScope,
+                            true),
                         ConstantNull(),
                         ConstantTrue(),
                         ConstantNull()));
@@ -151,15 +157,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
                 method.Block.DeclareVar<int>(
                     "index",
-                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(@Ref("indexResult"), evalType));
+                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("indexResult"), evalType));
             }
             else {
                 method.Block.DeclareVar<int>("index", Constant(forge.Constant));
             }
 
             CodegenExpression value = forge.IsFirst
-                ? stateForge.AggregatorLinear.GetFirstNthValueCodegen(@Ref("index"), method, classScope, namedMethods)
-                : stateForge.AggregatorLinear.GetLastNthValueCodegen(@Ref("index"), method, classScope, namedMethods);
+                ? stateForge.AggregatorLinear.GetFirstNthValueCodegen(Ref("index"), method, classScope, namedMethods)
+                : stateForge.AggregatorLinear.GetLastNthValueCodegen(Ref("index"), method, classScope, namedMethods);
             method.Block.MethodReturn(value);
             return method;
         }

@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 },
                 type.PropertyDescriptors);
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "xpathElement1",

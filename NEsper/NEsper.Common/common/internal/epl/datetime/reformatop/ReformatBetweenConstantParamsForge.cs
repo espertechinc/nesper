@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ReformatBetweenConstantParamsForge : ReformatForge,
         ReformatOp
     {
-        private readonly long first;
-        private readonly long second;
+        private readonly long _first;
+        private readonly long _second;
 
         public ReformatBetweenConstantParamsForge(IList<ExprNode> parameters)
         {
@@ -37,21 +37,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var paramSecond = GetLongValue(parameters[1]);
 
             if (paramFirst > paramSecond) {
-                second = paramFirst;
-                first = paramSecond;
+                _second = paramFirst;
+                _first = paramSecond;
             }
             else {
-                first = paramFirst;
-                second = paramSecond;
+                _first = paramFirst;
+                _second = paramSecond;
             }
 
             if (parameters.Count > 2) {
                 if (!GetBooleanValue(parameters[2])) {
-                    first++;
+                    _first++;
                 }
 
                 if (!GetBooleanValue(parameters[3])) {
-                    second--;
+                    _second--;
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return And(Relational(Constant(first), LE, inner), Relational(inner, LE, Constant(second)));
+            return And(Relational(Constant(_first), LE, inner), Relational(inner, LE, Constant(_second)));
         }
 
         public Type ReturnType => typeof(bool?);
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public object EvaluateInternal(long ts)
         {
-            return first <= ts && ts <= second;
+            return _first <= ts && ts <= _second;
         }
     }
 } // end of namespace

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     REF_ROWLIMITPROCESSOR.Ref,
                     ExprDotMethod(rowLimitFactory, "Instantiate", REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(
-                    CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
+                    CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
         public void CtorCodegen(

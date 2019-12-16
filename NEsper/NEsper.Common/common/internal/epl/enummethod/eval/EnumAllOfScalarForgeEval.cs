@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumAllOfScalarForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
 

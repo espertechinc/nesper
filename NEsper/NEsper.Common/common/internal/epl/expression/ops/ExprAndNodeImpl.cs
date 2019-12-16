@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public ExprEvaluator ExprEvaluator {
-            get => new ExprAndNodeEval(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(this.ChildNodes));
+            get => new ExprAndNodeEval(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(),
+                    GetType(),
                     this,
                     "ExprAnd",
                     requiredType,
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            if (this.ChildNodes.Length <= 1) {
+            if (ChildNodes.Length <= 1) {
                 throw new ExprValidationException("The AND operator requires at least 2 child expressions");
             }
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string appendStr = "";
-            foreach (ExprNode child in this.ChildNodes) {
+            foreach (ExprNode child in ChildNodes) {
                 writer.Write(appendStr);
                 child.ToEPL(writer, Precedence);
                 appendStr = " and ";

@@ -26,11 +26,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new InfraTableOnMergeSimple());
             execs.Add(new InfraOnMergePlainPropsAnyKeyed());
             execs.Add(new InfraMergeWhereWithMethodRead());
-            #endif
             execs.Add(new InfraMergeSelectWithAggReadAndEnum());
             return execs;
         }

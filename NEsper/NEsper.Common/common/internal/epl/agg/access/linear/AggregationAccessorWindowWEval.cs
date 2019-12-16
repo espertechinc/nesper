@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             var childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope);
+                context.ClassScope,
+                false);
             var childExprType = forge.ChildNode.EvaluationType;
 
             CodegenExpression invokeChild = LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull());
@@ -106,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         CodegenLegoMethodExpression.CodegenExpression(
                             forge.ChildNode,
                             context.Method,
-                            context.ClassScope),
+                            context.ClassScope,
+                            true),
                         Ref("eventsPerStreamBuf"),
                         ConstantTrue(),
                         ConstantNull()))

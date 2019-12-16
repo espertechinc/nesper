@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -49,20 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 this.GetType(),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<object>(
+                .DeclareVar<FlexCollection>(
                     "result",
-                    enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
-                .IfCondition(
-                    And(
-                        NotEqualsNull(@Ref("result")),
-                        InstanceOf<ICollection<EventBean>>(@Ref("result"))))
-                .DeclareVar<ICollection<EventBean>>(
-                    "events",
-                    Cast<ICollection<EventBean>>(@Ref("result")))
-                .BlockReturn(
-                    Cast<EventBean[]>(
-                        ExprDotMethod(@Ref("events"), "ToArray")))
-                .MethodReturn(Cast(typeof(EventBean[]), @Ref("result")));
+                    FlexWrap(enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
+                .IfRefNullReturnNull(Ref("result"))
+                .MethodReturn(ExprDotMethod(ExprDotName(Ref("result"), "EventBeanCollection"), "ToArray"));
             return LocalMethod(methodNode);
         }
 

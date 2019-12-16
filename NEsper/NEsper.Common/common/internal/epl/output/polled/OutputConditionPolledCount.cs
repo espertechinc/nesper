@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             if (optionalVariableReader != null) {
                 object value = optionalVariableReader.Value;
                 if (value != null) {
-                    state.EventRate = value.AsLong();
+                    state.EventRate = value.AsInt64();
                 }
             }
 

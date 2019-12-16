@@ -464,7 +464,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var formatEval = CodegenLegoMethodExpression.CodegenExpression(
                 formatExpr,
                 codegenClassScope.NamespaceScope.InitMethod,
-                codegenClassScope);
+                codegenClassScope,
+                true);
             CodegenExpression formatInit = LocalMethod(formatEval, ConstantNull(), ConstantTrue(), ConstantNull());
             return codegenClassScope.AddDefaultFieldUnshared(true, type, formatInit);
         }

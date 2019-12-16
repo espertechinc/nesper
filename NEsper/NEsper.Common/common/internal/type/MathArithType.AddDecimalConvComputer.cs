@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.type
         [Serializable]
         public class AddDecimalConvComputer : Computer
         {
-            private readonly SimpleNumberCoercer _convOne;
-            private readonly SimpleNumberCoercer _convTwo;
+            private readonly Coercer _convOne;
+            private readonly Coercer _convTwo;
 
             /// <summary>
             ///     Ctor.
@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="convOne">conversion for LHS</param>
             /// <param name="convTwo">conversion for RHS</param>
             public AddDecimalConvComputer(
-                SimpleNumberCoercer convOne,
-                SimpleNumberCoercer convTwo)
+                Coercer convOne,
+                Coercer convTwo)
             {
                 this._convOne = convOne;
                 this._convTwo = convTwo;

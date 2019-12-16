@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EventBean @event,
                 string propertyName)
             {
-                return @event.Get(propertyName).AsInt();
+                return @event.Get(propertyName).AsInt32();
             }
         }
     }

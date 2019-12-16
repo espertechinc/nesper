@@ -29,7 +29,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.ops;
 using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;

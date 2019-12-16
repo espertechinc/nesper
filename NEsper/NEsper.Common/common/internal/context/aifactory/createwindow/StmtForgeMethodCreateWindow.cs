@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.activator;
-using com.espertech.esper.common.@internal.context.aifactory.@select;
+using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;

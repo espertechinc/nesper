@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, EventMapNested.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventMapProperties()
         {
             RegressionRunner.Run(session, EventMapProperties.Executions());

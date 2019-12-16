@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(FlexCollection),
                 typeof(PropertyDotScalarCollection),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -214,13 +215,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope)
         {
             var method = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarCollection), codegenClassScope)
+                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarCollection), codegenClassScope)
                 .AddParam(typeof(EventBean), "@event")
                 .Block
                 .MethodReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(
-                        typeof(ICollection<object>),
-                        getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)));
+                    FlexWrap(
+                        getter.EventBeanGetCodegen(
+                            Ref("@event"),
+                            codegenMethodScope,
+                            codegenClassScope)));
             return LocalMethodBuild(method).Pass(@event).Call();
         }
     }

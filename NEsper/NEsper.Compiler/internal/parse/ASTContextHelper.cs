@@ -185,7 +185,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     throw ASTWalkException.From("Granularity provided must be an int-type number, received " + num.GetType() + " instead");
                 }
 
-                return new ContextSpecHash(rawSpecs, num.AsInt(), preallocateStr != null);
+                return new ContextSpecHash(rawSpecs, num.AsInt32(), preallocateStr != null);
             }
 
             // categorized

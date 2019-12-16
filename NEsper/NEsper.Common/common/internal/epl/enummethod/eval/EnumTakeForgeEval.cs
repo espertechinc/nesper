@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return null;
             }
 
-            return EvaluateEnumTakeMethod(enumcoll, size.AsInt());
+            return EvaluateEnumTakeMethod(enumcoll, size.AsInt32());
         }
 
         public static CodegenExpression Codegen(
@@ -52,16 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var isEventBeanCollection = !forge.Scalar;
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var returnType = isEventBeanCollection
-                ? typeof(ICollection<EventBean>)
-                : typeof(ICollection<object>);
-            var paramTypes = isEventBeanCollection
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            var returnType = typeof(FlexCollection);
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    returnType,
+                    typeof(FlexCollection),
                     typeof(EnumTakeForgeEval),
                     scope,
                     codegenClassScope)
@@ -85,6 +81,52 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("size"), sizeType)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="enumcoll">collection</param>
+        /// <param name="size">size</param>
+        /// <returns>collection</returns>
+        public static FlexCollection EvaluateEnumTakeMethod(
+            FlexCollection enumcoll,
+            int size)
+        {
+            if (enumcoll.Count == 0) {
+                return FlexCollection.Empty;
+            }
+
+            if (size <= 0) {
+                return FlexCollection.Empty;
+            }
+
+            if (enumcoll.Count < size) {
+                return enumcoll;
+            }
+
+            if (size == 1) {
+                if (enumcoll.IsEventBeanCollection) {
+                    return FlexCollection.OfEvent(
+                        enumcoll.EventBeanCollection.First());
+                }
+                else {
+                    return FlexCollection.OfObject(
+                        enumcoll.ObjectCollection.First());
+                }
+            }
+
+            if (enumcoll.IsEventBeanCollection) {
+                return FlexCollection.Of(
+                    enumcoll.EventBeanCollection
+                    .Take(size)
+                    .ToList());
+            }
+
+            return FlexCollection.Of(
+                enumcoll.ObjectCollection
+                    .Take(size)
+                    .ToList());
         }
 
         /// <summary>

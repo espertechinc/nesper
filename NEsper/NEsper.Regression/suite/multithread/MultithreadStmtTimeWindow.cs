@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             IDictionary<int, IList<string>> results = new Dictionary<int, IList<string>>();
             foreach (var theEvent in result) {
-                var count = theEvent.Get("IntPrimitive").AsInt();
+                var count = theEvent.Get("IntPrimitive").AsInt32();
                 var key = (string) theEvent.Get("key");
 
                 var entries = results.Get(count);

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                     NewInstance(typeof(OutputConditionPolledCountFactory)))
                 .SetProperty(Ref("factory"), "EventRate", Constant(eventRate))
                 .SetProperty(Ref("factory"), "Variable", variableExpression)
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
     }

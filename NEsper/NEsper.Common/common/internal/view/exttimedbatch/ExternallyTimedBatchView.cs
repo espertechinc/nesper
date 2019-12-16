@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         {
             eventsPerStream[0] = obj;
             var num = factory.timestampEval.Evaluate(eventsPerStream, true, agentInstanceContext);
-            return num.AsLong();
+            return num.AsInt64();
         }
     }
 } // end of namespace

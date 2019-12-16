@@ -277,7 +277,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 int constant = -1;
                 ExprForge forgeIndex;
                 if (evaluatorIndex.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                    constant = evaluatorIndex.Forge.ExprEvaluator.Evaluate(null, true, null).AsInt();
+                    constant = evaluatorIndex.Forge.ExprEvaluator.Evaluate(null, true, null).AsInt32();
                     forgeIndex = null;
                 }
                 else {

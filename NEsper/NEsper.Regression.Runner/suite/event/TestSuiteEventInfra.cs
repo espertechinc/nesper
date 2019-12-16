@@ -813,13 +813,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyDynamicNonSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyDynamicSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyDynamicSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyIndexedKeyExpr()
         {
             RegressionRunner.Run(session, new EventInfraPropertyIndexedKeyExpr());
@@ -831,37 +831,37 @@ namespace com.espertech.esper.regressionrun.suite.@event
             RegressionRunner.Run(session, new EventInfraPropertyMappedIndexed());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedDynamic()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedDynamic());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedDynamicDeep()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicDeep());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedDynamicRootedNonSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicRootedNonSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedDynamicRootedSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicRootedSimple());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedIndexed()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedIndexed());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEventInfraPropertyNestedSimple()
         {
             RegressionRunner.Run(session, new EventInfraPropertyNestedSimple());

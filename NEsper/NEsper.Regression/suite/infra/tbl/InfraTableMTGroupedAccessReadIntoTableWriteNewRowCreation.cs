@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         }
 
                         env.SendEventBean(new SupportBean_S0(0, currentEventId));
-                        var value = listener.AssertOneGetNewAndReset().Get("c0").AsInt();
+                        var value = listener.AssertOneGetNewAndReset().Get("c0").AsInt32();
                         Assert.AreEqual(10, value);
                     }
                 }

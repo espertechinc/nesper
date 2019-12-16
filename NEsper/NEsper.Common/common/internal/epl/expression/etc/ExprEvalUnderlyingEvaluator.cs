@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block.IfRefNullReturnNull(refEPS)
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(Cast(requiredType, ExprDotName(@Ref("@event"), "Underlying")));
+                .MethodReturn(Cast(requiredType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

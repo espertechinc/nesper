@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             string propTwo)
         {
             var theString = (string) eventBean.Get(propOne);
-            var id = eventBean.Get(propTwo).AsInt();
+            var id = eventBean.Get(propTwo).AsInt32();
             if (id < 0) {
                 return null;
             }
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.support.epl
 
         public static SupportBean ConvertEvent(SupportMarketDataBean bean)
         {
-            return new SupportBean(bean.Symbol, bean.Volume.AsInt());
+            return new SupportBean(bean.Symbol, bean.Volume.AsInt32());
         }
 
         public static object StaticMethod(object @object)
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regressionlib.support.epl
 
         public static bool VolumeGreaterZeroEventBean(EventBean bean)
         {
-            var volume = bean.Get("Volume").AsLong();
+            var volume = bean.Get("Volume").AsInt64();
             return volume > 0;
         }
 

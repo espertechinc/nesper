@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
@@ -370,6 +371,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             params CodegenExpression[] @params)
         {
             return new CodegenExpressionStaticMethod(clazz, method, @params);
+        }
+
+        public static CodegenExpression FlexWrap(
+            CodegenExpression expression)
+        {
+            return StaticMethod(typeof(FlexCollection), "Of", expression);
+        }
+
+        public static CodegenExpression FlexEvent(
+            CodegenExpression expression)
+        {
+            return StaticMethod(typeof(FlexCollection), "OfEvent", expression);
+        }
+
+        public static CodegenExpression FlexValue(
+            CodegenExpression expression)
+        {
+            return StaticMethod(typeof(FlexCollection), "OfObject", expression);
+        }
+
+        public static CodegenExpression FlexEmpty()
+        {
+            return EnumValue(typeof(FlexCollection), "Empty");
         }
 
         public static CodegenExpression Unwrap<T>(

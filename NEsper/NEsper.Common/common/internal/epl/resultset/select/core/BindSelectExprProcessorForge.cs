@@ -77,18 +77,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             processMethod.Block
                 .DeclareVar<bool>("makeNatural", ExprDotName(stmtResultSvc, "IsMakeNatural"))
                 .DeclareVar<bool>("synthesize", Or(ExprDotName(stmtResultSvc, "IsMakeSynthetic"), isSynthesize))
-                .IfCondition(Not(@Ref("makeNatural")))
-                .IfCondition(@Ref("synthesize"))
+                .IfCondition(Not(Ref("makeNatural")))
+                .IfCondition(Ref("synthesize"))
                 .DeclareVar<EventBean>("synthetic", LocalMethod(syntheticMethod))
-                .BlockReturn(@Ref("synthetic"))
+                .BlockReturn(Ref("synthetic"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<EventBean>("syntheticEvent", ConstantNull())
-                .IfCondition(@Ref("synthesize"))
+                .IfCondition(Ref("synthesize"))
                 .AssignRef("syntheticEvent", LocalMethod(syntheticMethod))
                 .BlockEnd()
                 .DeclareVar<object[]>("parameters", LocalMethod(bindMethod))
                 .MethodReturn(
-                    NewInstance<NaturalEventBean>(resultEventType, @Ref("parameters"), @Ref("syntheticEvent")));
+                    NewInstance<NaturalEventBean>(resultEventType, Ref("parameters"), Ref("syntheticEvent")));
 
             return processMethod;
         }

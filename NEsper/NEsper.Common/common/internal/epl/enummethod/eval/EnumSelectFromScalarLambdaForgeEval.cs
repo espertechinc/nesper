@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -80,9 +81,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(FlexCollection),
                     typeof(EnumSelectFromScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
@@ -97,16 +98,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar<object>(
                     "item",
                     forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .IfCondition(NotEqualsNull(@Ref("item")))
-                .Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("item")));
-            block.MethodReturn(@Ref("result"));
+                .IfCondition(NotEqualsNull(Ref("item")))
+                .Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

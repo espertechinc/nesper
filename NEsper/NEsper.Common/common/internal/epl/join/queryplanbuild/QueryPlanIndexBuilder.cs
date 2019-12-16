@@ -11,10 +11,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
-using com.espertech.esper.common.@internal.epl.@join.hint;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.analyze;
+using com.espertech.esper.common.@internal.epl.join.hint;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;

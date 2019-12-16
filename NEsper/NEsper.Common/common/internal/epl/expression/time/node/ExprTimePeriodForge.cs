@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                 evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
                 var values = new int[Adders.Length];
                 for (var i = 0; i < values.Length; i++) {
-                    values[i] = evaluators[i].Evaluate(null, true, null).AsInt();
+                    values[i] = evaluators[i].Evaluate(null, true, null).AsInt32();
                 }
 
                 return new TimePeriodComputeConstGivenCalAddForge(Adders, values, ForgeRenderable.TimeAbacus);
@@ -185,12 +185,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                             typeof(ExprTimePeriodForge),
                             "MakeTimePeriodParamNullException",
                             Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
-                block.AssignRef("seconds", Op(@Ref("seconds"), "+", Adders[i].ComputeCodegen(Unbox(Ref("result")))));
+                block.AssignRef("seconds", Op(Ref("seconds"), "+", Adders[i].ComputeCodegen(Unbox(Ref("result")))));
             }
 
             block
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprTimePeriod", Ref("seconds")))
-                .MethodReturn(@Ref("seconds"));
+                .MethodReturn(Ref("seconds"));
             return LocalMethod(methodNode);
         }
 
@@ -361,15 +361,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                 codegenClassScope);
             block.MethodReturn(
                 NewInstance<TimePeriod>(
-                    @Ref("year"),
-                    @Ref("month"),
-                    @Ref("week"),
-                    @Ref("day"),
-                    @Ref("hours"),
-                    @Ref("minutes"),
-                    @Ref("seconds"),
-                    @Ref("milliseconds"),
-                    @Ref("microseconds")));
+                    Ref("year"),
+                    Ref("month"),
+                    Ref("week"),
+                    Ref("day"),
+                    Ref("hours"),
+                    Ref("minutes"),
+                    Ref("seconds"),
+                    Ref("milliseconds"),
+                    Ref("microseconds")));
             return LocalMethod(methodNode);
         }
 
@@ -416,7 +416,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                 return null;
             }
 
-            return evaluated.AsInt();
+            return evaluated.AsInt32();
         }
 
         public ExprForge[] Forges => ExprNodeUtilityQuery.GetForges(ForgeRenderable.ChildNodes);

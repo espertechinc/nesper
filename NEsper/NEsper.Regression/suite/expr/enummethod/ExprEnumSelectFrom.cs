@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -55,7 +56,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 EPAssertionUtil.AssertPropsPerRow(
                     ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
                     new [] { "c0", "c1" },
-                    new[] {new object[] {"E1x", "12y"}, new object[] {"E2x", "11y"}, new object[] {"E3x", "2y"}});
+                    new[] {
+                        new object[] {"E1x", "12y"}, 
+                        new object[] {"E2x", "11y"}, 
+                        new object[] {"E3x", "2y"}
+                    });
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("E4,0,1"));
                 EPAssertionUtil.AssertPropsPerRow(

@@ -17,10 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
     public class IntervalForgeCodegenNames
     {
-        protected internal static readonly CodegenExpressionRef REF_LEFTSTART = @Ref("leftStart");
-        protected internal static readonly CodegenExpressionRef REF_LEFTEND = @Ref("leftEnd");
-        protected internal static readonly CodegenExpressionRef REF_RIGHTSTART = @Ref("rightStart");
-        protected internal static readonly CodegenExpressionRef REF_RIGHTEND = @Ref("rightEnd");
+        protected internal static readonly CodegenExpressionRef REF_LEFTSTART = Ref("leftStart");
+        protected internal static readonly CodegenExpressionRef REF_LEFTEND = Ref("leftEnd");
+        protected internal static readonly CodegenExpressionRef REF_RIGHTSTART = Ref("rightStart");
+        protected internal static readonly CodegenExpressionRef REF_RIGHTEND = Ref("rightEnd");
 
         protected internal static readonly CodegenNamedParam FP_LEFTSTART = new CodegenNamedParam(
             typeof(long),

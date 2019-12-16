@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var time = target.AsLong();
+            var time = target.AsInt64();
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var startTime = startTimestamp.AsLong();
-            var endTime = endTimestamp.AsLong();
+            var startTime = startTimestamp.AsInt64();
+            var endTime = endTimestamp.AsInt64();
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }

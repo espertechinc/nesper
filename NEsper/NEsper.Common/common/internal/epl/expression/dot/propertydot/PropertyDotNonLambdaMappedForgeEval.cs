@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                     forge.MappedGetter.EventBeanGetMappedCodegen(
                         methodNode,
                         codegenClassScope,
-                        @Ref("@event"),
-                        @Ref("key")));
+                        Ref("@event"),
+                        Ref("key")));
             return LocalMethod(methodNode);
         }
     }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
@@ -54,14 +55,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = typeof(ICollection<object>);
+            var returnType = typeof(ICollection<EventBean>);
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
-                .AddParam(typeof(ICollection<EventBean>), "target");
+                .AddParam(typeof(FlexCollection), "target");
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(NewInstance<EventUnderlyingCollection>(@Ref("target")));
+                .MethodReturn(NewInstance<EventUnderlyingCollection>(Ref("target")));
             return LocalMethod(methodNode, inner);
         }
 

@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
-            method.Block.DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
+            method.Block.DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
 
             // method to evaluate expressions and compute hash
             ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, true);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             method.Block.DeclareVar(
                 reflectionMethod.ReturnType,
                 "result",
-                LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()));
+                LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()));
             if (reflectionMethod.ReturnType.CanBeNull()) {
                 method.Block.IfRefNull("result").BlockReturn(Constant(0));
             }
@@ -120,10 +120,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             method.Block.DeclareVar<int>(
                     "value",
                     SimpleNumberCoercerFactory.GetCoercer(reflectionMethod.ReturnType, typeof(int?))
-                        .CoerceCodegen(@Ref("result"), reflectionMethod.ReturnType))
-                .IfCondition(Relational(@Ref("value"), CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
-                .BlockReturn(Op(@Ref("value"), "%", Constant(granularity)))
-                .MethodReturn(Op(Op(@Ref("value"), "%", Constant(granularity)), "*", Constant(-1)));
+                        .CoerceCodegen(Ref("result"), reflectionMethod.ReturnType))
+                .IfCondition(Relational(Ref("value"), CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
+                .BlockReturn(Op(Ref("value"), "%", Constant(granularity)))
+                .MethodReturn(Op(Op(Ref("value"), "%", Constant(granularity)), "*", Constant(-1)));
             return LocalMethod(method, beanExpression);
         }
     }

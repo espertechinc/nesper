@@ -135,6 +135,7 @@ namespace NEsper.Avro.Core
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             string schemaJson)
         {
+            Console.WriteLine("Schema: {0}", schemaJson);
             var schema = Schema.Parse(schemaJson);
             return MakeType(metadata, eventBeanTypedEventFactory, schema, null, null, null);
         }

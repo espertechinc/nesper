@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 typeof(FireAndForgetProcessorNamedWindow),
                 this.GetType(),
                 classScope);
-            CodegenExpressionRef nw = @Ref("nw");
+            CodegenExpressionRef nw = Ref("nw");
             method.Block
                 .DeclareVar<FireAndForgetProcessorNamedWindow>(
                     nw.Ref,

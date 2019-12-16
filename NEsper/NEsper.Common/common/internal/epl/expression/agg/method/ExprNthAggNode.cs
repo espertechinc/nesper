@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var num = second.Forge.ExprEvaluator.Evaluate(null, true, null);
-            int size = num.AsInt();
+            int size = num.AsInt32();
 
             if (optionalFilter != null) {
                 this.positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);

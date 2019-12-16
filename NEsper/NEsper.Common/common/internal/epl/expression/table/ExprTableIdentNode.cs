@@ -96,10 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     symbols.GetAddIsNewData(method),
                     symbols.GetAddExprEvalCtx(method)));
             if (requiredType == typeof(object)) {
-                method.Block.MethodReturn(@Ref("result"));
+                method.Block.MethodReturn(Ref("result"));
             }
             else {
-                method.Block.MethodReturn(Cast(Boxing.GetBoxedType(requiredType), @Ref("result")));
+                method.Block.MethodReturn(Cast(Boxing.GetBoxedType(requiredType), Ref("result")));
             }
 
             return LocalMethod(method);

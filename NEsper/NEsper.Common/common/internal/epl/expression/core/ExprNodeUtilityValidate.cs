@@ -577,7 +577,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             ExprEqualsNode equals = (ExprEqualsNode) node;
 
-            if (@equals.ChildNodes[0] is ExprVariableNode variableNode) {
+            if (equals.ChildNodes[0] is ExprVariableNode variableNode) {
                 return new Pair<string, ExprNode>(variableNode.VariableNameWithSubProp, equals.ChildNodes[1]);
             }
 

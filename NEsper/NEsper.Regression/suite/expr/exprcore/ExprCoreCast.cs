@@ -461,8 +461,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var mae = (MyArrayEvent) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
                 Assert.AreEqual("a", mae.C0[0]);
                 Assert.AreEqual(1, mae.C1[0]);
-                Assert.AreEqual(2, mae.C2[0].AsInt());
-                Assert.AreEqual(3, mae.C3[0].AsInt());
+                Assert.AreEqual(2, mae.C2[0].AsInt32());
+                Assert.AreEqual(3, mae.C3[0].AsInt32());
                 Assert.AreEqual(new SupportBean("E1", 0), mae.C4[0]);
                 Assert.AreEqual(10, mae.C5[0][0]);
                 Assert.AreEqual(11, mae.C6[0][0]);

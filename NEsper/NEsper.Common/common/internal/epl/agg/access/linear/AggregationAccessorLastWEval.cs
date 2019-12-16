@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope);
+                context.ClassScope,
+                true);
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     factoryLinear.AggregatorLinear.GetLastValueCodegen(
@@ -45,8 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
-                .MethodReturn(LocalMethod(childExpr, @Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()));
+                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
+                .MethodReturn(LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()));
         }
 
         public static void GetEnumerableEventsCodegen(
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.Method,
                         context.NamedMethods))
                 .IfRefNullReturnNull("bean")
-                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("bean")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("bean")));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -72,7 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod childExpr = CodegenLegoMethodExpression.CodegenExpression(
                 forge.ChildNode,
                 context.Method,
-                context.ClassScope);
+                context.ClassScope,
+                true);
             context.Method.Block.DeclareVar<EventBean>(
                     "bean",
                     stateForge.AggregatorLinear.GetLastValueCodegen(
@@ -84,12 +86,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
-                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
+                .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar<object>(
                     "value",
-                    LocalMethod(childExpr, @Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
+                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("value")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("value")));
         }
 
         public static void GetEnumerableEventCodegen(

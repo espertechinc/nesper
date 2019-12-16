@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -173,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 var ticksLargeLess = theEvent.Get("ticksLargeLess200");
-                var ticksLargeLessContainer = ticksLargeLess.Unwrap<EventBean>();
+                var ticksLargeLessContainer = FlexCollection.Of(ticksLargeLess);
                 
                 Assert.AreEqual(1, ticksLargeLessContainer.Count);
 
@@ -448,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val0", "val1" },
-                    new[] {typeof(SupportBean_ST0[]), typeof(ICollection<EventBean>)});
+                    new[] {typeof(SupportBean_ST0[]), typeof(ICollection<object>)});
 
                 env.SendEventBean(new SupportBean_ST0("E1", 5));
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E1");

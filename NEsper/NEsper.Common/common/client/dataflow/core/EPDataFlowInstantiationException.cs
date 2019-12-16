@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Indicates an exception instantiating a data flow. </summary>
+    [Serializable]
     public class EPDataFlowInstantiationException : EPException
     {
         /// <summary>Ctor. </summary>
@@ -34,6 +36,11 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// <param name="cause">the inner exception</param>
         public EPDataFlowInstantiationException(Exception cause)
             : base(cause)
+        {
+        }
+
+        protected EPDataFlowInstantiationException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

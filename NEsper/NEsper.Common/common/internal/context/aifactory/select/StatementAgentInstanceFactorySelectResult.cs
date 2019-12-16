@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.prior;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.subselect;

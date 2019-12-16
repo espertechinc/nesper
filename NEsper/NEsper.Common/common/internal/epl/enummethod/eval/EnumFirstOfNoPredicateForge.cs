@@ -61,9 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var type = EPTypeHelper.GetCodegenReturnType(_resultType);
-            var paramTypes = (type == typeof(EventBean))
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             
             var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumFirstOfNoPredicateForge), codegenClassScope)

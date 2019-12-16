@@ -42,13 +42,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new EPLSpatialPREventIndexUnindexed());
             execs.Add(new EPLSpatialPREventIndexUnusedOnTrigger());
             execs.Add(new EPLSpatialPREventIndexUnusedNamedWindowFireAndForget());
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(false));
             execs.Add(new EPLSpatialPREventIndexOnTriggerNWInsertRemove(true));
-            #endif
             execs.Add(new EPLSpatialPREventIndexOnTriggerTable());
             execs.Add(new EPLSpatialPREventIndexChoiceOfTwo());
             execs.Add(new EPLSpatialPREventIndexUnique());

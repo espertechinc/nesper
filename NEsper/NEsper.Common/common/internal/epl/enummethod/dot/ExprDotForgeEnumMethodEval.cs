@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
@@ -96,9 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             //block.Debug("param: {0}", ExprDotMethod(Ref("param"), "RenderAny"));
 
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar<ICollection<EventBean>>(
-                    "coll",
-                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(EventBean) }, Ref("param")));
+                block.DeclareVar<FlexCollection>("coll", FlexEvent(Ref("param")));
             }
             else if (innerType.IsGenericCollection()) {
                 block.DeclareVar(innerType, "coll", Ref("param"));

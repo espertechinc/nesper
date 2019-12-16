@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy("@Name('s0') select * from MyXMLEvent");
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "nested1simple",

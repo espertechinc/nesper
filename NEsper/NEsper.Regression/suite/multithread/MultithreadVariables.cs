@@ -74,11 +74,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // this counter have all the values from 0 to N-1.
             ISet<long> var3Values = new SortedSet<long>();
             foreach (var theEvent in listenerSetOne.GetNewDataListFlattened()) {
-                var3Values.Add(theEvent.Get("var3").AsLong());
+                var3Values.Add(theEvent.Get("var3").AsInt64());
             }
 
             foreach (var theEvent in listenerSetTwo.GetNewDataListFlattened()) {
-                var3Values.Add(theEvent.Get("var3").AsLong());
+                var3Values.Add(theEvent.Get("var3").AsInt64());
             }
 
             Assert.AreEqual(numThreads * numRepeats, var3Values.Count);

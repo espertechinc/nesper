@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNot,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             ExprForge havingEval)
             : base(
                 subselect,
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
                 eps,
                 ConstantTrue(),
                 evalCtx);

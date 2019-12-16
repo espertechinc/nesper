@@ -26,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprArrayNodeForge : ExprForgeInstrumentable,
         ExprEnumerationForge
     {
-        private readonly Array constantResult;
+        private readonly Array _constantResult;
 
         public ExprArrayNodeForge(
             ExprArrayNode parent,
             Type arrayReturnType,
             object[] constantResult)
         {
+            _constantResult = constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
-            this.constantResult = constantResult;
             IsMustCoerce = false;
             Coercer = null;
         }
@@ -44,14 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprArrayNode parent,
             Type arrayReturnType,
             bool mustCoerce,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             object constantResult)
         {
+            _constantResult = (Array) constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
             IsMustCoerce = mustCoerce;
             Coercer = coercer;
-            this.constantResult = (Array) constantResult;
         }
 
         public ExprArrayNode ForgeRenderableArray => Parent;
@@ -66,9 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsMustCoerce { get; }
 
-        public SimpleNumberCoercer Coercer { get; }
+        public Coercer Coercer { get; }
 
-        public object ConstantResult => constantResult;
+        public object ConstantResult => _constantResult;
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
             CodegenMethodScope codegenMethodScope,
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprForgeConstantType ForgeConstantType {
             get {
-                if (constantResult != null) {
+                if (_constantResult != null) {
                     return ExprForgeConstantType.COMPILETIMECONST;
                 }
 
@@ -128,12 +128,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                if (constantResult != null) {
+                if (_constantResult != null) {
                     return new ProxyExprEvaluator(
                         (
                             eventsPerStream,
                             isNewData,
-                            context) => constantResult);
+                            context) => _constantResult);
                 }
 
                 return new ExprArrayNodeForgeEval(
@@ -148,8 +148,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (constantResult != null) {
-                return Constant(constantResult);
+            if (_constantResult != null) {
+                return Constant(_constantResult);
             }
 
             return ExprArrayNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
@@ -175,10 +175,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEnumerationEval ExprEvaluatorEnumeration {
             get {
-                if (constantResult != null) {
+                if (_constantResult != null) {
                     var constantResultList = new List<object>();
                     for (var i = 0; i < Parent.ChildNodes.Length; i++) {
-                        constantResultList.Add(constantResult.GetValue(i));
+                        constantResultList.Add(_constantResult.GetValue(i));
                     }
 
                     return new ProxyExprEnumerationEval {

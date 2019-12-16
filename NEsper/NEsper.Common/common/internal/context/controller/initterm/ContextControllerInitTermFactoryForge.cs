@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
                         .Add("InitTermFactory"))
                 .SetProperty(Ref("factory"), "InitTermSpec", detail.MakeCodegen(method, symbols, classScope))
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return method;
         }
 

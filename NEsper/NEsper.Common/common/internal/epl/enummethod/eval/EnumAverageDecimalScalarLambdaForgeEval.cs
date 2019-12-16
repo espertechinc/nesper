@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAverageDecimalScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
             block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgDecimal>(
@@ -99,11 +99,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(
                         NewArrayByLength(typeof(object), Constant(1)),
                         resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "num",
@@ -112,8 +112,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach.IfRefNull("num").BlockContinue();
             }
 
-            forEach.Expression(ExprDotMethod(@Ref("agg"), "Enter", @Ref("num")));
-            block.MethodReturn(ExprDotName(@Ref("agg"), "Value"));
+            forEach.Expression(ExprDotMethod(Ref("agg"), "Enter", Ref("num")));
+            block.MethodReturn(ExprDotName(Ref("agg"), "Value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

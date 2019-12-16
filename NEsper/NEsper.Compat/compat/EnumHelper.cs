@@ -97,6 +97,18 @@ namespace com.espertech.esper.compat
             throw new ArgumentException("type is not an enumeration");
         }
 
+        public static object GetValue(Type enumType, int ordinal)
+        {
+            foreach (object value in Enum.GetValues(enumType)) {
+                if (Equals(ordinal, value)) {
+                    return value;
+                }
+            }
+
+            throw new ArgumentException("ordinal value not found");
+        }
+
+
         public static T GetValue<T>(int ordinal)
         {
             foreach (T value in GetValues<T>()) {

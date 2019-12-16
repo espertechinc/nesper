@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.lookup;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.core

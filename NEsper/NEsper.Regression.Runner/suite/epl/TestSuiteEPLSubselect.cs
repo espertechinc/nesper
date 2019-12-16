@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectMultirow.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectAggregatedMultirowAndColumn()
         {
             RegressionRunner.Run(session, EPLSubselectAggregatedMultirowAndColumn.Executions());
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLSubselectWithinHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLSubselectWithinPattern()
         {
             RegressionRunner.Run(session, EPLSubselectWithinPattern.Executions());

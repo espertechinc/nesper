@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             evaluator = new ExprIdentNodeEvaluatorImpl(
                 streamNum,
                 propertyGetter,
-                propertyType,
+                propertyType.GetBoxedType(),
                 this,
                 eventType,
                 validationContext.StreamTypeService.IsOptionalStreams,

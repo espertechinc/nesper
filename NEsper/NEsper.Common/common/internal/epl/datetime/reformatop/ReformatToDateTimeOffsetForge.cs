@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 
@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ReformatToDateTimeOffsetForge : ReformatForge,
         ReformatOp
     {
-        private readonly TimeAbacus timeAbacus;
+        private readonly TimeAbacus _timeAbacus;
 
         public ReformatToDateTimeOffsetForge(TimeAbacus timeAbacus)
         {
-            this.timeAbacus = timeAbacus;
+            this._timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             methodNode
                 .Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), methodNode, codegenClassScope))
+                .Expression(_timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), methodNode, codegenClassScope))
                 .MethodReturn(GetProperty(Ref("dtx"), "DateTime"));
 
             return LocalMethod(methodNode, inner);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dateTimeEx = DateTimeEx.NowLocal();
-            timeAbacus.DateTimeSet(ts, dateTimeEx);
+            _timeAbacus.DateTimeSet(ts, dateTimeEx);
             return dateTimeEx.DateTime;
         }
 

@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -163,9 +165,10 @@ namespace com.espertech.esper.common.@internal.rettype
             if (collectionComponentType == null) {
                 throw new ArgumentException("Invalid null collection component type");
             }
-            
-            Type containerType;
 
+            Type containerType = typeof(FlexCollection);
+
+            #if false
             // Have not yet deduced the black magic of why and when we decide the type of
             // collection.  It's not entirely clear and is a work-in-progress.
             // TBD: fix the general determinism of this algorithm.
@@ -175,12 +178,15 @@ namespace com.espertech.esper.common.@internal.rettype
             } else if (collectionType == null) {
                 containerType = typeof(ICollection<object>);
             } else if (collectionType == typeof(EventBean)) {
-                containerType = typeof(ICollection<EventBean>);
+                // WTF
+                containerType = typeof(ICollection<object>);
+                //containerType = typeof(ICollection<EventBean>);
             } else if (collectionComponentType == typeof(object[])) {
                 containerType = typeof(ICollection<object[]>);
             } else {
                 containerType = typeof(ICollection<object>);
             }
+            #endif
             
             return new ClassMultiValuedEPType(
                 containerType, 
@@ -308,7 +314,8 @@ namespace com.espertech.esper.common.@internal.rettype
         public static Type GetCodegenReturnType(this EPType theType)
         {
             if (theType is EventMultiValuedEPType) {
-                return typeof(ICollection<EventBean>);
+                return typeof(FlexCollection);
+                //return typeof(ICollection<EventBean>);
             }
 
             if (theType is ClassMultiValuedEPType classMultiValuedEpType) {

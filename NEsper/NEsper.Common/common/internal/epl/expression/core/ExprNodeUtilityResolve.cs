@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluators that should return the event collection
             if (CollectionUtil.IsAnySet(allowEventBeanCollType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanCollType[i] && parameterTypes[i].IsGenericCollection()) {
+                    if (allowEventBeanCollType[i] && (parameterTypes[i] == typeof(ICollection<EventBean>))) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }

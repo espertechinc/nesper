@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var dtxValue = (DateTimeEx) target;
             var dtx = dtxValue.Clone();
 
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
 
             return dtx;
         }
@@ -55,15 +55,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             CodegenBlock block = methodNode.Block.DeclareVar<DateTimeEx>(
-                "dtx", ExprDotMethod(@Ref("target"), "Clone"));
-            EvaluateCalOpsCalendarCodegen(
+                "dtx", ExprDotMethod(Ref("target"), "Clone"));
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
-                @Ref("dtx"),
+                Ref("dtx"),
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.MethodReturn(@Ref("dtx"));
+            block.MethodReturn(Ref("dtx"));
             return LocalMethod(methodNode, inner);
         }
     }

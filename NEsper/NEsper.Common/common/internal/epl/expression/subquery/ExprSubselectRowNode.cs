@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -262,13 +263,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent
-                .MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
+                .MakeChild(typeof(FlexCollection), GetType(), classScope);
 
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(
                         ConstantNull(),
-                        StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(EventBean) })),
+                        EnumValue(typeof(FlexCollection), "Empty")),
                     method,
                     symbols)
                 .MethodReturn(evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));
@@ -281,7 +282,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(ICollection<object>), GetType(), classScope);
+            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), CollectionUtil.EMPTY_LIST_EXPRESSION),

@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long total = 0;
             var deliveries = listener.NewDataListFlattened;
             foreach (var @event in deliveries) {
-                var count = @event.Get("cnt").AsLong();
+                var count = @event.Get("cnt").AsInt64();
                 total += count;
             }
 

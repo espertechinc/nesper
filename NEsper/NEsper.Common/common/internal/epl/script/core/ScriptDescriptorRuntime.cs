@@ -37,11 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public ExprEvaluator[] Parameters { get; set; }
 
-        public SimpleNumberCoercer SimpleNumberCoercer { get; set; }
+        public Coercer Coercer { get; set; }
 
+#if false
         public SimpleNumberCoercer Coercer {
             get => SimpleNumberCoercer;
             set => SimpleNumberCoercer = value;
         }
+#endif
     }
 } // end of namespace

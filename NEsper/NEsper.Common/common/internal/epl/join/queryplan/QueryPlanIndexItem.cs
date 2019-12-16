@@ -12,7 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
+using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
-            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope);
+            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true);
             CodegenExpression having = LocalMethod(
                 havingMethod,
                 REF_EVENTS_SHIFTED,

@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .SetProperty(factory, "TimePeriodCompute", @Ref("eval"))
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 

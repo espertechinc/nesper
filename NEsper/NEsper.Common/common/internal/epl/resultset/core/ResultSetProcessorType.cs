@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
     public static class ResultSetProcessorTypeExtensions
     {
-        public static bool IsAggregated(this ResultSetProcessorType @value)
+        public static bool IsAggregated(this ResultSetProcessorType value)
         {
-            switch (@value) {
+            switch (value) {
                 case ResultSetProcessorType.HANDTHROUGH:
                 case ResultSetProcessorType.UNAGGREGATED_UNGROUPED:
                     return false;
@@ -38,13 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     return true;
 
                 default:
-                    throw new ArgumentException("invalid argument", nameof(@value));
+                    throw new ArgumentException("invalid argument", nameof(value));
             }
         }
 
-        public static bool IsGrouped(this ResultSetProcessorType @value)
+        public static bool IsGrouped(this ResultSetProcessorType value)
         {
-            switch (@value) {
+            switch (value) {
                 case ResultSetProcessorType.HANDTHROUGH:
                 case ResultSetProcessorType.UNAGGREGATED_UNGROUPED:
                 case ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED:
@@ -57,13 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     return true;
 
                 default:
-                    throw new ArgumentException("invalid argument", nameof(@value));
+                    throw new ArgumentException("invalid argument", nameof(value));
             }
         }
 
-        public static bool IsUnaggregatedUngrouped(this ResultSetProcessorType @value)
+        public static bool IsUnaggregatedUngrouped(this ResultSetProcessorType value)
         {
-            return !IsAggregated(@value) && !IsGrouped(@value);
+            return !IsAggregated(value) && !IsGrouped(value);
         }
     }
 } // end of namespace

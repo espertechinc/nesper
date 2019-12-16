@@ -63,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("target")))
+                        Ref("target")))
                 .MethodReturn(
-                    forge.intervalForge.Codegen(@Ref("time"), @Ref("time"), methodNode, exprSymbol, codegenClassScope));
+                    forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
 
@@ -100,15 +100,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("startTimestamp")))
+                        Ref("startTimestamp")))
                 .DeclareVar<long>(
                     "end",
                     StaticMethod(
                         typeof(DatetimeLongCoercerDateTimeOffset),
                         "CoerceToMillis",
-                        @Ref("endTimestamp")))
+                        Ref("endTimestamp")))
                 .MethodReturn(
-                    forge.intervalForge.Codegen(@Ref("start"), @Ref("end"), methodNode, exprSymbol, codegenClassScope));
+                    forge.intervalForge.Codegen(Ref("start"), Ref("end"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

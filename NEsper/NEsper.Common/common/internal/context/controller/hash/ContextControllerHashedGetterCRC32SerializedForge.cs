@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
             method.Block
-                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
 
             // method to return object-array from expressions
             ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);
@@ -122,18 +122,18 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     exprMethod.Block.AssignArrayElement("values", Constant(i), result);
                 }
 
-                exprMethod.Block.MethodReturn(@Ref("values"));
+                exprMethod.Block.MethodReturn(Ref("values"));
             }
 
             method.Block
                 .DeclareVar<object>(
                     "values",
-                    LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()))
+                    LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()))
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterCRC32SerializedForge),
                         "SerializeAndCRC32Hash",
-                        @Ref("values"),
+                        Ref("values"),
                         Constant(granularity),
                         serializers));
 

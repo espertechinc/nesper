@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             eventsLambda[_forge.StreamNumLambda] = resultEvent;
             var props = resultEvent.Properties;
 
-            var values = (ICollection<object>) enumcoll;
+            var values = enumcoll;
             foreach (var next in values) {
                 props[0] = next;
 
@@ -82,18 +82,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumSumEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
             forge.sumMethodFactory.CodegenDeclare(block);
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "value",
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach.IfRefNull("value").BlockContinue();
             }
 
-            forge.sumMethodFactory.CodegenEnterNumberTypedNonNull(forEach, @Ref("value"));
+            forge.sumMethodFactory.CodegenEnterNumberTypedNonNull(forEach, Ref("value"));
 
             forge.sumMethodFactory.CodegenReturn(block);
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

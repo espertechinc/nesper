@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 .DeclareVar<AgregationTAAReaderCountMinSketchTopK>(
                     "strat",
                     NewInstance(typeof(AgregationTAAReaderCountMinSketchTopK)))
-                .MethodReturn(@Ref("strat"));
+                .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }
     }

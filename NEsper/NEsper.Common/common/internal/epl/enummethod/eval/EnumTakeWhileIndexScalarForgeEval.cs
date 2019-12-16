@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -110,11 +111,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(FlexCollection),
                     typeof(EnumTakeWhileIndexScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
             var innerValue = forge.innerExpression.EvaluateCodegen(
                 typeof(object),
                 methodNode,
@@ -127,44 +128,44 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("evalProps", ExprDotName(@Ref("evalEvent"), "Properties"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("evalEvent"))
+                .DeclareVar<object[]>("evalProps", ExprDotName(Ref("evalEvent"), "Properties"))
                 .DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
                 .AssignArrayElement(
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
-                    @Ref("indexEvent"))
-                .DeclareVar<object[]>("indexProps", ExprDotName(@Ref("indexEvent"), "Properties"));
+                    Ref("indexEvent"))
+                .DeclareVar<object[]>("indexProps", ExprDotName(Ref("indexEvent"), "Properties"));
 
             var blockSingle = block
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
                 .DeclareVar<object>(
                     "item",
                     ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
-                .AssignArrayElement("evalProps", Constant(0), @Ref("item"))
+                .AssignArrayElement("evalProps", Constant(0), Ref("item"))
                 .AssignArrayElement("indexProps", Constant(0), Constant(0));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(object) }));
-            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
+                FlexEmpty());
+            blockSingle.BlockReturn(FlexValue(Ref("item")));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<int>("count", Constant(-1));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .Increment("count")
-                .AssignArrayElement("evalProps", Constant(0), @Ref("next"))
-                .AssignArrayElement("indexProps", Constant(0), @Ref("count"));
+                .AssignArrayElement("evalProps", Constant(0), Ref("next"))
+                .AssignArrayElement("indexProps", Constant(0), Ref("count"));
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 forEach,
                 forge.innerExpression.EvaluationType,
                 innerValue);
-            forEach.Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("next")));
-            block.MethodReturn(@Ref("result"));
+            forEach.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

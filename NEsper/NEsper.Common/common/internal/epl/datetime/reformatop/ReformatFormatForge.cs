@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -27,21 +27,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ReformatFormatForge : ReformatForge,
         ReformatOp
     {
-        private readonly ExprForge formatter;
-        private readonly ReformatFormatForgeDesc formatterType;
-        private readonly TimeAbacus timeAbacus;
+        private readonly ExprForge _formatter;
+        private readonly ReformatFormatForgeDesc _formatterType;
+        private readonly TimeAbacus _timeAbacus;
 
         public ReformatFormatForge(
             ReformatFormatForgeDesc formatterType,
             ExprForge formatter,
             TimeAbacus timeAbacus)
         {
-            this.formatterType = formatterType;
-            this.formatter = formatter;
-            this.timeAbacus = timeAbacus;
+            this._formatterType = formatterType;
+            this._formatter = formatter;
+            this._timeAbacus = timeAbacus;
         }
 
-        private DateFormat DateFormatFormatter => (DateFormat) formatter.ExprEvaluator.Evaluate(null, true, null);
+        private DateFormat DateFormatFormatter => (DateFormat) _formatter.ExprEvaluator.Evaluate(null, true, null);
 
         public ReformatOp Op => this;
 
@@ -115,11 +115,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(long), "ts")
                 .Block;
             var syncBlock = blockMethod.LockOn(formatField);
-            if (timeAbacus.OneSecond == 1000L) {
+            if (_timeAbacus.OneSecond == 1000L) {
                 syncBlock.BlockReturn(ExprDotMethod(formatField, "Format", Ref("ts")));
             }
             else {
-                syncBlock.BlockReturn(ExprDotMethod(formatField, "Format", timeAbacus.ToDateCodegen(Ref("ts"))));
+                syncBlock.BlockReturn(ExprDotMethod(formatField, "Format", _timeAbacus.ToDateCodegen(Ref("ts"))));
             }
 
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             lock (this) {
-                return DateFormatFormatter.Format(timeAbacus.ToDateTimeEx(ts));
+                return DateFormatFormatter.Format(_timeAbacus.ToDateTimeEx(ts));
             }
         }
 
@@ -166,12 +166,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private CodegenExpressionInstanceField CodegenFormatFieldInit(CodegenClassScope classScope)
         {
             var formatEvalDtx = CodegenLegoMethodExpression.CodegenExpression(
-                formatter,
+                _formatter,
                 classScope.NamespaceScope.InitMethod,
-                classScope);
+                classScope,
+                true);
             var formatEval = LocalMethod(formatEvalDtx, ConstantNull(), ConstantTrue(), ConstantNull());
             CodegenExpression init;
-            if (formatterType.FormatterType != typeof(string)) {
+            if (_formatterType.FormatterType != typeof(string)) {
                 init = formatEval;
             }
             else {

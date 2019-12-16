@@ -198,19 +198,24 @@ namespace com.espertech.esper.compiler.@internal.util
             return SyntaxTree(assemblyBindingsCompilationUnit);
         }
 
+#if COMPILATION_DIAGNOSTICS
         private static long totalMicroTime = 0L;
         private static long totalInvocations = 0L;
         private static long minMicroTime = long.MaxValue;
         private static long maxMicroTime = 0L;
+#endif
         
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
         /// </summary>
         public Assembly Compile()
         {
+#if COMPILATION_DIAGNOSTICS
             var startMicro = PerformanceObserver.MicroTime;
             try {
+#endif
                 return CompileInternal();
+#if COMPILATION_DIAGNOSTICS
             }
             finally {
                 var deltaMicro = PerformanceObserver.MicroTime - startMicro;
@@ -228,6 +233,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     minMicroTime / 1000,
                     maxMicroTime / 1000);
             }
+#endif
         }
 
         /// <summary>
@@ -266,7 +272,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     try {
                         File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
                     }
-                    catch (Exception e) {
+                    catch (Exception) {
                         // Not fatal, but we need to log the failure
                         Log.Warn($"Unable to write audit file for {tempClassName} to \"{tempClassPath}\"");
                     }

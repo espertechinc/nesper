@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.util;

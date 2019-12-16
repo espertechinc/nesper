@@ -274,7 +274,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 filterEval);
         }
 
-        private static SimpleNumberCoercer GetCoercer(
+        private static Coercer GetCoercer(
             Type typeOne,
             Type typeTwo)
         {

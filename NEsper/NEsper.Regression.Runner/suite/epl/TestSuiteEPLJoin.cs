@@ -92,19 +92,19 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoin2StreamSimpleCoercionPerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamRangePerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamRangePerformance.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin5StreamPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin5StreamPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin2StreamExprPerformance()
         {
             RegressionRunner.Run(session, new EPLJoin2StreamExprPerformance());
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoinNoWhereClause.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLJoinEventRepresentation()
         {
             RegressionRunner.Run(session, EPLJoinEventRepresentation.Executions());
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLJoinUnidirectionalStream.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLJoin3StreamAndPropertyPerformance()
         {
             RegressionRunner.Run(session, EPLJoin3StreamAndPropertyPerformance.Executions());

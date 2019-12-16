@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                     "v",
                     NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
                 .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
-                .MethodReturn(@Ref("v"));
+                .MethodReturn(Ref("v"));
             return LocalMethod(method);
         }
     }

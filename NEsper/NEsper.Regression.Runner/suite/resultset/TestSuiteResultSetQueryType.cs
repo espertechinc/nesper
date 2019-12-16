@@ -77,103 +77,103 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             configuration.Common.AddVariable("MyVar", typeof(string), "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeAggregateGrouped()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeAggregateGrouped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeAggregateGroupedHaving()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeAggregateGroupedHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeGroupByReclaimMicrosecondResolution()
         {
             RegressionRunner.Run(session, new ResultSetQueryTypeRowPerGroupReclaimMicrosecondResolution(5000));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeHaving()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeEnumerator()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeEnumerator.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeLocalGroupBy()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeLocalGroupBy.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupDimensionality()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRollupDimensionality.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupGroupingFuncs()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRollupGroupingFuncs.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupHavingAndOrderBy()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRollupHavingAndOrderBy.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRollupPlanningAndSODA()
         {
             RegressionRunner.Run(session, new ResultSetQueryTypeRollupPlanningAndSODA());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowForAll()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRowForAll.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowForAllHaving()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRowForAllHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerEvent()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRowPerEvent.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerEventPerformance()
         {
             RegressionRunner.Run(session, new ResultSetQueryTypeRowPerEventPerformance());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroup()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRowPerGroup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeRowPerGroupHaving()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeRowPerGroupHaving.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeWTimeBatch()
         {
             RegressionRunner.Run(session, ResultSetQueryTypeWTimeBatch.Executions());

@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.type
             private readonly MathContext _mathContext;
 
             public DivideDecimalConvComputerWithMathCtx(
-                SimpleNumberCoercer convOne,
-                SimpleNumberCoercer convTwo,
+                Coercer convOne,
+                Coercer convTwo,
                 bool divisionByZeroReturnsNull,
                 MathContext mathContext)
                 : base(convOne, convTwo, divisionByZeroReturnsNull)

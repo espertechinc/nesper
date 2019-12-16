@@ -285,7 +285,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             //    .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             //assignerSetterClass.AddMethod("Assign", assignMethod);
 
-            assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", @Ref("assignments"));
+            assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
             //assignMethod.Block.StaticMethod(packageScope.FieldsClassName, "Assign", Ref("assignments"));
 
             var setValueMethod = new CodegenExpressionLambda(enclosingBlock)

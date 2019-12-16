@@ -75,10 +75,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 var descriptor = new EventPropertyDescriptor(
                     desc.Key,
                     type,
-                    null,
+                    type.GetIndexType(),
                     false,
                     false,
-                    false,
+                    type.IsIndexed(),
                     false,
                     desc.Value.PropertyType.IsFragmentableType());
                 PropertyDescriptors[count++] = descriptor;

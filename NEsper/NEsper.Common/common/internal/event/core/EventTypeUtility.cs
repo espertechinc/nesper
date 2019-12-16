@@ -9,10 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -949,6 +951,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (entry.Value is Type asType) {
+                    if (asType == typeof(FlexCollection)) {
+                        asType = typeof(ICollection<object>);
+                    }
+                    
                     var componentType = GenericExtensions.GetComponentType(asType);
                     var isIndexed = componentType != null;
 
@@ -1166,11 +1172,28 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> nestableTypes,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            var item = simplePropertyTypes.Get(StringValue.UnescapeDot(propertyName));
+            var propertyNameUnescape = StringValue.UnescapeDot(propertyName);
+            
+            var item = simplePropertyTypes.Get(propertyNameUnescape);
             if (item != null) {
                 return item.SimplePropertyType;
             }
-
+            
+            // see if this is an indexed property hanging off a pseudo-nested property
+            var propertyEval = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (propertyEval is NestedProperty nestedProperty) {
+                var nestedProperties = nestedProperty.Properties;
+                var lastProperty = nestedProperties[nestedProperties.Count - 1];
+                if (lastProperty is IndexedProperty indexedProp) {
+                    // Before going any further, see if the simple property everything except the index.
+                    var propertyNameWithoutIndex = nestedProperties
+                        .Select(np => np.PropertyNameAtomic)
+                        .Aggregate((a, b) => a + "." + b);
+                    item = simplePropertyTypes.Get(propertyNameWithoutIndex);
+                    // TBD: More work to do here
+                }
+            }
+            
             // see if this is a nested property
             var index = StringValue.UnescapedIndexOfDot(propertyName);
             if (index == -1) {
@@ -1181,7 +1204,6 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                 // parse, can be an indexed property
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-
                 if (property is SimpleProperty) {
                     var propItem = simplePropertyTypes.Get(propertyName);
                     if (propItem != null) {
@@ -1403,64 +1425,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (prop is IndexedProperty indexedProp) {
-                    var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
-                    if (type == null) {
-                        return null;
-                    }
-
-                    if (type is EventType[]) {
-                        var getterArr = factory.GetGetterIndexedEventBean(
-                            indexedProp.PropertyNameAtomic,
-                            indexedProp.Index);
-                        propertyGetterCache.Put(propertyName, getterArr);
-                        return getterArr;
-                    }
-
-                    if (type is TypeBeanOrUnderlying innerTypeWrapper) {
-                        var innerType = innerTypeWrapper.EventType;
-                        if (!(innerType is BaseNestableEventType)) {
-                            return null;
-                        }
-
-                        var typeGetter = factory.GetGetterBeanNested(
-                            indexedProp.PropertyNameAtomic,
-                            innerType,
-                            eventBeanTypedEventFactory);
-                        propertyGetterCache.Put(propertyName, typeGetter);
-                        return typeGetter;
-                    }
-
-                    if (type is TypeBeanOrUnderlying[] innerTypes) {
-                        var innerType = innerTypes[0].EventType;
-                        if (!(innerType is BaseNestableEventType)) {
-                            return null;
-                        }
-
-                        var typeGetter = factory.GetGetterIndexedUnderlyingArray(
-                            indexedProp.PropertyNameAtomic,
-                            indexedProp.Index,
-                            eventBeanTypedEventFactory,
-                            innerType);
-                        propertyGetterCache.Put(propertyName, typeGetter);
-                        return typeGetter;
-                    }
-
-                    // handle map type name in map
-                    if (type is Type asType) {
-                        var componentType = GenericExtensions.GetComponentType(asType);
-                        if (componentType != null) {
-                            var indexedGetter = factory.GetGetterIndexedPONO(
-                                indexedProp.PropertyNameAtomic,
-                                indexedProp.Index,
-                                eventBeanTypedEventFactory,
-                                componentType,
-                                beanEventTypeFactory);
-                            propertyGetterCache.Put(propertyName, indexedGetter);
-                            return indexedGetter;
-                        }
-                    }
-
-                    return null;
+                    return GetNestableIndexedProp(
+                        propertyName,
+                        propertyGetterCache,
+                        nestableTypes,
+                        eventBeanTypedEventFactory,
+                        factory,
+                        beanEventTypeFactory,
+                        indexedProp);
                 }
 
                 if (prop is MappedProperty mappedProp) {
@@ -1727,6 +1699,74 @@ namespace com.espertech.esper.common.@internal.@event.core
                           propertyName +
                           "', expected Class, Map.class or Map<String, Object> as value type";
             throw new PropertyAccessException(message);
+        }
+
+        private static EventPropertyGetterSPI GetNestableIndexedProp(string propertyName,
+            IDictionary<string, EventPropertyGetterSPI> propertyGetterCache,
+            IDictionary<string, object> nestableTypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeNestableGetterFactory factory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            IndexedProperty indexedProp)
+        {
+            var type = nestableTypes.Get(indexedProp.PropertyNameAtomic);
+            if (type == null) {
+                return null;
+            }
+
+            if (type is EventType[]) {
+                var getterArr = factory.GetGetterIndexedEventBean(
+                    indexedProp.PropertyNameAtomic,
+                    indexedProp.Index);
+                propertyGetterCache.Put(propertyName, getterArr);
+                return getterArr;
+            }
+
+            if (type is TypeBeanOrUnderlying innerTypeWrapper) {
+                var innerType = innerTypeWrapper.EventType;
+                if (!(innerType is BaseNestableEventType)) {
+                    return null;
+                }
+
+                var typeGetter = factory.GetGetterBeanNested(
+                    indexedProp.PropertyNameAtomic,
+                    innerType,
+                    eventBeanTypedEventFactory);
+                propertyGetterCache.Put(propertyName, typeGetter);
+                return typeGetter;
+            }
+
+            if (type is TypeBeanOrUnderlying[] innerTypes) {
+                var innerType = innerTypes[0].EventType;
+                if (!(innerType is BaseNestableEventType)) {
+                    return null;
+                }
+
+                var typeGetter = factory.GetGetterIndexedUnderlyingArray(
+                    indexedProp.PropertyNameAtomic,
+                    indexedProp.Index,
+                    eventBeanTypedEventFactory,
+                    innerType);
+                propertyGetterCache.Put(propertyName, typeGetter);
+                return typeGetter;
+            }
+
+            // handle map type name in map
+            if (type is Type asType) {
+                var componentType = GenericExtensions.GetComponentType(asType);
+                if (componentType != null) {
+                    var indexedGetter = factory.GetGetterIndexedPONO(
+                        indexedProp.PropertyNameAtomic,
+                        indexedProp.Index,
+                        eventBeanTypedEventFactory,
+                        componentType,
+                        beanEventTypeFactory);
+                    propertyGetterCache.Put(propertyName, indexedGetter);
+                    return indexedGetter;
+                }
+            }
+
+            return null;
         }
 
         public static LinkedHashMap<string, object> ValidateObjectArrayDef(

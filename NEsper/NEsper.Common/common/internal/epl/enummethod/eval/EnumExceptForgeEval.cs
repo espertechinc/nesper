@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -59,12 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var namedParams = forge.scalar
-                ? EnumForgeCodegenNames.PARAMS_OBJECT
-                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
-            var returnType = forge.scalar
-                ? typeof(ICollection<object>)
-                : typeof(ICollection<EventBean>);
+            var namedParams = EnumForgeCodegenNames.PARAMS;
+            var returnType = typeof(FlexCollection);
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
@@ -76,12 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<FlexCollection>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<ICollection<EventBean>>(
+                block.DeclareVar<FlexCollection>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
@@ -162,6 +160,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             return result;
+        }
+
+        public static FlexCollection EnumExceptForgeEvalSet(
+            FlexCollection other,
+            FlexCollection enumcoll)
+        {
+            if (other.IsEventBeanCollection) {
+                if (enumcoll.IsEventBeanCollection) {
+                    return FlexCollection.Of(EnumExceptForgeEvalSet(
+                        other.EventBeanCollection,
+                        enumcoll.EventBeanCollection));
+                }
+            } else if (enumcoll.IsObjectCollection) {
+                return FlexCollection.Of(EnumExceptForgeEvalSet(
+                    other.ObjectCollection,
+                    enumcoll.ObjectCollection));
+            }
+
+            throw new ArgumentException("mismatch in FlexCollection types");
         }
     }
 } // end of namespace

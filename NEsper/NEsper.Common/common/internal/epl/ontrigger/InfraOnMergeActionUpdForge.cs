@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             MakeFilter(method, classScope),
                             _updateHelper.MakeNoCopy(method, classScope),
                             TableDeployTimeResolver.MakeResolveTable(_table, symbols.GetAddInitSvc(method))))
-                    .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", @Ref("upd"))
-                    .MethodReturn(@Ref("upd"));
+                    .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("upd"))
+                    .MethodReturn(Ref("upd"));
             }
 
             return LocalMethod(method);

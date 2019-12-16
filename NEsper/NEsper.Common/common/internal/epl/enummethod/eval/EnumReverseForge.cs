@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -56,25 +57,43 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = IsScalar
-                ? typeof(ICollection<object>)
-                : typeof(ICollection<EventBean>);
-            var namedParams = IsScalar
-                ? EnumForgeCodegenNames.PARAMS_OBJECT
-                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var returnType = typeof(FlexCollection);
+            var namedParams = EnumForgeCodegenNames.PARAMS;
             var collectionType = IsScalar
                 ? typeof(List<object>)
                 : typeof(List<EventBean>);
             
             var method = codegenMethodScope
                 .MakeChild(returnType, typeof(EnumReverseForge), codegenClassScope)
-                .AddParam(namedParams)
-                .Block
+                .AddParam(namedParams);
+                
+            var block = method.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(collectionType, "result", NewInstance(collectionType, EnumForgeCodegenNames.REF_ENUMCOLL))
+                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
+
+            if (IsScalar) {
+                var listType = typeof(List<object>);
+                block.DeclareVar(
+                    listType, 
+                    "result",
+                    NewInstance(
+                        listType,
+                        ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "ObjectCollection")));
+            }
+            else {
+                var listType = typeof(List<EventBean>);
+                block.DeclareVar(
+                    listType, 
+                    "result",
+                    NewInstance(
+                        listType,
+                        ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "EventBeanCollection")));
+            }
+
+            block
                 .ExprDotMethod(Ref("result"), "Reverse")
-                .MethodReturn(Ref("result"));
+                .MethodReturn(FlexWrap(Ref("result")));
+            
             return LocalMethod(method, args.Expressions);
         }
     }

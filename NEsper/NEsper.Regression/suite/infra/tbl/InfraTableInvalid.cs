@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "sum(double)",
                     false,
                     "sum(IntPrimitive)",
-                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is System.Double and provided is System.Nullable<System.Int32> [");
+                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is System.Double and provided is System.Int32 [");
                 TryInvalidAggMatch(
                     env,
                     "var1",

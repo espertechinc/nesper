@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.settings;

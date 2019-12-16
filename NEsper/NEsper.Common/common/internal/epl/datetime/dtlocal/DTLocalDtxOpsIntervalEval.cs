@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dtx = ((DateTimeEx) target).Clone();
-            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = dtx.UtcMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "Clone")));
-            EvaluateCalOpsCalendarCodegen(
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var endLong = ((DateTimeEx) endTimestamp).UtcMillis;
             var dtx = DateTimeEx.GetInstance(timeZone);
             dtx.SetUtcMillis(startLong);
-            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             var startTime = dtx.UtcMillis;
             var endTime = startTime + (endLong - startLong);
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "UtcMillis"))
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("startLong")));
-            EvaluateCalOpsCalendarCodegen(
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),

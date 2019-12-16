@@ -93,7 +93,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBoolean()
         {
             var index = MakeOne("BoolPrimitive", testEventType);
@@ -104,7 +104,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyBooleanPrimitive(index, true, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFloatPrimitive()
         {
             var index = MakeOne("FloatPrimitive", testEventType);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyFloatPrimitive(index, 0, 0);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLong()
         {
             var index = MakeOne("ShortBoxed", testEventType);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.AreEqual(null, index.Get((short) 1));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestString()
         {
             var index = MakeOne("TheString", testEventType);

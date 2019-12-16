@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var returnType = Boxing.GetBoxedType(forge.InnerExpression.EvaluationType);
 
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
                     returnType,

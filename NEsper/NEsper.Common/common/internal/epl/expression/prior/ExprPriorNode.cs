@@ -67,8 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             CodegenClassScope codegenClassScope)
         {
             var method = parent.MakeChild(EvaluationType, GetType(), codegenClassScope);
-
-            var innerEval = CodegenLegoMethodExpression.CodegenExpression(InnerForge, method, codegenClassScope);
+            var innerEval = CodegenLegoMethodExpression.CodegenExpression(InnerForge, method, codegenClassScope, true);
             var eps = exprSymbol.GetAddEPS(method);
 
             // see ExprPriorEvalStrategyBase
@@ -76,6 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
                 priorStrategyFieldName,
                 typeof(PriorEvalStrategy));
 
+            var innerMethod = LocalMethod(
+                innerEval,
+                eps,
+                exprSymbol.GetAddIsNewData(method),
+                exprSymbol.GetAddExprEvalCtx(method));
             method.Block
                 .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                 .DeclareVar<EventBean>(
@@ -90,14 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
                         exprSymbol.GetAddExprEvalCtx(method),
                         Constant(StreamNumber)))
                 .AssignArrayElement(eps, Constant(StreamNumber), Ref("substituteEvent"))
-                .DeclareVar(
-                    EvaluationType,
-                    "evalResult",
-                    LocalMethod(
-                        innerEval,
-                        eps,
-                        exprSymbol.GetAddIsNewData(method),
-                        exprSymbol.GetAddExprEvalCtx(method)))
+                .DeclareVar(EvaluationType, "evalResult", innerMethod)
                 .AssignArrayElement(eps, Constant(StreamNumber), Ref("originalEvent"))
                 .MethodReturn(Ref("evalResult"));
 
@@ -143,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             }
 
             var value = constantNode.Forge.ExprEvaluator.Evaluate(null, false, null);
-            ConstantIndexNumber = value.AsInt();
+            ConstantIndexNumber = value.AsInt32();
             InnerForge = ChildNodes[1].Forge;
 
             // Determine stream number

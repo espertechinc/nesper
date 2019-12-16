@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             Type valueType,
             CodegenClassScope codegenClassScope)
         {
-            if (valueType != typeof(DateTimeOffset)) {
+            if (valueType.GetBoxedType() != typeof(DateTimeOffset?)) {
                 throw new IllegalStateException("Expected a DateTimeOffset type");
             }
 

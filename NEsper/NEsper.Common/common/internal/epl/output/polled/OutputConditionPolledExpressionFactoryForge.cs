@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                     ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, this.GetType(), classScope))
                 .SetProperty(Ref("factory"), "VariableReadWritePackage", variableRW)
                 .SetProperty(Ref("factory"), "IsUsingBuiltinProperties", Constant(isUsingBuiltinProperties))
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
 

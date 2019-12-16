@@ -173,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                     while (!shutdown) {
                         var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
-                        var count = result.Array[0].Get("c0").AsLong();
-                        var sumint = result.Array[0].Get("c1").AsInt();
+                        var count = result.Array[0].Get("c0").AsInt64();
+                        var sumint = result.Array[0].Get("c1").AsInt32();
                         var avgint = (double) result.Array[0].Get("c2");
                         Assert.AreEqual(2d, avgint, 0);
                         Assert.AreEqual(sumint, count * 2);

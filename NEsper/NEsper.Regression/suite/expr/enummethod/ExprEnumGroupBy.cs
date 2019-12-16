@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 EPAssertionUtil.AssertionCollectionValueString extractor = collectionItem => {
-                    var p00 = collectionItem.AsInt();
+                    var p00 = collectionItem.AsInt32();
                     return Convert.ToString(p00);
                 };
 

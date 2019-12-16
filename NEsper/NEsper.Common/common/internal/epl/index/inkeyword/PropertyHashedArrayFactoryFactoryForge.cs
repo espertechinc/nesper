@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                     method,
                     this.GetType(),
                     classScope);
-                method.Block.AssignArrayElement(@Ref("getters"), Constant(i), getter);
+                method.Block.AssignArrayElement(Ref("getters"), Constant(i), getter);
             }
 
             method.Block.MethodReturn(
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                     Constant(propertyNames),
                     Constant(propertyTypes),
                     Constant(unique),
-                    @Ref("getters"),
+                    Ref("getters"),
                     Constant(isFireAndForget)));
             return LocalMethod(method);
         }

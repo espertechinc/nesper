@@ -75,13 +75,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 if (hasWideners) {
                     firstBlock.Expression(
                         SelectExprProcessorHelper.ApplyWidenersCodegen(
-                            @Ref("row"),
+                            Ref("row"),
                             wideners,
                             firstMethodNode,
                             codegenClassScope));
                 }
 
-                firstBlock.MethodReturn(ExprDotMethod(firstMethodManufacturer, "Make", @Ref("row")));
+                firstBlock.MethodReturn(ExprDotMethod(firstMethodManufacturer, "Make", Ref("row")));
 
                 return LocalMethod(firstMethodNode);
             }
@@ -101,25 +101,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                         "rows",
                         typable.EvaluateTypableMultiCodegen(methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("rows")
-                    .IfCondition(EqualsIdentity(ArrayLength(@Ref("rows")), Constant(0)))
+                    .IfCondition(EqualsIdentity(ArrayLength(Ref("rows")), Constant(0)))
                     .BlockReturn(NewArrayByLength(typeof(EventBean), Constant(0)));
                 if (hasWideners) {
                     methodBlock.Expression(
                         SelectExprProcessorHelper.ApplyWidenersCodegenMultirow(
-                            @Ref("rows"),
+                            Ref("rows"),
                             wideners,
                             methodNode,
                             codegenClassScope));
                 }
 
-                methodBlock.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), ArrayLength(@Ref("rows"))))
-                    .ForLoopIntSimple("i", ArrayLength(@Ref("events")))
+                methodBlock.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), ArrayLength(Ref("rows"))))
+                    .ForLoopIntSimple("i", ArrayLength(Ref("events")))
                     .AssignArrayElement(
                         "events",
-                        @Ref("i"),
-                        ExprDotMethod(methodManufacturer, "Make", ArrayAtIndex(@Ref("rows"), @Ref("i"))))
+                        Ref("i"),
+                        ExprDotMethod(methodManufacturer, "Make", ArrayAtIndex(Ref("rows"), Ref("i"))))
                     .BlockEnd()
-                    .MethodReturn(@Ref("events"));
+                    .MethodReturn(Ref("events"));
                 return LocalMethod(methodNode);
             }
         }

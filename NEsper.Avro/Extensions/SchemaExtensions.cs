@@ -50,7 +50,7 @@ namespace NEsper.Avro.Extensions
         /// <returns></returns>
         public static JToken ToJsonObject(this Schema schema)
         {
-            var jsonRepr = SchemaToJsonEncoder.Encode(schema);
+            var jsonRepr = (new SchemaToJsonEncoder()).Encode(schema);
             return jsonRepr;
         }
 

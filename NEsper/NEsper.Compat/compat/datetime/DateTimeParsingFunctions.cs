@@ -136,7 +136,7 @@ namespace com.espertech.esper.compat.datetime
             }
 
             // Unable to parse, throw an exception
-            throw new ArgumentException("unable to parse value", nameof(dateTimeString));
+            throw new ArgumentException($"unable to parse value \"{dateTimeString}\"", nameof(dateTimeString));
         }
 
         public static DateTimeEx ParseDefaultExWZone(string dateTimeWithZone)

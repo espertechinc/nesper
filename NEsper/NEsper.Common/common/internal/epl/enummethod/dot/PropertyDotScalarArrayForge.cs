@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -200,12 +201,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), "context")
                 .Block
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(CodegenEvaluateGetInternal(Ref("@event"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    FlexWrap(
+                        CodegenEvaluateGetInternal(
+                            Ref("@event"),
+                            codegenMethodScope,
+                            codegenClassScope)));
             return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
         }
 

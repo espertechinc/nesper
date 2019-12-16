@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -42,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 return null;
             }
 
-            return EvaluateEnumMethodTakeLast(enumcoll, sizeObj.AsInt());
+            return EvaluateEnumMethodTakeLast(enumcoll, sizeObj.AsInt32());
         }
 
         public static CodegenExpression Codegen(
@@ -53,11 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var sizeType = forge.sizeEval.EvaluationType;
 
-            var returnType = args.EnumcollType ?? typeof(ICollection<EventBean>);
-            var paramArgs = returnType == typeof(ICollection<EventBean>)
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
-
+            var returnType = args.EnumcollType ?? typeof(FlexCollection);
+            var paramArgs = EnumForgeCodegenNames.PARAMS;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     returnType,
@@ -117,6 +116,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             return result;
+        }
+
+        public static FlexCollection EvaluateEnumMethodTakeLast(
+            FlexCollection enumcoll,
+            int size)
+        {
+            if (enumcoll.IsEventBeanCollection) {
+                return FlexCollection.Of(
+                    EvaluateEnumMethodTakeLast(enumcoll.EventBeanCollection, size));
+            }
+
+            return FlexCollection.Of(
+                EvaluateEnumMethodTakeLast(enumcoll.ObjectCollection, size));
         }
     }
 } // end of namespace

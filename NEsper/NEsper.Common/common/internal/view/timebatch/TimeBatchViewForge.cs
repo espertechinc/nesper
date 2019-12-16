@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                             ViewName + " view requires a Long-typed reference point in msec as a second parameter");
                     }
 
-                    optionalReferencePoint = paramRef.AsLong();
+                    optionalReferencePoint = paramRef.AsInt64();
                 }
 
                 if (viewParamValues.Length == 3) {

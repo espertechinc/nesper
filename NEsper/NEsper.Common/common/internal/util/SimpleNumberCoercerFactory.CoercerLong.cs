@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerLong : SimpleNumberCoercer
+        public class CoercerLong : Coercer
         {
             public static readonly CoercerLong INSTANCE = new CoercerLong();
 
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsLong();
+                return value.AsInt64();
             }
 
             public Type ReturnType => typeof(long);
@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.util
                 return ((valueType != typeof(short)) &&
                         (valueType != typeof(int)) &&
                         (valueType != typeof(long)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsLong")
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsInt64")
                     : value;
 
-                //return CodegenCoerceNonNull(typeof(long), typeof(long), "AsLong", param, type);
+                //return CodegenCoerceNonNull(typeof(long), typeof(long), "AsInt64", param, type);
             }
 
             public static CodegenExpression CodegenLongMayNullBox(
@@ -70,13 +70,13 @@ namespace com.espertech.esper.common.@internal.util
                         (valueType != typeof(int)) &&
                         (valueType != typeof(long)) &&
                         (valueType != typeof(long?)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedLong")
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt64")
                     : value;
 
 //                return CodegenCoerceMayNull(
 //                    typeof(long),
 //                    typeof(long?),
-//                    "AsLong",
+//                    "AsInt64",
 //                    param,
 //                    type,
 //                    codegenMethodScope,

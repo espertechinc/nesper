@@ -45,12 +45,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(ICollection<EventBean>),
-                        typeof(ICollection<EventBean>), 
-                        typeof(ICollection<EventBean>),
-                        typeof(ICollection<EventBean>),
-                        typeof(ICollection<EventBean>), 
-                        typeof(ICollection<EventBean>)
+                        typeof(ICollection<object>),
+                        typeof(ICollection<object>), 
+                        typeof(ICollection<object>),
+                        typeof(ICollection<object>),
+                        typeof(ICollection<object>), 
+                        typeof(ICollection<object>)
                     });
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"));
@@ -115,7 +115,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
-                        typeof(ICollection<object>), typeof(ICollection<object>), typeof(ICollection<object>),
+                        typeof(ICollection<object>),
+                        typeof(ICollection<object>), 
+                        typeof(ICollection<object>),
                         typeof(ICollection<object>)
                     });
 

@@ -233,7 +233,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             CodegenLegoMethodExpression.CodegenExpression(
                                 elements[0].ExprNode.Forge,
                                 method,
-                                classScope),
+                                classScope,
+                                true),
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));
@@ -250,7 +251,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope),
+                                    classScope,
+                                    true),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -389,7 +391,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[0].ExprNode.Forge,
                                     method,
-                                    classScope),
+                                    classScope,
+                                    true),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT))
@@ -431,7 +434,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope),
+                                    classScope,
+                                    true),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -480,7 +484,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[0].ExprNode.Forge,
                         methodNode,
-                        classScope);
+                        classScope,
+                        true);
                     methodNode.Block.MethodReturn(
                         LocalMethod(
                             expression,
@@ -497,7 +502,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[i].ExprNode.Forge,
                         methodNode,
-                        classScope);
+                        classScope,
+                        true);
                     methodNode.Block.AssignArrayElement(
                         "keys",
                         Constant(i),

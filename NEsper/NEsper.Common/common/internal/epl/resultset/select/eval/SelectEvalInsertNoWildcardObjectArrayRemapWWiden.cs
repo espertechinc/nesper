@@ -93,11 +93,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     value = forges[i].EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope);
                 }
 
-                block.AssignArrayElement(@Ref("result"), Constant(remapped[i]), value);
+                block.AssignArrayElement(Ref("result"), Constant(remapped[i]), value);
             }
 
             block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", @Ref("result"), resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", Ref("result"), resultEventType));
             return methodNode;
         }
     }

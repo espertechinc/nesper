@@ -19,15 +19,11 @@ using System.Xml;
 
 using Antlr4.Runtime;
 
-using Castle.Core.Internal;
-
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.compat;
@@ -35,7 +31,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.compat.util;
-using com.espertech.esper.grammar.@internal.generated;
 using com.espertech.esper.grammar.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -88,14 +83,14 @@ namespace com.espertech.esper.common.@internal.util
         ///     When provided allows for applications to define the search path for assemblies.
         ///     In the absence of this, the AppDomain is queried for assemblies to search.
         /// </summary>
-        public static Func<IEnumerable<Assembly>> AssemblySearchPath { get; set; }
+        public static Func<IEnumerable<Assembly>> AssemblySearchPath { get; }
 
         /// <summary>
         ///     When provided allows for applications to define the entire mechanism for
         ///     resolving a type.  In the absence, the default search algorithm is used which
         ///     employs the AssemblySearchPath.
         /// </summary>
-        public static Func<TypeResolverEventArgs, Type> TypeResolver { get; set; }
+        public static Func<TypeResolverEventArgs, Type> TypeResolver { get; }
 
         public static string GetSimpleName(this Type type)
         {
@@ -638,7 +633,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (resultBoxedType == typeof(long?))
             {
-                return numToCoerce.AsLong();
+                return numToCoerce.AsInt64();
             }
 
             if (resultBoxedType== typeof(BigInteger?))
@@ -658,12 +653,12 @@ namespace com.espertech.esper.common.@internal.util
 
             if (resultBoxedType == typeof(int?))
             {
-                return numToCoerce.AsInt();
+                return numToCoerce.AsInt32();
             }
 
             if (resultBoxedType == typeof(short?))
             {
-                return numToCoerce.AsShort();
+                return numToCoerce.AsInt16();
             }
 
             if (resultBoxedType == typeof(byte?))
@@ -693,7 +688,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedDouble", exprReturningBoxed);
             }
             else if (targetTypeBoxed == typeof(long?)) {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedLong", exprReturningBoxed);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt64", exprReturningBoxed);
             }
 
             else if (targetTypeBoxed == typeof(BigInteger?)) {
@@ -708,11 +703,11 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(TypeExtensions), "AsBoxedFloat", exprReturningBoxed);
             }
             else if (targetTypeBoxed == typeof(int?)) {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt", exprReturningBoxed);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt32", exprReturningBoxed);
             }
 
             else if (targetTypeBoxed == typeof(short?)) {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedShort", exprReturningBoxed);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt16", exprReturningBoxed);
             }
 
             else if (targetTypeBoxed == typeof(byte?)) {
@@ -745,7 +740,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (targetTypeBoxed == typeof(long?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedLong", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt64", expr);
             }
 
             if (targetTypeBoxed == typeof(BigInteger?))
@@ -765,12 +760,12 @@ namespace com.espertech.esper.common.@internal.util
 
             if (targetTypeBoxed == typeof(int?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt32", expr);
             }
 
             if (targetTypeBoxed == typeof(short?))
             {
-                return StaticMethod(typeof(TypeExtensions), "AsBoxedShort", expr);
+                return StaticMethod(typeof(TypeExtensions), "AsBoxedInt16", expr);
             }
 
             if (targetTypeBoxed == typeof(byte?))
@@ -1090,80 +1085,67 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>  CoercionException </throws>
         public static Type GetCommonCoercionType(IList<Type> types)
         {
-            if (types.Count < 1)
-            {
+            if (types.Count == 0) {
                 throw new ArgumentException("Unexpected zero length array");
             }
 
-            if (types.Count == 1)
-            {
-                return types[0].GetBoxedType();
+            if (types.Count == 1) {
+                return types[0];
             }
 
+            // Determine if we need boxing escalation
+            var boxEscalation = types.Any(t => t == null);
+            
             // Reduce to non-null types
-            var nonNullTypes = new List<Type>();
-            for (var i = 0; i < types.Count; i++)
-            {
-                if (types[i] != null)
-                {
-                    nonNullTypes.Add(types[i]);
-                }
-            }
-
-            types = nonNullTypes.ToArray();
-            if (types.Count == 0)
-            {
+            types = types.Where(t => t != null).ToArray();
+            if (types.Count == 0) {
                 return null; // only null types, result is null
             }
 
-            if (types.Count == 1)
-            {
-                return types[0].GetBoxedType();
+            if (types.Count == 1) {
+                return boxEscalation 
+                    ? types[0].GetBoxedType()
+                    : types[0];
+            }
+
+            // if all the types are the same, then return the value
+            var typeSet = new HashSet<Type>(types);
+            if (typeSet.Count == 1) {
+                return boxEscalation
+                    ? typeSet.First().GetBoxedType()
+                    : typeSet.First();
             }
 
             // Check if all String
-            if (types[0] == typeof(string))
-            {
-                for (var i = 0; i < types.Count; i++)
-                {
-                    if (types[i] != typeof(string))
-                    {
-                        throw new CoercionException("Cannot coerce to String type " + types[i].CleanName());
-                    }
+            if (types[0] == typeof(string)) {
+                var errorType = types.FirstOrDefault(t => t != typeof(string));
+                if (errorType != null) {
+                    throw new CoercionException("Cannot coerce to String type " + errorType.CleanName());
                 }
 
                 return typeof(string);
             }
 
             // Convert to boxed types
-            for (var i = 0; i < types.Count; i++)
-            {
-                types[i] = types[i].GetBoxedType();
-            }
+            types = types
+                .Select(t => t.GetBoxedType())
+                .ToArray();
 
             // Check if all bool
-            if (types[0] == typeof(bool?))
-            {
-                for (var i = 0; i < types.Count; i++)
-                {
-                    if (types[i] != typeof(bool?))
-                    {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].CleanName());
-                    }
+            if (types[0] == typeof(bool?)) {
+                var errorType = types.FirstOrDefault(t => t != typeof(bool?));
+                if (errorType != null) {
+                    throw new CoercionException("Cannot coerce to bool type " + errorType.CleanName());
                 }
 
                 return typeof(bool?);
             }
 
             // Check if all char
-            if (types[0] == typeof(char?))
-            {
-                for (var i = 0; i < types.Count; i++)
-                {
-                    if (types[i] != typeof(char?))
-                    {
-                        throw new CoercionException("Cannot coerce to bool type " + types[i].CleanName());
-                    }
+            if (types[0] == typeof(char?)) {
+                var errorType = types.FirstOrDefault(t => t != typeof(char?));
+                if (errorType != null) {
+                    throw new CoercionException("Cannot coerce to char type " + errorType.CleanName());
                 }
 
                 return typeof(char?);

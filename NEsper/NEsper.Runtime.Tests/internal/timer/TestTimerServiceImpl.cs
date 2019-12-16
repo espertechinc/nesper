@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.timer
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClocking()
         {
             var RESOLUTION = (int) service.MsecTimerResolution;

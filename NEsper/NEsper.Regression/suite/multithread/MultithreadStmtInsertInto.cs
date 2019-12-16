@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(totalExpected, result.Length);
             IDictionary<long, ICollection<string>> results = new Dictionary<long, ICollection<string>>();
             foreach (var theEvent in result) {
-                var count = theEvent.Get("mycount").AsLong();
+                var count = theEvent.Get("mycount").AsInt64();
                 var key = (string) theEvent.Get("key");
 
                 var entries = results.Get(count);

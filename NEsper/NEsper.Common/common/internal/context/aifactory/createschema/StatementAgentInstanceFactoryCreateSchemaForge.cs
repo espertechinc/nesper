@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                     Ref("saiff"),
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .MethodReturn(@Ref("saiff"));
+                .MethodReturn(Ref("saiff"));
             return method;
         }
     }

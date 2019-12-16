@@ -120,5 +120,10 @@ namespace com.espertech.esper.compat
         {
             return (type.GetBoxedType() == type);
         }
+        
+        public static bool IsUnboxedType(this Type type)
+        {
+            return (type.GetBoxedType() != type);
+        }
     }
 }

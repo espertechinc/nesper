@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             foreach (var test in timestampsAndResult) {
                 var testtime = (string) test[0];
-                var testduration = test[1].AsLong();
+                var testduration = test[1].AsInt64();
                 var expected = (bool) test[2];
 
                 var rightStart = DateTimeParsingFunctions.ParseDefaultMSec(seedTime);
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             foreach (var test in timestampsAndResult) {
                 var testtime = (string) test[0];
-                var testduration = test[1].AsLong();
+                var testduration = test[1].AsInt64();
                 var expected = (bool) test[2];
 
                 var rightStart = DateTimeParsingFunctions.ParseDefaultMSec(seedTime);

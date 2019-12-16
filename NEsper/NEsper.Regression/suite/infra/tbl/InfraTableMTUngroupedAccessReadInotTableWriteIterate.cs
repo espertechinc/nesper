@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         using (var iterator = iterateStatement.GetSafeEnumerator()) {
                             var @event = iterator.Advance();
-                            var c0 = @event.Get("c0").AsInt();
+                            var c0 = @event.Get("c0").AsInt32();
                             Assert.AreEqual((double) c0, @event.Get("c1"));
                             Assert.AreEqual((long) c0, @event.Get("c2"));
                         }

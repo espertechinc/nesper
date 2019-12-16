@@ -72,14 +72,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     exprSymbol,
                     codegenClassScope);
                 block.Expression(
-                    ExprDotMethod(@Ref("props"), "Put", Constant(this.context.ColumnNames[i]), expression));
+                    ExprDotMethod(Ref("props"), "Put", Constant(this.context.ColumnNames[i]), expression));
             }
 
             block.MethodReturn(
                 ProcessSpecificCodegen(
                     resultEventType,
                     eventBeanFactory,
-                    @Ref("props"),
+                    Ref("props"),
                     methodNode,
                     selectSymbol,
                     exprSymbol,

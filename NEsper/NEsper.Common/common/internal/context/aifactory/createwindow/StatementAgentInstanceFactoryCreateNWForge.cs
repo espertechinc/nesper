@@ -107,9 +107,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", @Ref("saiff"));
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("saiff"));
 
-            method.Block.MethodReturn(@Ref("saiff"));
+            method.Block.MethodReturn(Ref("saiff"));
             return method;
         }
     }

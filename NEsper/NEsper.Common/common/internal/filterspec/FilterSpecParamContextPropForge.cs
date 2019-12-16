@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamContextPropForge : FilterSpecParamForge
     {
         private readonly EventPropertyGetterSPI _getter;
-        private readonly SimpleNumberCoercer _numberCoercer;
+        private readonly Coercer _numberCoercer;
 
         public FilterSpecParamContextPropForge(
             ExprFilterSpecLookupableForge lookupable,
             FilterOperator filterOperator,
             EventPropertyGetterSPI getter,
-            SimpleNumberCoercer numberCoercer)
+            Coercer numberCoercer)
             : base(lookupable, filterOperator)
         {
             _getter = getter;

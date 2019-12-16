@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionRef queryMethod = @Ref("qm");
+            CodegenExpressionRef queryMethod = Ref("qm");
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
                 .SetProperty(

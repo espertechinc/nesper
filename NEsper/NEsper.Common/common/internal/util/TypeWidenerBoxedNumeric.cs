@@ -6,14 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -22,13 +16,13 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerBoxedNumeric : TypeWidenerSPI
     {
-        private readonly SimpleNumberCoercer coercer;
+        private readonly Coercer coercer;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="coercer">the coercer</param>
-        public TypeWidenerBoxedNumeric(SimpleNumberCoercer coercer)
+        public TypeWidenerBoxedNumeric(Coercer coercer)
         {
             this.coercer = coercer;
         }

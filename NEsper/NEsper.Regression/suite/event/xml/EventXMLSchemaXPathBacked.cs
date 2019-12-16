@@ -35,10 +35,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("prop4", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop4", typeof(string), typeof(char), false, false, false, false, false),
                     new EventPropertyDescriptor("nested3", typeof(XmlNode), null, false, false, false, false, !xpath),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false)
                 },
@@ -60,16 +60,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy(stmt).AddListener("s0");
             type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nodeProp", typeof(XmlNode), null, false, false, false, false, !xpath),
-                    new EventPropertyDescriptor("nested1Prop", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("nested1Prop", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested2Prop", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("complexProp", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("complexProp", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("indexedProp", typeof(int?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrOneProp", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attrTwoProp", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("attrTwoProp", typeof(string), typeof(char), false, false, true, false, false)
                 },
                 type.PropertyDescriptors);
 

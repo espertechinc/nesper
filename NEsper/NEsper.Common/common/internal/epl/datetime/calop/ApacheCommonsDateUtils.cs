@@ -88,12 +88,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return val;
             }
 
-            // ----------------- Fix for LANG-59 ---------------------- START ---------------
-            // see http://issues.apache.org/jira/browse/LANG-59
-            //
-            // Manually truncate milliseconds, seconds and minutes, rather than using
-            // DateTimeEx methods.
-
             var time = val.UtcMillis();
             var done = false;
 

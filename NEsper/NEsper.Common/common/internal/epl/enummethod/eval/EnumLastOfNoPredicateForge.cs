@@ -61,9 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var type = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(_resultType));
-            var paramTypes = (type == typeof(EventBean))
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             
             var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumLastOfNoPredicateForge), codegenClassScope)
@@ -71,9 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .Block
                 .DeclareVar<object>("result", ConstantNull())
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignRef("result", @Ref("next"))
+                .AssignRef("result", Ref("next"))
                 .BlockEnd()
-                .MethodReturn(Cast(type, @Ref("result")));
+                .MethodReturn(Cast(type, Ref("result")));
             return LocalMethod(method, args.Expressions);
         }
     }

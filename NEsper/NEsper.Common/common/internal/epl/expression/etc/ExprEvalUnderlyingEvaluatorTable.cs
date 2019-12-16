@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     ExprDotMethod(
                         eventToPublic,
                         "ConvertToUnd",
-                        @Ref("@event"),
+                        Ref("@event"),
                         exprSymbol.GetAddEPS(method),
                         exprSymbol.GetAddIsNewData(method),
                         exprSymbol.GetAddExprEvalCtx(method)));

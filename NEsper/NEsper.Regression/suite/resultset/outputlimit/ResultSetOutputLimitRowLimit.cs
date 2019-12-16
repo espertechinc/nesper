@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             env.SendEventBean(new SupportBean_S0(0));
             foreach (var row in rows) {
-                SendEvent(env, row[0].ToString(), row[1].AsInt());
+                SendEvent(env, row[0].ToString(), row[1].AsInt32());
             }
 
             env.SendEventBean(new SupportBean_S1(0));

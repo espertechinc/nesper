@@ -86,12 +86,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var newEvents = listener.GetNewDataListFlattened();
             IList<long>[] resultsPerIdent = new List<long>[numStatements];
             foreach (var theEvent in newEvents) {
-                var ident = theEvent.Get("ident").AsInt();
+                var ident = theEvent.Get("ident").AsInt32();
                 if (resultsPerIdent[ident] == null) {
                     resultsPerIdent[ident] = new List<long>();
                 }
 
-                var mysum = theEvent.Get("mysum").AsLong();
+                var mysum = theEvent.Get("mysum").AsInt64();
                 resultsPerIdent[ident].Add(mysum);
             }
 

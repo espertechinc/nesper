@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(numMessages * numThreads, listener.Values.Count);
             var result = new SortedSet<int>();
             foreach (var row in listener.Values) {
-                result.Add(row.AsInt());
+                result.Add(row.AsInt32());
             }
 
             Assert.AreEqual(numMessages * numThreads, result.Count);

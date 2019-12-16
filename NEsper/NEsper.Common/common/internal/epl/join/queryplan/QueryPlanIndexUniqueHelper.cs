@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {

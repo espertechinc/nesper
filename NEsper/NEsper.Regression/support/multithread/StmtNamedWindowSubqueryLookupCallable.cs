@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     var found = false;
                     foreach (var arr in events) {
                         foreach (var item in arr) {
-                            var value = item.Get("val").AsInt();
+                            var value = item.Get("val").AsInt32();
                             if (value == valueExpected) {
                                 found = true;
                                 break;

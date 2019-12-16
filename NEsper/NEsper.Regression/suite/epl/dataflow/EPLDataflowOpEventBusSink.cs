@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 for (var i = 0; i < 3; i++) {
                     Assert.AreEqual("abc", events[i].Get("P0"));
-                    var val = events[i].Get("P1").AsLong();
+                    var val = events[i].Get("P1").AsInt64();
                     Assert.IsTrue(val > 0 && val < 10);
                 }
 

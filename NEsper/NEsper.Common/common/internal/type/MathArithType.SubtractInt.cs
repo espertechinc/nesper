@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                return d1.AsInt() - d2.AsInt();
+                return d1.AsInt32() - d2.AsInt32();
             }
 
             public CodegenExpression Codegen(

@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dtx = DateTimeEx.GetInstance(timeZone);
-            var startRemainder = timeAbacus.DateTimeSet(target.AsLong(), dtx);
-            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            var startRemainder = timeAbacus.DateTimeSet(target.AsInt64(), dtx);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = timeAbacus.DateTimeGet(dtx, startRemainder);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<long>(
                     "startRemainder",
                     forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
-            EvaluateCalOpsCalendarCodegen(
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),
@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var startLong = startTimestamp.AsLong();
-            var endLong = endTimestamp.AsLong();
+            var startLong = startTimestamp.AsInt64();
+            var endLong = endTimestamp.AsInt64();
             var dtx = DateTimeEx.GetInstance(timeZone);
             var startRemainder = timeAbacus.DateTimeSet(startLong, dtx);
-            EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             var startTime = timeAbacus.DateTimeGet(dtx, startRemainder);
             var endTime = startTime + (endLong - startLong);
             return intervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<long>(
                     "startRemainder",
                     forge.timeAbacus.DateTimeSetCodegen(Ref("startLong"), Ref("dtx"), methodNode, codegenClassScope));
-            EvaluateCalOpsCalendarCodegen(
+            EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),

@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.CompileDeploy("@Name('sw') select * from MyXMLEventXPC#lastevent");
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("sw").EventType);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "nested1simple",
@@ -64,11 +64,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var fragmentTypeNested1 = env.Statement("insert").EventType.GetFragmentType("nested1simple");
             Assert.IsFalse(fragmentTypeNested1.IsIndexed);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("prop1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("prop2", typeof(bool?), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("attr1", typeof(string), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("attr1", typeof(string), typeof(char), false, false, true, false, false),
                     new EventPropertyDescriptor("nested2", typeof(XmlNode), null, false, false, false, false, false)
                 },
                 fragmentTypeNested1.FragmentType.PropertyDescriptors);
@@ -76,26 +76,26 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var fragmentTypeNested4 = env.Statement("insert").EventType.GetFragmentType("nested4array");
             Assert.IsTrue(fragmentTypeNested4.IsIndexed);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop5", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop6", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop7", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop8", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("id", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("prop5", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop6", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop7", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop8", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("id", typeof(string), typeof(char), false, false, true, false, false)
                 },
                 fragmentTypeNested4.FragmentType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4.FragmentType);
 
             var fragmentTypeNested4Item = env.Statement("insert").EventType.GetFragmentType("nested4array[0]");
             Assert.IsFalse(fragmentTypeNested4Item.IsIndexed);
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("prop5", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop6", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop7", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("prop8", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("id", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("prop5", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop6", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop7", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("prop8", typeof(string[]), typeof(string), false, false, true, false, false),
+                    new EventPropertyDescriptor("id", typeof(string), typeof(char), false, false, true, false, false)
                 },
                 fragmentTypeNested4Item.FragmentType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4Item.FragmentType);

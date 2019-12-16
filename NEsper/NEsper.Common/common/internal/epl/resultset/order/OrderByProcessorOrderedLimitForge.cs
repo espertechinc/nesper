@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 {
     public class OrderByProcessorOrderedLimitForge : OrderByProcessorFactoryForge
     {
-        public static readonly CodegenExpressionRef REF_ROWLIMITPROCESSOR = @Ref("rowLimitProcessor");
+        public static readonly CodegenExpressionRef REF_ROWLIMITPROCESSOR = Ref("rowLimitProcessor");
 
         private readonly OrderByProcessorForgeImpl orderByProcessorForge;
         private readonly RowLimitProcessorFactoryForge rowLimitProcessorFactoryForge;
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     REF_ROWLIMITPROCESSOR.Ref,
                     ExprDotMethod(rowLimitFactory, "Instantiate", REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(
-                    CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
+                    CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
         public void CtorCodegen(

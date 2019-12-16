@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var rowCount = 0;
                 var milestone = new AtomicLong();
                 foreach (var row in data) {
-                    var theEvent = new SupportBean((string) row[0], row[1].AsInt());
+                    var theEvent = new SupportBean((string) row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.EplToModelCompileDeploy(text).AddListener("s0");
 
                 foreach (var row in data) {
-                    var theEvent = new SupportBean((string) row[0], row[1].AsInt());
+                    var theEvent = new SupportBean((string) row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var rowCount = 0;
                 foreach (var row in data) {
                     rowCount++;
-                    var theEvent = new SupportRecogBean((string) row[0], row[1].AsInt());
+                    var theEvent = new SupportRecogBean((string) row[0], row[1].AsInt32());
                     env.SendEventBean(theEvent);
 
                     Compare(env, row, rowCount, theEvent);

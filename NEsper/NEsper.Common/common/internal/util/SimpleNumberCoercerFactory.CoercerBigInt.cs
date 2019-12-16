@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerBigInt : SimpleNumberCoercer,
+        public class CoercerBigInt : Coercer,
             BigIntegerCoercer
         {
             public static readonly CoercerBigInt INSTANCE = new CoercerBigInt();
@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.util
                 return numToCoerce.AsBigInteger();
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsBigInteger();
+                return value.AsBigInteger();
             }
 
             public Type ReturnType => typeof(BigInteger);

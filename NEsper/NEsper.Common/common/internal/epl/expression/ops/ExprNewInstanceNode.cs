@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 InstanceManufacturerFactoryFactory.GetManufacturer(
                     targetClass,
                     validationContext.ImportService,
-                    this.ChildNodes);
+                    ChildNodes);
             forge = new ExprNewInstanceNodeForge(this, targetClass, manufacturerFactory);
             return null;
         }
@@ -82,14 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             ExprNewInstanceNode other = (ExprNewInstanceNode) node;
-            return other.classIdent.Equals(this.classIdent);
+            return other.classIdent.Equals(classIdent);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("new ");
             writer.Write(classIdent);
-            ExprNodeUtilityPrint.ToExpressionStringParams(writer, this.ChildNodes);
+            ExprNodeUtilityPrint.ToExpressionStringParams(writer, ChildNodes);
         }
 
         public override ExprPrecedenceEnum Precedence {

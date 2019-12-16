@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterSpecParamEventPropForge : FilterSpecParamForge
     {
-        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        [NonSerialized] private readonly Coercer _numberCoercer;
         private readonly string _statementName;
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             string resultEventProperty,
             ExprIdentNodeEvaluator exprIdentNodeEvaluator,
             bool isMustCoerce,
-            SimpleNumberCoercer numberCoercer,
+            Coercer numberCoercer,
             Type coercionType,
             string statementName)
             : base(lookupable, filterOperator)

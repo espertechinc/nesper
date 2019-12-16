@@ -248,13 +248,13 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationFunction()
         {
             RegressionRunner.Run(_session, new ClientExtendAggregationFunction());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationMultiFunction()
         {
             RegressionRunner.Run(_session, new ClientExtendAggregationMultiFunction());
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, new ClientExtendPatternGuard());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendSingleRowFunction()
         {
             RegressionRunner.Run(_session, ClientExtendSingleRowFunction.Executions());
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, new ClientExtendView());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientExtendVirtualDataWindow()
         {
             RegressionRunner.Run(_session, new ClientExtendVirtualDataWindow());

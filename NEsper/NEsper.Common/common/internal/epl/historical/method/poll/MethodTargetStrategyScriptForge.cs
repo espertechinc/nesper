@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             method.Block
                 .DeclareVar<MethodTargetStrategyScript>("target", NewInstance(typeof(MethodTargetStrategyScript)))
                 .SetProperty(Ref("target"), "ScriptEvaluator", script.GetField(classScope))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", @Ref("target")))
-                .MethodReturn(@Ref("target"));
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("target")))
+                .MethodReturn(Ref("target"));
             return LocalMethod(method);
         }
     }

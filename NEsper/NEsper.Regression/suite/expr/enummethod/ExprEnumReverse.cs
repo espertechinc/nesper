@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     new [] { "val" },
-                    new[] {typeof(ICollection<EventBean>)});
+                    new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
                 LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", "E3,E2,E1");
@@ -75,7 +75,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
-                    new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
+                    new[] {
+                        typeof(ICollection<object>), 
+                        typeof(ICollection<object>)
+                    });
 
                 env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
                 LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E4", "E5", "E1", "E2");

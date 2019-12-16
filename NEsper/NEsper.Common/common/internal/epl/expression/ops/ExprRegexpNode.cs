@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="not">is true if the it's a "not regexp" expression, of false for regular regexp</param>
         public ExprRegexpNode(bool not)
         {
-            this.isNot = not;
+            isNot = not;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 2) {
+            if (ChildNodes.Length != 2) {
                 throw new ExprValidationException("The regexp operator requires 2 child expressions");
             }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("The regexp operator requires a String-type pattern expression");
             }
 
-            var constantPattern = this.ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
+            var constantPattern = ChildNodes[1].Forge.ForgeConstantType.IsCompileTimeConstant;
 
             // check eval child node - can be String or numeric
             var evalChildType = ChildNodes[0].Forge.EvaluationType;
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var other = (ExprRegexpNode) node;
-            if (this.isNot != other.isNot) {
+            if (isNot != other.isNot) {
                 return false;
             }
 
@@ -121,13 +121,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
             if (isNot) {
                 writer.Write(" not");
             }
 
             writer.Write(" regexp ");
-            this.ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence);
         }
 
         public override ExprPrecedenceEnum Precedence {

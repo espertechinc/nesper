@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                     Ref("conv"),
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .MethodReturn(@Ref("conv"));
+                .MethodReturn(Ref("conv"));
             return LocalMethod(method);
         }
     }

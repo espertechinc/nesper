@@ -53,9 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var namedParams = forge.Scalar
-                ? EnumForgeCodegenNames.PARAMS_OBJECT
-                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var namedParams = EnumForgeCodegenNames.PARAMS;
 
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumSequenceEqualForgeEval), scope, codegenClassScope)

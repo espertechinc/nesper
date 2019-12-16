@@ -33,11 +33,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
                 new [] { "val" },
-                new[] {typeof(IDictionary<string, object>)});
+                new[] {typeof(IDictionary<object, object>)});
 
             env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"));
             EPAssertionUtil.AssertPropsMap(
-                (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                 new [] { "E1","E2","E3" },
                 1,
                 5,
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
             env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,12", "E1,2"));
             EPAssertionUtil.AssertPropsMap(
-                (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                 new [] { "E1","E2","E3" },
                 2,
                 12,
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.SendEventBean(
                 new SupportBean_ST0_Container(Collections.SingletonList(new SupportBean_ST0(null, null))));
             EPAssertionUtil.AssertPropsMap(
-                (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
+                (IDictionary<object, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val"),
                 new [] { "E1","E2","E3" },
                 null,
                 null,

@@ -22,11 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
     {
         public void Run(RegressionEnvironment env)
         {
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("base", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("sub1", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("suba", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("base", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("sub1", typeof(string), typeof(char), false, false, true, false, false),
+                    new EventPropertyDescriptor("suba", typeof(string), typeof(char), false, false, true, false, false)
                 },
                 env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent").PropertyDescriptors);
 

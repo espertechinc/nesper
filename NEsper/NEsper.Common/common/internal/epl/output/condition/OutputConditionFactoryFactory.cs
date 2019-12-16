@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
                 var rate = -1;
                 if (outputLimitSpec.Rate != null) {
-                    rate = outputLimitSpec.Rate.AsInt();
+                    rate = outputLimitSpec.Rate.AsInt32();
                 }
 
                 return new OutputConditionCountForge(rate, variableMetaData);

@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             ISet<int> values = new HashSet<int>();
             foreach (var theEvent in resultNewData) {
-                values.Add(theEvent.Get("value").AsInt());
+                values.Add(theEvent.Get("value").AsInt32());
             }
 
             Assert.AreEqual(totalExpected, values.Count, "Unexpected duplicates");

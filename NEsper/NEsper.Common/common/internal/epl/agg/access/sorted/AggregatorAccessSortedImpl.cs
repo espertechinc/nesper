@@ -258,7 +258,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 if (criteria.Length == 1) {
                     method.Block.MethodReturn(
                         LocalMethod(
-                            CodegenLegoMethodExpression.CodegenExpression(criteria[0].Forge, method, classScope),
+                            CodegenLegoMethodExpression.CodegenExpression(
+                                criteria[0].Forge,
+                                method,
+                                classScope,
+                                true),
                             REF_EPS,
                             REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));

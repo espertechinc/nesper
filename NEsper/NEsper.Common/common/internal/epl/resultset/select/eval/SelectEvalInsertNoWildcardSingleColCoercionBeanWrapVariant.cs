@@ -47,16 +47,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var method = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
                 .AddParam(evaluationType, "result")
                 .Block
-                .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "EventTypeForNativeObject", @Ref("result")))
+                .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "EventTypeForNativeObject", Ref("result")))
                 .DeclareVar<EventBean>(
                     "wrappedEvent",
-                    ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", @Ref("result"), @Ref("beanEventType")))
-                .DeclareVar<EventBean>("variant", ExprDotMethod(type, "GetValueAddEventBean", @Ref("wrappedEvent")))
+                    ExprDotMethod(eventBeanFactory, "AdapterForTypedObject", Ref("result"), Ref("beanEventType")))
+                .DeclareVar<EventBean>("variant", ExprDotMethod(type, "GetValueAddEventBean", Ref("wrappedEvent")))
                 .MethodReturn(
                     ExprDotMethod(
                         eventBeanFactory,
                         "AdapterForTypedWrapper",
-                        @Ref("variant"),
+                        Ref("variant"),
                         StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }),
                         resultEventType));
             return LocalMethodBuild(method).Pass(expression).Call();

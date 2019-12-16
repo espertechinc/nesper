@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.type, EPStatementInitServicesConstants.REF)));
 
-            var namedParams = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var namedParams = EnumForgeCodegenNames.PARAMS;
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(bool), typeof(EnumAllOfScalarForgeEval), scope, codegenClassScope)
@@ -90,11 +90,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     NewInstance<ObjectArrayEventBean>(
                         NewArrayByLength(typeof(object), Constant(1)),
                         typeMember));
-            block.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
+            block.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("evalEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("evalEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"));
+                .AssignArrayElement("props", Constant(0), Ref("next"));
             CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
                 forEach,
                 forge.InnerExpression.EvaluationType,

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Avro;
@@ -23,11 +24,13 @@ namespace NEsper.Avro.IO
         private static readonly JValue TRUE_VALUE = new JValue(true);
         private static readonly JValue FALSE_VALUE = new JValue(false);
 
+        private readonly ISet<string> _schemaNameSet = new HashSet<string>();
+        
         public SchemaToJsonEncoder()
         {
         }
 
-        private static JObject EncodeField(Field field)
+        private JObject EncodeField(Field field)
         {
             var jobject = new JObject();
             jobject.Add("name", field.Name);
@@ -36,30 +39,38 @@ namespace NEsper.Avro.IO
             return jobject;
         }
 
-        private static JObject EncodeRecord(RecordSchema schema)
+        private JToken EncodeRecord(RecordSchema schema)
         {
-            var jfields = new JArray();
-            schema.Fields.ForEach(field => jfields.Add(EncodeField(field)));
+            if (_schemaNameSet.Add(schema.Name)) {
+                var jfields = new JArray();
+                schema.Fields.ForEach(field => jfields.Add(EncodeField(field)));
 
-            var jobject = new JObject();
-            jobject.Add(new JProperty("type", "record"));
-            jobject.Add(new JProperty("name", schema.Name));
-            jobject.Add(new JProperty("fields", jfields));
+                var jobject = new JObject();
+                jobject.Add(new JProperty("type", "record"));
+                jobject.Add(new JProperty("name", schema.Name));
+                jobject.Add(new JProperty("fields", jfields));
 
-            return jobject;
+                return jobject;
+            }
+
+            return new JValue(schema.Name);
         }
 
-        private static JObject EncodeFixed(FixedSchema schema)
+        private JToken EncodeFixed(FixedSchema schema)
         {
-            var jobject = new JObject();
-            jobject.Add(new JProperty("type", "fixed"));
-            jobject.Add(new JProperty("name", schema.Name));
-            jobject.Add(new JProperty("size", schema.Size));
+            if (_schemaNameSet.Add(schema.Name)) {
+                var jobject = new JObject();
+                jobject.Add(new JProperty("type", "fixed"));
+                jobject.Add(new JProperty("name", schema.Name));
+                jobject.Add(new JProperty("size", schema.Size));
 
-            return jobject;
+                return jobject;
+            }
+
+            return new JValue(schema.Name);
         }
 
-        private static JObject EncodeArray(ArraySchema schema)
+        private JObject EncodeArray(ArraySchema schema)
         {
             var jobject = new JObject();
             jobject.Add(new JProperty("type", "array"));
@@ -68,7 +79,7 @@ namespace NEsper.Avro.IO
             return jobject;
         }
 
-        private static JObject EncodeMap(MapSchema schema)
+        private JObject EncodeMap(MapSchema schema)
         {
             var jobject = new JObject();
             jobject.Add(new JProperty("type", "map"));
@@ -77,7 +88,7 @@ namespace NEsper.Avro.IO
             return jobject;
         }
 
-        private static JArray EncodeUnion(UnionSchema schema)
+        private JArray EncodeUnion(UnionSchema schema)
         {
             var jarray = new JArray();
 
@@ -89,20 +100,24 @@ namespace NEsper.Avro.IO
             return jarray;
         }
 
-        private static JObject EncodeEnum(EnumSchema schema)
+        private JToken EncodeEnum(EnumSchema schema)
         {
-            var jsymbols = new JArray();
-            schema.Symbols.ToList().ForEach(symbol => jsymbols.Add(symbol));
+            if (_schemaNameSet.Add(schema.Name)) {
+                var jsymbols = new JArray();
+                schema.Symbols.ToList().ForEach(symbol => jsymbols.Add(symbol));
 
-            var jobject = new JObject();
-            jobject.Add(new JProperty("type", "enum"));
-            jobject.Add(new JProperty("name", schema.Name));
-            jobject.Add(new JProperty("symbols", jsymbols));
+                var jobject = new JObject();
+                jobject.Add(new JProperty("type", "enum"));
+                jobject.Add(new JProperty("name", schema.Name));
+                jobject.Add(new JProperty("symbols", jsymbols));
 
-            return jobject;
+                return jobject;
+            }
+
+            return new JValue(schema.Name);
         }
 
-        private static JToken EncodePrimitive(PrimitiveSchema schema)
+        private JToken EncodePrimitive(PrimitiveSchema schema)
         {
             JToken jtoken = null;
 
@@ -166,7 +181,7 @@ namespace NEsper.Avro.IO
             return jobject;
         }
 
-        public static JToken Encode(Schema schema)
+        public JToken Encode(Schema schema)
         {
             switch (schema.Tag) {
                 case Schema.Type.Null:

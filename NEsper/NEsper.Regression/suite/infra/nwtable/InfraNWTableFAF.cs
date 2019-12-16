@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             Assert.AreEqual(result.Array.Length, expected.Length);
             IList<long> values = new List<long>();
             foreach (var @event in result.Array) {
-                values.Add(@event.Get("LongPrimitive").AsLong());
+                values.Add(@event.Get("LongPrimitive").AsInt64());
             }
 
             EPAssertionUtil.AssertEqualsAnyOrder(expected, values.ToArray());
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var result = env.Runtime.FireAndForgetService.ExecuteQuery(
                 compiled,
                 new ContextPartitionSelector[] {new SupportSelectorByHashCode(hashCode)});
-            return result.Array[0].Get("c0").AsLong();
+            return result.Array[0].Get("c0").AsInt64();
         }
 
         private static long GetCtxInfraCatCount(
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var result = env.Runtime.FireAndForgetService.ExecuteQuery(
                 compiled,
                 new ContextPartitionSelector[] {new SupportSelectorCategory(categoryName)});
-            return result.Array[0].Get("c0").AsLong();
+            return result.Array[0].Get("c0").AsInt64();
         }
 
         private static void RunAssertionFilter(
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 .CompileExecuteFAF("select count(*) as c0 from MyInfra where IntPrimitive >= 0", path)
                 .Array[0]
                 .Get("c0")
-                .AsLong();
+                .AsInt64();
             Assert.AreEqual(count, actual);
             SupportQueryPlanIndexHook.AssertFAFAndReset(indexName, backingClass);
         }
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             RegressionEnvironment env,
             RegressionPath path)
         {
-            return env.CompileExecuteFAF("select count(*) as c0 from MyInfra", path).Array[0].Get("c0").AsLong();
+            return env.CompileExecuteFAF("select count(*) as c0 from MyInfra", path).Array[0].Get("c0").AsInt64();
         }
 
         private static EPFireAndForgetQueryResult CompileExecute(

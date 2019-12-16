@@ -358,11 +358,19 @@ namespace com.espertech.esper.compat
 
         // --------------------------------------------------------------------------------
 
-        public static DateTime TruncatedTo(this DateTime dt, DateTimeFieldEnum field)
+        public static DateTime Truncate(this DateTime dt, DateTimeFieldEnum field)
         {
             switch (field) {
                 case DateTimeFieldEnum.MILLISEC:
-                    return dt;
+                    return new DateTime(
+                        dt.Year,
+                        dt.Month,
+                        dt.Day,
+                        dt.Hour,
+                        dt.Minute,
+                        dt.Second,
+                        dt.Millisecond,
+                        dt.Kind);
 
                 case DateTimeFieldEnum.SECOND:
                     return new DateTime(
@@ -438,6 +446,124 @@ namespace com.espertech.esper.compat
 
         // --------------------------------------------------------------------------------
 
+        public static DateTime Round(this DateTime dt, DateTimeFieldEnum field)
+        {
+            switch (field) {
+                case DateTimeFieldEnum.MILLISEC: {
+                    dt = dt.AddTicks(5000);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
+                }
+                case DateTimeFieldEnum.SECOND: {
+                    dt = dt.AddMilliseconds(500);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.MINUTE: {
+                    dt = dt.AddSeconds(30);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.HOUR: {
+                    dt = dt.AddMinutes(30);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.DAY:
+                case DateTimeFieldEnum.DATE: {
+                    dt = dt.Add(TimeSpan.FromSeconds(43200));
+                    return new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.MONTH: {
+                    var stMonth = dt.Month;
+                    var stYear = dt.Year;
+                    var stDate = new DateTime(stYear, stMonth, 1, 0, 0, 0, 0, dt.Kind);
+
+                    var edMonth = stMonth == 12 ? 1 : stMonth + 1;
+                    var edYear = stMonth == 12 ? stYear + 1 : stYear;
+                    var edDate = new DateTime(edYear, edMonth, 1, 0, 0, 0, 0, dt.Kind);
+
+                    var ticksInHalfMonth = (edDate.Ticks - stDate.Ticks) / 2;
+
+                    dt = dt.AddTicks(ticksInHalfMonth);
+                    return new DateTime(dt.Year, dt.Month, 1, 0, 0, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.YEAR: {
+                    var stYear = dt.Year;
+                    var stDate = new DateTime(stYear, 1, 1, 0, 0, 0, 0, dt.Kind);
+                    var edDate = new DateTime(stYear + 1, 1, 1, 0, 0, 0, 0, dt.Kind);
+
+                    var ticksInHalfYear = (edDate.Ticks - stDate.Ticks) / 2;
+
+                    dt = dt.AddTicks(ticksInHalfYear);
+                    return new DateTime(dt.Year, 1, 1, 0, 0, 0, 0, dt.Kind);
+                }
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+        
+        // --------------------------------------------------------------------------------
+
+        public static DateTime Ceiling(this DateTime dt, DateTimeFieldEnum field)
+        {
+            switch (field) {
+                case DateTimeFieldEnum.MILLISEC: {
+                    dt = dt.AddTicks(9999);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
+                }
+                case DateTimeFieldEnum.SECOND: {
+                    dt = dt.AddMilliseconds(999);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.MINUTE: {
+                    dt = dt.AddSeconds(59);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.HOUR: {
+                    dt = dt.AddMinutes(59);
+                    return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0, 0, dt.Kind);
+                }
+
+                case DateTimeFieldEnum.DAY:
+                case DateTimeFieldEnum.DATE: {
+                    var baseDt = new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0, dt.Kind);
+                    if (baseDt == dt) {
+                        return baseDt;
+                    }
+
+                    return baseDt.AddDays(1);
+                }
+
+                case DateTimeFieldEnum.MONTH: {
+                    var baseDt = new DateTime(dt.Year, dt.Month, 1, 0, 0, 0, 0, dt.Kind);
+                    if (baseDt == dt) {
+                        return baseDt;
+                    }
+
+                    return baseDt.AddMonths(1);
+                }
+
+                case DateTimeFieldEnum.YEAR: {
+                    var baseDt = new DateTime(dt.Year, 1, 1, 0, 0, 0, 0, dt.Kind);
+                    if (baseDt == dt) {
+                        return baseDt;
+                    }
+
+                    return baseDt.AddYears(1);
+                }
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+        
+        // --------------------------------------------------------------------------------
+
         public static ValueRange<int> Range(
             this DateTime dt,
             DateTimeFieldEnum field)
@@ -464,6 +590,49 @@ namespace com.espertech.esper.compat
                 default:
                     throw new NotSupportedException();
             }
+        }
+        
+        // --------------------------------------------------------------------------------
+
+        private static void Normalize(
+            ref int year,
+            ref int month,
+            ref int day,
+            ref int hour,
+            ref int minute,
+            ref int second,
+            ref int milliseconds)
+        {
+            if (milliseconds >= 1000) {
+                second += milliseconds / 1000;
+                milliseconds = milliseconds % 1000;
+            }
+
+            if (second >= 60) {
+                minute += second / 60;
+                second %= 60;
+            }
+
+            if (minute >= 60) {
+                hour += minute / 60;
+                minute %= 60;
+            }
+
+            if (hour >= 24) {
+                day += hour / 24;
+                hour %= 24;
+            }
+
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            do {
+                if (day > daysInMonth) {
+                    month++;
+                    day -= daysInMonth - 1;
+                }
+                daysInMonth = DateTime.DaysInMonth(year, month);
+            } while (day > daysInMonth);
+            
+            throw new NotSupportedException();
         }
     }
 }

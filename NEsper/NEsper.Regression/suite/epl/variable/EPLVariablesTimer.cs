@@ -35,9 +35,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             Assert.IsTrue(received.Length >= 5, "received : " + received.Length);
 
             for (var i = 0; i < received.Length; i++) {
-                var var1 = received[i].Get("var1").AsLong();
-                var var2 = received[i].Get("var2").AsLong();
-                var var3 = received[i].Get("var3").AsLong();
+                var var1 = received[i].Get("var1").AsInt64();
+                var var2 = received[i].Get("var2").AsInt64();
+                var var3 = received[i].Get("var3").AsInt64();
                 Assert.IsTrue(var1 >= startTime);
                 Assert.AreEqual(var1, var2 - 1);
                 Assert.AreEqual(var3, var2 + var1);

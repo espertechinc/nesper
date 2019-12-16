@@ -12,8 +12,8 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.lookup;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.virtualdw

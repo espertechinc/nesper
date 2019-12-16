@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             //var getFragment = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
             //    .AddParam(typeof(EventBean), "@event");
             //anonymousClass.AddMethod("GetFragment", getFragment);
-            getFragment.Block.BlockReturn(getter.EventBeanFragmentCodegen(@Ref("@event"), method /* getFragment */, classScope));
+            getFragment.Block.BlockReturn(getter.EventBeanFragmentCodegen(Ref("@event"), method /* getFragment */, classScope));
 
             method.Block.MethodReturn(NewInstance<ContainedEventEvalGetter>(anonymousClass));
             return LocalMethod(method);

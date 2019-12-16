@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes
-            if (this.ChildNodes.Length != 2) {
+            if (ChildNodes.Length != 2) {
                 throw new IllegalStateException("Relational op node does not have exactly 2 parameters");
             }
 
@@ -99,9 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
             writer.Write(relationalOpEnum.GetExpressionText());
-            this.ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence);
         }
 
         public override ExprPrecedenceEnum Precedence {
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             ExprRelationalOpNodeImpl other = (ExprRelationalOpNodeImpl) node;
 
-            if (other.relationalOpEnum != this.relationalOpEnum) {
+            if (other.relationalOpEnum != relationalOpEnum) {
                 return false;
             }
 

@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.type
         public class DivideDecimalConvComputerNoMathCtx : DivideDecimalConvComputerBase
         {
             public DivideDecimalConvComputerNoMathCtx(
-                SimpleNumberCoercer convOne,
-                SimpleNumberCoercer convTwo,
+                Coercer convOne,
+                Coercer convTwo,
                 bool divisionByZeroReturnsNull)
                 : base(convOne, convTwo, divisionByZeroReturnsNull)
             {

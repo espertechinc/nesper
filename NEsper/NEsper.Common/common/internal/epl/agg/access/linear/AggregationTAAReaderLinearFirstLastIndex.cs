@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     return null;
                 }
 
-                index = result.AsInt();
+                index = result.AsInt32();
             }
 
             if (index < 0) {

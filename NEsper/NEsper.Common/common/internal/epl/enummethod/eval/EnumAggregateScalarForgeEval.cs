@@ -88,9 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.EvalEventType, EPStatementInitServicesConstants.REF)));
 
-            var paramTypes = (forge.Initialization.EvaluationType == typeof(EventBean))
-                ? EnumForgeCodegenNames.PARAMS_EVENTBEAN
-                : EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
 
             var initializationEvalType = forge.Initialization.EvaluationType.GetBoxedType();
             var innerEvalType = forge.Initialization.EvaluationType;
@@ -114,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         scope,
                         codegenClassScope))
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(@Ref("value"));
+                .BlockReturn(Ref("value"));
             
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
@@ -129,17 +127,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement(
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.StreamNumLambda),
-                    @Ref("resultEvent"))
+                    Ref("resultEvent"))
                 .AssignArrayElement(
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.StreamNumLambda + 1),
-                    @Ref("evalEvent"))
+                    Ref("evalEvent"))
                 .DeclareVar<object[]>(
                     "resultProps",
-                    ExprDotName(@Ref("resultEvent"), "Properties"))
+                    ExprDotName(Ref("resultEvent"), "Properties"))
                 .DeclareVar<object[]>(
                     "evalProps",
-                    ExprDotName(@Ref("evalEvent"), "Properties"));
+                    ExprDotName(Ref("evalEvent"), "Properties"));
 
             block.ForEach(
                     typeof(object),
@@ -148,11 +146,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AssignArrayElement(
                     "resultProps",
                     Constant(0),
-                    @Ref("value"))
+                    Ref("value"))
                 .AssignArrayElement(
                     "evalProps",
                     Constant(0),
-                    @Ref("next"))
+                    Ref("next"))
                 .AssignRef(
                     "value",
                     forge.InnerExpression.EvaluateCodegen(
@@ -162,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         codegenClassScope))
                 .BlockEnd();
             
-            block.MethodReturn(@Ref("value"));
+            block.MethodReturn(Ref("value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

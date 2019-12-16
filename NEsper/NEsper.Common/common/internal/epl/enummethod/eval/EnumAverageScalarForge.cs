@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(double?), typeof(EnumAverageScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0))

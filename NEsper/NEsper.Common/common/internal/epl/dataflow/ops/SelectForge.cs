@@ -20,7 +20,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-using com.espertech.esper.common.@internal.context.aifactory.@select;
+using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.agg.rollup;
 using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;

@@ -89,21 +89,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     if (representationEnum.IsObjectArrayEvent()) {
                         var row = (object[]) output[i];
                         Assert.AreEqual("abc", row[0]);
-                        var val = row[1].AsLong();
+                        var val = row[1].AsInt64();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
                         Assert.AreEqual(1d, row[2]);
                     }
                     else if (representationEnum.IsMapEvent()) {
                         var row = (IDictionary<string, object>) output[i];
                         Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsLong();
+                        var val = row.Get("p1").AsInt64();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
                         Assert.AreEqual(1d, row.Get("p2"));
                     }
                     else {
                         var row = (GenericRecord) output[i];
                         Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsLong();
+                        var val = row.Get("p1").AsInt64();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
                         Assert.AreEqual(1d, row.Get("p2"));
                     }

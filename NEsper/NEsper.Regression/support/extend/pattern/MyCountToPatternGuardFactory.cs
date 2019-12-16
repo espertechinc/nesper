@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
                 throw new EPException("Count-to guard parameter evaluated to a null value");
             }
 
-            var numCountTo = parameter.AsInt();
+            var numCountTo = parameter.AsInt32();
             return new MyCountToPatternGuard(numCountTo, quitable);
         }
     }

@@ -57,14 +57,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
             new CodegenExpressionRef(NAME_STATEMENT_FIELDS);
 
 
-        public static readonly CodegenExpressionRef REF_NEWDATA = @Ref(NAME_NEWDATA);
-        public static readonly CodegenExpressionRef REF_OLDDATA = @Ref(NAME_OLDDATA);
-        public static readonly CodegenExpressionRef REF_ISSYNTHESIZE = @Ref(NAME_ISSYNTHESIZE);
-        public static readonly CodegenExpressionRef REF_ISNEWDATA = @Ref(NAME_ISNEWDATA);
-        public static readonly CodegenExpressionRef REF_JOINSET = @Ref(NAME_JOINSET);
-        public static readonly CodegenExpressionRef REF_VIEWABLE = @Ref(NAME_VIEWABLE);
-        public static readonly CodegenExpressionRef REF_VIEWEVENTSLIST = @Ref(NAME_VIEWEVENTSLIST);
-        public static readonly CodegenExpressionRef REF_JOINEVENTSSET = @Ref(NAME_JOINEVENTSSET);
-        public static readonly CodegenExpressionRef REF_RESULTSETVISITOR = @Ref(NAME_RESULTSETVISITOR);
+        public static readonly CodegenExpressionRef REF_NEWDATA = Ref(NAME_NEWDATA);
+        public static readonly CodegenExpressionRef REF_OLDDATA = Ref(NAME_OLDDATA);
+        public static readonly CodegenExpressionRef REF_ISSYNTHESIZE = Ref(NAME_ISSYNTHESIZE);
+        public static readonly CodegenExpressionRef REF_ISNEWDATA = Ref(NAME_ISNEWDATA);
+        public static readonly CodegenExpressionRef REF_JOINSET = Ref(NAME_JOINSET);
+        public static readonly CodegenExpressionRef REF_VIEWABLE = Ref(NAME_VIEWABLE);
+        public static readonly CodegenExpressionRef REF_VIEWEVENTSLIST = Ref(NAME_VIEWEVENTSLIST);
+        public static readonly CodegenExpressionRef REF_JOINEVENTSSET = Ref(NAME_JOINEVENTSSET);
+        public static readonly CodegenExpressionRef REF_RESULTSETVISITOR = Ref(NAME_RESULTSETVISITOR);
     }
 } // end of namespace

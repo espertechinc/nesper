@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             // try array property insert
             env.CompileDeploy("@Name('s0') select nested3.nested4 as narr from SimpleEventWSchema#lastevent");
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "narr",

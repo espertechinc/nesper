@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 var expectedPlus = SupportDateTime.GetArrayCoerced(
-                    "2002-05-30T010:00:10.020",
+                    "2002-05-30T10:00:10.020",
                     "long",
                     "dtx",
                     "dto",
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 env.SendEventBean(SupportDateTime.Make(null));
                 expectedPlus = SupportDateTime.GetArrayCoerced(
-                    "2002-05-30T010:00:10.020",
+                    "2002-05-30T10:00:10.020",
                     "long",
                     "null",
                     "null",

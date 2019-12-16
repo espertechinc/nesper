@@ -56,7 +56,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             callbackTwo = new SupportFilterHandle();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddRemove()
         {
             Assert.IsNull(eventTypeIndex.Get(typeOne));

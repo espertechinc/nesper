@@ -15,7 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.common.@internal.epl.@join.exec.@base;
+using com.espertech.esper.common.@internal.epl.join.exec.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.querygraph;

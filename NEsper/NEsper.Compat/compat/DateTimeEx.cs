@@ -16,8 +16,8 @@ namespace com.espertech.esper.compat
     ///     structure, they can take into account the timezone the date was associated with.
     /// </summary>
     public class DateTimeEx
-        : IComparable<DateTimeEx>
-        , IComparable
+        : IComparable<DateTimeEx>,
+            IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DateTimeEx" /> class.
@@ -173,70 +173,112 @@ namespace com.espertech.esper.compat
             int millisecond = 0)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                year, month, day, hour, minute, second, millisecond, TimeZone);
+                year,
+                month,
+                day,
+                hour,
+                minute,
+                second,
+                millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetYear(int year)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                year, DateTime.Month, DateTime.Day,
-                DateTime.Hour, DateTime.Minute, DateTime.Second,
-                DateTime.Millisecond, TimeZone);
+                year,
+                DateTime.Month,
+                DateTime.Day,
+                DateTime.Hour,
+                DateTime.Minute,
+                DateTime.Second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetMonth(int month)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, month, DateTime.Day,
-                DateTime.Hour, DateTime.Minute, DateTime.Second,
-                DateTime.Millisecond, TimeZone);
+                DateTime.Year,
+                month,
+                DateTime.Day,
+                DateTime.Hour,
+                DateTime.Minute,
+                DateTime.Second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetDay(int day)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, DateTime.Month, day,
-                DateTime.Hour, DateTime.Minute, DateTime.Second,
-                DateTime.Millisecond, TimeZone);
+                DateTime.Year,
+                DateTime.Month,
+                day,
+                DateTime.Hour,
+                DateTime.Minute,
+                DateTime.Second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetHour(int hour)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, DateTime.Month, DateTime.Day,
-                hour, DateTime.Minute, DateTime.Second,
-                DateTime.Millisecond, TimeZone);
+                DateTime.Year,
+                DateTime.Month,
+                DateTime.Day,
+                hour,
+                DateTime.Minute,
+                DateTime.Second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetMinute(int minute)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, DateTime.Month, DateTime.Day,
-                DateTime.Hour, minute, DateTime.Second,
-                DateTime.Millisecond, TimeZone);
+                DateTime.Year,
+                DateTime.Month,
+                DateTime.Day,
+                DateTime.Hour,
+                minute,
+                DateTime.Second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetSecond(int second)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, DateTime.Month, DateTime.Day,
-                DateTime.Hour, DateTime.Minute, second,
-                DateTime.Millisecond, TimeZone);
+                DateTime.Year,
+                DateTime.Month,
+                DateTime.Day,
+                DateTime.Hour,
+                DateTime.Minute,
+                second,
+                DateTime.Millisecond,
+                TimeZone);
             return this;
         }
 
         public DateTimeEx SetMillis(int millis)
         {
             DateTime = DateTimeOffsetHelper.CreateDateTime(
-                DateTime.Year, DateTime.Month, DateTime.Day,
-                DateTime.Hour, DateTime.Minute, DateTime.Second,
-                millis, TimeZone);
+                DateTime.Year,
+                DateTime.Month,
+                DateTime.Day,
+                DateTime.Hour,
+                DateTime.Minute,
+                DateTime.Second,
+                millis,
+                TimeZone);
             return this;
         }
 
@@ -470,19 +512,21 @@ namespace com.espertech.esper.compat
 
         public int GetActualMinimum(DateTimeFieldEnum field)
         {
-            switch (field)
-            {
+            switch (field) {
                 case DateTimeFieldEnum.MILLISEC:
                 case DateTimeFieldEnum.SECOND:
                 case DateTimeFieldEnum.MINUTE:
                 case DateTimeFieldEnum.HOUR:
                     return 0;
+
                 case DateTimeFieldEnum.DAY:
                 case DateTimeFieldEnum.DATE:
                 case DateTimeFieldEnum.MONTH:
                     return 1;
+
                 case DateTimeFieldEnum.YEAR:
                     return 0;
+
                 default:
                     throw new NotSupportedException();
             }
@@ -490,23 +534,29 @@ namespace com.espertech.esper.compat
 
         public int GetActualMaximum(DateTimeFieldEnum field)
         {
-            switch (field)
-            {
+            switch (field) {
                 case DateTimeFieldEnum.MILLISEC:
                     return 999;
+
                 case DateTimeFieldEnum.SECOND:
                     return 59;
+
                 case DateTimeFieldEnum.MINUTE:
                     return 59;
+
                 case DateTimeFieldEnum.HOUR:
                     return 23;
+
                 case DateTimeFieldEnum.DAY:
                 case DateTimeFieldEnum.DATE:
                     return System.DateTime.DaysInMonth(this.Year, this.Month);
+
                 case DateTimeFieldEnum.MONTH:
                     return 12;
+
                 case DateTimeFieldEnum.YEAR:
                     return int.MaxValue;
+
                 default:
                     throw new NotSupportedException();
             }
@@ -524,6 +574,24 @@ namespace com.espertech.esper.compat
             return Rebase();
         }
 
+        public DateTimeEx Truncate(DateTimeFieldEnum field)
+        {
+            DateTime = DateTime.Truncate(field);
+            return this;
+        }
+
+        public DateTimeEx Ceiling(DateTimeFieldEnum field)
+        {
+            DateTime = DateTime.Ceiling(field);
+            return this;
+        }
+
+        public DateTimeEx Round(DateTimeFieldEnum field)
+        {
+            DateTime = DateTime.Round(field);
+            return this;
+        }
+        
         private DateTimeEx Realign()
         {
             var offset = TimeZone.GetUtcOffset(DateTime);

@@ -451,7 +451,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var fields = new [] { "resOne"," resTwo" };
                 
-                #if false
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new[] {10, 20, 30}, null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -462,7 +461,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {true, false});
-                #endif
                 
                 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new int[] {30}, new long?[] {20L, 1L}));

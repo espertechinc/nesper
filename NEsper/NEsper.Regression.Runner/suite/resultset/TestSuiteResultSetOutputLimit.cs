@@ -65,13 +65,13 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             RegressionRunner.Run(session, ResultSetOutputLimitRowPerGroup.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitAggregateGrouped()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitAggregateGrouped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetOutputLimitRowPerGroupRollup()
         {
             RegressionRunner.Run(session, ResultSetOutputLimitRowPerGroupRollup.Executions());

@@ -1063,8 +1063,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             if (constantLower != null && constantUpper != null) {
-                var lower = constantLower.AsInt();
-                var upper = constantUpper.AsInt();
+                var lower = constantLower.AsInt32();
+                var upper = constantUpper.AsInt32();
                 if (lower > upper) {
                     throw new ExprValidationException(
                         "Incorrect range specification, lower bounds value '" +
@@ -1086,7 +1086,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             bool isAllowZero)
         {
             if (value != null) {
-                var bound = value.AsInt();
+                var bound = value.AsInt32();
                 if (isAllowZero) {
                     if (bound < 0) {
                         throw new ExprValidationException(

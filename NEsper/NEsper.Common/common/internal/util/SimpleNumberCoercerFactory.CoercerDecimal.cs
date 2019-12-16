@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerDecimal : SimpleNumberCoercer
+        public class CoercerDecimal : Coercer
         {
             public static readonly CoercerDecimal INSTANCE = new CoercerDecimal();
 
@@ -25,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsDecimal();
+                return value.AsDecimal();
             }
 
             public Type ReturnType => typeof(decimal?);

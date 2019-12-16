@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.historical.lookupstrategy;
-using com.espertech.esper.common.@internal.epl.@join.rep;
+using com.espertech.esper.common.@internal.epl.join.rep;
 using com.espertech.esper.common.@internal.epl.lookup;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.@base

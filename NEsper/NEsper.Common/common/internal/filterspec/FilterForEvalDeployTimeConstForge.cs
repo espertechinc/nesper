@@ -24,12 +24,12 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterForEvalDeployTimeConstForge : FilterSpecParamInValueForge
     {
         [NonSerialized] private readonly ExprNodeDeployTimeConst _deployTimeConst;
-        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        [NonSerialized] private readonly Coercer _numberCoercer;
         [NonSerialized] private readonly Type _returnType;
 
         public FilterForEvalDeployTimeConstForge(
             ExprNodeDeployTimeConst deployTimeConst,
-            SimpleNumberCoercer numberCoercer,
+            Coercer numberCoercer,
             Type returnType)
         {
             _deployTimeConst = deployTimeConst;

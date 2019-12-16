@@ -108,9 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             return GetMemberType(type).GetBoxedType();
         }
 
-        protected internal static SimpleNumberCoercer GetCoercerNonBigInt(Type inputValueType)
+        protected internal static Coercer GetCoercerNonBigInt(Type inputValueType)
         {
-            SimpleNumberCoercer coercer;
+            Coercer coercer;
             if (inputValueType == typeof(long?) || inputValueType == typeof(long)) {
                 coercer = SimpleNumberCoercerFactory.CoercerLong.INSTANCE;
             }

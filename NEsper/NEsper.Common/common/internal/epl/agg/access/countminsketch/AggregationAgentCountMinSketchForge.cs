@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                             method,
                             this.GetType(),
                             classScope))
-                .MethodReturn(@Ref("cms"));
+                .MethodReturn(Ref("cms"));
             return LocalMethod(method);
         }
     }

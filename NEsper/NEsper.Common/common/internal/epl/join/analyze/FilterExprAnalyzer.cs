@@ -12,7 +12,7 @@ using System.Linq;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

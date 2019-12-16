@@ -51,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.timer
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestWallClock()
         {
             // allow a tolerance as TimeSourceMillis resolution may be around 16ms

@@ -25,7 +25,7 @@ namespace com.espertech.esper.runtime.@internal.metrics
     [TestFixture]
     public class TestCodahaleMetrics : AbstractRuntimeTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMetrics()
         {
             var engineURI = "default";

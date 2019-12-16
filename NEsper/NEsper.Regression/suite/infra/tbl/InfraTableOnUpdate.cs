@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             Assert.AreEqual(keys.Length, values.Length);
             for (var i = 0; i < keys.Length; i++) {
-                env.SendEventBean(new SupportBean_S0(keys[i][1].AsInt(), (string) keys[i][0]));
+                env.SendEventBean(new SupportBean_S0(keys[i][1].AsInt32(), (string) keys[i][0]));
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.AreEqual(values[i], @event.Get("value"));
             }

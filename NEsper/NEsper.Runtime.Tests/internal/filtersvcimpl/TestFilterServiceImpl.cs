@@ -154,7 +154,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         ///     ie. a callback is removed which was a result of an evaluation and it
         ///     thus needs to be removed from the tree AND the current dispatch list.
         /// </summary>
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestActiveCallbackRemove()
         {
             var spec = SupportFilterSpecBuilder.Build(eventTypeOne, new object[0]).GetValueSet(null, null, null, null);
@@ -184,7 +184,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.That(callbackTwo.GetAndResetCountInvoked(), Is.EqualTo(1));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvalEvents()
         {
             for (var i = 0; i < events.Count; i++)

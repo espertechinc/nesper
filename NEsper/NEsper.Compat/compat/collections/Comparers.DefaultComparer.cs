@@ -57,7 +57,7 @@ namespace com.espertech.esper.compat.collections
                 if (xType != yType) {
                     // We can handle arithmetic types that can be coerced into each other without loss.
                     if (IsInteger(xType) && IsInteger(yType)) {
-                        return x.AsLong().CompareTo(y.AsLong());
+                        return x.AsInt64().CompareTo(y.AsInt64());
                     } else if (IsFloatingPoint(xType) && IsFloatingPoint(yType)) {
                         return x.AsDouble().CompareTo(y.AsDouble());
                     }

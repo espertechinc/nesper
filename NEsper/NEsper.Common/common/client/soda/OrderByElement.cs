@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client.soda
         public bool IsDescending
         {
             get => descending;
-            set => @descending = value;
+            set => descending = value;
         }
 
         /// <summary>

@@ -48,11 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 "@event",
                 symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
-                CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.FilterExpr,
-                    method,
-                    classScope);
+                @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
+                CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
                 CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                     @foreach,
                     typeof(bool?),
@@ -61,9 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         REF_EVENTS_SHIFTED,
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));
-                @foreach.IfCondition(NotEqualsNull(@Ref("filtered")))
+                @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
                     .BlockReturn(ConstantNull())
-                    .AssignRef("filtered", @Ref("@event"));
+                    .AssignRef("filtered", Ref("@event"));
             }
 
             method.Block.IfRefNullReturnNull("filtered")
@@ -71,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ExprDotMethod(
                         eventToPublic,
                         "ConvertToUnd",
-                        @Ref("filtered"),
+                        Ref("filtered"),
                         symbols.GetAddEPS(method),
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));

@@ -163,13 +163,13 @@ namespace com.espertech.esper.regressionrun.suite.context
             RegressionRunner.Run(session, ContextInitTermWithNow.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmented()
         {
             RegressionRunner.Run(session, ContextKeySegmented.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContextKeySegmentedAggregate()
         {
             RegressionRunner.Run(session, ContextKeySegmentedAggregate.Executions());

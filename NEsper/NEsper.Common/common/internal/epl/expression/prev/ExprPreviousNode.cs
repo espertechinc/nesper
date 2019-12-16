@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -112,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 throw new IllegalStateException("Unrecognized previous type " + PreviousType);
             }
 
-            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), codegenClassScope);
+            var method = parent.MakeChild(typeof(FlexCollection), GetType(), codegenClassScope);
             method.Block.DeclareVar<PreviousGetterStrategy>(
                 "strategy",
                 ExprDotMethod(
@@ -130,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
                         ExprDotName(Ref("getter"), "Accessor"))
-                    .BlockReturn(ExprDotName(Ref("randomAccess"), "WindowCollectionReadOnly"));
+                    .BlockReturn(FlexWrap(ExprDotName(Ref("randomAccess"), "WindowCollectionReadOnly")));
             }
             var relativeAccess = randomAccess.IfElse();
             {
@@ -145,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "relativeAccess",
                         ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess")
-                    .BlockReturn(ExprDotName(Ref("relativeAccess"), "WindowToEventCollReadOnly"));
+                    .BlockReturn(FlexWrap(ExprDotName(Ref("relativeAccess"), "WindowToEventCollReadOnly")));
             }
             return LocalMethod(method);
         }
@@ -198,7 +199,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                     ChildNodes[1].Forge,
                     methodX,
-                    codegenClassScope);
+                    codegenClassScope,
+                    true);
 
                 methodX.Block.DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                     .DeclareVar<ICollection<object>>("result", NewInstance<ArrayDeque<object>>(Ref("size")))
@@ -342,7 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "Previous function requires an integer index parameter or expression");
                 }
 
-                ConstantIndexNumber = valueNumber.AsInt();
+                ConstantIndexNumber = valueNumber.AsInt32();
                 IsConstantIndex = true;
             }
 
@@ -454,7 +456,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
-                codegenClassScope);
+                codegenClassScope,
+                true);
 
             method.Block.DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                 .DeclareVar(ResultType, "result", NewArrayByLength(ResultType.GetElementType(), Ref("size")))
@@ -485,7 +488,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
-                codegenClassScope);
+                codegenClassScope,
+                true);
 
             method.Block
                 .IfCondition(Not(exprSymbol.GetAddIsNewData(method)))
@@ -536,14 +540,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
             else {
                 var index = ChildNodes[0].Forge;
-                var indexMethod = CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope);
+                var indexMethod = CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope, true);
                 CodegenExpression indexCall = LocalMethod(indexMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
                 method.Block
                     .DeclareVar<object>("indexResult", indexCall)
                     .IfRefNullReturnNull("indexResult")
                     .DeclareVar<int>(
                         "index",
-                        ExprDotMethod(Ref("indexResult"), "AsInt"));
+                        ExprDotMethod(Ref("indexResult"), "AsInt32"));
             }
 
             var randomAccess = method.Block.IfCondition(InstanceOf(Ref("strategy"), typeof(RandomAccessByIndexGetter)));

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             for (int i = 0; i < 10; i++)   // Change to 1E8 for performance testing
             {
-                int value = getter.Get(unitTestBean).AsInt();
+                int value = getter.Get(unitTestBean).AsInt32();
                 Assert.AreEqual(10, value);
             }
 

@@ -13,8 +13,8 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan

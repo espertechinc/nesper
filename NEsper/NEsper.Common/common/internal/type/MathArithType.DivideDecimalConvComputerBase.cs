@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public abstract class DivideDecimalConvComputerBase : Computer
         {
-            private readonly SimpleNumberCoercer _convOne;
-            private readonly SimpleNumberCoercer _convTwo;
+            private readonly Coercer _convOne;
+            private readonly Coercer _convTwo;
             private readonly bool _divisionByZeroReturnsNull;
 
             /// <summary>
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.type
             /// <param name="convTwo">convertor for RHS</param>
             /// <param name="divisionByZeroReturnsNull">false for division-by-zero returns infinity, true for null</param>
             protected DivideDecimalConvComputerBase(
-                SimpleNumberCoercer convOne,
-                SimpleNumberCoercer convTwo,
+                Coercer convOne,
+                Coercer convTwo,
                 bool divisionByZeroReturnsNull)
             {
                 _convOne = convOne;

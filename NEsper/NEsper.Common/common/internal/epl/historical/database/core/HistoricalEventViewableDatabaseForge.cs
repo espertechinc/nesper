@@ -117,10 +117,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 "types",
                 NewInstance(typeof(Dictionary<object, object>)));
             foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
-                method.Block.ExprDotMethod(@Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
+                method.Block.ExprDotMethod(Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }
 
-            method.Block.MethodReturn(@Ref("types"));
+            method.Block.MethodReturn(Ref("types"));
             return LocalMethod(method);
         }
 

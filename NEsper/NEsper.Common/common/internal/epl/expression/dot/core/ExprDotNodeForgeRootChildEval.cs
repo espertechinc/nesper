@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -128,11 +130,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 typeof(ExprDotNodeForgeRootChildEval),
                 codegenClassScope);
 
-            var block = methodNode.Block
-                .DeclareVar(
-                    innerType,
-                    "inner",
-                    forge.innerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope));
+            var innerValue = forge.innerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope);
+            if (innerType == typeof(FlexCollection)) {
+                innerValue = FlexWrap(innerValue);
+            }
+            
+            var block = methodNode.Block.DeclareVar(innerType, "inner", innerValue);
             if (innerType.CanBeNull() && evaluationType != typeof(void)) {
                 block.IfRefNullReturnNull("inner");
             }
@@ -179,9 +182,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             var evaluationType = forge.EvaluationType;
-            if (evaluationType != typeof(ICollection<EventBean>)) {
-                throw new IllegalStateException("ROCollectionEvents missing event collection");
-            }
             
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
@@ -194,10 +194,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 
+            var codegenResult = ExprDotNodeUtility.EvaluateChainCodegen(
+                methodNode,
+                exprSymbol,
+                codegenClassScope,
+                Ref("inner"),
+                typeof(FlexCollection),
+                forge.forgesIteratorEventBean,
+                null);
+            
             methodNode.Block
-                .DeclareVar<ICollection<EventBean>>(
+                .DeclareVar<FlexCollection>(
                     "inner",
-                    forge.innerForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
+                    FlexWrap(forge.innerForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
                 .Apply(
                     InstrumentationCode.Instblock(
                         codegenClassScope,
@@ -208,17 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .IfRefNull("inner")
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    evaluationType,
-                    "result",
-                    ExprDotNodeUtility.EvaluateChainCodegen(
-                        methodNode,
-                        exprSymbol,
-                        codegenClassScope,
-                        Ref("inner"),
-                        typeof(ICollection<EventBean>),
-                        forge.forgesIteratorEventBean,
-                        null))
+                .DeclareVar(evaluationType, "result", codegenResult)
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .MethodReturn(Ref("result"));
             return LocalMethod(methodNode);
@@ -242,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             methodNode.Block
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<FlexCollection>(
                     "inner",
                     forge.innerForge.EvaluateGetROCollectionScalarCodegen(
                         methodNode,

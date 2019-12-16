@@ -8,7 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {

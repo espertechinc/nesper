@@ -79,14 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumAverageEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0));
             var forEach = block
                 .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerType,
                     "num",
@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             forEach.Increment("count")
-                .AssignRef("sum", Op(@Ref("sum"), "+", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref("num"), innerType)))
+                .AssignRef("sum", Op(Ref("sum"), "+", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref("num"), innerType)))
                 .BlockEnd();
-            block.IfCondition(EqualsIdentity(@Ref("count"), Constant(0)))
+            block.IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Op(@Ref("sum"), "/", @Ref("count")));
+                .MethodReturn(Op(Ref("sum"), "/", Ref("count")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -30,6 +31,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         void SaveDeclaredExpressionLastColl(
             object node,
             EventBean[] eventsPerStream,
-            ICollection<EventBean> result);
+            FlexCollection result);
     }
 } // end of namespace

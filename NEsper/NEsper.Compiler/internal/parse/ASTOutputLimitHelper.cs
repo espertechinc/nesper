@@ -131,7 +131,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 else
                 {
                     var constant = ASTConstantHelper.Parse(ctx.outputLimitAfter().number());
-                    afterNumberOfEvents = constant.AsInt();
+                    afterNumberOfEvents = constant.AsInt32();
                 }
             }
 
@@ -184,7 +184,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                numRowsInt = numRows.AsInt();
+                numRowsInt = numRows.AsInt32();
             }
 
             int? offsetInt = null;
@@ -195,7 +195,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                offsetInt = offset.AsBoxedInt();
+                offsetInt = offset.AsBoxedInt32();
             }
 
             return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);

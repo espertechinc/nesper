@@ -17,6 +17,7 @@ using System;
 
 using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -105,6 +106,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // conditions.  Unfortunately, we're leaning very heavily on the "compiler"
             // doing the right thing rather than doing what want it to do.
 
+            if (requiredIsBoxed) {
+                return requiredType;
+            }
+            
             return returnType;
             
             //throw new ArgumentException(nameof(requiredType) + " and " + nameof(returnType) + " are incompatible");
@@ -131,9 +136,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .Add(
                             "Property",
                             Constant(identNode.ResolvedPropertyName),
-                            @Ref("value"),
+                            Ref("value"),
                             symbols.GetAddExprEvalCtx(method)))
-                .MethodReturn(@Ref("value"));
+                .MethodReturn(Ref("value"));
             return LocalMethod(method);
         }
 
@@ -173,13 +178,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     eventType,
                     true);
 
-                if (!requiredType.IsBoxedType()) {
+                if (castTargetType.CanNotBeNull()) {
 #if THROW_VALUE_ON_NULL
                     block.IfRefNullThrowException(underlying);
 #else
                     block
                         .IfRefNull(underlying)
-                        .BlockReturn(new CodegenExpressionDefault(requiredType));
+                        .BlockReturn(new CodegenExpressionDefault(castTargetType));
 #endif
                 }
                 else {
@@ -195,13 +200,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var refEPS = exprSymbol.GetAddEPS(method);
                 method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)));
                 if (optionalEvent) {
-                    if (!requiredType.IsBoxedType()) {
+                    if (castTargetType.CanNotBeNull()) {
 #if THROW_VALUE_ON_NULL
                         block.IfRefNullThrowException(Ref("@event"));
 #else
                         block
                             .IfRefNull(Ref("@event"))
-                            .BlockReturn(new CodegenExpressionDefault(requiredType));
+                            .BlockReturn(new CodegenExpressionDefault(castTargetType));
 #endif
                     }
                     else {
@@ -212,7 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 block.MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         castTargetType,
-                        propertyGetter.EventBeanGetCodegen(@Ref("@event"), method, codegenClassScope)));
+                        propertyGetter.EventBeanGetCodegen(Ref("@event"), method, codegenClassScope)));
             }
 
             return LocalMethod(method);

@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Check if we need to coerce
             var mustCoerce = false;
-            SimpleNumberCoercer coercer = null;
+            Coercer coercer = null;
             if (coercionTypeBoxed.IsNumeric()) {
                 foreach (var compareType in comparedTypes) {
                     if (coercionTypeBoxed != compareType.GetBoxedType()) {

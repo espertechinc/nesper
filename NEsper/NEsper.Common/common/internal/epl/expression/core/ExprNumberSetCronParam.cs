@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return new CronParameter(CronOperator, null);
             }
 
-            int intValue = value.AsInt();
+            int intValue = value.AsInt32();
             return new CronParameter(CronOperator, intValue);
         }
 

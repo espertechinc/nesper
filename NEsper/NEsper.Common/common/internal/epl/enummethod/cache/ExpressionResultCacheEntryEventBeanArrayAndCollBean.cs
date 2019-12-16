@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
@@ -19,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
     {
         public ExpressionResultCacheEntryEventBeanArrayAndCollBean(
             EventBean[] reference,
-            ICollection<EventBean> result)
+            FlexCollection result)
         {
             Reference = reference;
             Result = result;
@@ -27,6 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public EventBean[] Reference { get; set; }
 
-        public ICollection<EventBean> Result { get; set; }
+        public FlexCollection Result { get; set; }
     }
 } // end of namespace

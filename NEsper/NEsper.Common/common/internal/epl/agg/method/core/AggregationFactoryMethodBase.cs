@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope);
 
         public abstract ExprForge[] GetMethodAggregationForge(
-            bool @join,
+            bool join,
             EventType[] typesPerStream);
     }
 } // end of namespace

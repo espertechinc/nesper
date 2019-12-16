@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
                     Ref("factory"),
                     "GroupByRollupDesc",
                     groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
     }

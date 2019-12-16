@@ -1184,7 +1184,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 if (anno.number() != null)
                 {
                     var val = ASTConstantHelper.Parse(anno.number());
-                    consumption = val.AsInt();
+                    consumption = val.AsInt32();
                 }
                 else
                 {

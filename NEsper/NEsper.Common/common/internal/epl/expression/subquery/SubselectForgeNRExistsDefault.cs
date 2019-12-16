@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 throw new UnsupportedOperationException();
             }
 
-            var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope);
+            var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope, true);
             method.Block
                 .ForEach(typeof(EventBean), "subselectEvent", symbols.GetAddMatchingEvents(method))
                 .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectEvent"))

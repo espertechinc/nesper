@@ -34,11 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have a single child node
-            if (this.ChildNodes.Length != 1) {
+            if (ChildNodes.Length != 1) {
                 throw new ExprValidationException("The NOT node requires exactly 1 child node");
             }
 
-            ExprForge forge = this.ChildNodes[0].Forge;
+            ExprForge forge = ChildNodes[0].Forge;
             Type childType = forge.EvaluationType;
             if (!TypeHelper.IsBoolean(childType)) {
                 throw new ExprValidationException("Incorrect use of NOT clause, sub-expressions do not return boolean");
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            ExprForge child = this.ChildNodes[0].Forge;
+            ExprForge child = ChildNodes[0].Forge;
             if (child.EvaluationType == typeof(bool)) {
                 Not(child.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope));
             }
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             methodNode.Block
                 .DeclareVar<bool?>("b", child.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("b")
-                .MethodReturn(Not(@Ref("b")));
+                .MethodReturn(Not(Ref("b")));
             return LocalMethod(methodNode);
         }
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(),
+                    GetType(),
                     this,
                     "ExprNot",
                     requiredType,
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("not ");
-            this.ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
         }
 
         public override ExprPrecedenceEnum Precedence {

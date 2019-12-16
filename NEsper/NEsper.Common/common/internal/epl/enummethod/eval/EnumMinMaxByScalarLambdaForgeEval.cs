@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumMinMaxByScalarLambdaForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
@@ -116,11 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerTypeBoxed,
                     "value",
@@ -128,19 +128,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfRefNull("value")
                 .BlockContinue();
 
-            forEach.IfCondition(EqualsNull(@Ref("minKey")))
-                .AssignRef("minKey", @Ref("value"))
-                .AssignRef("result", Cast(resultTypeBoxed, @Ref("next")))
+            forEach.IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Cast(resultTypeBoxed, Ref("next")))
                 .IfElse()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(Unbox(@Ref("minKey"), innerTypeBoxed), "CompareTo", @Ref("value")),
+                        ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")),
                         forge.max ? LT : GT,
                         Constant(0)))
-                .AssignRef("minKey", @Ref("value"))
-                .AssignRef("result", Cast(resultTypeBoxed, @Ref("next")));
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Cast(resultTypeBoxed, Ref("next")));
 
-            block.MethodReturn(@Ref("result"));
+            block.MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

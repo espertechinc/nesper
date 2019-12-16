@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientCompileOutput.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileVisibility()
         {
             RegressionRunner.Run(_session, ClientCompileVisibility.Executions());
@@ -94,19 +94,19 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientCompileStatementObjectModel.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileSubstitutionParams()
         {
             RegressionRunner.Run(_session, ClientCompileSubstitutionParams.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileEnginePath()
         {
             RegressionRunner.Run(_session, ClientCompileEnginePath.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientCompileEventTypeAutoName()
         {
             RegressionRunner.Run(_session, ClientCompileEventTypeAutoName.Executions());

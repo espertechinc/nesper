@@ -75,26 +75,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumGroupByKeySelectorEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }))
                 .DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(LinkedHashMap<object, object>)));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar<object>(
                     "key",
                     forge.InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<ICollection<object>>(
                     "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "Get", @Ref("key"))))
+                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
                 .IfRefNull("value")
                 .AssignRef("value", NewInstance(typeof(List<object>)))
-                .Expression(ExprDotMethod(@Ref("result"), "Put", @Ref("key"), @Ref("value")))
+                .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
                 .BlockEnd()
-                .Expression(ExprDotMethod(@Ref("value"), "Add", ExprDotUnderlying(@Ref("next"))));
-            block.MethodReturn(@Ref("result"));
+                .Expression(ExprDotMethod(Ref("value"), "Add", ExprDotUnderlying(Ref("next"))));
+            block.MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

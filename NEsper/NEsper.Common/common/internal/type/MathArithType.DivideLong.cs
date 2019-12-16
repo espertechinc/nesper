@@ -32,12 +32,12 @@ namespace com.espertech.esper.common.@internal.type
                     return null;
                 }
 
-                var d2Long = d2.AsLong();
+                var d2Long = d2.AsInt64();
                 if (d2Long == 0) {
                     return null;
                 }
 
-                return d1.AsLong() / d2Long;
+                return d1.AsInt64() / d2Long;
             }
 
             public CodegenExpression Codegen(

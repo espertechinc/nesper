@@ -20,24 +20,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeCoercionEval : ExprEvaluator
     {
-        private readonly ExprEvaluator lhs;
-        private readonly SimpleNumberCoercer numberCoercerLHS;
-        private readonly SimpleNumberCoercer numberCoercerRHS;
-        private readonly ExprEqualsNodeImpl parent;
-        private readonly ExprEvaluator rhs;
+        private readonly ExprEqualsNodeImpl _parent;
+        private readonly ExprEvaluator _lhs;
+        private readonly ExprEvaluator _rhs;
+        private readonly Coercer _coercerLhs;
+        private readonly Coercer _coercerRhs;
 
         public ExprEqualsNodeForgeCoercionEval(
             ExprEqualsNodeImpl parent,
             ExprEvaluator lhs,
             ExprEvaluator rhs,
-            SimpleNumberCoercer numberCoercerLHS,
-            SimpleNumberCoercer numberCoercerRHS)
+            Coercer coercerLhs,
+            Coercer coercerRhs)
         {
-            this.parent = parent;
-            this.lhs = lhs;
-            this.rhs = rhs;
-            this.numberCoercerLHS = numberCoercerLHS;
-            this.numberCoercerRHS = numberCoercerRHS;
+            _parent = parent;
+            _lhs = lhs;
+            _rhs = rhs;
+            _coercerLhs = coercerLhs;
+            _coercerRhs = coercerRhs;
         }
 
         public object Evaluate(
@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var leftResult = lhs.Evaluate(eventsPerStream, isNewData, context);
-            var rightResult = rhs.Evaluate(eventsPerStream, isNewData, context);
+            var leftResult = _lhs.Evaluate(eventsPerStream, isNewData, context);
+            var rightResult = _rhs.Evaluate(eventsPerStream, isNewData, context);
 
-            if (!parent.IsIs) {
+            if (!_parent.IsIs) {
                 if (leftResult == null || rightResult == null) {
                     // null comparison
                     return null;
@@ -73,9 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            var left = numberCoercerLHS.CoerceBoxed(leftResult);
-            var right = numberCoercerRHS.CoerceBoxed(rightResult);
-            return left.Equals(right) ^ parent.IsNotEquals;
+            var left = _coercerLhs.CoerceBoxed(leftResult);
+            var right = _coercerRhs.CoerceBoxed(rightResult);
+            return left.Equals(right) ^ _parent.IsNotEquals;
         }
 
         public static CodegenMethod Codegen(
@@ -119,13 +119,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             block.DeclareVar(
-                forge.NumberCoercerLHS.ReturnType,
+                forge.CoercerLHS.ReturnType,
                 "left",
-                forge.NumberCoercerLHS.CoerceCodegen(Ref("l"), lhsType));
+                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType));
             block.DeclareVar(
-                forge.NumberCoercerRHS.ReturnType,
+                forge.CoercerRHS.ReturnType,
                 "right",
-                forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhsType));
+                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
 
             //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
             

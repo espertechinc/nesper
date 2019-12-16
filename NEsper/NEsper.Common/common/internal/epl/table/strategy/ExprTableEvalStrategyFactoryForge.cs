@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
                     accessAggStrategy == null
                         ? ConstantNull()
                         : accessAggStrategy.CodegenCreateReader(method, symbols, classScope))
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
     }

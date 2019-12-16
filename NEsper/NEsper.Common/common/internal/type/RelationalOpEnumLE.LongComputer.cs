@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 object s1 = (object) objOne;
                 object s2 = (object) objTwo;
-                return s1.AsLong() <= s2.AsLong();
+                return s1.AsInt64() <= s2.AsInt64();
             }
 
             public CodegenExpression Codegen(

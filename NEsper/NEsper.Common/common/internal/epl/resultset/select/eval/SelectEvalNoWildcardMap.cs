@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -43,27 +44,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 this.GetType(),
                 codegenClassScope);
+            var codegenPropsRef = Ref("props");
 
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
                 "props",
                 NewInstance(typeof(HashMap<string, object>)));
             for (int i = 0; i < selectContext.ColumnNames.Length; i++) {
-                CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
+                var selectContextExprForge = selectContext.ExprForges[i];
+                var expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),
-                    selectContext.ExprForges[i],
+                    selectContextExprForge,
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
+
+                var codegenValue = Constant(selectContext.ColumnNames[i]);
                 methodNode.Block.Expression(
-                    ExprDotMethod(@Ref("props"), "Put", Constant(selectContext.ColumnNames[i]), expression));
+                    ExprDotMethod(codegenPropsRef, "Put", codegenValue, expression));
             }
 
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", @Ref("props"), resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", Ref("props"), resultEventType));
             return methodNode;
         }
 

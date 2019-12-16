@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamDeployTimeConstParamForge : FilterSpecParamForge
     {
         private readonly ExprNodeDeployTimeConst _deployTimeConstant;
-        private readonly SimpleNumberCoercer _numberCoercer;
+        private readonly Coercer _numberCoercer;
         private readonly Type _returnType;
 
         public FilterSpecParamDeployTimeConstParamForge(
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             FilterOperator filterOperator,
             ExprNodeDeployTimeConst deployTimeConstant,
             Type returnType,
-            SimpleNumberCoercer numberCoercer)
+            Coercer numberCoercer)
             : base(
                 lookupable,
                 filterOperator)

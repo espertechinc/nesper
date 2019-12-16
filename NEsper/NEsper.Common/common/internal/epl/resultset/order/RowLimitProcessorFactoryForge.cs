@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .SetProperty(Ref("factory"), "OffsetVariable", offsetVariable)
                 .SetProperty(Ref("factory"), "CurrentRowLimit", Constant(currentRowLimit))
                 .SetProperty(Ref("factory"), "CurrentOffset", Constant(currentOffset))
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
     }

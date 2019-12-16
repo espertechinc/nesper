@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(Cast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), @Ref("target")))));
+                .MethodReturn(Cast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
             return LocalMethod(methodNode, inner);
         }
 

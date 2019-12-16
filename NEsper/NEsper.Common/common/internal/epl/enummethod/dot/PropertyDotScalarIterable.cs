@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         typeof(IEnumerable),
                         getter.EventBeanGetCodegen(symbols.GetAddEvent(method), methodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", @Ref("result")));
+                .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", Ref("result")));
             return LocalMethod(method);
         }
 
@@ -158,9 +158,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     "result",
                     CodegenLegoCast.CastSafeFromObjectType(
                         getterReturnType,
-                        getter.EventBeanGetCodegen(@Ref("@event"), codegenMethodScope, codegenClassScope)))
+                        getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] { typeof(object) }, @Ref("result")));
+                .MethodReturn(StaticMethod(typeof(CompatExtensions), "UnwrapIntoList", new [] { typeof(object) }, Ref("result")));
             return LocalMethodBuild(method).Pass(@event).Call();
         }
 

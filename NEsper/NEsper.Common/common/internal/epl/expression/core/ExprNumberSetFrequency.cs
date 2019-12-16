@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return HandleNumberSetFreqNullValue();
             }
 
-            var intValue = value.AsInt();
+            var intValue = value.AsInt32();
             return new FrequencyParameter(intValue);
         }
 

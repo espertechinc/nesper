@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     public class SubselectForgeCodegenUtil
     {
         public const string EVENTS_SHIFTED = "shift";
-        public static readonly CodegenExpressionRef REF_EVENTS_SHIFTED = @Ref(EVENTS_SHIFTED);
+        public static readonly CodegenExpressionRef REF_EVENTS_SHIFTED = Ref(EVENTS_SHIFTED);
 
         public static readonly TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>
             DECLARE_EVENTS_SHIFTED =

@@ -8,6 +8,7 @@
 
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
@@ -26,7 +27,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             string epl;
 
-            #if false
             // invalid incompatible params
             epl = "select Contained.set('hour', 1) from SupportBean_ST0_Container";
             TryInvalidCompile(
@@ -84,7 +84,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env,
                 epl,
                 "Failed to validate select-clause expression 'DateTimeOffset.between(DateTime,Dat...(48 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received System.Int32");
-            #endif
             
             #if NOT_APPLICABLE // use case exercises code that examines DateFormatters on legacy date types - not applicable
             // mismatch parameter to input

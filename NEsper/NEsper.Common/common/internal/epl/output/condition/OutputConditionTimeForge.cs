@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                         .Add(
                             "MakeOutputConditionTime",
                             Constant(timePeriod.HasVariable),
-                            @Ref("delta"),
+                            Ref("delta"),
                             Constant(isStartConditionOnCreation),
                             Constant(scheduleCallbackId)));
             return LocalMethod(method);

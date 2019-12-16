@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 {

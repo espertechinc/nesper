@@ -47,7 +47,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             matchesList = new List<FilterHandle>();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClosedRange()
         {
             FilterParamIndexDoubleRangeInverted index = MakeOne("LongBoxed", FilterOperator.NOT_RANGE_CLOSED, testEventType);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Verify(index, 6L, new bool[] { true, true, true, true });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestOpenRange()
         {
             FilterParamIndexDoubleRangeInverted index = MakeOne("LongBoxed", FilterOperator.NOT_RANGE_OPEN, testEventType);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Verify(index, 6L, new bool[] { true, true, true, true });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHalfOpenRange()
         {
             FilterParamIndexDoubleRangeInverted index = MakeOne("LongBoxed", FilterOperator.NOT_RANGE_HALF_OPEN, testEventType);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Verify(index, 6L, new bool[] { true, true, true, true });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHalfClosedRange()
         {
             FilterParamIndexDoubleRangeInverted index = MakeOne("LongBoxed", FilterOperator.NOT_RANGE_HALF_CLOSED, testEventType);

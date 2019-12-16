@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -76,15 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var namedParams = forge.scalar
-                ? EnumForgeCodegenNames.PARAMS_OBJECT
-                : EnumForgeCodegenNames.PARAMS_EVENTBEAN;
-            var returnType = forge.scalar
-                ? typeof(ICollection<object>)
-                : typeof(ICollection<EventBean>);
+            var namedParams = EnumForgeCodegenNames.PARAMS;
+            var returnType = typeof(FlexCollection);
             var listType = forge.scalar
                 ? typeof(List<object>)
                 : typeof(List<EventBean>);
+            var subProperty = forge.scalar
+                ? "ObjectCollection"
+                : "EventBeanCollection";
             
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
@@ -93,23 +93,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<FlexCollection>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<ICollection<EventBean>>(
+                block.DeclareVar<FlexCollection>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
-            block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "IsEmpty")))
+            block.IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block
                 .DeclareVar(listType, "result", NewInstance(listType))
-                .Expression(ExprDotMethod(@Ref("result"), "AddAll", EnumForgeCodegenNames.REF_ENUMCOLL))
-                .Expression(ExprDotMethod(@Ref("result"), "AddAll", @Ref("other")))
-                .MethodReturn(@Ref("result"));
+                .Expression(ExprDotMethod(Ref("result"), "AddAll", 
+                    ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, subProperty)))
+                .Expression(ExprDotMethod(Ref("result"), "AddAll",
+                    ExprDotName(Ref("other"), subProperty)))
+                .MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

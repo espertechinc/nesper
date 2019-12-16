@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                             ExprDotMethod(
                                 eventToPublic,
                                 "Convert",
-                                @Ref(refname),
+                                Ref(refname),
                                 refEPS,
                                 refIsNewData,
                                 refExprEvalCtx))
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 selectSymbol,
                 exprSymbol,
                 codegenClassScope);
-            methodNode.Block.AssignRef(refEPS.Ref, @Ref("eventsPerStreamWTableRows"))
+            methodNode.Block.AssignRef(refEPS.Ref, Ref("eventsPerStreamWTableRows"))
                 .MethodReturn(LocalMethod(innerMethod));
             return methodNode;
         }

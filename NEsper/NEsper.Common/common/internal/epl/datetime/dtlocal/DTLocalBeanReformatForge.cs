@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar(
                     getterResultType,
                     "timestamp",
-                    getter.EventBeanGetCodegen(@Ref("target"), methodNode, codegenClassScope));
+                    getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope));
             if (getterResultType.CanBeNull()) {
                 block.IfRefNullReturnNull("timestamp");
             }

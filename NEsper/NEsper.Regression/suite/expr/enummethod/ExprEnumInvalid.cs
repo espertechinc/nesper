@@ -131,11 +131,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 "Failed to validate select-clause expression 'TheString.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select TheString, IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
 
             // subselect individual column
-            epl = "select (select TheString from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0";
+            epl = "select (select IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'TheString.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select TheString from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
+                "Failed to validate select-clause expression 'IntPrimitive.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
 
             // aggregation
             epl = "select avg(IntPrimitive).where(x->x.BoolPrimitive) from SupportBean_ST0";

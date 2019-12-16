@@ -14,8 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -26,24 +24,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprRelationalOpNodeForge : ExprForgeInstrumentable
     {
-        private readonly ExprRelationalOpNodeImpl parent;
-        private readonly RelationalOpEnumComputer computer;
-        private readonly Type coercionType;
+        private readonly ExprRelationalOpNodeImpl _parent;
+        private readonly RelationalOpEnumComputer _computer;
+        private readonly Type _coercionType;
 
         public ExprRelationalOpNodeForge(ExprRelationalOpNodeImpl parent,
             RelationalOpEnumComputer computer,
             Type coercionType)
         {
-            this.parent = parent;
-            this.computer = computer;
-            this.coercionType = coercionType;
+            _parent = parent;
+            _computer = computer;
+            _coercionType = coercionType;
         }
 
         public ExprEvaluator ExprEvaluator {
             get => new ExprRelationalOpNodeForgeEval(
                 this,
-                parent.ChildNodes[0].Forge.ExprEvaluator,
-                parent.ChildNodes[1].Forge.ExprEvaluator);
+                _parent.ChildNodes[0].Forge.ExprEvaluator,
+                _parent.ChildNodes[1].Forge.ExprEvaluator);
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
@@ -62,26 +60,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(),
+                    GetType(),
                     this,
                     "ExprRelOp",
                     requiredType,
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope)
-                .Qparam(Constant(parent.RelationalOpEnum.GetExpressionText()))
+                .Qparam(Constant(_parent.RelationalOpEnum.GetExpressionText()))
                 .Build();
         }
 
         public Type EvaluationType => typeof(bool?);
 
-        public ExprRelationalOpNodeImpl ForgeRenderable => parent;
+        public ExprRelationalOpNodeImpl ForgeRenderable => _parent;
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public RelationalOpEnumComputer Computer => computer;
+        public RelationalOpEnumComputer Computer => _computer;
 
-        public Type CoercionType => coercionType;
+        public Type CoercionType => _coercionType;
 
         public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;

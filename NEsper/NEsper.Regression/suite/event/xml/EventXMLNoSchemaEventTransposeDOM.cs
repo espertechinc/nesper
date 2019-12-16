@@ -22,15 +22,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy("@Name('insert') insert into MyNestedStream select nested1 from TestXMLSchemaType");
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("nested1", typeof(string), typeof(char), false, false, true, false, false)
                 },
                 env.Statement("insert").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
 
             env.CompileDeploy("@Name('s0') select * from TestXMLSchemaType");
-            EPAssertionUtil.AssertEqualsAnyOrder(new EventPropertyDescriptor[0], env.Statement("s0").EventType.PropertyDescriptors);
+            CollectionAssert.AreEquivalent(new EventPropertyDescriptor[0], env.Statement("s0").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             SupportXML.SendDefaultEvent(env.EventService, "test", "TestXMLSchemaType");

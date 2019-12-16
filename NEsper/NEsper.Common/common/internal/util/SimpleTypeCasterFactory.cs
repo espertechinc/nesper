@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Numerics;
-using System.Reflection.Metadata;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.util;
 
@@ -24,94 +26,189 @@ namespace com.espertech.esper.common.@internal.util
     {
         public static readonly SimpleTypeCaster Int16TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastInt16(v),
+            ProcCast = v => CastHelper.CastInt16(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastInt16", input)
+                .StaticMethod(typeof(CastHelper), "CastInt16", input)
         };
 
         public static readonly SimpleTypeCaster Int32TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastInt32(v),
+            ProcCast = v => CastHelper.CastInt32(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastInt32", input)
+                .StaticMethod(typeof(CastHelper), "CastInt32", input)
         };
 
         public static readonly SimpleTypeCaster Int64TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastInt64(v),
+            ProcCast = v => CastHelper.CastInt64(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastInt64", input)
+                .StaticMethod(typeof(CastHelper), "CastInt64", input)
         };
 
         public static readonly SimpleTypeCaster UInt16TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastUInt16(v),
+            ProcCast = v => CastHelper.CastUInt16(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt16", input)
+                .StaticMethod(typeof(CastHelper), "CastUInt16", input)
         };
 
         public static readonly SimpleTypeCaster UInt32TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastUInt32(v),
+            ProcCast = v => CastHelper.CastUInt32(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt32", input)
+                .StaticMethod(typeof(CastHelper), "CastUInt32", input)
         };
 
         public static readonly SimpleTypeCaster UInt64TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastUInt64(v),
+            ProcCast = v => CastHelper.CastUInt64(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastUInt64", input)
+                .StaticMethod(typeof(CastHelper), "CastUInt64", input)
         };
 
         public static readonly SimpleTypeCaster SingleTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastSingle(v),
+            ProcCast = v => CastHelper.CastSingle(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastSingle", input)
+                .StaticMethod(typeof(CastHelper), "CastSingle", input)
         };
 
         public static readonly SimpleTypeCaster DoubleTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastDouble(v),
+            ProcCast = v => CastHelper.CastDouble(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastDouble", input)
+                .StaticMethod(typeof(CastHelper), "CastDouble", input)
         };
 
         public static readonly SimpleTypeCaster DecimalTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastDecimal(v),
+            ProcCast = v => CastHelper.CastDecimal(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastDecimal", input)
+                .StaticMethod(typeof(CastHelper), "CastDecimal", input)
         };
 
         public static readonly SimpleTypeCaster CharTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastChar(v),
+            ProcCast = v => CastHelper.CastChar(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastChar", input)
+                .StaticMethod(typeof(CastHelper), "CastChar", input)
         };
 
         public static readonly SimpleTypeCaster ByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastByte(v),
+            ProcCast = v => CastHelper.CastByte(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastByte", input)
+                .StaticMethod(typeof(CastHelper), "CastByte", input)
         };
 
         public static readonly SimpleTypeCaster SByteTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastSByte(v),
+            ProcCast = v => CastHelper.CastSByte(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastSByte", input)
+                .StaticMethod(typeof(CastHelper), "CastSByte", input)
         };
 
         public static readonly SimpleTypeCaster BigIntegerTypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
-            ProcCast = v => CastHelper.PrimitiveCastBigInteger(v),
+            ProcCast = v => CastHelper.CastBigInteger(v),
             ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(CastHelper), "PrimitiveCastBigInteger", input)
+                .StaticMethod(typeof(CastHelper), "CastBigInteger", input)
         };
+        
+        // -----
+        
+        public static readonly SimpleTypeCaster NullableInt16TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableInt16(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableInt16", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableInt32TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableInt32(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableInt32", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableInt64TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableInt64(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableInt64", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableUInt16TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableUInt16(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableUInt16", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableUInt32TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableUInt32(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableUInt32", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableUInt64TypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableUInt64(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableUInt64", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableSingleTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableSingle(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableSingle", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableDoubleTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableDouble(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableDouble", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableDecimalTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableDecimal(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableDecimal", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableCharTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableChar(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableChar", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableByteTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableByte(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableByte", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableSByteTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableSByte(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableSByte", input)
+        };
+
+        public static readonly SimpleTypeCaster NullableBigIntegerTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = true,
+            ProcCast = v => CastHelper.CastNullableBigInteger(v),
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(CastHelper), "CastNullableBigInteger", input)
+        };
+        
+        // -----
 
         public static readonly SimpleTypeCaster BooleanTypeCaster = new ProxyTypeCaster {
             IsNumericCast = false,
@@ -120,18 +217,60 @@ namespace com.espertech.esper.common.@internal.util
                 .StaticMethod(typeof(Convert), "ToBoolean", input)
         };
 
-        public static readonly SimpleTypeCaster StringTypeCaster = new ProxyTypeCaster {
-            IsNumericCast = false,
-            ProcCast = sourceObj => sourceObj == null ? (object) null : Convert.ToBoolean(sourceObj),
-            ProcCodegenInput = input => CodegenExpressionBuilder
-                .StaticMethod(typeof(Convert), "ToString", input)
-        };
-
         public static readonly SimpleTypeCaster IdentityTypeCaster = new ProxyTypeCaster {
             IsNumericCast = false,
             ProcCast = value => value,
             ProcCodegenInput = input => input
         };
+        
+        public static readonly SimpleTypeCaster StringTypeCaster = new ProxyTypeCaster {
+            IsNumericCast = false,
+            ProcCast = sourceObj => {
+                if (sourceObj == null) {
+                    return null;
+                }
+
+                if (sourceObj is string stringValue) {
+                    return stringValue;
+                }
+
+                return sourceObj.ToString();
+            },
+            ProcCodegenInput = input => CodegenExpressionBuilder
+                .StaticMethod(typeof(Convert), "ToString", input)
+        };
+
+        public static readonly IDictionary<Type, SimpleTypeCaster> TypeToTypeCaster =
+            new Dictionary<Type, SimpleTypeCaster> {
+                [typeof(string)] = StringTypeCaster,
+                [typeof(int?)] = NullableInt32TypeCaster,
+                [typeof(long?)] = NullableInt64TypeCaster,
+                [typeof(short?)] = NullableInt16TypeCaster,
+                [typeof(sbyte?)] = NullableSByteTypeCaster,
+                [typeof(float?)] = NullableSingleTypeCaster,
+                [typeof(double?)] = NullableDoubleTypeCaster,
+                [typeof(decimal?)] = NullableDecimalTypeCaster,
+                [typeof(uint?)] = NullableUInt32TypeCaster,
+                [typeof(ulong?)] = NullableUInt64TypeCaster,
+                [typeof(ushort?)] = NullableUInt16TypeCaster,
+                [typeof(char?)] = NullableCharTypeCaster,
+                [typeof(byte?)] = NullableByteTypeCaster,
+                [typeof(BigInteger?)] = NullableBigIntegerTypeCaster,
+                [typeof(int)] = Int32TypeCaster,
+                [typeof(long)] = Int64TypeCaster,
+                [typeof(short)] = Int16TypeCaster,
+                [typeof(sbyte)] = SByteTypeCaster,
+                [typeof(float)] = SingleTypeCaster,
+                [typeof(double)] = DoubleTypeCaster,
+                [typeof(decimal)] = DecimalTypeCaster,
+                [typeof(uint)] = UInt32TypeCaster,
+                [typeof(ulong)] = UInt64TypeCaster,
+                [typeof(ushort)] = UInt16TypeCaster,
+                [typeof(char)] = CharTypeCaster,
+                [typeof(byte)] = ByteTypeCaster,
+                [typeof(BigInteger)] = BigIntegerTypeCaster,
+                [typeof(bool)] = BooleanTypeCaster
+            };
 
         /// <summary>
         ///     Returns a caster that casts to a target type.
@@ -180,87 +319,12 @@ namespace com.espertech.esper.common.@internal.util
         {
             isNumeric = true;
 
-            var baseType = Nullable.GetUnderlyingType(targetType);
-            if (baseType != null) {
-                targetType = baseType;
-            }
-
-            if (targetType == typeof(int)) {
-                return Int32TypeCaster;
-            }
-
-            if (targetType == typeof(long)) {
-                return Int64TypeCaster;
-            }
-
-            if (targetType == typeof(short)) {
-                return Int16TypeCaster;
-            }
-
-            if (targetType == typeof(sbyte)) {
-                return SByteTypeCaster;
-            }
-
-            if (targetType == typeof(float)) {
-                return SingleTypeCaster;
-            }
-
-            if (targetType == typeof(double)) {
-                return DoubleTypeCaster;
-            }
-
-            if (targetType == typeof(decimal)) {
-                return DecimalTypeCaster;
-            }
-
-            if (targetType == typeof(uint)) {
-                return UInt32TypeCaster;
-            }
-
-            if (targetType == typeof(ulong)) {
-                return UInt64TypeCaster;
-            }
-
-            if (targetType == typeof(ushort)) {
-                return UInt16TypeCaster;
-            }
-
-            if (targetType == typeof(char)) {
-                return CharTypeCaster;
-            }
-
-            if (targetType == typeof(byte)) {
-                return ByteTypeCaster;
-            }
-
-            if (targetType.IsBigInteger()) {
-                return BigIntegerTypeCaster;
+            if (TypeToTypeCaster.TryGetValue(targetType, out var targetTypeCaster)) {
+                isNumeric = targetTypeCaster.IsNumericCast;
+                return targetTypeCaster;
             }
 
             isNumeric = false;
-
-            if (targetType == typeof(bool?)) {
-                return BooleanTypeCaster;
-            }
-
-            if (targetType == typeof(string)) {
-                return new ProxyTypeCaster {
-                    IsNumericCast = false,
-                    ProcCast = sourceObj => {
-                        if (sourceObj == null) {
-                            return null;
-                        }
-
-                        if (sourceObj is string) {
-                            return (string) sourceObj;
-                        }
-
-                        return sourceObj.ToString();
-                    },
-                    ProcCodegenInput = input => CodegenExpressionBuilder
-                        .StaticMethod(typeof(Convert), "ToString", input)
-                };
-            }
 
             if (targetType.IsArray) {
                 var arrayElementType = targetType.GetElementType();
@@ -277,6 +341,15 @@ namespace com.espertech.esper.common.@internal.util
                 };
             }
 
+            if (targetType.IsEnum) {
+                return new ProxyTypeCaster {
+                    IsNumericCast = false,
+                    ProcCast = v => CastHelper.CastEnum(targetType, v),
+                    ProcCodegenInput = input => CodegenExpressionBuilder
+                        .StaticMethod(typeof(CastHelper), "CastEnum", new [] { targetType }, input)
+                };
+            }
+            
             return new ProxyTypeCaster {
                 IsNumericCast = false,
                 ProcCast = sourceObj => {
@@ -291,7 +364,7 @@ namespace com.espertech.esper.common.@internal.util
                     input,
                     inputType,
                     methodScope,
-                    classScope) => throw new NotImplementedException()
+                    classScope) => CodegenExpressionBuilder.Cast(targetType, input)
             };
         }
     }

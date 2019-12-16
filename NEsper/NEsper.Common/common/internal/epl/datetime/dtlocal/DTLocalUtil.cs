@@ -27,26 +27,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         public static IList<CalendarOp> GetCalendarOps(IList<CalendarForge> forges)
         {
             IList<CalendarOp> ops = new List<CalendarOp>(forges.Count);
-            foreach (CalendarForge forge in forges) {
+            foreach (var forge in forges) {
                 ops.Add(forge.EvalOp);
             }
 
             return ops;
         }
 
-        internal static void EvaluateCalOpsCalendar(
+        internal static void EvaluateCalOpsDtx(
             IList<CalendarOp> calendarOps,
             DateTimeEx dtx,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (CalendarOp calendarOp in calendarOps) {
+            foreach (var calendarOp in calendarOps) {
                 calendarOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
-        internal static void EvaluateCalOpsCalendarCodegen(
+        internal static void EvaluateCalOpsDtxCodegen(
             CodegenBlock block,
             IList<CalendarForge> calendarForges,
             CodegenExpressionRef dtx,
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            foreach (CalendarForge calendarForge in calendarForges) {
+            foreach (var calendarForge in calendarForges) {
                 // block.Expression
                 block.AssignRef(dtx, calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
             }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (CalendarOp calendarOp in calendarOps) {
+            foreach (var calendarOp in calendarOps) {
                 dto = calendarOp.Evaluate(dto, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
@@ -82,32 +82,32 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            foreach (CalendarForge calendarForge in calendarForges) {
+            foreach (var calendarForge in calendarForges) {
                 block.AssignRef(
                     resultVariable,
                     calendarForge.CodegenDateTimeOffset(
-                        @Ref(resultVariable),
+                        Ref(resultVariable),
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope));
             }
         }
 
-        internal static DateTime EvaluateCalOpsDtx(
+        internal static DateTime EvaluateCalOpsDateTime(
             IList<CalendarOp> calendarOps,
             DateTime dateTime,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (CalendarOp calendarOp in calendarOps) {
+            foreach (var calendarOp in calendarOps) {
                 dateTime = calendarOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
             return dateTime;
         }
 
-        internal static void EvaluateCalOpsDtxCodegen(
+        internal static void EvaluateCalOpsDateTimeCodegen(
             CodegenBlock block,
             string resultVariable,
             IList<CalendarForge> calendarForges,
@@ -115,11 +115,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            foreach (CalendarForge calendarForge in calendarForges) {
+            foreach (var calendarForge in calendarForges) {
                 block.AssignRef(
                     resultVariable,
                     calendarForge.CodegenDateTime(
-                        @Ref(resultVariable),
+                        Ref(resultVariable),
                         codegenMethodScope,
                         exprSymbol,
                         codegenClassScope));

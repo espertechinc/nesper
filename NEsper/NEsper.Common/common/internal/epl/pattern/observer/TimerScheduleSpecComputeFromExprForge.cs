@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     periodNode.MakeTimePeriodAnonymous(method, classScope));
             }
 
-            method.Block.MethodReturn(@Ref("compute"));
+            method.Block.MethodReturn(Ref("compute"));
             return LocalMethod(method);
         }
 

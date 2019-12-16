@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 }
             }
 
-            int categoryNum = partitionKey.AsInt();
+            int categoryNum = partitionKey.AsInt32();
             ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
             return FilterSpecActivatable.EvaluateValueSet(
                 item.CompiledFilterParam,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             IDictionary<string, object> props,
             object allPartitionKey)
         {
-            ContextControllerDetailCategoryItem item = CategorySpec.Items[allPartitionKey.AsInt()];
+            ContextControllerDetailCategoryItem item = CategorySpec.Items[allPartitionKey.AsInt32()];
             props.Put(PROP_CTX_LABEL, item.Name);
         }
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
-            int categoryNum = partitionKey.AsInt();
+            int categoryNum = partitionKey.AsInt32();
             ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
             return new ContextPartitionIdentifierCategory(item.Name);
         }

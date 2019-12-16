@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return;
             }
 
-            int intValue = value.AsInt();
+            int intValue = value.AsInt32();
             parameters.Add(new IntParameter(intValue));
         }
     }

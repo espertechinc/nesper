@@ -77,13 +77,13 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             RegressionRunner.Run(session, ResultSetAggregateCountSum.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFiltered()
         {
             RegressionRunner.Run(session, ResultSetAggregateFiltered.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFilterNamedParameter()
         {
             RegressionRunner.Run(session, ResultSetAggregateFilterNamedParameter.Executions());
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             RegressionRunner.Run(session, ResultSetAggregateFirstEverLastEver.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateFirstLastWindow()
         {
             RegressionRunner.Run(session, ResultSetAggregateFirstLastWindow.Executions());
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             RegressionRunner.Run(session, ResultSetAggregateRate.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateSortedMinMaxBy()
         {
             RegressionRunner.Run(session, ResultSetAggregateSortedMinMaxBy.Executions());

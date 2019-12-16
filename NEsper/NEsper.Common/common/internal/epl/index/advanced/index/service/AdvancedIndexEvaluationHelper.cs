@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 throw InvalidParameterValue(indexName, parameterName, null, "non-null");
             }
 
-            return number.AsInt();
+            return number.AsInt32();
         }
 
         public static EPException InvalidParameterValue(

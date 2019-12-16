@@ -13,7 +13,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;

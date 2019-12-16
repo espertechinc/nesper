@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(@Ref("@event"), "Underlying")));
+                    CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

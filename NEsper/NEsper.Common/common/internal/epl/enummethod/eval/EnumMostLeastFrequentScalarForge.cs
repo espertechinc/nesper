@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var paramTypes = EnumForgeCodegenNames.PARAMS_OBJECT;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             var block = codegenMethodScope
                 .MakeChild(_returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
                 .AddParam(paramTypes)

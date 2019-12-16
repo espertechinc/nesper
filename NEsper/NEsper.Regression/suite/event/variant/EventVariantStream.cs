@@ -66,15 +66,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
             }
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
                         "TheString",
                         typeof(string),
-                        null,
+                        typeof(char),
                         false,
                         false,
-                        false,
+                        true,
                         false,
                         false),
                     new EventPropertyDescriptor(

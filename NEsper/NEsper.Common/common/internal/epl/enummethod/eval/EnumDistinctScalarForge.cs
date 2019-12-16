@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -55,14 +56,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(EnumDistinctScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT)
+                .MakeChild(typeof(FlexCollection), typeof(EnumDistinctScalarForge), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfCondition(InstanceOf(Ref("enumcoll"), typeof(ISet<object>)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .MethodReturn(NewInstance<LinkedHashSet<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
+                .MethodReturn(FlexWrap(NewInstance<LinkedHashSet<object>>(EnumForgeCodegenNames.REF_ENUMCOLL)));
             return LocalMethod(method, args.Expressions);
         }
     }

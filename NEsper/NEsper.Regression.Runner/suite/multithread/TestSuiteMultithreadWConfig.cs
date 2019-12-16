@@ -34,13 +34,13 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.RunConfigurable(new MultithreadContextDBAccess());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextMultiStmtStartEnd()
         {
             new MultithreadContextMultiStmtStartEnd().Run(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadContextNestedNonOverlapAtNow()
         {
             new MultithreadContextNestedNonOverlapAtNow().Run(SupportConfigFactory.GetConfiguration());
@@ -76,19 +76,19 @@ namespace com.espertech.esper.regressionrun.suite.multithread
             RegressionRunner.RunConfigurable(new MultithreadStmtListenerAddRemove());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtNamedWindowPriority()
         {
             RegressionRunner.RunConfigurable(new MultithreadStmtNamedWindowPriority());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtPatternFollowedByReadMostly()
         {
             new MultithreadStmtPatternFollowedBy().RunReadMostly(SupportConfigFactory.GetConfiguration());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMultithreadStmtPatternFollowedByReadWrite()
         {
             new MultithreadStmtPatternFollowedBy().RunReadWrite(SupportConfigFactory.GetConfiguration());

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -69,15 +70,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 result);
         }
 
-        public static ICollection<EventBean> UnwrapEventBeans(
+        public static FlexCollection UnwrapEventBeans(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventType type,
             IEnumerable enumerable)
         {
-            return enumerable
-                .Cast<object>()
-                .Select(value => eventBeanTypedEventFactory.AdapterForTypedObject(value, type))
-                .ToList();
+            return FlexCollection.Of(
+                enumerable
+                    .Cast<object>()
+                    .Select(value => eventBeanTypedEventFactory.AdapterForTypedObject(value, type))
+                    .ToList());
         }
     }
 } // end of namespace

@@ -332,17 +332,36 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                 if (coercedValue != null &&
                     !TypeHelper.IsSubclassOrImplementsInterface(coercedValue.GetType(), variableType)) {
-                    // if the declared type is not numeric or the init value is not numeric, fail
-                    if (!variableType.IsNumeric() || !coercedValue.IsNumber()) {
-                        throw GetVariableTypeException(variableName, variableType, coercedValue.GetType());
-                    }
+                    var coercedValueType = coercedValue.GetType();
+                    
+                    // Lets see if the coerced value is an array of an element, whereas the variable is an array
+                    // of the boxed variant of the type.  Technically, the arrays are not compatible and we need
+                    // to coerce as a result.
+                    
+                    if (coercedValueType.IsArray &&
+                        variableType.IsArray &&
+                        coercedValueType.GetElementType().GetBoxedType() == variableType.GetElementType()) {
+                        var coercedSourceArray = (Array) coercedValue;
+                        var coercedDestArray = Array.CreateInstance(variableType.GetElementType(), coercedSourceArray.Length);
+                        for (int ii = 0; ii < coercedSourceArray.Length; ii++) {
+                            coercedDestArray.SetValue(coercedSourceArray.GetValue(ii), ii);
+                        }
 
-                    if (!coercedValue.GetType().CanCoerce(variableType)) {
-                        throw GetVariableTypeException(variableName, variableType, coercedValue.GetType());
+                        coercedValue = coercedDestArray;
                     }
+                    else {
+                        // if the declared type is not numeric or the init value is not numeric, fail
+                        if (!variableType.IsNumeric() || !coercedValue.IsNumber()) {
+                            throw GetVariableTypeException(variableName, variableType, coercedValue.GetType());
+                        }
 
-                    // coerce
-                    coercedValue = TypeHelper.CoerceBoxed(coercedValue, variableType);
+                        if (!coercedValue.GetType().CanCoerce(variableType)) {
+                            throw GetVariableTypeException(variableName, variableType, coercedValueType);
+                        }
+
+                        // coerce
+                        coercedValue = TypeHelper.CoerceBoxed(coercedValue, variableType);
+                    }
                 }
             }
 

@@ -10,7 +10,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -20,18 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeNCEvalEquals : ExprEvaluator
     {
-        private readonly ExprEvaluator lhs;
-        private readonly ExprEqualsNodeImpl parent;
-        private readonly ExprEvaluator rhs;
+        private readonly ExprEvaluator _lhs;
+        private readonly ExprEqualsNodeImpl _parent;
+        private readonly ExprEvaluator _rhs;
 
         internal ExprEqualsNodeForgeNCEvalEquals(
             ExprEqualsNodeImpl parent,
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this.parent = parent;
-            this.lhs = lhs;
-            this.rhs = rhs;
+            _parent = parent;
+            _lhs = lhs;
+            _rhs = rhs;
         }
 
         public object Evaluate(
@@ -39,14 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = lhs.Evaluate(eventsPerStream, isNewData, context);
-            var right = rhs.Evaluate(eventsPerStream, isNewData, context);
+            var left = _lhs.Evaluate(eventsPerStream, isNewData, context);
+            var right = _rhs.Evaluate(eventsPerStream, isNewData, context);
 
             if (left == null || right == null) { // null comparison
                 return null;
             }
 
-            var result = left.Equals(right) ^ parent.IsNotEquals;
+            var result = left.Equals(right) ^ _parent.IsNotEquals;
             return result;
         }
 

@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var mustCoerce = false;
-            SimpleNumberCoercer coercer = null;
+            Coercer coercer = null;
             if (IsCase2) {
                 // validate we can compare result types
                 var comparedTypes = new List<Type>();
@@ -175,7 +176,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             if (childMapTypes.IsEmpty()) {
                 // Determine common denominator type
                 try {
-                    resultType = TypeHelper.GetCommonCoercionType(childTypes.ToArray());
+                    resultType = TypeHelper
+                        .GetCommonCoercionType(childTypes.ToArray())
+                        .GetBoxedType();
                     if (resultType.IsNumeric()) {
                         isNumericResult = true;
                     }

@@ -69,7 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 "start",
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterStartReturnType,
-                    forge.getterStartTimestamp.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
+                    forge.getterStartTimestamp.EventBeanGetCodegen(
+                        Ref("target"), 
+                        methodNode, 
+                        codegenClassScope)));
             if (forge.getterStartReturnType.CanBeNull()) {
                 block.IfRefNullReturnNull("start");
             }
@@ -79,7 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 "end",
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterEndReturnType,
-                    forge.getterEndTimestamp.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
+                    forge.getterEndTimestamp.EventBeanGetCodegen(
+                        Ref("target"), 
+                        methodNode, 
+                        codegenClassScope)));
             if (forge.getterEndReturnType.CanBeNull()) {
                 block.IfRefNullReturnNull("end");
             }

@@ -131,8 +131,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long? previousIdE1 = null;
             long? previousIdE2 = null;
             foreach (var events in delivered) {
-                var idE1 = events[0].Get("e1.Instance").AsLong();
-                var idE2 = events[0].Get("e2.Instance").AsLong();
+                var idE1 = events[0].Get("e1.Instance").AsInt64();
+                var idE2 = events[0].Get("e2.Instance").AsInt64();
                 // comment-in when needed: System.out.println("Received " + IdE1 + " " + IdE2);
 
                 if (previousIdE1 != null) {

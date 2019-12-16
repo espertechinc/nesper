@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.util
             //    .AddParam(typeof(string), "text");
             //anonymousClass.AddMethod("Parse", parse);
 
-            parse.Block.BlockReturn(parser.Codegen(@Ref("text")));
+            parse.Block.BlockReturn(parser.Codegen(Ref("text")));
             return anonymousClass;
         }
 

@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 long total = 0;
 
                 foreach (var @out in outputEvents) {
-                    var cnt = @out.Get("cnt").AsLong();
+                    var cnt = @out.Get("cnt").AsInt64();
                     total += cnt;
                 }
 

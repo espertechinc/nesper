@@ -23,6 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            #if false
             execs.Add(new ViewTimeLengthBatchSceneOne());
             execs.Add(new ViewTimeLengthBatchSceneTwo());
             execs.Add(new ViewTimeLengthBatchForceOutputOne());
@@ -31,6 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             execs.Add(new ViewTimeLengthBatchStartEager());
             execs.Add(new ViewTimeLengthBatchForceOutputStartEagerSum());
             execs.Add(new ViewTimeLengthBatchForceOutputStartNoEagerSum());
+            #endif
             execs.Add(new ViewTimeLengthBatchPreviousAndPrior());
             execs.Add(new ViewTimeLengthBatchGroupBySumStartEager());
             return execs;

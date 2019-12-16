@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.epl.@join.analyze;
+using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 
@@ -29,14 +29,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         ReformatOp
     {
         private readonly DateTimeExEval _dateTimeExEval;
-        private readonly TimeAbacus timeAbacus;
+        private readonly TimeAbacus _timeAbacus;
 
         public ReformatEvalForge(
             DateTimeExEval dateTimeExEval,
             TimeAbacus timeAbacus)
         {
             this._dateTimeExEval = dateTimeExEval;
-            this.timeAbacus = timeAbacus;
+            this._timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(long), "ts");
             method.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), method, codegenClassScope))
+                .Expression(_timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), method, codegenClassScope))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethodBuild(method).Pass(inner).Call();
         }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dateTimeEx = DateTimeEx.NowUtc();
-            timeAbacus.DateTimeSet(ts, dateTimeEx);
+            _timeAbacus.DateTimeSet(ts, dateTimeEx);
             return _dateTimeExEval.EvaluateInternal(dateTimeEx);
         }
 

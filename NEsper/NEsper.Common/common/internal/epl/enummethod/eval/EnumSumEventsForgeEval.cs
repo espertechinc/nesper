@@ -69,13 +69,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumSumEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
             forge.sumMethodFactory.CodegenDeclare(block);
 
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerType.GetBoxedType(),
                     "value",
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach.IfRefNull("value").BlockContinue();
             }
 
-            forge.sumMethodFactory.CodegenEnterNumberTypedNonNull(forEach, @Ref("value"));
+            forge.sumMethodFactory.CodegenEnterNumberTypedNonNull(forEach, Ref("value"));
             forge.sumMethodFactory.CodegenReturn(block);
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

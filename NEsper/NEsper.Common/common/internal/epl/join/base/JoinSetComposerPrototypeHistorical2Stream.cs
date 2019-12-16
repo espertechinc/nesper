@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.historical.lookupstrategy;
-using com.espertech.esper.common.@internal.epl.@join.strategy;
+using com.espertech.esper.common.@internal.epl.join.strategy;
 using com.espertech.esper.common.@internal.view.core;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base

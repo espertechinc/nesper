@@ -78,13 +78,13 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionRunner.Run(session, ViewDerived.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewExpressionBatch()
         {
             RegressionRunner.Run(session, ViewExpressionBatch.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewExpressionWindow()
         {
             RegressionRunner.Run(session, ViewExpressionWindow.Executions());
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             RegressionRunner.Run(session, ViewFirstUnique.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestViewGroup()
         {
             RegressionRunner.Run(session, ViewGroup.Executions());

@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.aifactory.@select;
+using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
-using com.espertech.esper.common.@internal.epl.@join.strategy;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.strategy;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.virtualdw;

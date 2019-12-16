@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var innerType = forge.InnerExpression.EvaluationType;
             var innerTypeBoxed = Boxing.GetBoxedType(innerType);
-            var paramTypes = EnumForgeCodegenNames.PARAMS_EVENTBEAN;
+            var paramTypes = EnumForgeCodegenNames.PARAMS;
             
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<EventBean>("result", ConstantNull());
 
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("next"))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("next"))
                 .DeclareVar(
                     innerTypeBoxed,
                     "value",
@@ -105,19 +105,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfRefNull("value")
                 .BlockContinue();
 
-            forEach.IfCondition(EqualsNull(@Ref("minKey")))
-                .AssignRef("minKey", @Ref("value"))
-                .AssignRef("result", @Ref("next"))
+            forEach.IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Ref("next"))
                 .IfElse()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(Unbox(@Ref("minKey"), innerTypeBoxed), "CompareTo", @Ref("value")),
+                        ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")),
                         forge.max ? LT : GT,
                         Constant(0)))
-                .AssignRef("minKey", @Ref("value"))
-                .AssignRef("result", @Ref("next"));
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Ref("next"));
 
-            block.MethodReturn(@Ref("result"));
+            block.MethodReturn(Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

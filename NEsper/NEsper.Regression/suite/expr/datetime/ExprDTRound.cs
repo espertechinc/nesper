@@ -22,9 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public static IList<RegressionExecution> Executions()
         {
             var executions = new List<RegressionExecution>();
-            #if false
             executions.Add(new ExprDTRoundInput());
-            #endif
             executions.Add(new ExprDTRoundCeil());
             executions.Add(new ExprDTRoundFloor());
             executions.Add(new ExprDTRoundHalf());
@@ -148,15 +146,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "2002-05-30T09:01:00.000",
                     "2002-05-30T09:00:00.000",
                     "2002-05-30T00:00:00.000",
-                    "2002-05-1T00:00:00.000",
-                    "2002-01-1T00:00:00.000"
+                    "2002-05-01T00:00:00.000",
+                    "2002-01-01T00:00:00.000"
                 };
                 var startTime = "2002-05-30T09:01:02.003";
                 env.SendEventBean(SupportDateTime.Make(startTime));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expected, "util"));
+                    SupportDateTime.GetArrayCoerced(expected, "dto"));
 
                 env.UndeployAll();
             }
@@ -204,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expected, "util"));
+                    SupportDateTime.GetArrayCoerced(expected, "dto"));
 
                 // test rounding up/down
                 env.UndeployAll();
@@ -216,19 +214,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "util")});
+                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "dto")});
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.000"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
+                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto")});
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.001"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "util")});
+                    new[] {SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto")});
 
                 env.UndeployAll();
             }

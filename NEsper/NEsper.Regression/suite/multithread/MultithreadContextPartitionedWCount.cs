@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(choices.Length, result.Length);
             foreach (var item in result) {
                 var theString = (string) item.Get("TheString");
-                var count = item.Get("cnt").AsLong();
+                var count = item.Get("cnt").AsInt64();
                 //System.out.println("String " + string + " count " + count);
                 Assert.AreEqual(count, totals.Get(theString));
             }

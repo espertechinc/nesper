@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprFilterExpressions.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprFilterInAndBetween()
         {
             RegressionRunner.Run(session, ExprFilterInAndBetween.Executions());
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoDiff.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterNestedTwoSame()
         {
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoSame.Executions());

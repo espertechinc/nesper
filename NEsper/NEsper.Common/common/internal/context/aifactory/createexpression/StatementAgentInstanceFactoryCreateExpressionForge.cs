@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                     "StatementEventType",
                     EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "ExpressionName", Constant(expressionName))
-                .MethodReturn(@Ref("saiff"));
+                .MethodReturn(Ref("saiff"));
             return method;
         }
     }

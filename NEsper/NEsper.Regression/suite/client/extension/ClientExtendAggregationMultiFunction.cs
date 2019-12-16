@@ -24,8 +24,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
     {
         public void Run(RegressionEnvironment env)
         {
-            //RunAssertionManagedSimpleState(env);
-            //RunAssertionManagedScalarOnly(env);
+            RunAssertionManagedSimpleState(env);
+            RunAssertionManagedScalarOnly(env);
             RunAssertionManagedScalarArray(env);
             RunAssertionManagedScalarColl(env);
             RunAssertionManagedSingleEvent(env);

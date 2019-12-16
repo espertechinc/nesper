@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
                 var rate = -1;
                 if (outputLimitSpec.Rate != null) {
-                    rate = outputLimitSpec.Rate.AsInt();
+                    rate = outputLimitSpec.Rate.AsInt32();
                 }
 
                 return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);

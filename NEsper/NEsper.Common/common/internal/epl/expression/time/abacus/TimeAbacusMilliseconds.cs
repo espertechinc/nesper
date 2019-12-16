@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                 return DeltaForSecondsDouble(timeInSeconds.AsDouble());
             }
 
-            return 1000 * timeInSeconds.AsLong();
+            return 1000 * timeInSeconds.AsInt64();
         }
 
         public long DateTimeSet(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                         .AddParam(typeof(long), "fromTime")
                         .AddParam(typeof(DateTimeEx), "dtx")
                         .Block
-                        .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", @Ref("fromTime")))
+                        .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("fromTime")))
                         .MethodReturn(Constant(0)))
                 .Pass(startLong)
                 .Pass(dateTime)

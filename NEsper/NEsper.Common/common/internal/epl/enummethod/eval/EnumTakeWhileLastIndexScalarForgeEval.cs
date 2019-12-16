@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumTakeWhileLastIndexScalarForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
             var innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
             var block = methodNode.Block
@@ -150,8 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "GetEmptyList", new [] { typeof(object) }));
-            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
+                FlexEmpty());
+            blockSingle.BlockReturn(FlexValue(Ref("item")));
 
             block
                 .DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forge.innerExpression.EvaluationType,
                 innerValue);
             forEach.Expression(ExprDotMethod(Ref("result"), "AddFirst", ArrayAtIndex(Ref("all"), Ref("i"))));
-            block.MethodReturn(Ref("result"));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 

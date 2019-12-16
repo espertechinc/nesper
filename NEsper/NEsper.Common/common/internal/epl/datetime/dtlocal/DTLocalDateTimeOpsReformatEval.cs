@@ -22,9 +22,9 @@ using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUt
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    public class DTLocalCalOpsReformatEval : DTLocalEvaluatorCalopReformatBase
+    public class DTLocalDateTimeOpsReformatEval : DTLocalEvaluatorCalopReformatBase
     {
-        public DTLocalCalOpsReformatEval(
+        public DTLocalDateTimeOpsReformatEval(
             IList<CalendarOp> calendarOps,
             ReformatOp reformatOp)
             : base(calendarOps, reformatOp)
@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTime dateTime = (DateTime) target;
-            dateTime = EvaluateCalOpsDtx(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+            dateTime = EvaluateCalOpsDateTime(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
-            DTLocalCalOpsReformatForge forge,
+            DTLocalDateTimeOpsReformatForge forge,
             CodegenExpression inner,
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
@@ -51,12 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
                     forge.reformatForge.ReturnType,
-                    typeof(DTLocalCalOpsReformatEval),
+                    typeof(DTLocalDateTimeOpsReformatEval),
                     codegenClassScope)
                 .AddParam(typeof(DateTime), "dateTime");
 
             CodegenBlock block = methodNode.Block;
-            DTLocalUtil.EvaluateCalOpsDtxCodegen(
+            DTLocalUtil.EvaluateCalOpsDateTimeCodegen(
                 block,
                 "dateTime",
                 forge.calendarForges,
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 exprSymbol,
                 codegenClassScope);
             block.MethodReturn(
-                forge.reformatForge.CodegenDateTime(@Ref("dateTime"), methodNode, exprSymbol, codegenClassScope));
+                forge.reformatForge.CodegenDateTime(Ref("dateTime"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

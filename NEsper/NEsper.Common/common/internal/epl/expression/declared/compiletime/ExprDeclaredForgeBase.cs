@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -111,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<EventBean>),
+                typeof(FlexCollection),
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -375,6 +376,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var evaluationType = requiredType == typeof(object) 
                 ? typeof(object)
                 : InnerForge.EvaluationType;
+            if (evaluationType != requiredType) {
+                if (evaluationType.GetBoxedType() == requiredType) {
+                    evaluationType = evaluationType.GetBoxedType();
+                }
+                else {
+                    throw new IllegalStateException("requiredType incompatible with evaluationType");
+                }
+            }
 
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
@@ -400,7 +409,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     eval = Cast(InnerForge.EvaluationType, eval);
                 }
 
-                block.DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>(
+                block
+                    .DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>(
                         "cache",
                         ExprDotMethodChain(refExprEvalCtx)
                             .Get("ExpressionResultCacheService")
@@ -436,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<EventBean>),
+                    typeof(FlexCollection),
                     typeof(ExprDeclaredForgeBase),
                     scope,
                     codegenClassScope)
@@ -455,7 +465,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
             if (isCache) {
-                block.DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
+                block
+                    .DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
                         "cache",
                         ExprDotMethodChain(refExprEvalCtx)
                             .Get("ExpressionResultCacheService")
@@ -465,7 +476,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotName(Ref("entry"), "Result"))
-                    .DeclareVar<ICollection<EventBean>>("result", innerValue)
+                    .DeclareVar<FlexCollection>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
@@ -475,10 +486,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             Ref("result")));
             }
             else {
-                block.DeclareVar<ICollection<EventBean>>("result", innerValue);
+                block
+                    .DeclareVar<FlexCollection>("result", innerValue);
             }
 
-            block.MethodReturn(Ref("result"));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return methodNode;
         }
 
@@ -535,7 +547,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 block.DeclareVar<ICollection<object>>("result", innerValue);
             }
 
-            block.MethodReturn(Ref("result"));
+            block.MethodReturn(FlexWrap(Ref("result")));
             return methodNode;
         }
 

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
-            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope);
+            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
             CodegenExpression having = LocalMethod(
                 havingMethod,
                 REF_EVENTS_SHIFTED,
@@ -45,10 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 ConstantNull());
 
             if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[0].Forge,
-                    method,
-                    classScope);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }

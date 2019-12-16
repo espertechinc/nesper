@@ -13,11 +13,11 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.@join.@base;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.util;
 
-namespace com.espertech.esper.common.@internal.context.aifactory.@select
+namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
     public partial class StatementAgentInstanceFactorySelect
     {

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -53,6 +54,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             return @event.Underlying;
         }
 
+        public static object GetNonemptyFirstEventUnderlying(FlexCollection matchingEvents)
+        {
+            return GetNonemptyFirstEventUnderlying(matchingEvents.EventBeanCollection);
+        }
+        
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -69,6 +75,16 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return matchingEvents.First();
+        }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="matchingEvents">events</param>
+        /// <returns>event</returns>
+        public static EventBean GetNonemptyFirstEvent(FlexCollection matchingEvents)
+        {
+            return GetNonemptyFirstEvent(matchingEvents.EventBeanCollection);
         }
 
         public static EventPropertyGetter GetAssertPropertyGetter(
@@ -1016,6 +1032,21 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return subSelectResult;
+        }
+
+        public static EventBean EvaluateFilterExpectSingleMatch(
+            EventBean[] eventsZeroSubselect,
+            bool newData,
+            FlexCollection matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ExprEvaluator filter)
+        {
+            return EvaluateFilterExpectSingleMatch(
+                eventsZeroSubselect,
+                newData,
+                matchingEvents.EventBeanCollection,
+                exprEvaluatorContext,
+                filter);
         }
 
         private static bool FindEvent(

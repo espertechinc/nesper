@@ -13,13 +13,13 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.aifactory.@select;
+using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
-using com.espertech.esper.common.@internal.epl.@join.indexlookupplan;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
-using com.espertech.esper.common.@internal.epl.@join.querygraph;
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.indexlookupplan;
+using com.espertech.esper.common.@internal.epl.join.lookup;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.table.compiletime;

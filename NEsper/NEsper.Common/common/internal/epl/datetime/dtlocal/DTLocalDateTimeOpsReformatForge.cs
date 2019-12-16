@@ -19,9 +19,9 @@ using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUt
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
-    public class DTLocalCalOpsReformatForge : DTLocalForgeCalopReformatBase
+    public class DTLocalDateTimeOpsReformatForge : DTLocalForgeCalopReformatBase
     {
-        public DTLocalCalOpsReformatForge(
+        public DTLocalDateTimeOpsReformatForge(
             IList<CalendarForge> calendarForges,
             ReformatForge reformatForge)
             : base(
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
         }
 
-        public override DTLocalEvaluator DTEvaluator => new DTLocalCalOpsReformatEval(
+        public override DTLocalEvaluator DTEvaluator => new DTLocalDateTimeOpsReformatEval(
             GetCalendarOps(calendarForges),
             reformatForge.Op);
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return DTLocalCalOpsReformatEval.Codegen(
+            return DTLocalDateTimeOpsReformatEval.Codegen(
                 this,
                 inner,
                 codegenMethodScope,

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamEventPropIndexedForge : FilterSpecParamForge
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        [NonSerialized] private readonly SimpleNumberCoercer _numberCoercer;
+        [NonSerialized] private readonly Coercer _numberCoercer;
         private readonly string _statementName;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             string resultEventProperty,
             EventType eventType,
             bool isMustCoerce,
-            SimpleNumberCoercer numberCoercer,
+            Coercer numberCoercer,
             Type coercionType,
             string statementName)
             : base(lookupable, filterOperator)

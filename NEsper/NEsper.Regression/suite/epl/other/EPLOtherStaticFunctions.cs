@@ -33,7 +33,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            #if false
             execs.Add(new EPLOtherNullPrimitive());
             execs.Add(new EPLOtherChainedInstance());
             execs.Add(new EPLOtherChainedStatic());
@@ -54,7 +53,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             execs.Add(new EPLOtherMultipleMethodInvocations());
             execs.Add(new EPLOtherOtherClauses());
             execs.Add(new EPLOtherNestedFunction());
-#endif
             execs.Add(new EPLOtherPassthru());
             execs.Add(new EPLOtherPrimitiveConversion());
             return execs;
@@ -318,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10d, 4L, ""));
-                var result = GetProperty(env, $"{dateTimeHelper}.GetCurrentTimeMillis()").AsLong();
+                var result = GetProperty(env, $"{dateTimeHelper}.GetCurrentTimeMillis()").AsInt64();
                 long? finishTime = DateTimeHelper.CurrentTimeMillis;
                 Assert.IsTrue(startTime <= result);
                 Assert.IsTrue(result <= finishTime);
@@ -682,17 +680,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public static int PassIntAsObject(object o)
             {
-                return o.AsInt();
+                return o.AsInt32();
             }
 
             public static int PassIntAsNumber(object n)
             {
-                return n.AsInt();
+                return n.AsInt32();
             }
 
             public static int PassIntAsComparable(IComparable c)
             {
-                return c.AsInt();
+                return c.AsInt32();
             }
         }
     }

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                                      .StatementType ==
                                  StatementType.CREATE_WINDOW;
             ContextControllerDetailHashItem foundPartition = null;
-            var hashCode = partitionKey.AsInt();
+            var hashCode = partitionKey.AsInt32();
 
             if (!isCreateWindow) {
                 foundPartition = FindHashItemSpec(hashSpec, filterSpec);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
-            return new ContextPartitionIdentifierHash(partitionKey.AsInt());
+            return new ContextPartitionIdentifierHash(partitionKey.AsInt32());
         }
 
         private static ContextControllerDetailHashItem FindHashItemSpec(

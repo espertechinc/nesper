@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             ExprForge havingEval)
             : base(
                 subselect,

@@ -29,15 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
         public static DatetimeLongCoercer GetCoercer(Type clazz)
         {
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTime))) {
+            clazz = clazz.GetBoxedType();
+            
+            if (clazz == typeof(DateTime?)) {
                 return DATETIME_LONG_COERCER_DATETIME;
             }
 
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTimeOffset))) {
+            if (clazz == typeof(DateTimeOffset?)) {
                 return DATETIME_LONG_COERCER_DATETIME_OFFSET;
             }
 
-            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof(DateTimeEx))) {
+            if (clazz == typeof(DateTimeEx)) {
                 return DATETIME_LONG_COERCER_DTX;
             }
 

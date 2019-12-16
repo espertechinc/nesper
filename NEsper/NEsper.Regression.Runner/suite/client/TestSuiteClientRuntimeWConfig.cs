@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             new ClientRuntimeRuntimeProvider.ClientRuntimeRuntimeDestroy().Run(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeExHandlerGetContext()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();

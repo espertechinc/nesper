@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                     spec.HashesSpec.GetType(),
                     value => {
                         if (value != null) {
-                            spec.HashesSpec.Seed = value.AsInt();
+                            spec.HashesSpec.Seed = value.AsInt32();
                         }
                     },
                     true),
@@ -285,7 +285,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                     spec.GetType(),
                     value => {
                         if (value != null) {
-                            spec.TopkSpec = value.AsInt();
+                            spec.TopkSpec = value.AsInt32();
                         }
                     },
                     true),

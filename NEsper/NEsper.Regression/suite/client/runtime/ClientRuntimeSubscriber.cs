@@ -959,7 +959,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 updateEventArgs) => {
                 var newEvents = updateEventArgs.NewEvents;
                 var theString = (string) newEvents[0].Get("TheString");
-                var val = newEvents[0].Get("IntPrimitive").AsInt();
+                var val = newEvents[0].Get("IntPrimitive").AsInt32();
                 results.Add(new object[] {theString, val});
             };
 

@@ -8,7 +8,7 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.epl.@join.queryplan;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {

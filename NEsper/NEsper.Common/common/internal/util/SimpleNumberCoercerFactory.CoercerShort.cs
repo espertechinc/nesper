@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
 {
     public partial class SimpleNumberCoercerFactory
     {
-        public class CoercerShort : SimpleNumberCoercer
+        public class CoercerShort : Coercer
         {
             public static readonly CoercerShort INSTANCE = new CoercerShort();
 
@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.util
             {
             }
 
-            public object CoerceBoxed(object numToCoerce)
+            public object CoerceBoxed(object value)
             {
-                return numToCoerce.AsShort();
+                return value.AsInt16();
             }
 
             public Type ReturnType => typeof(short?);
@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return ((valueType != typeof(short)) &&
                         (valueType != typeof(short?)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedShort")
+                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt16")
                     : value;
 
 //                return CodegenCoerceMayNull(
 //                    typeof(short),
 //                    typeof(short?),
-//                    "AsShort",
+//                    "AsInt16",
 //                    value,
 //                    valueTypeMustNumeric,
 //                    codegenMethodScope,
@@ -66,9 +66,9 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return ((inputType != typeof(short)) &&
                         (inputType != typeof(short?)))
-                    ? CodegenExpressionBuilder.ExprDotMethod(input, "AsShort")
+                    ? CodegenExpressionBuilder.ExprDotMethod(input, "AsInt16")
                     : input;
-                //return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsShort", input, inputType);
+                //return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsInt16", input, inputType);
             }
         }
     }

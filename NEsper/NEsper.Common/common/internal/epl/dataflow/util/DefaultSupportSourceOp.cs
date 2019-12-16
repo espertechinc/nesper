@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 latch.Await();
             }
             else if (next.IsLong() || next.IsInt()) {
-                Thread.Sleep(next.AsInt());
+                Thread.Sleep(next.AsInt32());
             }
             else if (next is EPRuntimeException) {
                 var ex = (EPRuntimeException) next;

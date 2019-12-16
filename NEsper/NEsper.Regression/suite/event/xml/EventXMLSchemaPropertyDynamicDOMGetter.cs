@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from MyEventWithPrefix";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            EPAssertionUtil.AssertEqualsAnyOrder(
+            CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("type?", typeof(XmlNode), null, false, false, false, false, false),
                     new EventPropertyDescriptor("dyn[1]?", typeof(XmlNode), null, false, false, false, false, false),

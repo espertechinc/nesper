@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading;
 
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.util
@@ -96,7 +95,7 @@ namespace com.espertech.esper.common.@internal.util
             //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
         }
 
-        private static string GetLockInfo(IReaderWriterLock @lockObj)
+        private static string GetLockInfo(IReaderWriterLock lockObj)
         {
             string lockid = string.Format("RWLock@{0:X}", lockObj.GetHashCode());
             return lockid +

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -41,10 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public void SaveDeclaredExpressionLastColl(
             object node,
             EventBean[] eventsPerStream,
-            ICollection<EventBean> result)
+            FlexCollection result)
         {
             var copy = EventBeanUtility.CopyArray(eventsPerStream);
-            var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result);
+            var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result: result);
             exprDeclCacheCollection.Put(
                 node,
                 new SoftReference<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(entry));

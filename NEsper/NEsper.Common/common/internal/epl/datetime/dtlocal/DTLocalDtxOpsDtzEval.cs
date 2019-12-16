@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             DateTime dateTime = (DateTime) target;
-            return EvaluateCalOpsDtx(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+            return EvaluateCalOpsDateTime(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
@@ -51,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTime), "dateTime");
 
             CodegenBlock block = methodNode.Block;
-            EvaluateCalOpsDtxCodegen(
+            EvaluateCalOpsDateTimeCodegen(
                 block,
                 "dateTime",
                 forge.calendarForges,
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.MethodReturn(@Ref("dateTime"));
+            block.MethodReturn(Ref("dateTime"));
             return LocalMethod(methodNode, inner);
         }
     }

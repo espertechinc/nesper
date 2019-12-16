@@ -14,20 +14,18 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
-    ///     Interface for number coercion.
+    ///     Interface for coercion.
     /// </summary>
-    public interface SimpleNumberCoercer
+    public interface Coercer
     {
         Type ReturnType { get; }
 
         /// <summary>
-        ///     Coerce the given number to a previously determined type, assuming the type is a Boxed type. Allows coerce to lower
-        ///     resultion number.
-        ///     Doesnt coerce to primitive types.
+        /// Coerce the given value to a pre-determined type.
         /// </summary>
-        /// <param name="numToCoerce">is the number to coerce to the given type</param>
-        /// <returns>the numToCoerce as a value in the given result type</returns>
-        object CoerceBoxed(object numToCoerce);
+        /// <param name="value">is the value to coerce</param>
+        /// <returns>the value coerced to the given result type.</returns>
+        object CoerceBoxed(object value);
 
         CodegenExpression CoerceCodegen(
             CodegenExpression value,

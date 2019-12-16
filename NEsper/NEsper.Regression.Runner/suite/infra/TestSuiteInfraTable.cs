@@ -100,13 +100,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraTableAccessAggregationState.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableAccessCore()
         {
             RegressionRunner.Run(session, InfraTableAccessCore.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableAccessDotMethod()
         {
             RegressionRunner.Run(session, InfraTableAccessDotMethod.Executions());
@@ -118,13 +118,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraTableContext.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableCountMinSketch()
         {
             RegressionRunner.Run(session, InfraTableCountMinSketch.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableDocSamples()
         {
             RegressionRunner.Run(session, InfraTableDocSamples.Executions());
@@ -142,19 +142,19 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableFilters());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableInsertInto()
         {
             RegressionRunner.Run(session, InfraTableInsertInto.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableIntoTable()
         {
             RegressionRunner.Run(session, InfraTableIntoTable.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableInvalid()
         {
             RegressionRunner.Run(session, InfraTableInvalid.Executions());
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableIterate());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableJoin()
         {
             RegressionRunner.Run(session, InfraTableJoin.Executions());
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency()
         {
             RegressionRunner.Run(session, new InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency());
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableMTGroupedAccessReadIntoTableWriteNewRowCreation());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedFAFReadFAFWriteChain()
         {
             RegressionRunner.Run(session, new InfraTableMTGroupedFAFReadFAFWriteChain());
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadInsertIntoWriteConcurr());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd()
         {
             RegressionRunner.Run(session, new InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd());
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableNonAccessDotSubqueryAndJoin()
         {
             RegressionRunner.Run(session, new InfraTableNonAccessDotSubqueryAndJoin());
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableOnSelect());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableOnUpdate()
         {
             RegressionRunner.Run(session, new InfraTableOnUpdate());
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, new InfraTableOutputRateLimiting());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTablePlugInAggregation()
         {
             RegressionRunner.Run(session, InfraTablePlugInAggregation.Executions());
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(session, InfraTableSubquery.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInfraTableUpdateAndIndex()
         {
             RegressionRunner.Run(session, InfraTableUpdateAndIndex.Executions());

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
                         .Add("HashFactory"))
                 .SetProperty(Ref("factory"), "HashSpec", detail.MakeCodegen(method, symbols, classScope))
-                .MethodReturn(@Ref("factory"));
+                .MethodReturn(Ref("factory"));
             return method;
         }
 

@@ -99,18 +99,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(innerTypeBoxed, typeof(EnumMinMaxScalarLambdaForgeEval), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_OBJECT);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .AssignArrayElement("props", Constant(0), @Ref("next"))
+                .AssignArrayElement("props", Constant(0), Ref("next"))
                 .DeclareVar(
                     innerTypeBoxed,
                     "value",
@@ -119,17 +119,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach.IfRefNull("value").BlockContinue();
             }
 
-            forEach.IfCondition(EqualsNull(@Ref("minKey")))
-                .AssignRef("minKey", @Ref("value"))
+            forEach.IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
                 .IfElse()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(Unbox(@Ref("minKey"), innerTypeBoxed), "CompareTo", @Ref("value")),
+                        ExprDotMethod(Unbox(Ref("minKey"), innerTypeBoxed), "CompareTo", Ref("value")),
                         forge.max ? LT : GT,
                         Constant(0)))
-                .AssignRef("minKey", @Ref("value"));
+                .AssignRef("minKey", Ref("value"));
 
-            block.MethodReturn(@Ref("minKey"));
+            block.MethodReturn(Ref("minKey"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

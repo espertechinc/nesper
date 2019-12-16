@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
@@ -23,20 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public static readonly CodegenExpressionRef REF_ENUMCOLL = Ref("enumcoll");
         public static readonly CodegenExpressionRef REF_EPS = Ref(NAME_EPS);
 
-        public static readonly CodegenNamedParam FP_ENUMCOLL_EVENT_BEAN = new CodegenNamedParam(
-            typeof(ICollection<EventBean>), REF_ENUMCOLL);
-        public static readonly CodegenNamedParam FP_ENUMCOLL_OBJECT = new CodegenNamedParam(
-            typeof(ICollection<object>), REF_ENUMCOLL);
+        public static readonly CodegenNamedParam FP_ENUMCOLL = new CodegenNamedParam(
+            typeof(FlexCollection), REF_ENUMCOLL);
 
-        public static readonly IList<CodegenNamedParam> PARAMS_EVENTBEAN = Collections.List(
+        public static readonly IList<CodegenNamedParam> PARAMS = Collections.List(
             FP_EPS,
-            FP_ENUMCOLL_EVENT_BEAN,
-            FP_ISNEWDATA,
-            FP_EXPREVALCONTEXT);
-
-        public static readonly IList<CodegenNamedParam> PARAMS_OBJECT = Collections.List(
-            FP_EPS,
-            FP_ENUMCOLL_OBJECT,
+            FP_ENUMCOLL,
             FP_ISNEWDATA,
             FP_EXPREVALCONTEXT);
     }

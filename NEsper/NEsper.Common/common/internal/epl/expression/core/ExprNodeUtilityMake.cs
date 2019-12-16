@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // handle parameter conversion to vararg parameter
             ExprForge[] varargForges = new ExprForge[varargArrayLength];
-            SimpleNumberCoercer[] coercers = new SimpleNumberCoercer[varargForges.Length];
+            Coercer[] coercers = new Coercer[varargForges.Length];
             bool needCoercion = false;
             for (int i = 0; i < varargArrayLength; i++) {
                 int childIndex = i + methodParameterTypes.Length - 1;

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.@join.lookup;
+using com.espertech.esper.common.@internal.epl.join.lookup;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {

@@ -6,7 +6,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.common.@internal.epl.@join.exec.@base;
+using com.espertech.esper.common.@internal.epl.join.exec.@base;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.epl.pattern.and;

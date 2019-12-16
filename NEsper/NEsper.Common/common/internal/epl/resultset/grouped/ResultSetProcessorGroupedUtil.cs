@@ -129,10 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                         REF_EPS));
 
                 if (groupKeyExpressions.Length == 1) {
-                    var expression = CodegenLegoMethodExpression.CodegenExpression(
-                        groupKeyExpressions[0].Forge,
-                        methodNode,
-                        classScope);
+                    var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[0].Forge, methodNode, classScope, true);
                     methodNode.Block
                         .DeclareVar<object>(
                             "key",
@@ -155,10 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     "keys",
                     NewArrayByLength(typeof(object), Constant(groupKeyExpressions.Length)));
                 for (var i = 0; i < groupKeyExpressions.Length; i++) {
-                    var expression = CodegenLegoMethodExpression.CodegenExpression(
-                        groupKeyExpressions[i].Forge,
-                        methodNode,
-                        classScope);
+                    var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[i].Forge, methodNode, classScope, true);
                     methodNode.Block.AssignArrayElement(
                         "keys",
                         Constant(i),

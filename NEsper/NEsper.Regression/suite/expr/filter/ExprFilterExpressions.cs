@@ -105,11 +105,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     break;
 
                 case "IntBoxed":
-                    theEvent.IntBoxed = value.AsBoxedInt();
+                    theEvent.IntBoxed = value.AsBoxedInt32();
                     break;
 
                 case "LongBoxed":
-                    theEvent.LongBoxed = value.AsBoxedLong();
+                    theEvent.LongBoxed = value.AsBoxedInt64();
                     break;
 
                 default:
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     assertions,
                     new object[] {1, 2, 3, 4},
-                    data => SendBeanIntDouble(env, data.AsInt(), 0D),
+                    data => SendBeanIntDouble(env, data.AsInt32(), 0D),
                     milestone);
             }
         }
@@ -827,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     Arrays.AsList(epl),
                     new object[] {0, 1, 2, 3, 4},
-                    data => SendSupportBean(env, new SupportBean("", data.AsInt())),
+                    data => SendSupportBean(env, new SupportBean("", data.AsInt32())),
                     (
                         eventIndex,
                         eventData,
@@ -923,7 +923,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     assertions,
                     new object[] {3, 4, 5},
-                    data => env.SendEventBean(new SupportInstanceMethodBean(data.AsInt())),
+                    data => env.SendEventBean(new SupportInstanceMethodBean(data.AsInt32())),
                     milestone);
             }
         }

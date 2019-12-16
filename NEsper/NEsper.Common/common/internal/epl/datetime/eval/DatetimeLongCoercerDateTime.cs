@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             Type valueType,
             CodegenClassScope codegenClassScope)
         {
-            if (valueType != typeof(DateTime)) {
+            if (valueType.GetBoxedType() != typeof(DateTime?)) {
                 throw new IllegalStateException("Expected a DateTime type, but received \"" + valueType.CleanName() + "\"");
             }
 
@@ -61,16 +61,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 throw new ArgumentNullException(nameof(dateTime), nameof(dateTime) + " cannot be null");
             }
 
-            return CoerceToMillis(dateTime, timeZoneInfo);
+            return dateTime
+                .Value
+                .ToDateTimeOffset(timeZoneInfo)
+                .InMillis();
         }
         
         public static long CoerceToMillis(DateTime dateTime, TimeZoneInfo timeZoneInfo)
         {
             return dateTime
                 .ToDateTimeOffset(timeZoneInfo)
-                .ToUniversalTime()
-                .UtcDateTime
-                .UtcMillis();
+                .InMillis();
+                
+                //.ToUniversalTime()
+                //.UtcDateTime
+                //.UtcMillis();
         }
     }
 } // end of namespace

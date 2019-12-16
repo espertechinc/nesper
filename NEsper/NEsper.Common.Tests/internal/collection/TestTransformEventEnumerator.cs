@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             public EventBean Transform(EventBean theEvent)
             {
-                int value = theEvent.Get("IntPrimitive").AsInt();
+                int value = theEvent.Get("IntPrimitive").AsInt32();
                 return SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean_S0(value));
             }
 

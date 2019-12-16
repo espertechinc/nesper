@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util

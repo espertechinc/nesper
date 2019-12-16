@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var dtx = ((DateTimeEx) target).Clone();
-            DTLocalUtil.EvaluateCalOpsCalendar(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
+            DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .DeclareVar<DateTimeEx>(
                     "dtx",
                     Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "Clone")));
-            DTLocalUtil.EvaluateCalOpsCalendarCodegen(
+            DTLocalUtil.EvaluateCalOpsDtxCodegen(
                 block,
                 forge.calendarForges,
                 Ref("dtx"),

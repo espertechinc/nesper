@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .DeclareVar<AggregationTAAReaderSortedWindow>(
                     "strat",
                     NewInstance(typeof(AggregationTAAReaderSortedWindow)))
-                .MethodReturn(@Ref("strat"));
+                .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }
     }

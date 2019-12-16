@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             session.Destroy();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientInstrumentAudit()
         {
             RegressionSession session = RegressionRunner.Session();

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
                     timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     timeAbacus.DeltaForSecondsDoubleCodegen(
-                        @Ref("sec"), codegenClassScope));
+                        Ref("sec"), codegenClassScope));
             return LocalMethod(methodNode, reference);
         }
     }

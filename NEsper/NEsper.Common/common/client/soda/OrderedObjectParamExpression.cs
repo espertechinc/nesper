@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>indicator for descending sort</returns>
         public bool Descending {
             get => descending;
-            set => @descending = value;
+            set => descending = value;
         }
 
         /// <summary>

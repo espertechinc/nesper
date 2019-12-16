@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                 return DeltaForSecondsDouble(timeInSeconds.AsDouble());
             }
 
-            return 1000000 * timeInSeconds.AsLong();
+            return 1000000 * timeInSeconds.AsInt64();
         }
 
         public long DateTimeSet(

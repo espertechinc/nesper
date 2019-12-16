@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var events = listener.GetNewDataListFlattened();
             var result = new long[events.Length];
             for (var i = 0; i < events.Length; i++) {
-                result[i] = events[i].Get("cnt").AsLong();
+                result[i] = events[i].Get("cnt").AsInt64();
             }
             //log.info(".trySend result=" + Arrays.toString(result));
 

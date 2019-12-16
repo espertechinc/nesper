@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             if (numRowsVariableReader != null) {
                 var varValue = numRowsVariableReader.Value;
                 if (varValue != null) {
-                    CurrentRowLimit = varValue.AsInt();
+                    CurrentRowLimit = varValue.AsInt32();
                 }
                 else {
                     CurrentRowLimit = int.MaxValue;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             if (offsetVariableReader != null) {
                 var varValue = offsetVariableReader.Value;
                 if (varValue != null) {
-                    CurrentOffset = varValue.AsInt();
+                    CurrentOffset = varValue.AsInt32();
                 }
                 else {
                     CurrentOffset = 0;

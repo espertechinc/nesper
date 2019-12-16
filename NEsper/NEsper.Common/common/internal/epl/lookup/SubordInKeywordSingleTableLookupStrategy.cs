@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
-using com.espertech.esper.common.@internal.epl.@join.exec.inkeyword;
+using com.espertech.esper.common.@internal.epl.join.exec.inkeyword;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
 {

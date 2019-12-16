@@ -158,13 +158,13 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientRuntimeRuntimeProvider.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeSolutionPatternPortScan()
         {
             RegressionRunner.Run(_session, ClientRuntimeSolutionPatternPortScan.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeStatementAnnotation()
         {
             RegressionRunner.Run(_session, ClientRuntimeStatementAnnotation.Executions());
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             RegressionRunner.Run(_session, ClientRuntimeStatementName.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestClientRuntimeSubscriber()
         {
             RegressionRunner.Run(_session, new ClientRuntimeSubscriber());

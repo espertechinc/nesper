@@ -87,6 +87,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                 if (complex.OptionalSimpleType != null) {
                     returnType = SchemaUtil.ToReturnType(complex);
+                    if (returnType == typeof(string)) {
+                        propertyComponentType = typeof(char);
+                    }
                 }
 
                 if (complex.IsArray) {

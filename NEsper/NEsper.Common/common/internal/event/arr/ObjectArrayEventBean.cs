@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object[] propertyValues,
             EventType eventType)
         {
-            if (propertyValues.GetType() != typeof(object[])) {
+            if ((propertyValues != null) &&  (propertyValues.GetType() != typeof(object[]))) {
                 throw new ArgumentException("propertyValues must adhere to strict object array");
             }
             

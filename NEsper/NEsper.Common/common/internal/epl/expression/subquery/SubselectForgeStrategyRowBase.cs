@@ -95,10 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 "results",
                 NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
             for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[i].Forge,
-                    method,
-                    classScope);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
                 method.Block.AssignArrayElement(
                     "results",
                     Constant(i),
@@ -144,10 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .AssignArrayElement("rows", Ref("index"), Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                        var eval = CodegenLegoMethodExpression.CodegenExpression(
-                            subselect.SelectClause[i].Forge,
-                            method,
-                            classScope);
+                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
                         foreachEvent.AssignArrayElement(
                             "results",
                             Constant(i),
@@ -173,10 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 {
                     foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
 
-                    var filter = CodegenLegoMethodExpression.CodegenExpression(
-                        subselect.FilterExpr,
-                        method,
-                        classScope);
+                    var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                         foreachEvent,
                         typeof(bool?),
@@ -192,10 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .ExprDotMethod(Ref("rows"), "Add", Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
-                        var eval = CodegenLegoMethodExpression.CodegenExpression(
-                            subselect.SelectClause[i].Forge,
-                            method,
-                            classScope);
+                        var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[i].Forge, method, classScope, true);
                         foreachEvent.AssignArrayElement(
                             "results",
                             Constant(i),

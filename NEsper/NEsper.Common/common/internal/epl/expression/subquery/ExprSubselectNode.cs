@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -135,7 +136,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(GETEVENTCOLL, this, typeof(ICollection<EventBean>), parent, exprSymbol, codegenClassScope);
+            return MakeEvaluate(
+                GETEVENTCOLL,
+                this,
+                typeof(FlexCollection),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -146,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return MakeEvaluate(
                 GETSCALARCOLL,
                 this,
-                typeof(ICollection<object>),
+                typeof(FlexCollection),
                 parent,
                 exprSymbol,
                 codegenClassScope);
@@ -157,7 +164,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(GETEVENT, this, typeof(EventBean), parent, exprSymbol, codegenClassScope);
+            return MakeEvaluate(
+                GETEVENT,
+                this,
+                typeof(EventBean),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
@@ -340,14 +353,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenExpression future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
-            var evalMatching = ExprDotMethod(future, "Lookup", eps, evalCtx);
-            method.Block.DeclareVar<ICollection<EventBean>>(NAME_MATCHINGEVENTS, evalMatching);
+            var evalMatching = FlexWrap(ExprDotMethod(future, "Lookup", eps, evalCtx));
+            method.Block.DeclareVar<FlexCollection>(NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events
             var evalMatchSymbol = new ExprSubselectEvalMatchSymbol();
             var processMethod = method
                 .MakeChildWithScope(resultType, typeof(ExprSubselectNode), evalMatchSymbol, classScope)
-                .AddParam(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS)
+                .AddParam(typeof(FlexCollection), NAME_MATCHINGEVENTS)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression process;
             if (evaluationType == PLAIN) {

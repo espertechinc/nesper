@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.epl.@join.exec.outer;
+using com.espertech.esper.common.@internal.epl.join.exec.outer;
 
 namespace com.espertech.esper.common.@internal.epl.join.rep
 {

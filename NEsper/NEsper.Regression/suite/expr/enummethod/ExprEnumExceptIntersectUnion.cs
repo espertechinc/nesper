@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     env.Statement("s0").EventType,
                     new [] { "val0" },
                     new[] {
-                        typeof(ICollection<EventBean>)
+                        typeof(ICollection<object>)
                     });
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));

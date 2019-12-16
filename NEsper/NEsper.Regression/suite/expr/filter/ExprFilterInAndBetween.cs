@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             }
 
             if (fieldName.Equals("LongBoxed")) {
-                theEvent.LongBoxed = value.AsBoxedLong();
+                theEvent.LongBoxed = value.AsBoxedInt64();
             }
 
             env.SendEventBean(theEvent);

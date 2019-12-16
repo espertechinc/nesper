@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public object GetOutputRow(SQLOutputRowValueContext rowContext)
         {
-            var myint = rowContext.Values.Get("myint").AsInt();
+            var myint = rowContext.Values.Get("myint").AsInt32();
             if (myint == 90) {
                 return null;
             }

@@ -73,11 +73,11 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static short? AsBoxedShort(this object value)
+        public static short? AsBoxedInt16(this object value)
         {
             if (value == null) return null;
             if (value is short) return (short) value;
-            return AsShort(value);
+            return AsInt16(value);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static short AsShort(this object value)
+        public static short AsInt16(this object value)
         {
             if (value is short shortValue)
                 return shortValue;
@@ -112,11 +112,11 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static int? AsBoxedInt(this object value)
+        public static int? AsBoxedInt32(this object value)
         {
             if (value == null) return null;
             if (value is int intValue) return intValue;
-            return AsInt(value);
+            return AsInt32(value);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static int AsInt(this object value)
+        public static int AsInt32(this object value)
         {
             if (value is int intValue)
                 return intValue;
@@ -151,11 +151,11 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static long? AsBoxedLong(this object value)
+        public static long? AsBoxedInt64(this object value)
         {
             if (value == null) return null;
             if (value is long longValue) return longValue;
-            return AsLong(value);
+            return AsInt64(value);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public static long AsLong(this object value)
+        public static long AsInt64(this object value)
         {
             if (value is long longValue)
                 return longValue;
@@ -184,7 +184,67 @@ namespace com.espertech.esper.compat
 
             return Convert.ToInt64(value);
         }
+        
+        public static ulong AsUInt64(this object value)
+        {
+            if (value is ulong longValue)
+                return longValue;
+            if (value is uint intValue)
+                return intValue;
+            if (value is ushort shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
 
+            // -- Down-casts / Cross-casts
+            if (value is float floatValue)
+                return (ulong) floatValue;
+            if (value is double doubleValue)
+                return (ulong) doubleValue;
+            if (value is decimal decimalValue)
+                return (ulong) decimalValue;
+
+            return Convert.ToUInt64(value);
+        }
+
+        public static uint AsUInt32(this object value)
+        {
+            if (value is uint intValue)
+                return intValue;
+            if (value is ushort shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+
+            // -- Down-casts / Cross-casts
+            if (value is float floatValue)
+                return (uint) floatValue;
+            if (value is double doubleValue)
+                return (uint) doubleValue;
+            if (value is decimal decimalValue)
+                return (uint) decimalValue;
+
+            return Convert.ToUInt32(value);
+        }
+
+        public static ushort AsUInt16(this object value)
+        {
+            if (value is ushort shortValue)
+                return shortValue;
+            if (value is byte byteValue)
+                return byteValue;
+
+            // -- Down-casts / Cross-casts
+            if (value is float floatValue)
+                return (ushort) floatValue;
+            if (value is double doubleValue)
+                return (ushort) doubleValue;
+            if (value is decimal decimalValue)
+                return (ushort) decimalValue;
+
+            return Convert.ToUInt16(value);
+        }
+        
         /// <summary>
         /// Returns the value as a float.
         /// </summary>

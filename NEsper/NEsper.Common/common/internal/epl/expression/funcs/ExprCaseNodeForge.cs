@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             IDictionary<string, object> mapResultType,
             bool isNumericResult,
             bool mustCoerce,
-            SimpleNumberCoercer coercer,
+            Coercer coercer,
             IList<UniformPair<ExprNode>> whenThenNodeList,
             ExprNode optionalCompareExprNode,
             ExprNode optionalElseExprNode)
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public bool IsMustCoerce { get; }
 
-        public SimpleNumberCoercer Coercer { get; }
+        public Coercer Coercer { get; }
 
         public ExprTypableReturnEval TypableReturnEvaluator => new ExprCaseNodeForgeEvalTypable(this);
 

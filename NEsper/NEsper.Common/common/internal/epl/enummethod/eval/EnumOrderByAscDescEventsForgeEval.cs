@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     typeof(EnumOrderByAscDescEventsForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS_EVENTBEAN);
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .DeclareVar<OrderedDictionary<object, object>>(
