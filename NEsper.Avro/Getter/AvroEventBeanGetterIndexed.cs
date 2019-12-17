@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,53 +13,35 @@ using System.Linq;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.events;
+using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
-
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
     public class AvroEventBeanGetterIndexed : AvroEventPropertyGetter
     {
-        private readonly Field _pos;
-        private readonly int _index;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
         private readonly EventType _fragmentEventType;
-        private readonly EventAdapterService _eventAdapterService;
-
-        /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="index">The index.</param>
-        /// <returns></returns>
-        public static object GetAvroIndexedValue(ICollection<object> values, int index)
-        {
-            if (values == null)
-            {
-                return null;
-            }
-            else if (values is IList<object> list)
-            {
-                return list.Count > index ? list[index] : null;
-            }
-
-            return values.Skip(index).FirstOrDefault();
-        }
+        private readonly int _index;
+        private readonly Field _key;
 
         public AvroEventBeanGetterIndexed(
-            Field pos,
+            Field key,
             int index,
             EventType fragmentEventType,
-            EventAdapterService eventAdapterService)
+            EventBeanTypedEventFactory eventAdapterService)
         {
-            _pos = pos;
+            _key = key;
             _index = index;
             _fragmentEventType = fragmentEventType;
             _eventAdapterService = eventAdapterService;
@@ -68,14 +50,22 @@ namespace NEsper.Avro.Getter
         public object Get(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = record.Get(_pos).Unwrap<object>(true);
-            return GetAvroIndexedValue(values, _index);
+            var values = record.Get(_key);
+            if (IsIndexableValue(values)) {
+                return GetAvroIndexedValue(values, _index);
+            }
+
+            throw new ArgumentException("eventBean contains incorrect array", nameof(eventBean));
         }
 
         public object GetAvroFieldValue(GenericRecord record)
         {
-            var values = record.Get(_pos).Unwrap<object>(true);
-            return GetAvroIndexedValue(values, _index);
+            var values = record.Get(_key);
+            if (IsIndexableValue(values)) {
+                return GetAvroIndexedValue(values, _index);
+            }
+
+            throw new ArgumentException("eventBean contains incorrect array", nameof(record));
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -96,89 +86,163 @@ namespace NEsper.Avro.Getter
 
         public object GetAvroFragment(GenericRecord record)
         {
-            if (_fragmentEventType == null)
-            {
+            if (_fragmentEventType == null) {
                 return null;
             }
+
             var value = GetAvroFieldValue(record);
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
+
             return _eventAdapterService.AdapterForTypedAvro(value, _fragmentEventType);
         }
 
-        internal static object GetIndexedValue(Array values, int index)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            if (values == null)
-            {
-                return null;
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
+
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingFragmentCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
+
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var values = CodegenExpressionBuilder.Cast(
+                typeof(ICollection<object>),
+                CodegenExpressionBuilder.ExprDotMethod(
+                    underlyingExpression,
+                    "Get",
+                    CodegenExpressionBuilder.Constant(_key.Name)));
+            return CodegenExpressionBuilder.StaticMethod(
+                GetType(),
+                "GetAvroIndexedValue",
+                values,
+                CodegenExpressionBuilder.Constant(_index));
+        }
+
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            if (_fragmentEventType == null) {
+                return CodegenExpressionBuilder.ConstantNull();
             }
 
-            return values.Length > index ? values.GetValue(index) : null;
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFragmentCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
-        internal static object GetIndexedValue(IEnumerable<object> values, int index)
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="values">coll</param>
+        /// <param name="index">index</param>
+        /// <returns>value</returns>
+        public static object GetAvroIndexedValue(
+            object values,
+            int index)
         {
-            if (values == null)
-            {
-                return null;
+            switch (values) {
+                case null:
+                    return null;
+
+                case Array valuesArray:
+                    return valuesArray.Length > index ? valuesArray.GetValue(index) : null;
             }
-            if (values is IList<object>)
-            {
-                var list = (IList<object>)values;
-                return list.Count > index ? list[index] : null;
+
+            IList<object> list;
+
+            if (values is IList<object> listRecast) {
+                list = listRecast;
+            }
+            else if (values.GetType().IsGenericList()) {
+                list = MagicMarker.SingletonInstance.GetList(values);
+            }
+            else {
+                list = CompatExtensions.UnwrapIntoList<object>(values);
             }
 
-            return values.Skip(index).FirstOrDefault(null);
-            //return values.ToArray()[index];
+            return list.Count > index ? list[index] : null;
         }
 
-        private String GetAvroFragmentCodegen(ICodegenContext context)
+        private CodegenMethod GetAvroFragmentCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            var mSvc = context.MakeAddMember(typeof(EventAdapterService), _eventAdapterService);
-            var mType = context.MakeAddMember(typeof(EventType), _fragmentEventType);
-            return context.AddMethod(typeof(object), typeof(GenericRecord), "record", this.GetType())
-                .DeclareVar(typeof(object), "value", CodegenUnderlyingGet(Ref("record"), context))
-                .MethodReturn(ExprDotMethod(
-                    Ref(mSvc.MemberName), "AdapterForTypedAvro", 
-                    Ref("value"),
-                    Ref(mType.MemberName)));
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventType = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<object>(
+                    "value",
+                    UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
+                .MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        factory,
+                        "AdapterForTypedAvro",
+                        CodegenExpressionBuilder.Ref("value"),
+                        eventType));
         }
-
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        
+        /// <summary>
+        /// Returns true if the value being presented can be used as an indexable value.
+        /// </summary>
+        /// <param name="values">the value(s) being presented.</param>
+        /// <returns></returns>
+        public static bool IsIndexableValue(object values)
         {
-            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
-        }
-
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return CodegenUnderlyingFragment(CastUnderlying(typeof(GenericRecord), beanExpression), context);
-        }
-
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            var values = Cast(typeof(ICollection<object>), ExprDotMethod(underlyingExpression, "get", Constant(_pos)));
-            return StaticMethod(this.GetType(), "GetAvroIndexedValue", values, Constant(_index));
-        }
-
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            if (_fragmentEventType == null)
-            {
-                return ConstantNull();
+            switch (values) {
+                case null:
+                case Array _:
+                case IList<object> _:
+                    return true;
             }
-            return LocalMethod(GetAvroFragmentCodegen(context), underlyingExpression);
+
+            if (values.GetType().IsGenericList()) {
+                return true;
+            }
+
+            return false;
         }
     }
 } // end of namespace

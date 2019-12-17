@@ -12,11 +12,12 @@ using System.Dynamic;
 using System.IO;
 
 using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.spec;
-using com.espertech.esper.script;
-using com.espertech.esper.util;
 
 using Microsoft.ClearScript;
 using Microsoft.ClearScript.Windows;
@@ -153,17 +154,16 @@ namespace NEsper.Scripting.ClearScript
 
         private void ExposeTypesToEngine(Microsoft.ClearScript.ScriptEngine engine)
         {
-            var typeCollection = new HostTypeCollection(
-                typeof(com.espertech.esper.client.EPAdministrator).Assembly);
+            //var typeCollection = new HostTypeCollection(
+            //    typeof(com.espertech.esper.client.EPAdministrator).Assembly);
 
-            engine.AddHostObject("esper", typeCollection);
+            //engine.AddHostObject("esper", typeCollection);
             engine.AddHostType("Object", typeof(Object));
-            engine.AddHostType("typeHelper", typeof(com.espertech.esper.util.TypeHelper));
+            engine.AddHostType("typeHelper", typeof(TypeHelper));
             engine.AddHostType("Collections", typeof(com.espertech.esper.compat.collections.Collections));
-            engine.AddHostType("EventBean", typeof(com.espertech.esper.client.EventBean));
-            engine.AddHostType("EventBean", typeof(com.espertech.esper.client.EventBean));
-            engine.AddHostType("EPAdministrator", typeof(com.espertech.esper.client.EPAdministrator));
-            engine.AddHostType("EPRuntime", typeof(com.espertech.esper.client.EPRuntime));
+            engine.AddHostType("EventBean", typeof(EventBean));
+            engine.AddHostType("EventBean", typeof(EventBean));
+            //engine.AddHostType("EPRuntime", typeof(com.espertech.esper.client.EPRuntime));
         }
         
         private int _debugCounter = 0;

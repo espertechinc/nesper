@@ -91,7 +91,7 @@ namespace NEsper.Examples.VirtualDW
         private void RunJoinSample(EPServiceProvider epService) {
             String epl = "select sw.* " +
                     "from SampleJoinEvent#lastevent() sje, MySampleWindow sw " +
-                    "where sw.key1 = sje.propOne and sw.key2 = sje.propTwo";
+                    "where sw.Key1 = sje.propOne and sw.Key2 = sje.propTwo";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             SampleUpdateListener sampleListener = new SampleUpdateListener();
             stmt.Events += sampleListener.Update;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,13 +13,15 @@ using System.Linq;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.avro;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.property;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.parse;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-using com.espertech.esper.events.property;
-using com.espertech.esper.util;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Getter;
@@ -27,390 +29,410 @@ using NEsper.Avro.Writer;
 
 namespace NEsper.Avro.Core
 {
-    public class AvroEventType
-        : AvroSchemaEventType
-        , EventTypeSPI
+    public class AvroEventType : AvroSchemaEventType,
+        EventTypeSPI
     {
-        private readonly RecordSchema _avroSchema;
-        private readonly ICollection<EventType> _deepSupertypes;
-        private readonly string _endTimestampPropertyName;
-        private readonly EventAdapterService _eventAdapterService;
-        private readonly EventTypeMetadata _metadata;
-        private readonly EventType[] _optionalSuperTypes;
+        private readonly Schema _avroSchema;
         private readonly IDictionary<string, PropertySetDescriptorItem> _propertyItems;
-        private readonly string _startTimestampPropertyName;
-        private readonly int _typeId;
+        private readonly EventType[] _optionalSuperTypes;
+        private readonly ISet<EventType> _deepSupertypes;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventTypeAvroHandler _eventTypeAvroHandler;
+        private readonly AvroEventTypeFragmentTypeCache _fragmentTypeCache = new AvroEventTypeFragmentTypeCache();
 
         private EventPropertyDescriptor[] _propertyDescriptors;
-        private Dictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
-        private Dictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
         private string[] _propertyNames;
+        private Dictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
+        private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         public AvroEventType(
             EventTypeMetadata metadata,
-            string eventTypeName,
-            int typeId,
-            EventAdapterService eventAdapterService,
-            RecordSchema avroSchema,
+            Schema avroSchema,
             string startTimestampPropertyName,
             string endTimestampPropertyName,
             EventType[] optionalSuperTypes,
-            ICollection<EventType> deepSupertypes)
+            ISet<EventType> deepSupertypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeAvroHandler eventTypeAvroHandler)
         {
-            _metadata = metadata;
-            _typeId = typeId;
-            _eventAdapterService = eventAdapterService;
+            Metadata = metadata;
             _avroSchema = avroSchema;
             _optionalSuperTypes = optionalSuperTypes;
-            _deepSupertypes = deepSupertypes ?? Collections.GetEmptySet<EventType>();
+            _deepSupertypes = deepSupertypes ?? new EmptySet<EventType>();
             _propertyItems = new LinkedHashMap<string, PropertySetDescriptorItem>();
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _eventTypeAvroHandler = eventTypeAvroHandler;
 
             Init();
 
-            EventTypeUtility.TimestampPropertyDesc desc = EventTypeUtility.ValidatedDetermineTimestampProps(
-                this, startTimestampPropertyName, endTimestampPropertyName, optionalSuperTypes);
-            _startTimestampPropertyName = desc.Start;
-            _endTimestampPropertyName = desc.End;
+            var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
+                this,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                optionalSuperTypes);
+            StartTimestampPropertyName = desc.Start;
+            EndTimestampPropertyName = desc.End;
         }
 
-        public RecordSchema SchemaAvro
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
-            get { return _avroSchema; }
+            Metadata = Metadata.WithIds(publicId, protectedId);
         }
 
-        public Type UnderlyingType
-        {
-            get { return typeof (GenericRecord); }
-        }
+        public Type UnderlyingType => typeof(GenericRecord);
 
         public Type GetPropertyType(string propertyName)
         {
-            PropertySetDescriptorItem item = _propertyItems.Get(ASTUtil.UnescapeDot(propertyName));
-            if (item != null)
-            {
+            var item = _propertyItems.Get(StringValue.UnescapeDot(propertyName));
+            if (item != null) {
                 return item.SimplePropertyType;
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             return AvroPropertyUtil.PropertyType(_avroSchema, property);
         }
 
         public bool IsProperty(string propertyExpression)
         {
-            Type propertyType = GetPropertyType(propertyExpression);
-            if (propertyType != null)
-            {
+            var propertyType = GetPropertyType(propertyExpression);
+            if (propertyType != null) {
                 return true;
             }
-            if (_propertyGetterCache == null)
-            {
+
+            if (_propertyGetterCache == null) {
                 _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
-            return
-                AvroPropertyUtil.GetGetter(
-                    _avroSchema, _propertyGetterCache, _propertyItems, propertyExpression, false, _eventAdapterService) !=
-                null;
+
+            return AvroPropertyUtil.GetGetter(
+                       _avroSchema,
+                       Metadata.ModuleName,
+                       _propertyGetterCache,
+                       _propertyItems,
+                       propertyExpression,
+                       false,
+                       _eventBeanTypedEventFactory,
+                       _eventTypeAvroHandler,
+                       _fragmentTypeCache) !=
+                   null;
         }
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyExpression)
         {
-            if (_propertyGetterCache == null)
-            {
+            if (_propertyGetterCache == null) {
                 _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
+
             return AvroPropertyUtil.GetGetter(
-                _avroSchema, _propertyGetterCache, _propertyItems, propertyExpression, true, _eventAdapterService);
+                _avroSchema,
+                Metadata.ModuleName,
+                _propertyGetterCache,
+                _propertyItems,
+                propertyExpression,
+                true,
+                _eventBeanTypedEventFactory,
+                _eventTypeAvroHandler,
+                _fragmentTypeCache);
         }
 
-        public EventPropertyGetter GetGetter(String propertyName)
+        public EventPropertyGetter GetGetter(string propertyName)
         {
-            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
-            {
-                return GetGetterSPI(propertyName);
-            }
-            if (_propertyGetterCodegeneratedCache == null)
-            {
+            if (_propertyGetterCodegeneratedCache == null) {
                 _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
             }
 
             var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
-            if (getter != null)
-            {
+            if (getter != null) {
                 return getter;
             }
 
             var getterSPI = GetGetterSPI(propertyName);
-            if (getterSPI == null)
-            {
+            if (getterSPI == null) {
                 return null;
             }
 
-            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
-            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
-            return getterCode;
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterSPI);
+            return getterSPI;
         }
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
             return AvroFragmentTypeUtil.GetFragmentType(
-                _avroSchema, propertyExpression, _propertyItems, _eventAdapterService);
+                _avroSchema,
+                propertyExpression,
+                Metadata.ModuleName,
+                _propertyItems,
+                _eventBeanTypedEventFactory,
+                _eventTypeAvroHandler,
+                _fragmentTypeCache);
         }
 
-        public string[] PropertyNames
-        {
-            get { return _propertyNames; }
-        }
+        public string[] PropertyNames => _propertyNames;
 
-        public IList<EventPropertyDescriptor> PropertyDescriptors
-        {
-            get { return _propertyDescriptors; }
-        }
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _propertyDescriptors;
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
-            PropertySetDescriptorItem item = _propertyItems.Get(propertyName);
-            if (item == null)
-            {
-                return null;
-            }
-            return item.PropertyDescriptor;
+            var item = _propertyItems.Get(propertyName);
+            return item?.PropertyDescriptor;
         }
 
-        public EventType[] SuperTypes
-        {
-            get { return _optionalSuperTypes; }
-        }
+        public EventType[] SuperTypes => _optionalSuperTypes;
 
-        public EventType[] DeepSuperTypes
-        {
-            get { return _deepSupertypes.ToArray(); }
-        }
+        public IEnumerable<EventType> DeepSuperTypes => _deepSupertypes;
 
-        public string Name
-        {
-            get { return _metadata.PublicName; }
-        }
+        public ICollection<EventType> DeepSuperTypesCollection => _deepSupertypes;
+
+        public string Name => Metadata.Name;
 
         public EventPropertyGetterMapped GetGetterMapped(string mappedPropertyName)
         {
-            PropertySetDescriptorItem desc = _propertyItems.Get(mappedPropertyName);
-            if (desc == null || !desc.PropertyDescriptor.IsMapped)
-            {
+            return GetGetterMappedSPI(mappedPropertyName);
+        }
+
+        public EventPropertyGetterMappedSPI GetGetterMappedSPI(string mappedPropertyName)
+        {
+            var desc = _propertyItems.Get(mappedPropertyName);
+            if (desc == null || !desc.PropertyDescriptor.IsMapped) {
                 return null;
             }
-            Field field = _avroSchema.GetField(mappedPropertyName);
+
+            var field = _avroSchema.GetField(mappedPropertyName);
             return new AvroEventBeanGetterMappedRuntimeKeyed(field);
         }
 
         public EventPropertyGetterIndexed GetGetterIndexed(string indexedPropertyName)
         {
-            PropertySetDescriptorItem desc = _propertyItems.Get(indexedPropertyName);
-            if (desc == null || !desc.PropertyDescriptor.IsIndexed)
-            {
+            return GetGetterIndexedSPI(indexedPropertyName);
+        }
+
+        public EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string indexedPropertyName)
+        {
+            var desc = _propertyItems.Get(indexedPropertyName);
+            if (desc == null || !desc.PropertyDescriptor.IsIndexed) {
                 return null;
             }
-            Field field = _avroSchema.GetField(indexedPropertyName);
+
+            var field = _avroSchema.GetField(indexedPropertyName);
             return new AvroEventBeanGetterIndexedRuntimeKeyed(field);
         }
 
-        public int EventTypeId
+        public string StartTimestampPropertyName { get; }
+
+        public string EndTimestampPropertyName { get; }
+
+        public EventTypeMetadata Metadata { get; private set; }
+
+        public EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            get { return _typeId; }
+            return GetWriterInternal(propertyName);
         }
 
-        public string StartTimestampPropertyName
+        public AvroEventBeanPropertyWriter GetWriterInternal(string propertyName)
         {
-            get { return _startTimestampPropertyName; }
-        }
-
-        public string EndTimestampPropertyName
-        {
-            get { return _endTimestampPropertyName; }
-        }
-
-        public object Schema
-        {
-            get { return _avroSchema; }
-        }
-
-        public EventTypeMetadata Metadata
-        {
-            get { return _metadata; }
-        }
-
-        public EventPropertyWriter GetWriter(string propertyName)
-        {
-            PropertySetDescriptorItem desc = _propertyItems.Get(propertyName);
-            if (desc != null)
-            {
-                var field = _avroSchema.GetField(propertyName);
-                return new AvroEventBeanPropertyWriter(field);
+            var desc = _propertyItems.Get(propertyName);
+            if (desc != null) {
+                var pos = _avroSchema.GetField(propertyName);
+                return new AvroEventBeanPropertyWriter(pos);
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty)
-            {
-                var mapProp = (MappedProperty) property;
-                var field = _avroSchema.GetField(property.PropertyNameAtomic);
-                return new AvroEventBeanPropertyWriterMapProp(field, mapProp.Key);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (property is MappedProperty mapProp) {
+                var pos = _avroSchema.GetField(mapProp.PropertyNameAtomic);
+                return new AvroEventBeanPropertyWriterMapProp(pos, mapProp.Key);
             }
 
-            if (property is IndexedProperty)
-            {
-                var indexedProp = (IndexedProperty) property;
-                var field = _avroSchema.GetField(property.PropertyNameAtomic);
-                return new AvroEventBeanPropertyWriterIndexedProp(field, indexedProp.Index);
+            if (property is IndexedProperty indexedProp) {
+                var pos = _avroSchema.GetField(indexedProp.PropertyNameAtomic);
+                return new AvroEventBeanPropertyWriterIndexedProp(pos, indexedProp.Index);
             }
 
             return null;
         }
 
-        public EventPropertyDescriptor[] WriteableProperties
-        {
-            get { return _propertyDescriptors; }
-        }
+        public EventPropertyDescriptor[] WriteableProperties => _propertyDescriptors;
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            foreach (EventPropertyDescriptor desc in _propertyDescriptors)
-            {
-                if (desc.PropertyName.Equals(propertyName))
-                {
+            foreach (var desc in _propertyDescriptors) {
+                if (desc.PropertyName.Equals(propertyName)) {
                     return desc;
                 }
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty)
-            {
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (property is MappedProperty mapProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
-                if (writer == null)
-                {
+                if (writer == null) {
                     return null;
                 }
-                var mapProp = (MappedProperty) property;
+
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof (Object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
             }
-            if (property is IndexedProperty)
-            {
+
+            if (property is IndexedProperty indexedProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
-                if (writer == null)
-                {
+                if (writer == null) {
                     return null;
                 }
-                var indexedProp = (IndexedProperty) property;
+
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof (Object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false);
             }
+
             return null;
         }
 
-        public EventBeanCopyMethod GetCopyMethod(string[] properties)
+        public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
-            return new AvroEventBeanCopyMethod(this, _eventAdapterService);
+            return new AvroEventBeanCopyMethodForge(this);
         }
 
         public EventBeanWriter GetWriter(string[] properties)
         {
-            bool allSimpleProps = true;
+            var allSimpleProps = true;
             var writers = new AvroEventBeanPropertyWriter[properties.Length];
-            var indexes = new List<Field>();
+            IList<Field> indexes = new List<Field>();
 
-            for (int i = 0; i < properties.Length; i++)
-            {
-                var writer = (AvroEventBeanPropertyWriter) GetWriter(properties[i]);
-                if (_propertyItems.ContainsKey(properties[i]))
-                {
+            for (var i = 0; i < properties.Length; i++) {
+                var writer = GetWriterInternal(properties[i]);
+                if (_propertyItems.ContainsKey(properties[i])) {
                     writers[i] = writer;
                     indexes.Add(_avroSchema.GetField(properties[i]));
                 }
-                else
-                {
-                    writers[i] = (AvroEventBeanPropertyWriter) GetWriter(properties[i]);
-                    if (writers[i] == null)
-                    {
+                else {
+                    writers[i] = GetWriterInternal(properties[i]);
+                    if (writers[i] == null) {
                         return null;
                     }
+
                     allSimpleProps = false;
                 }
             }
 
-            if (allSimpleProps)
-            {
+            if (allSimpleProps) {
                 return new AvroEventBeanWriterSimpleProps(indexes.ToArray());
             }
+
             return new AvroEventBeanWriterPerProp(writers);
         }
 
-        public EventBeanReader Reader
+        public EventBeanReader Reader => null; // use the default reader
+
+        public ExprValidationException EqualsCompareType(EventType other)
         {
-            get
-            {
-                return null; // use the default reader
+            if (!other.Name.Equals(Name)) {
+                return new ExprValidationException(
+                    "Expected event type '" +
+                    Name +
+                    "' but received event type '" +
+                    other.Metadata.Name +
+                    "'");
             }
+
+            if (Metadata.ApplicationType != other.Metadata.ApplicationType) {
+                return new ExprValidationException(
+                    "Expected for event type '" +
+                    Name +
+                    "' of type " +
+                    Metadata.ApplicationType +
+                    " but received event type '" +
+                    other.Metadata.Name +
+                    "' of type " +
+                    other.Metadata.ApplicationType);
+            }
+
+            var otherAvro = (AvroEventType) other;
+            if (!otherAvro._avroSchema.Equals(_avroSchema)) {
+                return new ExprValidationException("Avro schema does not match for type '" + other.Name + "'");
+            }
+
+            return null;
         }
 
-        public bool EqualsCompareType(EventType other)
-        {
-            var otherAvro = other as AvroEventType;
-            if (otherAvro != null)
-            {
-                if (!otherAvro.Name.Equals(_metadata.PrimaryName))
-                {
-                    return false;
-                }
-                return otherAvro._avroSchema.Equals(_avroSchema);
-            }
-            return false;
-        }
+        public object Schema => _avroSchema;
+
+        public Schema SchemaAvro => _avroSchema;
+
+        public string SchemaAsJson => _avroSchema.ToJsonObject().ToString();
 
         private void Init()
         {
-            _propertyNames = new string[_avroSchema.GetFields().Count];
-            _propertyDescriptors = new EventPropertyDescriptor[_propertyNames.Length];
-            int fieldNum = 0;
+            var avroFields = _avroSchema.GetFields();
 
-            foreach (Field field in _avroSchema.GetFields())
-            {
+            _propertyNames = new string[avroFields.Count];
+            _propertyDescriptors = new EventPropertyDescriptor[_propertyNames.Length];
+            var fieldNum = 0;
+
+            foreach (var field in avroFields) {
                 _propertyNames[fieldNum] = field.Name;
 
-                Type propertyType = AvroTypeUtil.PropertyType(field.Schema);
+                var propertyType = AvroTypeUtil.PropertyType(field.Schema).GetBoxedType();
                 Type componentType = null;
-                bool indexed = false;
-                bool mapped = false;
+                var indexed = false;
+                var mapped = false;
                 FragmentEventType fragmentEventType = null;
 
-                if (field.Schema.Tag == global::Avro.Schema.Type.Array)
-                {
-                    componentType = AvroTypeUtil.PropertyType(field.Schema.GetElementType());
+                if (field.Schema.Tag == global::Avro.Schema.Type.Array) {
+                    componentType = AvroTypeUtil.PropertyType(field.Schema.AsArraySchema().ItemSchema);
                     indexed = true;
-                    if (field.Schema.GetElementType().Tag == global::Avro.Schema.Type.Record)
-                    {
-                        fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(field.Schema, _eventAdapterService);
+                    if (field.Schema.AsArraySchema().ItemSchema.Tag == global::Avro.Schema.Type.Record) {
+                        fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
+                            field.Schema,
+                            Metadata.ModuleName,
+                            _eventBeanTypedEventFactory,
+                            _eventTypeAvroHandler,
+                            _fragmentTypeCache);
                     }
                 }
-                else if (field.Schema.Tag == global::Avro.Schema.Type.Map)
-                {
+                else if (field.Schema.Tag == global::Avro.Schema.Type.Map) {
                     mapped = true;
-                    componentType = AvroTypeUtil.PropertyType(field.Schema.GetValueType());
+                    componentType = AvroTypeUtil.PropertyType(field.Schema.AsMapSchema().ValueSchema);
                 }
-                else if (field.Schema.Tag == global::Avro.Schema.Type.String)
-                {
-                    indexed = true;
+                else if (field.Schema.Tag == global::Avro.Schema.Type.String) {
                     componentType = typeof(char);
-                    fragmentEventType = null;
+                    indexed = true;
                 }
-                else
-                {
-                    fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(field.Schema, _eventAdapterService);
+                else {
+                    fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
+                        field.Schema,
+                        Metadata.ModuleName,
+                        _eventBeanTypedEventFactory,
+                        _eventTypeAvroHandler,
+                        _fragmentTypeCache);
                 }
 
                 var getter = new AvroEventBeanGetterSimple(
-                    field, fragmentEventType == null ? null : fragmentEventType.FragmentType, _eventAdapterService);
+                    field,
+                    fragmentEventType?.FragmentType,
+                    _eventBeanTypedEventFactory,
+                    propertyType);
 
                 var descriptor = new EventPropertyDescriptor(
-                    field.Name, propertyType, componentType, false, false, indexed, mapped, fragmentEventType != null);
+                    field.Name,
+                    propertyType,
+                    componentType,
+                    false,
+                    false,
+                    indexed,
+                    mapped,
+                    fragmentEventType != null);
                 var item = new PropertySetDescriptorItem(descriptor, propertyType, getter, fragmentEventType);
                 _propertyItems.Put(field.Name, item);
                 _propertyDescriptors[fieldNum] = descriptor;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,13 +8,11 @@
 
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 using NEsper.Avro.Core;
-
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
@@ -58,126 +56,221 @@ namespace NEsper.Avro.Getter
             return GetAvroFieldValuePolyExists(record, _getters);
         }
 
-        internal static bool GetAvroFieldValuePolyExists(GenericRecord record, AvroEventPropertyGetter[] getters)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            if (record == null)
-            {
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
+
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFieldValuePolyCodegen(codegenMethodScope, codegenClassScope, _getters),
+                underlyingExpression);
+        }
+
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        internal static bool GetAvroFieldValuePolyExists(
+            GenericRecord record,
+            AvroEventPropertyGetter[] getters)
+        {
+            if (record == null) {
                 return false;
             }
+
             record = NavigatePoly(record, getters);
             return record != null && getters[getters.Length - 1].IsExistsPropertyAvro(record);
         }
 
-        internal static object GetAvroFieldValuePoly(GenericRecord record, AvroEventPropertyGetter[] getters)
+        internal static CodegenMethod GetAvroFieldValuePolyExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            AvroEventPropertyGetter[] getters)
         {
-            if (record == null)
-            {
+            return codegenMethodScope.MakeChild(typeof(bool), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .IfRefNullReturnFalse("record")
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
+                .IfRefNullReturnFalse("record")
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingExistsCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
+        }
+
+        internal static object GetAvroFieldValuePoly(
+            GenericRecord record,
+            AvroEventPropertyGetter[] getters)
+        {
+            if (record == null) {
                 return null;
             }
+
             record = NavigatePoly(record, getters);
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
+
             return getters[getters.Length - 1].GetAvroFieldValue(record);
         }
 
-        internal static object GetAvroFieldFragmentPoly(GenericRecord record, AvroEventPropertyGetter[] getters)
+        internal static CodegenMethod GetAvroFieldValuePolyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            AvroEventPropertyGetter[] getters)
         {
-            if (record == null)
-            {
+            return codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .IfRefNullReturnNull("record")
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
+                .IfRefNullReturnNull("record")
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingGetCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
+        }
+
+        internal static object GetAvroFieldFragmentPoly(
+            GenericRecord record,
+            AvroEventPropertyGetter[] getters)
+        {
+            if (record == null) {
                 return null;
             }
+
             record = NavigatePoly(record, getters);
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
+
             return getters[getters.Length - 1].GetAvroFragment(record);
         }
 
-        private static GenericRecord NavigatePoly(GenericRecord record, AvroEventPropertyGetter[] getters)
+        internal static CodegenMethod GetAvroFieldFragmentPolyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            AvroEventPropertyGetter[] getters)
         {
-            for (var i = 0; i < getters.Length - 1; i++)
-            {
+            return codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .IfRefNullReturnNull("record")
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
+                .IfRefNullReturnNull("record")
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingFragmentCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
+        }
+
+        internal static GenericRecord NavigatePoly(
+            GenericRecord record,
+            AvroEventPropertyGetter[] getters)
+        {
+            for (var i = 0; i < getters.Length - 1; i++) {
                 var value = getters[i].GetAvroFieldValue(record);
-                if (!(value is GenericRecord))
-                {
+                if (!(value is GenericRecord)) {
                     return null;
                 }
+
                 record = (GenericRecord) value;
             }
+
             return record;
         }
 
-        internal static string GetAvroFieldValuePolyExistsCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
+        internal static CodegenMethod NavigatePolyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            AvroEventPropertyGetter[] getters)
         {
-            return context.AddMethod(typeof(bool), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
-                .IfRefNullReturnFalse("record")
-                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
-                .IfRefNullReturnFalse("record")
-                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingExists(Ref("record"), context));
-        }
-
-        internal static string GetAvroFieldValuePolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
-        {
-            return context.AddMethod(typeof(object), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
-                .IfRefNullReturnNull("record")
-                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
-                .IfRefNullReturnNull("record")
-                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingGet(Ref("record"), context));
-        }
-
-        internal static string GetAvroFieldFragmentPolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
-        {
-            return context.AddMethod(typeof(object), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly))
-                .IfRefNullReturnNull("record")
-                .AssignRef("record", LocalMethod(NavigatePolyCodegen(context, getters), Ref("record")))
-                .IfRefNullReturnNull("record")
-                .MethodReturn(getters[getters.Length - 1].CodegenUnderlyingFragment(Ref("record"), context));
-        }
-
-        private static string NavigatePolyCodegen(ICodegenContext context, AvroEventPropertyGetter[] getters)
-        {
-            var block = context.AddMethod(typeof(GenericRecord), typeof(GenericRecord), "record", typeof(AvroEventBeanGetterDynamicPoly));
-            block.DeclareVar(typeof(object), "value", ConstantNull());
-            for (int i = 0; i<getters.Length - 1; i++) {
-                block.AssignRef("value", getters[i].CodegenUnderlyingGet(Ref("record"), context))
+            var block = codegenMethodScope.MakeChild(
+                    typeof(GenericRecord),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block;
+            block.DeclareVar<object>("value", CodegenExpressionBuilder.ConstantNull());
+            for (var i = 0; i < getters.Length - 1; i++) {
+                block.AssignRef(
+                        "value",
+                        getters[i]
+                            .UnderlyingGetCodegen(
+                                CodegenExpressionBuilder.Ref("record"),
+                                codegenMethodScope,
+                                codegenClassScope))
                     .IfRefNotTypeReturnConst("value", typeof(GenericRecord), null)
-                    .AssignRef("record", Cast(typeof(GenericRecord), Ref("value")));
+                    .AssignRef(
+                        "record",
+                        CodegenExpressionBuilder.Cast(typeof(GenericRecord), CodegenExpressionBuilder.Ref("value")));
             }
-            return block.MethodReturn(Ref("record"));
-        }
 
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return CodegenUnderlyingGet(
-                CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return block.MethodReturn(CodegenExpressionBuilder.Ref("record"));
         }
-
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return ConstantNull();
-        }
-
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return LocalMethod(GetAvroFieldValuePolyCodegen(context, _getters), underlyingExpression);
-        }
-
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantNull();
-        }
-}
+    }
 } // end of namespace

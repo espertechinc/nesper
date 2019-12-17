@@ -9,7 +9,10 @@
 using System;
 using System.Data.Common;
 using System.Runtime.Serialization;
-using com.espertech.esper.compat.container;
+
+using com.espertech.esper.common.@internal.db.drivers;
+using com.espertech.esper.container;
+
 using Npgsql;
 
 namespace com.espertech.esper.epl.db.drivers

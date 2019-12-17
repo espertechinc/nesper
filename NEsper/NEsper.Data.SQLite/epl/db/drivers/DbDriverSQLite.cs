@@ -11,8 +11,9 @@ using System.Data.Common;
 using System.Data.SQLite;
 using System.Runtime.Serialization;
 
+using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.epl.db.drivers
 {
@@ -40,7 +41,8 @@ namespace com.espertech.esper.epl.db.drivers
             : base(info, context)
         {
             var container = (IContainer) context.Context;
-            if (container == null) {
+            if (container == null)
+            {
                 throw new IllegalStateException("context is not set to container");
             }
         }

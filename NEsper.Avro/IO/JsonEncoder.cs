@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
@@ -39,6 +35,7 @@ namespace NEsper.Avro.IO
         {
             _jsonWriter.WriteValue(value);
         }
+
         public void WriteFloat(float value)
         {
             _jsonWriter.WriteValue(value);
@@ -102,7 +99,10 @@ namespace NEsper.Avro.IO
             _jsonWriter.WriteValue(data);
         }
 
-        public void WriteFixed(byte[] data, int start, int len)
+        public void WriteFixed(
+            byte[] data,
+            int start,
+            int len)
         {
             byte[] value = new byte[len];
             Array.Copy(data, start, value, 0, len);

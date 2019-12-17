@@ -20,14 +20,18 @@ namespace NEsper.Avro.Extensions
                 .AsUnionSchema();
         }
 
-        public static RecordSchema Record(string name, params JObject[] fields)
+        public static RecordSchema Record(
+            string name,
+            params JObject[] fields)
         {
             return SchemaExtensions
                 .ToAvro(TypeBuilder.Record(name, fields))
                 .AsRecordSchema();
         }
 
-        public static RecordSchema Record(string name, JArray fields)
+        public static RecordSchema Record(
+            string name,
+            JArray fields)
         {
             return SchemaExtensions
                 .ToAvro(TypeBuilder.Record(name, fields))

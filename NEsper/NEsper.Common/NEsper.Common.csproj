@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462</TargetFrameworks>
+    <!--
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>NEsper.Common</AssemblyName>
+    <AssemblyTitle>NEsper.Common</AssemblyTitle>
+    <PackageId>NEsper.Common</PackageId>
+    <RootNamespace>com.espertech.esper</RootNamespace>
+    <Summary>Underlying common library for NEsper.</Summary>
+    <Description>Underlying common library for NEsper.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591;</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="common\internal\util\apachecommonstext\**" />
+    <EmbeddedResource Remove="common\internal\util\apachecommonstext\**" />
+    <None Remove="common\internal\util\apachecommonstext\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="common\client\util\DateTimeUtil.cs" />
+    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateEval.cs" />
+    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateForge.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="common\internal\util\apachecommonstext\EntityArrays.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Castle.Windsor" Version="4.1.0" />
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
+    <PackageReference Include="Crc32.NET" Version="1.2.0" />
+    <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+    <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="common\internal\epl\expression\funcs\cast\" />
+    <Folder Include="common\magic\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\..\..\Users\Aaron\.nuget\packages\microsoft.codeanalysis.csharp\3.1.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

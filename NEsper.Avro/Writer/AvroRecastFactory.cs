@@ -1,198 +1,360 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.core.eval;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.events;
-using com.espertech.esper.events.avro;
-using com.espertech.esper.util;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+using com.espertech.esper.common.@internal.@event.avro;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
-
-using Enumerable = System.Linq.Enumerable;
 
 namespace NEsper.Avro.Writer
 {
     public class AvroRecastFactory
     {
-        public static SelectExprProcessor Make(
+        public static SelectExprProcessorForge Make(
             EventType[] eventTypes,
-            SelectExprContext selectExprContext,
+            SelectExprForgeContext selectExprForgeContext,
             int streamNumber,
             AvroSchemaEventType targetType,
             ExprNode[] exprNodes,
-            string statementName,
-            string engineURI)
+            string statementName)
         {
-            var resultType = (AvroEventType) targetType;
-            var streamType = (AvroEventType) eventTypes[streamNumber];
-    
+            AvroEventType resultType = (AvroEventType) targetType;
+            AvroEventType streamType = (AvroEventType) eventTypes[streamNumber];
+
             // (A) fully assignment-compatible: same number, name and type of fields, no additional expressions: Straight repackage
-            if (resultType.Schema.Equals(streamType.Schema) && selectExprContext.ExpressionNodes.Length == 0) {
-                return new AvroInsertProcessorSimpleRepackage(selectExprContext, streamNumber, targetType);
+            if (resultType.Schema.Equals(streamType.Schema) && selectExprForgeContext.ExprForges.Length == 0) {
+                return new AvroInsertProcessorSimpleRepackage(selectExprForgeContext, streamNumber, targetType);
             }
-    
+
             // (B) not completely assignable: find matching properties
-            var writables = selectExprContext.EventAdapterService.GetWriteableProperties(resultType, true);
-            var items = new List<Item>();
-            var written = new List<WriteablePropertyDescriptor>();
-    
+            var writables = EventTypeUtility.GetWriteableProperties(resultType, true);
+            IList<Item> items = new List<Item>();
+            IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
+
             // find the properties coming from the providing source stream
             foreach (var writeable in writables) {
                 var propertyName = writeable.PropertyName;
-    
+
                 Field streamTypeField = streamType.SchemaAvro.GetField(propertyName);
-                //int indexSource = streamTypeField == null ? null : streamTypeField.Pos;
                 Field resultTypeField = resultType.SchemaAvro.GetField(propertyName);
-                //int indexTarget = resultTypeField == null ? null : resultTypeField.Pos;
-    
+
                 if (streamTypeField != null && resultTypeField != null) {
                     if (streamTypeField.Schema.Equals(resultTypeField.Schema)) {
                         items.Add(new Item(resultTypeField, streamTypeField, null, null));
-                    } else {
-                        throw new ExprValidationException("Type by name '" + resultType.Name + "' " +
-                                                          "in property '" + propertyName +
-                                                          "' expected schema '" + resultTypeField.Schema +
-                                                          "' but received schema '" + streamTypeField.Schema +
-                                                          "'");
+                    }
+                    else {
+                        throw new ExprValidationException(
+                            "Type by name '" +
+                            resultType.Name +
+                            "' " +
+                            "in property '" +
+                            propertyName +
+                            "' expected schema '" +
+                            resultTypeField.Schema +
+                            "' but received schema '" +
+                            streamTypeField.Schema +
+                            "'");
                     }
                 }
             }
-    
+
             // find the properties coming from the expressions of the select clause
-            var typeWidenerCustomizer = selectExprContext.EventAdapterService.GetTypeWidenerCustomizer(targetType);
-            for (var i = 0; i < selectExprContext.ExpressionNodes.Length; i++) {
-                var columnName = selectExprContext.ColumnNames[i];
-                var evaluator = selectExprContext.ExpressionNodes[i];
+            var typeWidenerCustomizer =
+                selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(targetType);
+            for (var i = 0; i < selectExprForgeContext.ExprForges.Length; i++) {
+                var columnName = selectExprForgeContext.ColumnNames[i];
                 var exprNode = exprNodes[i];
-    
+
                 var writable = FindWritable(columnName, writables);
                 if (writable == null) {
-                    throw new ExprValidationException("Failed to find column '" + columnName + "' in target type '" + resultType.Name + "'");
+                    throw new ExprValidationException(
+                        "Failed to find column '" + columnName + "' in target type '" + resultType.Name + "'");
                 }
+
                 Field resultTypeField = resultType.SchemaAvro.GetField(writable.PropertyName);
 
-                var widener =
-                    TypeWidenerFactory.GetCheckPropertyAssignType(
-                        exprNode.ToExpressionStringMinPrecedenceSafe(),
-                        exprNode.ExprEvaluator.ReturnType,
-                        writable.PropertyType, columnName, false, typeWidenerCustomizer, statementName, engineURI);
-                items.Add(new Item(resultTypeField, null, evaluator, widener));
+                TypeWidenerSPI widener;
+                try {
+                    widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode),
+                        exprNode.Forge.EvaluationType,
+                        writable.PropertyType,
+                        columnName,
+                        false,
+                        typeWidenerCustomizer,
+                        statementName);
+                }
+                catch (TypeWidenerException ex) {
+                    throw new ExprValidationException(ex.Message, ex);
+                }
+
+                items.Add(new Item(resultTypeField, null, exprNode.Forge, widener));
                 written.Add(writable);
             }
-    
+
             // make manufacturer
-            var itemsArr = items.ToArray();
-            return new AvroInsertProcessorAllocate(streamNumber, itemsArr, resultType, resultType.SchemaAvro, selectExprContext.EventAdapterService);
-        }
-    
-        private static WriteablePropertyDescriptor FindWritable(string columnName, IEnumerable<WriteablePropertyDescriptor> writables)
-        {
-            return Enumerable.FirstOrDefault(writables, writable => writable.PropertyName.Equals(columnName));
+            Item[] itemsArr = items.ToArray();
+            return new AvroInsertProcessorAllocate(
+                streamNumber,
+                itemsArr,
+                resultType,
+                resultType.SchemaAvro,
+                selectExprForgeContext.EventBeanTypedEventFactory);
         }
 
-        private class AvroInsertProcessorSimpleRepackage : SelectExprProcessor
+        private static WriteablePropertyDescriptor FindWritable(
+            string columnName,
+            ISet<WriteablePropertyDescriptor> writables)
         {
-            private readonly SelectExprContext _selectExprContext;
-            private readonly int _underlyingStreamNumber;
-            private readonly EventType _resultEventType;
-
-            internal AvroInsertProcessorSimpleRepackage(SelectExprContext selectExprContext, int underlyingStreamNumber, EventType resultType) {
-                _selectExprContext = selectExprContext;
-                _underlyingStreamNumber = underlyingStreamNumber;
-                _resultEventType = resultType;
+            foreach (var writable in writables) {
+                if (writable.PropertyName.Equals(columnName)) {
+                    return writable;
+                }
             }
 
-            public EventType ResultEventType
+            return null;
+        }
+
+        internal class AvroInsertProcessorSimpleRepackage : SelectExprProcessor,
+            SelectExprProcessorForge
+        {
+            private readonly SelectExprForgeContext _selectExprForgeContext;
+            private readonly int _underlyingStreamNumber;
+
+            internal AvroInsertProcessorSimpleRepackage(
+                SelectExprForgeContext selectExprForgeContext,
+                int underlyingStreamNumber,
+                EventType resultType)
             {
-                get { return _resultEventType; }
+                _selectExprForgeContext = selectExprForgeContext;
+                _underlyingStreamNumber = underlyingStreamNumber;
+                ResultEventType = resultType;
             }
 
-            public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext) {
-                var theEvent = (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
-                return _selectExprContext.EventAdapterService.AdapterForTypedAvro(theEvent.Properties, ResultEventType);
+            public EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
+            {
+                AvroGenericDataBackedEventBean theEvent =
+                    (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
+                return _selectExprForgeContext.EventBeanTypedEventFactory.AdapterForTypedAvro(
+                    theEvent.Properties,
+                    ResultEventType);
+            }
+
+            public EventType ResultEventType { get; }
+
+            public CodegenMethod ProcessCodegen(
+                CodegenExpression resultEventType,
+                CodegenExpression eventBeanFactory,
+                CodegenMethodScope codegenMethodScope,
+                SelectExprProcessorCodegenSymbol selectSymbol,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
+            {
+                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var theEvent = CodegenExpressionBuilder.Cast(
+                    typeof(AvroGenericDataBackedEventBean),
+                    CodegenExpressionBuilder.ArrayAtIndex(
+                        refEPS,
+                        CodegenExpressionBuilder.Constant(_underlyingStreamNumber)));
+                methodNode.Block.MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        eventBeanFactory,
+                        "AdapterForTypedAvro",
+                        CodegenExpressionBuilder.ExprDotName(theEvent, "Properties"),
+                        resultEventType));
+                return methodNode;
+            }
+
+            public SelectExprProcessor GetSelectExprProcessor(
+                ImportService classpathImportService,
+                bool isFireAndForget,
+                string statementName)
+            {
+                return this;
             }
         }
-    
-        private class AvroInsertProcessorAllocate : SelectExprProcessor
+
+        internal class AvroInsertProcessorAllocate : SelectExprProcessor,
+            SelectExprProcessorForge
         {
-            private readonly int _underlyingStreamNumber;
+            private readonly EventBeanTypedEventFactory _eventAdapterService;
             private readonly Item[] _items;
-            private readonly EventType _resultType;
             private readonly Schema _resultSchema;
-            private readonly EventAdapterService _eventAdapterService;
-    
-            public AvroInsertProcessorAllocate(int underlyingStreamNumber, Item[] items, EventType resultType, Schema resultSchema, EventAdapterService eventAdapterService)
+            private readonly int _underlyingStreamNumber;
+
+            internal AvroInsertProcessorAllocate(
+                int underlyingStreamNumber,
+                Item[] items,
+                EventType resultType,
+                Schema resultSchema,
+                EventBeanTypedEventFactory eventAdapterService)
             {
                 _underlyingStreamNumber = underlyingStreamNumber;
                 _items = items;
-                _resultType = resultType;
+                ResultEventType = resultType;
                 _resultSchema = resultSchema;
                 _eventAdapterService = eventAdapterService;
             }
 
-            public EventType ResultEventType
+            public EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
-                get { return _resultType; }
-            }
+                AvroGenericDataBackedEventBean theEvent =
+                    (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
+                GenericRecord source = theEvent.Properties;
+                GenericRecord target = new GenericRecord(_resultSchema.AsRecordSchema());
+                foreach (var item in _items) {
+                    object value;
 
-            public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
-            {
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-                var source = ((AvroGenericDataBackedEventBean)eventsPerStream[_underlyingStreamNumber]).Properties;
-                var target = new GenericRecord(_resultSchema.AsRecordSchema());
-
-                foreach (var item in _items)
-                {
-                    Object value;
-    
-                    if (item.OptionalFromField != null) {
-                        value = source.Get(item.OptionalFromField);
-                    } else {
-                        value = item.Evaluator.Evaluate(evaluateParams);
+                    if (item.OptionalFromIndex != null) {
+                        value = source.Get(item.OptionalFromIndex);
+                    }
+                    else {
+                        value = item.EvaluatorAssigned.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                         if (item.OptionalWidener != null) {
-                            value = item.OptionalWidener.Invoke(value);
+                            value = item.OptionalWidener.Widen(value);
                         }
                     }
-    
-                    target.Put(item.ToField, value);
+
+                    target.Put(item.ToIndex, value);
                 }
-    
-                return _eventAdapterService.AdapterForTypedAvro(target, _resultType);
+
+                return _eventAdapterService.AdapterForTypedAvro(target, ResultEventType);
+            }
+
+            public EventType ResultEventType { get; }
+
+            public CodegenMethod ProcessCodegen(
+                CodegenExpression resultEventType,
+                CodegenExpression eventBeanFactory,
+                CodegenMethodScope codegenMethodScope,
+                SelectExprProcessorCodegenSymbol selectSymbol,
+                ExprForgeCodegenSymbol exprSymbol,
+                CodegenClassScope codegenClassScope)
+            {
+                var schema = codegenClassScope.NamespaceScope.AddDefaultFieldUnshared(
+                    true,
+                    typeof(RecordSchema),
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(AvroSchemaUtil),
+                        "ResolveRecordSchema",
+                        EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
+                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var block = methodNode.Block
+                    .DeclareVar<AvroGenericDataBackedEventBean>(
+                        "theEvent",
+                        CodegenExpressionBuilder.Cast(
+                            typeof(AvroGenericDataBackedEventBean),
+                            CodegenExpressionBuilder.ArrayAtIndex(
+                                refEPS,
+                                CodegenExpressionBuilder.Constant(_underlyingStreamNumber))))
+                    .DeclareVar<GenericRecord>(
+                        "source",
+                        CodegenExpressionBuilder.ExprDotName(
+                            CodegenExpressionBuilder.Ref("theEvent"),
+                            "Properties"))
+                    .DeclareVar<GenericRecord>(
+                        "target",
+                        CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+                
+                foreach (var item in _items) {
+                    CodegenExpression value;
+                    if (item.OptionalFromIndex != null) {
+                        value = CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
+                            "Get",
+                            CodegenExpressionBuilder.Ref("source"),
+                            CodegenExpressionBuilder.Constant(item.OptionalFromIndex.Name));
+                    }
+                    else {
+                        if (item.OptionalWidener != null) {
+                            value = item.Forge.EvaluateCodegen(
+                                item.Forge.EvaluationType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
+                            value = item.OptionalWidener.WidenCodegen(value, methodNode, codegenClassScope);
+                        }
+                        else {
+                            value = item.Forge.EvaluateCodegen(
+                                typeof(object),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
+                        }
+                    }
+
+                    block.StaticMethod(
+                        typeof(GenericRecordExtensions),
+                        "Put",
+                        CodegenExpressionBuilder.Ref("target"),
+                        CodegenExpressionBuilder.Constant(item.ToIndex.Name),
+                        value);
+                }
+
+                block.MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        eventBeanFactory,
+                        "AdapterForTypedAvro",
+                        CodegenExpressionBuilder.Ref("target"),
+                        resultEventType));
+                return methodNode;
             }
         }
-    
-        private class Item
+
+        internal class Item
         {
-            internal Item(Field toToField, Field optionalFromField, ExprEvaluator evaluator, TypeWidener optionalWidener)
+            internal Item(
+                Field toIndex,
+                Field optionalFromIndex,
+                ExprForge forge,
+                TypeWidenerSPI optionalWidener)
             {
-                ToField = toToField;
-                OptionalFromField = optionalFromField;
-                Evaluator = evaluator;
+                ToIndex = toIndex;
+                OptionalFromIndex = optionalFromIndex;
+                Forge = forge;
                 OptionalWidener = optionalWidener;
             }
 
-            public Field ToField { get; private set; }
+            public Field ToIndex { get; }
 
-            public Field OptionalFromField { get; private set; }
+            public Field OptionalFromIndex { get; }
 
-            public ExprEvaluator Evaluator { get; private set; }
+            public ExprForge Forge { get; }
 
-            public TypeWidener OptionalWidener { get; private set; }
+            public TypeWidenerSPI OptionalWidener { get; }
+
+            public ExprEvaluator EvaluatorAssigned { get; set; }
         }
     }
 } // end of namespace

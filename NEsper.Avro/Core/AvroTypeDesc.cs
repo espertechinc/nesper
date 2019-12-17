@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,11 +12,11 @@ namespace NEsper.Avro.Core
 {
     public class AvroTypeDesc
     {
-        public AvroTypeDesc(Type underlyingType)
+        public AvroTypeDesc(Type type)
         {
-            UnderlyingType = underlyingType;
+            Type = type;
         }
 
-        public Type UnderlyingType { get; private set; }
+        public Type Type { get; }
     }
 } // end of namespace

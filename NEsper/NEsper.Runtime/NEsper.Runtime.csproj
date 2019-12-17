@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462</TargetFrameworks>
+    <!--
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>NEsper.Runtime</AssemblyName>
+    <AssemblyTitle>NEsper.Runtime</AssemblyTitle>
+    <PackageId>NEsper.Runtime</PackageId>
+    <RootNamespace>com.espertech.esper.runtime</RootNamespace>
+    <Summary>A component for complex event processing (CEP).</Summary>
+    <Description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591;</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net461|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(NetFramework)'!='true'">
+    <Compile Remove="epl\db\drivers\DbDriverODBC.cs" />
+    <Compile Remove="epl\db\drivers\DbDriverOleDb.cs" />
+    <Compile Remove="esper\util\EsperSectionHandler.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\core\VirtualMachineMetrics.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.AbstractBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Counter.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.CounterMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Gauge.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.GaugeMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Histogram.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.HistogramMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MetaContext.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.Meter.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MeterMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.MetricMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.TimerImpl.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\reporting\JmxReporter.TimerMBean.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\util\DeadlockHealthCheck.cs" />
+    <Compile Remove="internal\metrics\codahale_metrics\metrics\util\JmxGauge.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Castle.Windsor" Version="4.1.0" />
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
+    <PackageReference Include="Crc32.NET" Version="1.2.0" />
+    <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
+    <!--
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="2.8.2" />
+    -->
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(NetCore)'=='true'">
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+  </ItemGroup>
+</Project>

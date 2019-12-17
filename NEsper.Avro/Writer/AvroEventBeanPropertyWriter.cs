@@ -1,42 +1,63 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
+using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events;
-
-using Avro;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Core;
+using NEsper.Avro.Extensions;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Writer
 {
-    public class AvroEventBeanPropertyWriter : EventPropertyWriter
+    public class AvroEventBeanPropertyWriter : EventPropertyWriterSPI
     {
-        protected readonly Field Field;
+        protected readonly Field index;
 
-        public AvroEventBeanPropertyWriter(Field field)
+        public AvroEventBeanPropertyWriter(Field index)
         {
-            Field = field;
+            this.index = index;
         }
 
-        public void Write(Object value, EventBean target)
+        public void Write(
+            object value,
+            EventBean target)
         {
-            var avroEvent = (AvroGenericDataBackedEventBean) target;
+            AvroGenericDataBackedEventBean avroEvent = (AvroGenericDataBackedEventBean) target;
             Write(value, avroEvent.Properties);
         }
 
-        public virtual void Write(Object value, GenericRecord record)
+        public virtual void Write(
+            object value,
+            GenericRecord record)
         {
-            record.Add(Field.Name, value);
+            record.Put(index, value);
+        }
+
+        public virtual CodegenExpression WriteCodegen(
+            CodegenExpression assigned,
+            CodegenExpression und,
+            CodegenExpression target,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            return StaticMethod(
+                typeof(GenericRecordExtensions),
+                "Put",
+                und,
+                Constant(index.Name),
+                assigned);
         }
     }
 } // end of namespace

@@ -1,24 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
-using com.espertech.esper.events;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.@event.core;
 
 using NEsper.Avro.Extensions;
-
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace NEsper.Avro.Getter
 {
@@ -27,91 +23,154 @@ namespace NEsper.Avro.Getter
         private readonly Field _posTop;
         private readonly string _propertyName;
 
-        public AvroEventBeanGetterNestedDynamicSimple(Field posTop, string propertyName)
+        public AvroEventBeanGetterNestedDynamicSimple(
+            Field posTop,
+            string propertyName)
         {
             _posTop = posTop;
             _propertyName = propertyName;
         }
 
-        public Object Get(EventBean eventBean)
+        public object Get(EventBean eventBean)
         {
-            return Get((GenericRecord)eventBean.Underlying);
+            return Get((GenericRecord) eventBean.Underlying);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            return IsExistsProperty((GenericRecord)eventBean.Underlying);
+            return IsExistsProperty((GenericRecord) eventBean.Underlying);
         }
 
-        private Object Get(GenericRecord record)
-        {
-            var inner = (GenericRecord) record.Get(_posTop);
-            if (inner == null)
-            {
-                return null;
-            }
-            return inner.Get(_propertyName);
-        }
-
-        private string GetCodegen(ICodegenContext context)
-        {
-            return context.AddMethod(typeof(Object), typeof(GenericRecord), "record", GetType())
-                    .DeclareVar(typeof(GenericRecord), "inner", Cast(typeof(GenericRecord), ExprDotMethod(Ref("record"), "Get", Constant(_posTop))))
-                    .IfRefNullReturnNull("inner")
-                    .MethodReturn(ExprDotMethod(Ref("inner"), "Get", Constant(_propertyName)));
-        }
-
-        private bool IsExistsProperty(GenericRecord record)
-        {
-            var inner = (GenericRecord)record.Get(_posTop);
-            if (inner == null)
-            {
-                return false;
-            }
-            return inner.Schema.GetField(_propertyName) != null;
-        }
-
-        private string IsExistsPropertyCodegen(ICodegenContext context)
-        {
-            return context.AddMethod(typeof(bool), typeof(GenericRecord), "record", GetType())
-                    .DeclareVar(typeof(GenericRecord), "inner", Cast(typeof(GenericRecord), ExprDotMethod(Ref("record"), "Get", Constant(_posTop))))
-                    .IfRefNullReturnFalse("inner")
-                    .MethodReturn(NotEqualsNull(ExprDotMethodChain(Ref("inner")).AddNoParam("GetSchema").AddWConst("GetField", _propertyName)));
-        }
-
-        public Object GetFragment(EventBean eventBean)
+        public object GetFragment(EventBean eventBean)
         {
             return null;
         }
 
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return CodegenUnderlyingExists(CastUnderlying(typeof(GenericRecord), beanExpression), context);
+            return UnderlyingExistsCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantNull();
+            return CodegenExpressionBuilder.ConstantNull();
         }
 
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(GetCodegen(context), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(
+                GetCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(IsExistsPropertyCodegen(context), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(
+                IsExistsPropertyCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return ConstantNull();
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        private object Get(GenericRecord record)
+        {
+            var inner = (GenericRecord) record.Get(_posTop);
+            if (inner == null) {
+                return null;
+            }
+
+            return inner.Get(_propertyName);
+        }
+
+        private CodegenMethod GetCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<GenericRecord>(
+                    "inner",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(GenericRecord),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
+                            "Get",
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_posTop.Name))))
+                .IfRefNullReturnNull("inner")
+                .MethodReturn(
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(GenericRecordExtensions),
+                        "Get",
+                        CodegenExpressionBuilder.Ref("inner"),
+                        CodegenExpressionBuilder.Constant(_propertyName)));
+        }
+
+        private bool IsExistsProperty(GenericRecord record)
+        {
+            GenericRecord inner = (GenericRecord) record.Get(_posTop);
+            if (inner == null) {
+                return false;
+            }
+
+            return inner.Schema.GetField(_propertyName) != null;
+        }
+
+        private CodegenMethod IsExistsPropertyCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<GenericRecord>(
+                    "inner",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(GenericRecord),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
+                            "Get",
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_posTop.Name))))
+                .IfRefNullReturnFalse("inner")
+                .MethodReturn(
+                    CodegenExpressionBuilder.NotEqualsNull(
+                        CodegenExpressionBuilder.ExprDotMethodChain(CodegenExpressionBuilder.Ref("inner"))
+                            .Get("Schema")
+                            .Add("GetField", CodegenExpressionBuilder.Constant(_propertyName))));
         }
     }
 } // end of namespace

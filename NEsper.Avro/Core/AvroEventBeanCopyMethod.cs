@@ -1,31 +1,36 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.events;
 
 using NEsper.Avro.Extensions;
 
 namespace NEsper.Avro.Core
 {
-    /// <summary>Copy method for Map-underlying events.</summary>
+    /// <summary>
+    ///     Copy method for Map-underlying events.
+    /// </summary>
     public class AvroEventBeanCopyMethod : EventBeanCopyMethod
     {
         private readonly AvroEventType _avroEventType;
-        private readonly EventAdapterService _eventAdapterService;
+        private readonly EventBeanTypedEventFactory _eventAdapterService;
 
-        public AvroEventBeanCopyMethod(AvroEventType avroEventType, EventAdapterService eventAdapterService)
+        public AvroEventBeanCopyMethod(
+            AvroEventType avroEventType,
+            EventBeanTypedEventFactory eventAdapterService)
         {
             _avroEventType = avroEventType;
             _eventAdapterService = eventAdapterService;
@@ -36,33 +41,33 @@ namespace NEsper.Avro.Core
             var original = (GenericRecord) theEvent.Underlying;
             var copy = new GenericRecord(_avroEventType.SchemaAvro.AsRecordSchema());
             var fields = _avroEventType.SchemaAvro.GetFields();
-            foreach (Field field in fields)
-            {
-                if (field.Schema.Tag == Schema.Type.Array)
-                {
-                    var originalColl = original.Get(field).UnwrapEnumerable<object>(true);
-                    if (originalColl != null)
-                    {
-                        copy.Put(field, new List<object>(originalColl));
+            foreach (var field in fields) {
+                if (field.Schema.Tag == Schema.Type.Array) {
+                    var originalValue = original.Get(field);
+                    if (originalValue == null) {
+                    } else if (originalValue is Array originalArray) {
+                        var copyArray = Array.CreateInstance(
+                            originalArray.GetType().GetElementType(),
+                            originalArray.Length);
+                        Array.Copy(originalArray, 0, copyArray, 0, copyArray.Length);
+                        copy.Put(field, copyArray);
+                    } else if (originalValue.GetType().IsGenericCollection()) {
+                        var elementType = originalValue.GetType().GetCollectionItemType();
+                        var copyList = Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+                        throw new NotImplementedException();
                     }
                 }
-                else if (field.Schema.Tag == Schema.Type.Map)
-                {
-                    var originalMap = original.Get(field).UnwrapStringDictionary();
-                    if (originalMap != null)
-                    {
+                else if (field.Schema.Tag == Schema.Type.Map) {
+                    var originalMap = (IDictionary<string, object>) original.Get(field);
+                    if (originalMap != null) {
                         copy.Put(field, new Dictionary<string, object>(originalMap));
                     }
                 }
-                else
-                {
-                    object originalValue;
-                    if (original.TryGetValue(field.Name, out originalValue))
-                    {
-                        copy.Add(field.Name, originalValue);
-                    }
+                else {
+                    copy.Put(field, original.Get(field));
                 }
             }
+
             return _eventAdapterService.AdapterForTypedAvro(copy, _avroEventType);
         }
     }

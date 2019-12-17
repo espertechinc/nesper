@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <xs:element name="mediaorder">
+  <xs:element name="MediaOrder">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="orderId" type="xs:string"/>
-        <xs:element ref="items" maxOccurs="1" />
-        <xs:element ref="books" maxOccurs="1" />
+        <xs:element name="OrderId" type="xs:string"/>
+        <xs:element ref="Items" maxOccurs="1" />
+        <xs:element ref="Books" maxOccurs="1" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="items">
+  <xs:element name="Items">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="item" maxOccurs="unbounded" />
+        <xs:element ref="Item" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="books">
+  <xs:element name="Books">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="book" maxOccurs="unbounded" />
+        <xs:element ref="Book" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="item">
+  <xs:element name="Item">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="itemId" type="xs:string"/>
-        <xs:element name="productId" type="xs:string"/>
-        <xs:element name="amount" type="xs:int"/>
-        <xs:element name="price" type="xs:double"/>
+        <xs:element name="ItemId" type="xs:string"/>
+        <xs:element name="ProductId" type="xs:string"/>
+        <xs:element name="Amount" type="xs:int"/>
+        <xs:element name="Price" type="xs:double"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="book">
+  <xs:element name="Book">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="bookId" type="xs:string"/>
-        <xs:element name="author" type="xs:string"/>
-        <xs:element ref="review" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="BookId" type="xs:string"/>
+        <xs:element name="Author" type="xs:string"/>
+        <xs:element ref="Review" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="review">
+  <xs:element name="Review">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="reviewId" type="xs:string"/>
-        <xs:element name="comment" type="xs:string"/>
+        <xs:element name="ReviewId" type="xs:string"/>
+        <xs:element name="Comment" type="xs:string"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -8,13 +8,11 @@
 
 using System;
 
-using com.espertech.esper.compat.logging;
-
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
 
-namespace com.espertech.esper.compat.logger
+namespace com.espertech.esper.compat.logging
 {
     using LogManager = LogManager;
 
@@ -29,14 +27,16 @@ namespace com.espertech.esper.compat.logger
         /// <summary>
         /// Gets the simple layout.
         /// </summary>
-        public static Layout SimpleLayout { get; } = new SimpleLayout() {
+        public static Layout SimpleLayout { get; } = new SimpleLayout()
+        {
             Text = "${threadid}|${level}|${logger}|${message}"
         };
 
         /// <summary>
         /// Gets the console target.
         /// </summary>
-        public static Target Console { get; } = new ConsoleTarget() {
+        public static Target Console { get; } = new ConsoleTarget()
+        {
             Layout = SimpleLayout,
             DetectConsoleAvailable = true
         };
@@ -44,7 +44,8 @@ namespace com.espertech.esper.compat.logger
         /// <summary>
         /// Gets the memory target - this should only be used for debugging purposes.
         /// </summary>
-        public static MemoryTarget MemoryTarget { get; } = new MemoryTarget() {
+        public static MemoryTarget MemoryTarget { get; } = new MemoryTarget()
+        {
             Layout = SimpleLayout
         };
 
@@ -53,9 +54,9 @@ namespace com.espertech.esper.compat.logger
         /// </summary>
         public static void Register()
         {
-            LogManager.FactoryLoggerFromType = type =>
+            logging.LogManager.FactoryLoggerFromType = type =>
                 new LoggerNLog(NLog.LogManager.GetLogger(type.FullName));
-            LogManager.FactoryLoggerFromName = name =>
+            logging.LogManager.FactoryLoggerFromName = name =>
                 new LoggerNLog(NLog.LogManager.GetLogger(name));
         }
 
@@ -330,6 +331,5 @@ namespace com.espertech.esper.compat.logger
                 _log.Fatal(e, message);
             }
         }
-
     }
 }

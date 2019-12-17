@@ -7,7 +7,7 @@
     <AssemblyName>NEsper.Regression</AssemblyName>
     <AssemblyTitle>NEsper.Regression</AssemblyTitle>
     <PackageId>NEsper.Regression</PackageId>
-    <RootNamespace>com.espertech.esper</RootNamespace>
+    <RootNamespace>com.espertech.esper.regressionlib</RootNamespace>
     <Description>Regression tests for NEsper.</Description>
     <Summary>Regression tests for NEsper.</Summary>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -18,6 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="suite\client\runtime\ClientRuntimeJMX.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="4.0.8" />
     <PackageReference Include="NUnit" Version="3.10.1" />
   </ItemGroup>
 
@@ -26,20 +31,20 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Confluent.Apache.Avro" Version="1.7.7.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NEsper\NEsper.csproj" />
-    <ProjectReference Include="..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
-    <ProjectReference Include="..\NEsper.Data.MySQL\NEsper.Data.MySQL.csproj" />
-    <ProjectReference Include="..\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
-    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
-  </ItemGroup>
-
+  <!--
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.0'">
     <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
+  </ItemGroup>
+  -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
+    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
+    <ProjectReference Include="..\NEsper.Compiler\NEsper.Compiler.csproj" />
+    <ProjectReference Include="..\NEsper.Data.PgSQL\NEsper.Data.PgSQL.csproj" />
+    <ProjectReference Include="..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+    <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

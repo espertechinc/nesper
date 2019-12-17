@@ -35,7 +35,7 @@ namespace NEsper.Examples.StockTicker.monitor
             var tick = (StockTick) @event;
     
             Log.Debug(".update Alert for stock=" + tick.StockSymbol +
-                      "  price=" + tick.Price +
+                      "  Price=" + tick.Price +
                       "  initialPriceTick=" + _initialPriceTick.Price +
                       "  limt=" + _limit.LimitPct);
     

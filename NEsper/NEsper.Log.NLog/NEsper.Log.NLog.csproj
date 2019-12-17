@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
   </ItemGroup>
 
   <ItemGroup>

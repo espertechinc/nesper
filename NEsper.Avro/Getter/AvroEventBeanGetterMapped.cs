@@ -1,53 +1,49 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.codegen.core;
-using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
-using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
-
 namespace NEsper.Avro.Getter
 {
-    using Map = IDictionary<string, object>;
-
     public class AvroEventBeanGetterMapped : AvroEventPropertyGetter
     {
         private readonly string _key;
         private readonly Field _pos;
 
-        public AvroEventBeanGetterMapped(Field pos, string key)
+        public AvroEventBeanGetterMapped(
+            Field pos,
+            string key)
         {
             _pos = pos;
             _key = key;
         }
 
-        public Object Get(EventBean eventBean)
+        public object Get(EventBean eventBean)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = (Map) record.Get(_pos);
+            var values = (IDictionary<string, object>) record.Get(_pos);
             return GetAvroMappedValueWNullCheck(values, _key);
         }
 
-        public Object GetAvroFieldValue(GenericRecord record)
+        public object GetAvroFieldValue(GenericRecord record)
         {
-            var values = (Map) record.Get(_pos);
+            var values = (IDictionary<string, object>) record.Get(_pos);
             return GetAvroMappedValueWNullCheck(values, _key);
         }
 
@@ -61,72 +57,102 @@ namespace NEsper.Avro.Getter
             return true;
         }
 
-        public Object GetFragment(EventBean eventBean)
+        public object GetFragment(EventBean eventBean)
         {
             return null;
         }
 
-        public Object GetAvroFragment(GenericRecord record)
+        public object GetAvroFragment(GenericRecord record)
         {
             return null;
         }
 
-        public static Object GetMappedValue(object map, string key)
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            if (map == null)
-            {
-                return null;
-            }
-
-            var magicMap = MagicMarker.GetStringDictionary(map);
-            return magicMap.Get(key);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
-        private string GetAvroFieldValueCodegen(ICodegenContext context)
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            return context.AddMethod(typeof(Object), typeof(GenericRecord), "record", GetType())
-                .DeclareVar(typeof(Map), "values", Cast(typeof(Map), ExprDotMethod(Ref("record"), "get", Constant(_pos))))
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFieldValueCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
+        }
+
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantTrue();
+        }
+
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return CodegenExpressionBuilder.ConstantNull();
+        }
+
+        private CodegenMethod GetAvroFieldValueCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<IDictionary<string, object>>(
+                    "values",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(IDictionary<string, object>),
+                        CodegenExpressionBuilder.StaticMethod(
+                            typeof(GenericRecordExtensions),
+                            "Get",
+                            CodegenExpressionBuilder.Ref("record"),
+                            CodegenExpressionBuilder.Constant(_pos.Name))))
                 .IfRefNullReturnNull("values")
-                .MethodReturn(ExprDotMethod(Ref("values"), "get", Constant(_key)));
-        }
-
-        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return CodegenUnderlyingGet(CastUnderlying(typeof(GenericRecord), beanExpression), context);
-        }
-
-        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
-        {
-            return ConstantNull();
-        }
-
-        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return LocalMethod(GetAvroFieldValueCodegen(context), underlyingExpression);
-        }
-
-        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantTrue();
-        }
-
-        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
-        {
-            return ConstantNull();
+                .MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("values"),
+                        "Get",
+                        CodegenExpressionBuilder.Constant(_key)));
         }
 
         /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="map">map</param>
         /// <param name="key">key</param>
         /// <returns>value</returns>
-        public static Object GetAvroMappedValueWNullCheck(Map map, string key)
+        public static object GetAvroMappedValueWNullCheck(
+            IDictionary<string, object> map,
+            string key)
         {
             return map?.Get(key);
         }

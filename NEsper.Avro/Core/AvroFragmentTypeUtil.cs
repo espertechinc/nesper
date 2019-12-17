@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,11 +10,15 @@ using System.Collections.Generic;
 
 using Avro;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.@event.avro;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.property;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.parse;
-using com.espertech.esper.events;
-using com.espertech.esper.events.property;
 
 using NEsper.Avro.Extensions;
 
@@ -25,64 +29,87 @@ namespace NEsper.Avro.Core
         internal static FragmentEventType GetFragmentType(
             Schema schema,
             string propertyName,
+            string moduleName,
             IDictionary<string, PropertySetDescriptorItem> propertyItems,
-            EventAdapterService eventAdapterService)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeAvroHandler eventTypeAvroHandler,
+            AvroEventTypeFragmentTypeCache fragmentTypeCache)
         {
-            string unescapePropName = ASTUtil.UnescapeDot(propertyName);
-            PropertySetDescriptorItem item = propertyItems.Get(unescapePropName);
-            if (item != null)
-            {
+            var unescapePropName = StringValue.UnescapeDot(propertyName);
+            var item = propertyItems.Get(unescapePropName);
+            if (item != null) {
                 return item.FragmentEventType;
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            AvroFieldDescriptor desc = AvroFieldUtil.FieldForProperty(schema, property);
-            if (desc == null)
-            {
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var desc = AvroFieldUtil.FieldForProperty(schema, property);
+            if (desc == null) {
                 return null;
             }
-            if (desc.IsDynamic)
-            {
+
+            if (desc.IsDynamic) {
                 return null;
             }
-            Schema fieldSchemaByAccess = desc.Field.Schema;
-            if (desc.IsAccessedByIndex)
-            {
-                fieldSchemaByAccess = fieldSchemaByAccess.GetElementType();
+
+            var fieldSchemaByAccess = desc.Field.Schema;
+            if (desc.IsAccessedByIndex) {
+                fieldSchemaByAccess = fieldSchemaByAccess.AsArraySchema().ItemSchema;
             }
-            return GetFragmentEventTypeForField(fieldSchemaByAccess, eventAdapterService);
+
+            return GetFragmentEventTypeForField(
+                fieldSchemaByAccess,
+                moduleName,
+                eventBeanTypedEventFactory,
+                eventTypeAvroHandler,
+                fragmentTypeCache);
         }
 
         internal static FragmentEventType GetFragmentEventTypeForField(
             Schema fieldSchema,
-            EventAdapterService eventAdapterService)
+            string moduleName,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeAvroHandler eventTypeAvroHandler,
+            AvroEventTypeFragmentTypeCache fragmentTypeCache)
         {
             Schema recordSchema;
-            bool indexed = false;
-            if (fieldSchema.Tag == Schema.Type.Record)
-            {
+            var indexed = false;
+            if (fieldSchema.Tag == Schema.Type.Record) {
                 recordSchema = fieldSchema;
             }
-            else if (fieldSchema.Tag == Schema.Type.Array && fieldSchema.GetElementType().Tag == Schema.Type.Record)
-            {
-                recordSchema = fieldSchema.GetElementType();
+            else if (fieldSchema.Tag == Schema.Type.Array &&
+                     fieldSchema.AsArraySchema().ItemSchema.Tag == Schema.Type.Record) {
+                recordSchema = fieldSchema.AsArraySchema().ItemSchema;
                 indexed = true;
             }
-            else
-            {
+            else {
                 return null;
             }
 
-            // See if there is an existing type
-            EventType existing = eventAdapterService.GetEventTypeByName(recordSchema.Name);
-            if (existing != null && existing is AvroEventType)
-            {
-                return new FragmentEventType(existing, indexed, false);
+            var cached = fragmentTypeCache.Get(recordSchema.Name);
+            if (cached != null) {
+                return new FragmentEventType(cached, indexed, false);
             }
 
-            EventType fragmentType = eventAdapterService.AddAvroType(
-                recordSchema.Name, new ConfigurationEventTypeAvro().SetAvroSchema(recordSchema), false, false, false,
-                false, false);
+            var metadata = new EventTypeMetadata(
+                recordSchema.Name,
+                moduleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.AVRO,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
+            var config = new ConfigurationCommonEventTypeAvro();
+            config.AvroSchema = recordSchema;
+
+            var fragmentType = eventTypeAvroHandler.NewEventTypeFromSchema(
+                metadata,
+                eventBeanTypedEventFactory,
+                config,
+                null,
+                null);
+
+            fragmentTypeCache.Add(recordSchema.Name, fragmentType);
             return new FragmentEventType(fragmentType, indexed, false);
         }
     }

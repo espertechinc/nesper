@@ -35,7 +35,7 @@ namespace NEsper.Examples.StockTicker.monitor
             _stockTickerResultListener = stockTickerResultListener;
 
             // Listen to all limits to be set
-            String expressionText = "every pricelimit=PriceLimit()";
+            String expressionText = "every Pricelimit=PriceLimit()";
             EPStatement factory = epService.EPAdministrator.CreatePattern(expressionText);
 
             factory.Events += HandleEvents;
@@ -48,7 +48,7 @@ namespace NEsper.Examples.StockTicker.monitor
             _limit = limit;
             _stockTickerResultListener = stockTickerResultListener;
 
-            String expressionText = "every pricelimit=PriceLimit" +
+            String expressionText = "every Pricelimit=PriceLimit" +
                                     "(UserId='" + limit.UserId + "'," +
                                     "StockSymbol='" + limit.StockSymbol + "')";
             _newLimitListener = epService.EPAdministrator.CreatePattern(expressionText);
@@ -61,7 +61,7 @@ namespace NEsper.Examples.StockTicker.monitor
 
         private void HandleEvents(Object sender, UpdateEventArgs e)
         {
-            var limitBean = (PriceLimit) e.NewEvents[0].Get("pricelimit");
+            var limitBean = (PriceLimit) e.NewEvents[0].Get("Pricelimit");
 
             if (Log.IsDebugEnabled) {
                 Log.Debug(".update Received new limit, user=" + limitBean.UserId +
@@ -94,7 +94,7 @@ namespace NEsper.Examples.StockTicker.monitor
 
             if (Log.IsDebugEnabled) {
                 Log.Debug(".update Received initial tick, stock=" + tick.StockSymbol +
-                          "  price=" + tick.Price +
+                          "  Price=" + tick.Price +
                           "  limit.LimitPct=" + limitPct +
                           "  lowerLimit=" + lowerLimit +
                           "  upperLimit=" + upperLimit);

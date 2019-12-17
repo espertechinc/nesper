@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>NEsper.LINQ</AssemblyName>
+    <AssemblyTitle>NEsper.LINQ</AssemblyTitle>
+    <PackageId>NEsper.LINQ</PackageId>
+    <RootNamespace>com.espertech.esper.linq</RootNamespace>
+    <Summary>LINQ support for NEsper.</Summary>
+    <Description>LINQ support for NEsper.</Description>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
+  </ItemGroup>
+
+</Project>

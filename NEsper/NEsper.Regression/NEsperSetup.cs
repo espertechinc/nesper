@@ -7,38 +7,36 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using com.espertech.esper.compat.logger;
+using System.IO;
+
+using com.espertech.esper.compat.logging;
 
 using NEsper.Avro.Extensions;
+
 using NLog;
-#if NETSTANDARD2_0
-#else
-using NEsper.Scripting.ClearScript;
-#endif
 
 using NUnit.Framework;
 
-namespace com.espertech.esper
+namespace com.espertech.esper.regressionlib
 {
-    using Directory = System.IO.Directory;
-
     [SetUpFixture]
     public class NEsperSetup
     {
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
+            AppDomainSetup appDomainSetup = new AppDomainSetup();
+
 #if NETSTANDARD2_0
 #else
-            var clearScript = typeof(ScriptingEngineJScript);
+            //var clearScript = typeof(ScriptingEngineJScript);
 #endif
 
             // Ensure that AVRO support is loaded before we change directories
             SchemaBuilder.Record("dummy");
 
             var dir = TestContext.CurrentContext.TestDirectory;
-            if (dir != null)
-            {
+            if (dir != null) {
                 Environment.CurrentDirectory = dir;
                 Directory.SetCurrentDirectory(dir);
             }

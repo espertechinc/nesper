@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,22 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression.core;
 
 namespace NEsper.Avro.SelectExprRep
 {
-    public class SelectExprProcessorEvalByGetterFragmentAvroArray : ExprEvaluator
+    public class SelectExprProcessorEvalByGetterFragmentAvroArray : ExprEvaluator,
+        ExprForge,
+        ExprNodeRenderable
     {
-        private readonly EventPropertyGetter _getter;
-        private readonly Type _returnType;
         private readonly int _streamNum;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly Type _returnType;
 
         public SelectExprProcessorEvalByGetterFragmentAvroArray(
             int streamNum,
-            EventPropertyGetter getter,
+            EventPropertyGetterSPI getter,
             Type returnType)
         {
             _streamNum = streamNum;
@@ -30,24 +38,81 @@ namespace NEsper.Avro.SelectExprRep
             _returnType = returnType;
         }
 
-        public object Evaluate(EvaluateParams evaluateParams)
+        public object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean streamEvent = evaluateParams.EventsPerStream[_streamNum];
-            if (streamEvent == null)
-            {
+            EventBean @event = eventsPerStream[_streamNum];
+            if (@event == null) {
                 return null;
             }
-            Object result = _getter.Get(streamEvent);
-            if (result is Array)
-            {
-                return Collections.List((Object[]) result);
+
+            object result = _getter.Get(@event);
+            if (result != null && result.GetType().IsArray) {
+                return Arrays.AsList((object[]) result);
             }
+
             return null;
         }
 
-        public Type ReturnType
+        public ExprEvaluator ExprEvaluator {
+            get => this;
+        }
+
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
         {
-            get { return _returnType; }
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(ICollection<object>),
+                GetType(),
+                codegenClassScope);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+
+            methodNode.Block
+                .DeclareVar<EventBean>(
+                    "@event",
+                    CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
+                .IfRefNullReturnNull("@event")
+                .DeclareVar<object[]>(
+                    "result",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(object[]),
+                        _getter.EventBeanGetCodegen(
+                            CodegenExpressionBuilder.Ref("@event"),
+                            methodNode,
+                            codegenClassScope)))
+                .IfRefNullReturnNull("result")
+                .MethodReturn(
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(CompatExtensions),
+                        "AsList",
+                        CodegenExpressionBuilder.Ref("result")));
+            return CodegenExpressionBuilder.LocalMethod(methodNode);
+        }
+
+        public Type EvaluationType {
+            get => _returnType;
+        }
+
+        public ExprForgeConstantType ForgeConstantType {
+            get => ExprForgeConstantType.NONCONST;
+        }
+
+        public ExprNodeRenderable ForgeRenderable {
+            get => this;
+        }
+
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
+
+        public void ToEPL(
+            TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence)
+        {
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace
