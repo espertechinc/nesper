@@ -175,7 +175,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
-                ExprDotMethod(REF_ROW, "GetCollectionScalar", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                ExprDotMethod(
+                    REF_ROW,
+                    "GetCollectionScalar",
+                    REF_COLUMN,
+                    REF_EPS,
+                    REF_ISNEWDATA,
+                    REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionOfEventsCodegen(

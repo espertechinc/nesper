@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -58,16 +59,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
+            var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 this.GetType(),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
                 .DeclareVar<object>(
@@ -94,6 +95,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => enumerationForge.EnumForgeRenderable;
         }
 
+        public static EventBean[] ConvertToTableTypeImpl(
+            ICollection<EventBean> eventBeanCollection,
+            TableMetadataInternalEventToPublic eventToPublic,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var @out = new EventBean[eventBeanCollection.Count];
+            var index = 0;
+            foreach (var @event in eventBeanCollection) {
+                @out[index++] = eventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
+            }
+
+            return @out;
+        }
+
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -110,18 +127,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (result is ICollection<EventBean> eventsDowncast) {
-                EventBean[] @out = new EventBean[eventsDowncast.Count];
-                int index = 0;
-                foreach (EventBean @event in eventsDowncast) {
-                    @out[index++] = eventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
-                }
-
-                return @out;
+            if (result is FlexCollection eventsDowncastFlex) {
+                return ConvertToTableTypeImpl(
+                    eventsDowncastFlex.EventBeanCollection,
+                    eventToPublic,
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
+            } else if (result is ICollection<EventBean> eventsDowncast) {
+                return ConvertToTableTypeImpl(
+                    eventsDowncast,
+                    eventToPublic,
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
             }
 
-            EventBean[] events = (EventBean[]) result;
-            for (int i = 0; i < events.Length; i++) {
+            var events = (EventBean[]) result;
+            for (var i = 0; i < events.Length; i++) {
                 events[i] = eventToPublic.Convert(events[i], eventsPerStream, isNewData, exprEvaluatorContext);
             }
 

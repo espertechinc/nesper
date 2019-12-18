@@ -123,13 +123,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             CodegenClassScope codegenClassScope)
         {
             var future = GetAggFuture(codegenClassScope);
-            return ExprDotMethod(
-                future,
-                "GetCollectionOfEvents",
-                Constant(column),
-                exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent),
-                exprSymbol.GetAddExprEvalCtx(parent));
+            return FlexWrap(
+                ExprDotMethod(
+                    future,
+                    "GetCollectionOfEvents",
+                    Constant(column),
+                    exprSymbol.GetAddEPS(parent),
+                    exprSymbol.GetAddIsNewData(parent),
+                    exprSymbol.GetAddExprEvalCtx(parent)));
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(

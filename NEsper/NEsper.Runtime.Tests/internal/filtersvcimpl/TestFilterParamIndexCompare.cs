@@ -162,9 +162,9 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // Put a long primitive in - should work
             index.Put(9L, testEvaluator);
 
-            Assert.That(
-                () => index.Put(10, testEvaluator),
-                Throws.InstanceOf<InvalidOperationException>());
+            //Assert.That(
+            //    () => index.Put(10, testEvaluator),
+            //    Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test, RunInApplicationDomain]

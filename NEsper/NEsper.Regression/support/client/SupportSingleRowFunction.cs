@@ -12,6 +12,7 @@ using System.IO;
 using System.Numerics;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.support.bean;
@@ -80,6 +81,17 @@ namespace com.espertech.esper.regressionlib.support.client
             return false;
         }
 
+        public static bool EventsCheckStrings(
+            FlexCollection events,
+            string property,
+            string value)
+        {
+            return EventsCheckStrings(
+                events.EventBeanCollection,
+                property,
+                value);
+        }
+        
         public static string VarargsOnlyInt(params int[] values)
         {
             var objects = new object[values.Length];

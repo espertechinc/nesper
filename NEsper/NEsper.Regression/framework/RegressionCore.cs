@@ -15,13 +15,6 @@ namespace com.espertech.esper.regressionlib.framework
         static RegressionCore()
         {
             Log.Info("Database Driver Loaded: {0}", DatabaseDriver);
-
-            // Go delete all my previous run's data
-            var srcDir = @"C:\src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review";
-            foreach (var srcFile in Directory.GetFiles(srcDir, "*.cs"))
-            {
-                File.Delete(srcFile);
-            }
         }
 
         public static void Initialize()

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -157,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = methodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(FlexCollection),
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
@@ -206,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
         }
 
-        private ICollection<object> EvaluateGetInternal(EventBean @event)
+        private FlexCollection EvaluateGetInternal(EventBean @event)
         {
             return ConvertToCollection(_propertyName, _getter.Get(@event));
         }
@@ -217,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
                 .AddParam(typeof(EventBean), "@event")
                 .Block
                 .DeclareVar(
@@ -237,7 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethodBuild(method).Pass(@event).Call();
         }
         
-        public static ICollection<object> ConvertToCollection(
+        public static FlexCollection ConvertToCollection(
             string propertyName, 
             object value)
         {
@@ -247,10 +248,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             if (value is string stringValue) {
                 // Convert to a collection of characters
-                return stringValue
-                    .ToCharArray()
-                    .Cast<object>()
-                    .ToList();
+                return FlexCollection.Of(
+                    stringValue
+                        .ToCharArray()
+                        .Cast<object>()
+                        .ToList());
             }
 
             Log.Warn(

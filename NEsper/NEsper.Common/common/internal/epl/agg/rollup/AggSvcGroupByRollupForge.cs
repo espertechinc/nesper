@@ -136,7 +136,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
         {
             method.Block.DebugStack();
             method.Block.MethodReturn(
-                ExprDotMethod(REF_CURRENTROW, "GetValue", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                ExprDotMethod(
+                    REF_CURRENTROW,
+                    "GetValue",
+                    REF_COLUMN,
+                    REF_EPS,
+                    REF_ISNEWDATA,
+                    REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionOfEventsCodegen(

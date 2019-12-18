@@ -50,7 +50,6 @@ namespace com.espertech.esper.regressionrun.Runner
                 config.Runtime.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactoryRethrow));
                 config.Runtime.ExceptionHandling.UndeployRethrowPolicy = UndeployRethrowPolicy.RETHROW_FIRST;
                 config.Compiler.ByteCode.AttachEPL = true;
-                config.Compiler.Logging.AuditDirectory = $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review";
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
                 {

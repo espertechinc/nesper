@@ -658,11 +658,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(getValueMethod, "GetValue", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(getEventBeanMethod, "GetEventBean", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(getCollectionScalarMethod, "GetCollectionScalar", innerMethods, innerProperties);
-            CodegenStackGenerator.RecursiveBuildStack(
-                getCollectionOfEventsMethod,
-                "GetCollectionOfEvents",
-                innerMethods,
-                innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(getCollectionOfEventsMethod, "GetCollectionOfEvents", innerMethods, innerProperties);
             foreach (var methodEntry in namedMethods.Methods) {
                 CodegenStackGenerator.RecursiveBuildStack(methodEntry.Value, methodEntry.Key, innerMethods, innerProperties);
             }

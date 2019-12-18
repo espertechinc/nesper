@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -92,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var events = (ICollection<EventBean>) target;
+            var events = ((FlexCollection) target).EventBeanCollection;
             var underlyings = new ArrayDeque<object[]>(events.Count);
             foreach (var @event in events) {
                 underlyings.Add(eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, exprEvaluatorContext));

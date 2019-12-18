@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -29,14 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context);
     }
-
-    public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
+    
+        public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
     {
-        public delegate ICollection<EventBean> EvaluateEventGetROCollectionEventsFunc(
+        public delegate FlexCollection EvaluateEventGetROCollectionEventsFunc(
             EventBean @event,
             ExprEvaluatorContext context);
 
-        public delegate ICollection<object> EvaluateEventGetROCollectionScalarFunc(
+        public delegate FlexCollection EvaluateEventGetROCollectionScalarFunc(
             EventBean @event,
             ExprEvaluatorContext context);
 
@@ -66,14 +67,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetROCollectionEvents(@event, context);
+            return ProcEvaluateEventGetROCollectionEvents(@event, context).EventBeanCollection;
         }
 
         public ICollection<object> EvaluateEventGetROCollectionScalar(
             EventBean @event,
             ExprEvaluatorContext context)
         {
-            return ProcEvaluateEventGetRoCollectionScalar(@event, context);
+            return ProcEvaluateEventGetRoCollectionScalar(@event, context).ObjectCollection;
         }
 
         public EventBean EvaluateEventGetEventBean(

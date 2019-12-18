@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
@@ -320,7 +321,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var enumSymbols = new ExprEnumerationGivenEventSymbol();
 
             var evaluateEventGetROCollectionEventsMethod = method
-                .MakeChildWithScope(typeof(ICollection<EventBean>), generator, enumSymbols, classScope)
+                .MakeChildWithScope(typeof(FlexCollection), generator, enumSymbols, classScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             evaluateEventGetROCollectionEventsMethod.Block.MethodReturn(
@@ -355,7 +356,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             //        classScope));
 
             var evaluateEventGetROCollectionScalarMethod = method
-                .MakeChildWithScope(typeof(ICollection<object>), generator, enumSymbols, classScope)
+                .MakeChildWithScope(typeof(FlexCollection), generator, enumSymbols, classScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             evaluateEventGetROCollectionScalarMethod.Block.MethodReturn(

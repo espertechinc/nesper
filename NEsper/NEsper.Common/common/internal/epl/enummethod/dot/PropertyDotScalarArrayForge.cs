@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = methodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(FlexCollection),
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
@@ -241,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
                 .AddParam(typeof(EventBean), "@event")
                 .Block
                 .DeclareVar(
@@ -254,7 +254,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethod method;
             if (ComponentTypeCollection.CanNotBeNull() ||
                 ComponentTypeCollection.GetUnboxedType().CanNotBeNull()) {
-                method = block.MethodReturn(NewInstance<ArrayWrappingCollection>(Ref("value")));
+                method = block.MethodReturn(
+                    FlexWrap(
+                        NewInstance<ArrayWrappingCollection>(
+                            Ref("value"))));
             }
             else {
                 method = block.MethodReturn(Ref("value"));
