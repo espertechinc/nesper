@@ -5,8 +5,8 @@ namespace com.espertech.esperio
     /// </summary>
     public class AdapterStateManager
     {
-        private AdapterState state = AdapterState.OPENED;
-        private bool stateTransitionsAllowed = true;
+        private AdapterState _state = AdapterState.OPENED;
+        private bool _stateTransitionsAllowed = true;
 
         /// <summary>
         /// Gets the state
@@ -15,7 +15,7 @@ namespace com.espertech.esperio
 
         public AdapterState State
         {
-            get { return state; }
+            get { return _state; }
         }
 
         /// <summary>
@@ -26,11 +26,11 @@ namespace com.espertech.esperio
         public void Start()
         {
             AssertStateTransitionsAllowed();
-            if (state != AdapterState.OPENED)
+            if (_state != AdapterState.OPENED)
             {
-                throw new IllegalStateTransitionException("Cannot start from the " + state + " state");
+                throw new IllegalStateTransitionException("Cannot start from the " + _state + " state");
             }
-            state = AdapterState.STARTED;
+            _state = AdapterState.STARTED;
         }
 
         /// <summary>
@@ -40,11 +40,11 @@ namespace com.espertech.esperio
         public void Stop()
         {
             AssertStateTransitionsAllowed();
-            if (state != AdapterState.STARTED && state != AdapterState.PAUSED)
+            if (_state != AdapterState.STARTED && _state != AdapterState.PAUSED)
             {
-                throw new IllegalStateTransitionException("Cannot stop from the " + state + " state");
+                throw new IllegalStateTransitionException("Cannot stop from the " + _state + " state");
             }
-            state = AdapterState.OPENED;
+            _state = AdapterState.OPENED;
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace com.espertech.esperio
         public void Pause()
         {
             AssertStateTransitionsAllowed();
-            if (state != AdapterState.STARTED)
+            if (_state != AdapterState.STARTED)
             {
-                throw new IllegalStateTransitionException("Cannot pause from the " + state + " state");
+                throw new IllegalStateTransitionException("Cannot pause from the " + _state + " state");
             }
-            state = AdapterState.PAUSED;
+            _state = AdapterState.PAUSED;
         }
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace com.espertech.esperio
         public void Resume()
         {
             AssertStateTransitionsAllowed();
-            if (state != AdapterState.PAUSED)
+            if (_state != AdapterState.PAUSED)
             {
-                throw new IllegalStateTransitionException("Cannot resume from the " + state + " state");
+                throw new IllegalStateTransitionException("Cannot resume from the " + _state + " state");
             }
-            state = AdapterState.STARTED;
+            _state = AdapterState.STARTED;
         }
 
         /// <summary>
@@ -84,11 +84,11 @@ namespace com.espertech.esperio
 
         public void Destroy()
         {
-            if (state == AdapterState.DESTROYED)
+            if (_state == AdapterState.DESTROYED)
             {
-                throw new IllegalStateTransitionException("Cannot destroy from the " + state + " state");
+                throw new IllegalStateTransitionException("Cannot destroy from the " + _state + " state");
             }
-            state = AdapterState.DESTROYED;
+            _state = AdapterState.DESTROYED;
         }
 
         /// <summary>
@@ -98,12 +98,12 @@ namespace com.espertech.esperio
 
         public void DisallowStateTransitions()
         {
-            stateTransitionsAllowed = false;
+            _stateTransitionsAllowed = false;
         }
 
         private void AssertStateTransitionsAllowed()
         {
-            if (!stateTransitionsAllowed)
+            if (!_stateTransitionsAllowed)
             {
                 throw new IllegalStateTransitionException("State transitions have been disallowed");
             }

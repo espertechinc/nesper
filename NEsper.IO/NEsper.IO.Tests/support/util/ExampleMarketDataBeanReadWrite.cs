@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
-using com.espertech.esper.compat;
+using com.espertech.esper.compat.magic;
 using com.espertech.esperio.regression.adapter;
 
 namespace com.espertech.esperio.support.util
@@ -17,9 +14,6 @@ namespace com.espertech.esperio.support.util
     public class ExampleMarketDataBeanReadWrite : TestCSVAdapterUseCases.ExampleMarketDataBean
     {
         [PropertyName("value")]
-        public double Value
-        {
-            get { return Price*Volume.Value; }
-        }
+        public double Value => Price*Volume.Value;
     }
 }

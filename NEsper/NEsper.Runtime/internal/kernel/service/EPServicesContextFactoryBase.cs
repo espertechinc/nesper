@@ -278,7 +278,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     importServiceRuntime);
             var historicalDataCacheFactory = MakeHistoricalDataCacheFactory(epServicesHA.RuntimeExtensionServices);
 
-            var dataflowService = new EPDataFlowServiceImpl();
+            var dataflowService = new EPDataFlowServiceImpl(container);
             var dataFlowFilterServiceAdapter = MakeDataFlowFilterServiceAdapter();
 
             var threadingService = MakeThreadingService(configs);

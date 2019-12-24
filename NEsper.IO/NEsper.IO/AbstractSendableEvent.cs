@@ -8,8 +8,6 @@
 
 using System;
 
-using com.espertech.esper.schedule;
-
 namespace com.espertech.esperio
 {
     /// <summary>
@@ -17,9 +15,6 @@ namespace com.espertech.esperio
     /// </summary>
     public abstract class AbstractSendableEvent : SendableEvent
     {
-        private readonly long timestamp;
-        private readonly long scheduleSlot;
-
         /// <summary>Ctor. </summary>
         /// <param name="timestamp">to send</param>
         /// <param name="scheduleSlot">the schedule slot assigned by scheduling service</param>
@@ -30,20 +25,14 @@ namespace com.espertech.esperio
                 throw new ArgumentNullException("scheduleSlot");
             }
 
-            this.timestamp = timestamp;
-            this.scheduleSlot = scheduleSlot;
+            SendTime = timestamp;
+            ScheduleSlot = scheduleSlot;
         }
 
         public abstract void Send(AbstractSender runtime);
 
-        public long ScheduleSlot
-        {
-            get { return scheduleSlot; }
-        }
+        public long ScheduleSlot { get; }
 
-        public long SendTime
-        {
-            get { return timestamp; }
-        }
+        public long SendTime { get; }
     }
 }

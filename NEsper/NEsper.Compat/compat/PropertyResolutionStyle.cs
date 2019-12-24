@@ -55,13 +55,7 @@ namespace com.espertech.esper.compat
         static PropertyResolutionStyleHelper()
         {
             // Default setting is consistent with the way that esper works
-            defaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
-            // Check with configuration management to see if the user has specified a
-            // setting that overrides the default behavior.
-            string styleSetting = ConfigurationManager.AppSettings["PropertyResolutionStyle"];
-            if (styleSetting != null) {
-                defaultPropertyResolutionStyle = EnumHelper.Parse<PropertyResolutionStyle>(styleSetting);
-            }
+            defaultPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
         }
 
         /// <summary>
@@ -70,7 +64,7 @@ namespace com.espertech.esper.compat
         /// </summary>
 
         public static PropertyResolutionStyle DefaultPropertyResolutionStyle {
-            get => defaultPropertyResolutionStyle.GetValueOrDefault(PropertyResolutionStyle.CASE_SENSITIVE);
+            get => defaultPropertyResolutionStyle.GetValueOrDefault(PropertyResolutionStyle.DEFAULT);
             set => defaultPropertyResolutionStyle = value;
         }
     }

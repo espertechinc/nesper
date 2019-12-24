@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -8,8 +8,7 @@
 
 namespace com.espertech.esper.common.client.dataflow.util
 {
-    /// <summary>Window marker for data flows. </summary>
-    public interface EPDataFlowSignalWindowMarker : EPDataFlowSignal
+    public class EPDataFlowSignalWindowMarkerImpl : EPDataFlowSignalWindowMarker
     {
     }
 }

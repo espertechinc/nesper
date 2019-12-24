@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using com.espertech.esper.client;
+
+using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -27,10 +27,10 @@ namespace com.espertech.esperio.csv
         /// the property names in the order in which they occur in the file
         /// </returns>
 
-        public static String[] ResolvePropertyOrder(String[] firstRow, IDictionary<String, Object> propertyTypes)
+        public static string[] ResolvePropertyOrder(string[] firstRow, IDictionary<string, object> propertyTypes)
         {
             Log.Debug(".ResolvePropertyOrder firstRow==" + firstRow.Render());
-            String[] result = null;
+            string[] result = null;
 
             if (IsValidTitleRow(firstRow, propertyTypes))
             {
@@ -45,7 +45,7 @@ namespace com.espertech.esperio.csv
             return result;
         }
 
-        private static bool IsValidTitleRow(String[] row, IDictionary<String, Object> propertyTypes)
+        private static bool IsValidTitleRow(string[] row, IDictionary<string, object> propertyTypes)
         {
             if (propertyTypes == null)
             {
@@ -57,13 +57,13 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        private static bool EachPropertyNameRepresented(String[] row, IDictionary<String, Object> propertyTypes)
+        private static bool EachPropertyNameRepresented(string[] row, IDictionary<string, object> propertyTypes)
         {
-            ICollection<String> rowSet = new HashSet<String>(row);
+            ICollection<string> rowSet = new HashSet<string>(row);
             return propertyTypes.Keys.All(rowSet.Contains);
         }
 
-        private static bool IsValidRowLength(String[] row, IDictionary<String, Object> propertyTypes)
+        private static bool IsValidRowLength(string[] row, IDictionary<string, object> propertyTypes)
         {
             Log.Debug(".IsValidRowLength");
             if (row == null)

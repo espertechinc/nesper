@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.realize;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.core
 {
@@ -26,23 +27,33 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<string, DataflowDeployment> deployments =
+        private readonly IDictionary<string, DataflowDeployment> _deployments =
             new Dictionary<string, DataflowDeployment>();
 
-        private readonly IDictionary<string, EPDataFlowInstance> instances =
+        private readonly IDictionary<string, EPDataFlowInstance> _instances =
             new Dictionary<string, EPDataFlowInstance>();
 
-        private readonly DataFlowConfigurationStateService configurationState =
+        private readonly DataFlowConfigurationStateService _configurationState =
             new DataFlowConfigurationStateServiceImpl();
 
-        private int agentInstanceNumCurrent;
+        private readonly IContainer _container;
+        private int _agentInstanceNumCurrent;
+
+        /// <summary>
+        /// Instantiate the service.
+        /// </summary>
+        /// <param name="container"></param>
+        public EPDataFlowServiceImpl(IContainer container)
+        {
+            _container = container;
+        }
 
         public EPDataFlowDescriptor GetDataFlow(
             string deploymentId,
             string dataflowName)
         {
             lock (this) {
-                DataflowDesc entry = GetEntryMayNull(deploymentId, dataflowName);
+                var entry = GetEntryMayNull(deploymentId, dataflowName);
                 return entry == null
                     ? null
                     : new EPDataFlowDescriptor(entry.DataflowName, entry.StatementContext.StatementName);
@@ -53,8 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             get {
                 lock (this) {
                     IList<DeploymentIdNamePair> ids = new List<DeploymentIdNamePair>();
-                    foreach (KeyValuePair<string, DataflowDeployment> deployment in deployments) {
-                        foreach (KeyValuePair<string, DataflowDesc> entry in deployment.Value.Dataflows) {
+                    foreach (var deployment in _deployments) {
+                        foreach (var entry in deployment.Value.Dataflows) {
                             ids.Add(new DeploymentIdNamePair(deployment.Key, entry.Key));
                         }
                     }
@@ -79,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             EPDataFlowInstantiationOptions options)
         {
             lock (this) {
-                DataflowDesc entry = GetEntryMayNull(deploymentId, dataFlowName);
+                var entry = GetEntryMayNull(deploymentId, dataFlowName);
                 if (entry == null) {
                     throw new EPDataFlowInstantiationException(
                         "Data flow by name '" +
@@ -90,11 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 }
 
                 try {
-                    agentInstanceNumCurrent++;
-                    return DataflowInstantiator.Instantiate(agentInstanceNumCurrent, entry, options);
+                    _agentInstanceNumCurrent++;
+                    return DataflowInstantiator.Instantiate(_container, _agentInstanceNumCurrent, entry, options);
                 }
                 catch (Exception ex) {
-                    string message = "Failed to instantiate data flow '" + dataFlowName + "': " + ex.Message;
+                    var message = "Failed to instantiate data flow '" + dataFlowName + "': " + ex.Message;
                     Log.Debug(message, ex);
                     throw new EPDataFlowInstantiationException(message, ex);
                 }
@@ -106,19 +117,19 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             EPDataFlowInstance instance)
         {
             lock (this) {
-                if (instances.ContainsKey(instanceName)) {
+                if (_instances.ContainsKey(instanceName)) {
                     throw new EPDataFlowAlreadyExistsException(
                         "Data flow instance name '" + instanceName + "' already saved");
                 }
 
-                instances.Put(instanceName, instance);
+                _instances.Put(instanceName, instance);
             }
         }
 
         public string[] SavedInstances {
             get {
                 lock (this) {
-                    var instanceids = instances.Keys;
+                    var instanceids = _instances.Keys;
                     return instanceids.ToArray();
                 }
             }
@@ -127,14 +138,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         public EPDataFlowInstance GetSavedInstance(string instanceName)
         {
             lock (this) {
-                return instances.Get(instanceName);
+                return _instances.Get(instanceName);
             }
         }
 
         public bool RemoveSavedInstance(string instanceName)
         {
             lock (this) {
-                return instances.Delete(instanceName) != null;
+                return _instances.Delete(instanceName) != null;
             }
         }
 
@@ -143,10 +154,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             DataflowDesc dataflow)
         {
             lock (this) {
-                DataflowDeployment deployment = deployments.Get(deploymentId);
+                var deployment = _deployments.Get(deploymentId);
                 if (deployment == null) {
                     deployment = new DataflowDeployment();
-                    deployments.Put(deploymentId, deployment);
+                    _deployments.Put(deploymentId, deployment);
                 }
 
                 deployment.Add(dataflow.DataflowName, dataflow);
@@ -158,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             DataflowDesc dataflow)
         {
             lock (this) {
-                DataflowDeployment deployment = deployments.Get(deploymentId);
+                var deployment = _deployments.Get(deploymentId);
                 if (deployment == null) {
                     return;
                 }
@@ -174,20 +185,20 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             EPDataFlowInstantiationOptions options)
         {
             lock (this) {
-                DataflowDesc entry = GetEntryMayNull(deploymentId, dataFlowName);
+                var entry = GetEntryMayNull(deploymentId, dataFlowName);
                 if (entry == null) {
-                    string message = "Failed to locate data flow '" + dataFlowName + "'";
+                    var message = "Failed to locate data flow '" + dataFlowName + "'";
                     throw new EPDataFlowNotFoundException(message);
                 }
 
-                if (configurationState.Exists(dataflowConfigName)) {
-                    string message = "Data flow saved configuration by name '" +
+                if (_configurationState.Exists(dataflowConfigName)) {
+                    var message = "Data flow saved configuration by name '" +
                                      dataflowConfigName +
                                      "' already exists";
                     throw new EPDataFlowAlreadyExistsException(message);
                 }
 
-                configurationState.Add(
+                _configurationState.Add(
                     new EPDataFlowSavedConfiguration(dataflowConfigName, deploymentId, dataFlowName, options));
             }
         }
@@ -195,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         public string[] SavedConfigurations {
             get {
                 lock (this) {
-                    return configurationState.SavedConfigNames;
+                    return _configurationState.SavedConfigNames;
                 }
             }
         }
@@ -203,20 +214,20 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         public EPDataFlowSavedConfiguration GetSavedConfiguration(string configurationName)
         {
             lock (this) {
-                return configurationState.GetSavedConfig(configurationName);
+                return _configurationState.GetSavedConfig(configurationName);
             }
         }
 
         public EPDataFlowInstance InstantiateSavedConfiguration(string configurationName)
         {
             lock (this) {
-                EPDataFlowSavedConfiguration savedConfiguration = configurationState.GetSavedConfig(configurationName);
+                var savedConfiguration = _configurationState.GetSavedConfig(configurationName);
                 if (savedConfiguration == null) {
                     throw new EPDataFlowInstantiationException(
                         "Dataflow saved configuration '" + configurationName + "' could not be found");
                 }
 
-                EPDataFlowInstantiationOptions options = savedConfiguration.Options;
+                var options = savedConfiguration.Options;
                 if (options == null) {
                     options = new EPDataFlowInstantiationOptions();
                     options.WithDataFlowInstanceId(configurationName);
@@ -229,7 +240,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         public bool RemoveSavedConfiguration(string configurationName)
         {
             lock (this) {
-                return configurationState.RemovePrototype(configurationName) != null;
+                return _configurationState.RemovePrototype(configurationName) != null;
             }
         }
 
@@ -237,7 +248,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             string deploymentId,
             string dataFlowName)
         {
-            DataflowDeployment deployment = deployments.Get(deploymentId);
+            var deployment = _deployments.Get(deploymentId);
             return deployment == null ? null : deployment.GetDataflow(dataFlowName);
         }
     }

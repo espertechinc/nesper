@@ -8,7 +8,7 @@
 
 using System;
 
-using com.espertech.esper.compat.logger;
+using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
 

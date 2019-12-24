@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esperio.csv
@@ -17,10 +15,10 @@ namespace com.espertech.esperio.csv
     /// </summary>
     public class BasicTypeCoercer : AbstractTypeCoercer {
     
-        public override Object Coerce(String property, String source)
+        public override object Coerce(string property, string source)
         {
             var factory = propertyFactories.Get(property);
-            var value = factory != null ? factory.Invoke(source) : Int64.Parse(source);
+            var value = factory != null ? factory.Invoke(source) : long.Parse(source);
     
             return value;
     	}

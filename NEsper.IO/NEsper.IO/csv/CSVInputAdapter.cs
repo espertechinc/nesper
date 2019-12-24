@@ -13,16 +13,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.eventtyperepo;
+using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.magic;
-using com.espertech.esper.core.service;
-using com.espertech.esper.events;
-using com.espertech.esper.events.map;
-using com.espertech.esper.util;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
+using com.espertech.esper.runtime.@internal.kernel.service;
 
 namespace com.espertech.esperio.csv
 {
@@ -40,49 +42,45 @@ namespace com.espertech.esperio.csv
 
         private int? _eventsPerSec;
         private CSVReader _reader;
-        private String[] _propertyOrder;
+        private string[] _propertyOrder;
         private readonly CSVInputAdapterSpec _adapterSpec;
         private DataMap _propertyTypes;
-        private readonly String _eventTypeName;
+        private readonly string _eventTypeName;
         private long? _lastTimestamp = 0;
         private long _totalDelay;
-        private bool _atEOF = false;
-        private String[] _firstRow;
+        private bool _atEof = false;
+        private string[] _firstRow;
         private Type _beanType;
         private int _rowCount = 0;
-        private readonly IContainer _container;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="epService">provides the engine runtime and services</param>
+        /// <param name="runtime">provides the engine runtime and services</param>
         /// <param name="spec">the parameters for this adapter</param>
 
-        public CSVInputAdapter(IContainer container, EPServiceProvider epService, CSVInputAdapterSpec spec)
-            : base(epService, spec.IsUsingEngineThread, spec.IsUsingExternalTimer, spec.IsUsingTimeSpanEvents)
+        public CSVInputAdapter(EPRuntime runtime, CSVInputAdapterSpec spec)
+            : base(runtime, spec.IsUsingEngineThread, spec.IsUsingExternalTimer, spec.IsUsingTimeSpanEvents)
         {
             Coercer = new BasicTypeCoercer();
             _adapterSpec = spec;
             _eventTypeName = _adapterSpec.EventTypeName;
             _eventsPerSec = spec.EventsPerSec;
-            _container = container;
 
-            if (epService != null)
+            if (runtime != null)
             {
-                FinishInitialization(epService, spec);
+                FinishInitialization(runtime, spec);
             }
         }
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="epService">provides the engine runtime and services</param>
+        /// <param name="runtime">provides the engine runtime and services</param>
         /// <param name="adapterInputSource">the source of the CSV file</param>
         /// <param name="eventTypeName">the name of the Map event to create from the CSV data</param>
-        public CSVInputAdapter(IContainer container, EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeName)
-            : this(container, epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeName))
+        public CSVInputAdapter(EPRuntime runtime, AdapterInputSource adapterInputSource, string eventTypeName)
+            : this(runtime, new CSVInputAdapterSpec(adapterInputSource, eventTypeName))
         {
             
         }
@@ -90,23 +88,21 @@ namespace com.espertech.esperio.csv
         /// <summary>
         /// Ctor for adapters that will be passed to an AdapterCoordinator.
         /// </summary>
-        /// <param name="container">The container.</param>
         /// <param name="adapterSpec">contains parameters that specify the behavior of the input adapter</param>
 
-        public CSVInputAdapter(IContainer container, CSVInputAdapterSpec adapterSpec)
-            : this(container, null, adapterSpec)
+        public CSVInputAdapter(CSVInputAdapterSpec adapterSpec)
+            : this(null, adapterSpec)
         {
         }
 
         /// <summary>
         /// Ctor for adapters that will be passed to an AdapterCoordinator.
         /// </summary>
-        /// <param name="container">The container.</param>
         /// <param name="adapterInputSource">the parameters for this adapter</param>
         /// <param name="eventTypeName">the event type name that the input adapter generates events for</param>
 
-        public CSVInputAdapter(IContainer container, AdapterInputSource adapterInputSource, String eventTypeName)
-            : this(container, null, adapterInputSource, eventTypeName)
+        public CSVInputAdapter(AdapterInputSource adapterInputSource, string eventTypeName)
+            : this(null, adapterInputSource, eventTypeName)
         {
         }
 
@@ -118,7 +114,7 @@ namespace com.espertech.esperio.csv
 
         public override SendableEvent Read()
         {
-            if (StateManager.State == AdapterState.DESTROYED || _atEOF)
+            if (StateManager.State == AdapterState.DESTROYED || _atEof)
             {
                 return null;
             }
@@ -141,11 +137,11 @@ namespace com.espertech.esperio.csv
             }
             catch (EndOfStreamException)
             {
-                if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+                if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled))
                 {
                     Log.Debug(".read reached end of CSV file");
                 } 
-                _atEOF = true;
+                _atEof = true;
                 if (StateManager.State == AdapterState.STARTED)
                 {
                     Stop();
@@ -158,11 +154,11 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        public override EPServiceProvider EPService
+        public override EPRuntime Runtime
         {
             set
             {
-                base.EPService = value;
+                base.Runtime = value;
                 FinishInitialization(value, _adapterSpec);
             }
         }
@@ -177,8 +173,8 @@ namespace com.espertech.esperio.csv
         }
 
         /// <summary>
-        /// Remove the first member of eventsToSend. If there isanother record in the CSV file, 
-        /// insert the event createdfrom it into eventsToSend.
+        /// Remove the first member of eventsToSend. If there is another record in the CSV file, 
+        /// insert the event created from it into eventsToSend.
         /// </summary>
 
         protected override void ReplaceFirstEventToSend()
@@ -199,22 +195,22 @@ namespace com.espertech.esperio.csv
         {
             _lastTimestamp = 0;
             _totalDelay = 0;
-            _atEOF = false;
+            _atEof = false;
             if (_reader.IsResettable)
             {
                 _reader.Reset();
             }
         }
 
-        private void FinishInitialization(EPServiceProvider epService, CSVInputAdapterSpec spec)
+        private void FinishInitialization(EPRuntime runtime, CSVInputAdapterSpec spec)
         {
-            AssertValidParameters(epService, spec);
+            AssertValidParameters(runtime, spec);
 
-            var spi = (EPServiceProviderSPI)epService;
+            var spi = (EPRuntimeSPI)runtime;
 
-            ScheduleSlot = spi.SchedulingMgmtService.AllocateBucket().AllocateSlot();
+            ScheduleSlot = new ScheduleBucket(-1).AllocateSlot();
 
-            _reader = new CSVReader(_container, spec.AdapterInputSource);
+            _reader = new CSVReader(spec.AdapterInputSource);
             _reader.Looping = spec.IsLooping;
 
             var firstRow = FirstRow;
@@ -222,7 +218,7 @@ namespace com.espertech.esperio.csv
             var givenPropertyTypes = ConstructPropertyTypes(
                 spec.EventTypeName,
                 spec.PropertyTypes,
-                spi.EventAdapterService);
+                spi.ServicesContext.EventTypeRepositoryBus);
 
             _propertyOrder =
                 spec.PropertyOrder ??
@@ -237,7 +233,7 @@ namespace com.espertech.esperio.csv
             _propertyTypes = ResolvePropertyTypes(givenPropertyTypes);
             if (givenPropertyTypes == null)
             {
-                spi.EventAdapterService.AddNestableMapType(_eventTypeName, new Dictionary<string, object>(_propertyTypes), null, true, true, true, false, false);
+                throw new EPException("CSV adapter requires a predefined event type name, the event type named '" + spec.EventTypeName + "' could not be found");
             }
 
             Coercer.SetPropertyTypes(_propertyTypes);
@@ -258,7 +254,7 @@ namespace com.espertech.esperio.csv
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        private static Object ProxyParser(String input)
+        private static object ProxyParser(string input)
         {
             return input;
         }
@@ -269,7 +265,7 @@ namespace com.espertech.esperio.csv
         /// <typeparam name="T"></typeparam>
         /// <param name="input">The input.</param>
         /// <returns></returns>
-        private static Object EasyParser<T>( String input )
+        private static object EasyParser<T>( string input )
         {
             var result = Convert.ChangeType(input, typeof (T));
             return result;
@@ -280,9 +276,9 @@ namespace com.espertech.esperio.csv
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        private static ObjectFactory<String> ObjectFactoryFor(Type type)
+        private static ObjectFactory<string> ObjectFactoryFor(Type type)
         {
-            ObjectFactory<String> factoryObj;
+            ObjectFactory<string> factoryObj;
 
             lock (((ICollection)StaticTypeTable).SyncRoot)
             {
@@ -294,7 +290,7 @@ namespace com.espertech.esperio.csv
                         throw new EPException("unable to find a usable constructor for " + type.FullName);
                     }
 
-                    factoryObj = (input => constructor.Invoke(new Object[] {input}));
+                    factoryObj = (input => constructor.Invoke(new object[] {input}));
 
                     StaticTypeTable[type] = factoryObj;
                 }
@@ -303,9 +299,9 @@ namespace com.espertech.esperio.csv
             return factoryObj;
         }
 
-        private static IDictionary<String, ObjectFactory<String>> CreatePropertyConstructors(IDictionary<String, Type> propertyTypes)
+        private static IDictionary<string, ObjectFactory<string>> CreatePropertyConstructors(IDictionary<string, Type> propertyTypes)
         {
-            var factories = new NullableDictionary<String, ObjectFactory<String>>();
+            var factories = new NullableDictionary<string, ObjectFactory<string>>();
             
             foreach( var entry in propertyTypes )
             {
@@ -320,9 +316,9 @@ namespace com.espertech.esperio.csv
             return factories;
         }
 
-        private IDictionary<String, Object> CreateMapFromRow(String[] row)
+        private IDictionary<string, object> CreateMapFromRow(string[] row)
         {
-            var map = new Dictionary<String, Object>();
+            var map = new Dictionary<string, object>();
 
             var count = 0;
 
@@ -352,17 +348,17 @@ namespace com.espertech.esperio.csv
             return map;
         }
 
-        private DataMap ConstructPropertyTypes(String eventTypeName,
+        private DataMap ConstructPropertyTypes(string eventTypeName,
                                                DataMap propertyTypesGiven,
-                                               EventAdapterService eventAdapterService)
+                                               EventTypeRepository eventAdapterService)
         {
             var propertyTypes = new Dictionary<string, object>();
-            var eventType = eventAdapterService.GetEventTypeByName(eventTypeName);
+            var eventType = eventAdapterService.NameToTypeMap.Get(eventTypeName);
             if (eventType == null)
             {
                 if (propertyTypesGiven != null)
                 {
-                    eventAdapterService.AddNestableMapType(eventTypeName, new Dictionary<string, object>(propertyTypesGiven), null, true, true, true, false, false);
+                    throw new EPException("Failed to find event type named '" + eventTypeName + "'");
                 }
                 return propertyTypesGiven;
             }
@@ -462,7 +458,7 @@ namespace com.espertech.esperio.csv
             return flattenPropertyTypes;
         }
 
-        private void UpdateTotalDelay(IDictionary<String, Object> map, bool isFirstRow)
+        private void UpdateTotalDelay(IDictionary<string, object> map, bool isFirstRow)
         {
             if (_eventsPerSec != null)
             {
@@ -473,11 +469,11 @@ namespace com.espertech.esperio.csv
             {
                 var timestamp = ResolveTimestamp(map);
                 if (timestamp == null) {
-                    throw new EPException("Couldn't resolve the timestamp for record " + map.Render());
+                    throw new EPException("Couldn't resolve the timestamp for record " + map.RenderAny());
                 }
                 else if (timestamp < 0)
                 {
-                    throw new EPException("Encountered negative timestamp for CSV record : " + map.Render());
+                    throw new EPException("Encountered negative timestamp for CSV record : " + map.RenderAny());
                 }
                 else
                 {
@@ -501,12 +497,12 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        private Int64? ResolveTimestamp(IDictionary<String, Object> map)
+        private long? ResolveTimestamp(IDictionary<string, object> map)
         {
             if (_adapterSpec.TimestampColumn != null)
             {
                 var value = map.Get(_adapterSpec.TimestampColumn);
-                return Int64.Parse(value.ToString());
+                return long.Parse(value.ToString());
             }
             
             return null;
@@ -540,14 +536,14 @@ namespace com.espertech.esperio.csv
             return result;
         }
 
-        private static bool IsUsingTitleRow(String[] firstRow, String[] propertyOrder)
+        private static bool IsUsingTitleRow(string[] firstRow, string[] propertyOrder)
         {
             if (firstRow == null)
             {
                 return false;
             }
-            ISet<String> firstRowSet = new SortedSet<String>(firstRow);
-            ISet<String> propertyOrderSet = new SortedSet<String>(propertyOrder);
+            ISet<string> firstRowSet = new SortedSet<string>(firstRow);
+            ISet<string> propertyOrderSet = new SortedSet<string>(propertyOrder);
             return firstRowSet.SetEquals(propertyOrderSet);
         }
 
@@ -556,18 +552,18 @@ namespace com.espertech.esperio.csv
         /// </summary>
         /// <value>The first row.</value>
         
-        private String[] FirstRow
+        private string[] FirstRow
         {
             get
             {
-                String[] firstRow;
+                string[] firstRow;
                 try
                 {
                 	firstRow = _reader.GetNextRecord();
                 }
                 catch (EndOfStreamException)
                 {
-                    _atEOF = true;
+                    _atEof = true;
                     firstRow = null;
                 }
                 return firstRow;
@@ -585,9 +581,9 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        private static void AssertValidParameters(EPServiceProvider epService, CSVInputAdapterSpec adapterSpec)
+        private static void AssertValidParameters(EPRuntime runtime, CSVInputAdapterSpec adapterSpec)
         {
-            if (!(epService is EPServiceProviderSPI))
+            if (!(runtime is EPRuntimeSPI))
             {
                 throw new ArgumentException("Invalid type of EPServiceProvider");
             }
@@ -610,8 +606,8 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        private static readonly Type[] ParameterTypes = new [] { typeof(String) };
-        private static readonly Dictionary<Type, ObjectFactory<String>> StaticTypeTable;
+        private static readonly Type[] ParameterTypes = new [] { typeof(string) };
+        private static readonly Dictionary<Type, ObjectFactory<string>> StaticTypeTable;
 
         static CSVInputAdapter()
         {
@@ -645,9 +641,9 @@ namespace com.espertech.esperio.csv
             StaticTypeTable[typeof(string)] = ProxyParser;
         }
 
-        private static IContainer GetContainer(EPServiceProvider epService)
+        private static IContainer GetContainer(EPRuntime runtime)
         {
-            if (epService is EPServiceProviderSPI spi)
+            if (runtime is EPRuntimeSPI spi)
                 return spi.Container;
             throw new ArgumentException("Container is missing");
         }

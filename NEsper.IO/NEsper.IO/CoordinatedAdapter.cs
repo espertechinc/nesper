@@ -1,4 +1,4 @@
-using com.espertech.esper.client;
+using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esperio
 {
@@ -37,8 +37,8 @@ namespace com.espertech.esperio
         long ScheduleSlot { set; }
 
 		/// <summary>
-		/// Set the epService
+		/// Set the runtime
 		/// </summary>
-        EPServiceProvider EPService { set; }
+		EPRuntime Runtime { set; }
 	}
 }

@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462</TargetFrameworks>
-    <!--
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    -->
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,22 +16,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>CS1591;</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="common\internal\util\apachecommonstext\**" />
-    <EmbeddedResource Remove="common\internal\util\apachecommonstext\**" />
-    <None Remove="common\internal\util\apachecommonstext\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="common\client\util\DateTimeUtil.cs" />
-    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateEval.cs" />
-    <Compile Remove="common\internal\epl\datetime\dtlocal\DTLocalDtxOpsDateForge.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="common\internal\util\apachecommonstext\EntityArrays.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
@@ -54,6 +35,11 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(NetFramework)'!='true'">
+    <Compile Remove="common\internal\db\drivers\DbDriverODBC.cs" />
+    <Compile Remove="common\internal\db\drivers\DbDriverSqlServer.cs" />
   </ItemGroup>
 
   <ItemGroup>

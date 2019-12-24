@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.util;
 
 namespace com.espertech.esperio.csv
 {
@@ -24,11 +24,11 @@ namespace com.espertech.esperio.csv
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>Constructors for coercion. </summary>
-        protected IDictionary<String, Func<string, object>> propertyFactories;
+        protected IDictionary<string, Func<string, object>> propertyFactories;
 
         /// <summary>Ctor. </summary>
         /// <param name="propertyTypes">the type conversion to be done</param>
-        public void SetPropertyTypes(IDictionary<String, Object> propertyTypes)
+        public void SetPropertyTypes(IDictionary<string, object> propertyTypes)
         {
             propertyFactories = CreatePropertyFactories(propertyTypes);
         }
@@ -38,7 +38,7 @@ namespace com.espertech.esperio.csv
         /// <param name="source">value to convert</param>
         /// <returns>object value</returns>
         /// <throws>Exception if coercion failed</throws>
-        public abstract Object Coerce(String property, String source);
+        public abstract object Coerce(string property, string source);
 
         private static readonly IDictionary<Type, Func<string, object>> _typeFactoryTable =
             new Dictionary<Type, Func<string, object>>();
@@ -48,17 +48,17 @@ namespace com.espertech.esperio.csv
             if (t == typeof(string))
                 return s => s;
             if (t == typeof(int?))
-                return s => s == null ? (int?) null : Int32.Parse(s);
+                return s => s == null ? (int?) null : int.Parse(s);
             if (t == typeof(long?))
-                return s => s == null ? (long?)null : Int64.Parse(s);
+                return s => s == null ? (long?)null : long.Parse(s);
             if (t == typeof(short?))
-                return s => s == null ? (short?)null : Int16.Parse(s);
+                return s => s == null ? (short?)null : short.Parse(s);
             if (t == typeof(float?))
-                return s => s == null ? (float?)null : Single.Parse(s);
+                return s => s == null ? (float?)null : float.Parse(s);
             if (t == typeof(double?))
-                return s => s == null ? (double?)null : Double.Parse(s);
+                return s => s == null ? (double?)null : double.Parse(s);
             if (t == typeof(decimal?))
-                return s => s == null ? (decimal?)null : Decimal.Parse(s);
+                return s => s == null ? (decimal?)null : decimal.Parse(s);
             if (t == typeof(DateTime?))
                 return s => s == null ? (DateTime?)null : DateTime.Parse(s);
             if (t == typeof(Guid?))
@@ -83,9 +83,9 @@ namespace com.espertech.esperio.csv
             return null;
         }
 
-        private static IDictionary<String, Func<string, object>> CreatePropertyFactories(IDictionary<String, Object> propertyTypes)
+        private static IDictionary<string, Func<string, object>> CreatePropertyFactories(IDictionary<string, object> propertyTypes)
         {
-            var factories = new NullableDictionary<String, Func<string, object>>();
+            var factories = new NullableDictionary<string, Func<string, object>>();
 
             foreach (var property in propertyTypes.Keys)
             {

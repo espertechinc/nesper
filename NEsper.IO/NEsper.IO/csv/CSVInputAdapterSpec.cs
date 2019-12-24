@@ -1,7 +1,8 @@
 using System;
 
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.util;
 
 using DataMap = System.Collections.Generic.IDictionary<string, object>;
 
@@ -17,7 +18,7 @@ namespace com.espertech.esperio.csv
 		/// <param name="adapterInputSource">the source for the CSV data</param>
 		/// <param name="eventTypeName">the name of the event type created from the CSV data</param>
 
-		public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeName)
+		public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, string eventTypeName)
 		{
 			AdapterInputSource = adapterInputSource;
 			EventTypeName = eventTypeName;
@@ -31,7 +32,7 @@ namespace com.espertech.esperio.csv
 	    /// <summary>
 	    /// Gets or sets the property order of the properties in the CSV file
 	    /// </summary>
-	    public String[] PropertyOrder { get; set; }
+	    public string[] PropertyOrder { get; set; }
 
 	    /// <summary>
 	    /// Gets or sets the flag that indicates if the adapter is looping
@@ -53,9 +54,8 @@ namespace com.espertech.esperio.csv
             set
             {
                 var tempDict = new NullableDictionary<string, object>();
-                foreach( var entry in value )
-                {
-                    tempDict[entry.Key] = ((Type) entry.Value).GetBoxedType();
+                foreach( var entry in value ) {
+	                tempDict[entry.Key] = ((Type) entry.Value).GetBoxedType();
                 }
 
                 _propertyTypes = tempDict;
@@ -89,7 +89,7 @@ namespace com.espertech.esperio.csv
 	    /// Gets or sets the timestamp column name.
 	    /// </summary>
 	    /// <returns>the name of the column to use for timestamps</returns>
-	    public String TimestampColumn { get; set; }
+	    public string TimestampColumn { get; set; }
 
 	    /// <summary>
 	    /// Gets or sets the adapter input source.
@@ -99,6 +99,6 @@ namespace com.espertech.esperio.csv
 	    /// <summary>
 	    /// Gets or sets the event type name.
 	    /// </summary>
-	    public String EventTypeName { get; set; }
+	    public string EventTypeName { get; set; }
 	}
 }

@@ -1,7 +1,6 @@
 using System.IO;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
 
 namespace com.espertech.esperio.csv
 {
@@ -20,24 +19,19 @@ namespace com.espertech.esperio.csv
 	    private int _rMarkIndex; // read index
 	    private int[] _markData; // backing store for reading data when marked
 
-	    private IContainer _container;
-
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="container">The container.</param>
         /// <param name="source">the AdapterInputSource from which to obtain the underlying resource</param>
 
-        public CSVSource(IContainer container, AdapterInputSource source)
+        public CSVSource(AdapterInputSource source)
         {
-            _container = container;
-
             _rMarkIndex = -1; // not reading
             _wMarkIndex = -1; // not writing
             _eMarkIndex = -1;
             _markData = new int[2];
 
-			_stream = source.GetAsStream(_container) ;
+			_stream = source.GetAsStream() ;
 			if ( _stream == null )
 			{
 				_reader = source.GetAsReader() ;
@@ -216,7 +210,7 @@ namespace com.espertech.esperio.csv
 			
 			if(_stream != null)
 			{
-				_stream = _source.GetAsStream(_container);
+				_stream = _source.GetAsStream();
 			}
 			else
 			{

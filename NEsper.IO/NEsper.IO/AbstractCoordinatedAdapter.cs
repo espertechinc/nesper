@@ -11,17 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.time;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
-using com.espertech.esper.compat.threading;
-using com.espertech.esper.core.context.util;
-using com.espertech.esper.core.service;
-using com.espertech.esper.schedule;
-using com.espertech.esper.util;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
+using com.espertech.esper.runtime.@internal.kernel.service;
 
 namespace com.espertech.esperio
 {
@@ -43,7 +42,8 @@ namespace com.espertech.esperio
 	    /// </summary>
 	    protected readonly ICollection<SendableEvent> EventsToSend = new SortedSet<SendableEvent>(new SendableEventComparator());
 
-	    private readonly EPServiceProviderSPI _epService;
+	    private readonly EPRuntime _runtime;
+	    private EPEventService _processEvent;
 	    private SchedulingService _schedulingService;
 	    private long _currentTime;
         private long _lastEventTime;
@@ -55,38 +55,35 @@ namespace com.espertech.esperio
         /// Get the state of this Adapter.
         /// </summary>
         /// <value></value>
-        public AdapterState State
-        {
-            get { return StateManager.State; }
-        }
+        public AdapterState State => StateManager.State;
 
-	    /// <summary>
+        /// <summary>
 	    /// Ctor.
 	    /// </summary>
-	    /// <param name="epService">the EPServiceProvider for the engine runtime and services</param>
-	    /// <param name="usingEngineThread">true if the Adapter should set time by the scheduling service in the engine,false if it should set time externally through the calling thread</param>
+	    /// <param name="runtime">the runtime for the engine runtime</param>
+	    /// <param name="usingEngineThread">true if the Adapter should set time by the scheduling service in the runtime, false if it should set time externally through the calling thread</param>
 	    /// <param name="usingExternalTimer">true to use esper's external timer mechanism instead of internal timing</param>
 	    /// <param name="usingTimeSpanEvents"></param>
-	    protected AbstractCoordinatedAdapter(EPServiceProvider epService, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
+	    protected AbstractCoordinatedAdapter(EPRuntime runtime, bool usingEngineThread, bool usingExternalTimer, bool usingTimeSpanEvents)
         {
             UsingEngineThread = usingEngineThread;
             UsingExternalTimer = usingExternalTimer;
             UsingTimeSpanEvents = usingTimeSpanEvents;
             Sender = new DirectSender();
 
-			if(epService == null)
+			if(runtime == null)
 			{
 				return;
 			}
-			if(!(epService is EPServiceProviderSPI))
+			if(!(runtime is EPRuntimeSPI runtimeSpi))
 			{
 				throw new ArgumentException("Invalid epService provided");
 			}
 
-            _epService = (EPServiceProviderSPI) epService;
-            _container = _epService.Container;
-            Runtime = epService.EPRuntime;
-			_schedulingService = ((EPServiceProviderSPI)epService).SchedulingService;
+            _runtime = runtimeSpi;
+            _container = runtimeSpi.Container;
+            _processEvent = runtime.EventService;
+			_schedulingService = runtimeSpi.ServicesContext.SchedulingService;
 		}
 
 	    /// <summary>
@@ -95,20 +92,20 @@ namespace com.espertech.esperio
         /// <throws>EPException in case of errors processing the events</throws>
         public virtual void Start()
         {
-            if ((ExecutionPathDebugLog.IsEnabled) &&
+            if ((ExecutionPathDebugLog.IsDebugEnabled) &&
                 (Log.IsDebugEnabled)) {
                 Log.Debug(".start");
             }
-            if (Runtime == null) {
-                throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
+            if (_processEvent == null) {
+                throw new EPException("Attempting to start an Adapter that hasn't had the runtime provided");
             }
             _startTime = CurrentTime;
-            if ((ExecutionPathDebugLog.IsEnabled) &&
+            if ((ExecutionPathDebugLog.IsDebugEnabled) &&
                 (Log.IsDebugEnabled)) {
                 Log.Debug(".start startTime==" + _startTime);
             }
             StateManager.Start();
-            _sender.Runtime = Runtime;
+            _sender.Runtime = _processEvent;
             ContinueSendingEvents();
         }
 
@@ -155,7 +152,7 @@ namespace com.espertech.esperio
         /// <throws>EPException in case of errors releasing resources</throws>
 		public virtual void Stop()
 		{
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled))
             {
                 Log.Debug(".Stop");
             }
@@ -206,24 +203,23 @@ namespace com.espertech.esperio
         /// Sets the service.
         /// </summary>
 
-        public virtual EPServiceProvider EPService
+        public virtual EPRuntime Runtime
 		{
 			set
 			{
-				if(value == null)
+				if (value == null)
 				{
 					throw new ArgumentNullException("value", "epService cannot be null");
 				}
-					
-				var spi = value as EPServiceProviderSPI;
-                if ( spi == null )
+
+				if (!(value is EPRuntimeSPI spi))
                 {
                     throw new ArgumentException("Invalid type of EPServiceProvider");
                 }
-
-				Runtime = spi.EPRuntime;
-				_schedulingService = spi.SchedulingService;
-                _sender.Runtime = Runtime;
+                
+                _processEvent = spi.EventService;
+                _schedulingService = spi.ServicesContext.SchedulingService;
+                _sender.Runtime = _processEvent;
             }
 		}
 
@@ -250,7 +246,7 @@ namespace com.espertech.esperio
             bool keepLooping = true;
             while (StateManager.State == AdapterState.STARTED && keepLooping) {
                 _currentTime = CurrentTime;
-                if ((ExecutionPathDebugLog.IsEnabled) &&
+                if ((ExecutionPathDebugLog.IsDebugEnabled) &&
                     (Log.IsDebugEnabled)) {
                     Log.Debug(".ContinueSendingEvents currentTime==" + _currentTime);
                 }
@@ -321,13 +317,11 @@ namespace com.espertech.esperio
                     // check whether time has increased. Cannot go backwards due to checks elsewhere
                     if (currentEventTime > _lastEventTime)
                     {
-                        if (UsingTimeSpanEvents)
-                        {
-                            _sender.SendEvent(null, new CurrentTimeSpanEvent(currentEventTime));
+                        if (UsingTimeSpanEvents) {
+	                        _runtime.EventService.AdvanceTimeSpan(currentEventTime);
                         }
-                        else
-                        {
-                            _sender.SendEvent(null, new CurrentTimeEvent(currentEventTime));
+                        else {
+	                        _runtime.EventService.AdvanceTime(currentEventTime);
                         }
 
                         _lastEventTime = currentEventTime;
@@ -349,12 +343,12 @@ namespace com.espertech.esperio
         {
             var sendableEvent = EventsToSend.First();
 
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled))
             {
                 Log.Debug(".sendFirstEvent currentTime==" + _currentTime);
                 Log.Debug(".sendFirstEvent sending event " + sendableEvent + ", its sendTime==" + sendableEvent.SendTime);
             }
-            _sender.Runtime = Runtime;
+            _sender.Runtime = _processEvent;
             sendableEvent.Send(_sender);
             ReplaceFirstEventToSend();
         }
@@ -362,18 +356,21 @@ namespace com.espertech.esperio
 		private void ScheduleNextCallback()
 		{
 		    var nextScheduleCallback = new ProxyScheduleHandleCallback(delegate { ContinueSendingEvents(); });
-            var spi = (EPServiceProviderSPI)_epService;
-            var metricsHandle = spi.MetricReportingService.GetStatementHandle(-1, "AbstractCoordinatedAdapter");
+            var spi = (EPRuntimeSPI) _runtime;
+            var deploymentId = "CSV-adapter-" + UuidGenerator.Generate();
+            var metricsHandle = spi.ServicesContext.MetricReportingService.GetStatementHandle(-1, deploymentId, "AbstractCoordinatedAdapter");
             var lockImpl = _container.RWLockManager().CreateLock("CSV");
-            var stmtHandle = new EPStatementHandle(-1, "AbstractCoordinatedAdapter", null, StatementType.ESPERIO, "AbstractCoordinatedAdapter", false, metricsHandle, 0, false, false, spi.ServicesContext.MultiMatchHandlerFactory.GetDefaultHandler());
-            var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, lockImpl, -1, new StatementAgentInstanceFilterVersion(), null);
-            var scheduleCSVHandle = new EPStatementHandleCallback(agentInstanceHandle, nextScheduleCallback);
+            var stmtHandle = new EPStatementHandle(
+	            "AbstractCoordinatedAdapter", deploymentId, -1, null, 0, false, false, 
+	            spi.ServicesContext.MultiMatchHandlerFactory.Make(false, false), false, false, metricsHandle, null, null);
+            var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, -1, lockImpl);
+            var scheduleCSVHandle = new EPStatementHandleCallbackSchedule(agentInstanceHandle, nextScheduleCallback);
 
 	        long nextScheduleSlot;
 
 			if(EventsToSend.IsEmpty())
 			{
-                if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+                if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled))
                 {
                     Log.Debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
                 }
@@ -387,7 +384,7 @@ namespace com.espertech.esperio
                 long baseMsec = _currentTime - _startTime;
                 long afterMsec = first.SendTime - baseMsec;
 				nextScheduleSlot = first.ScheduleSlot;
-                if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+                if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled))
                 {
                     Log.Debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
                 }
@@ -395,26 +392,29 @@ namespace com.espertech.esperio
             }
 		}
 
-	    /// <summary>
-	    /// Gets the runtime.
-	    /// </summary>
-	    /// <value>The runtime.</value>
-	    public EPRuntime Runtime { get; private set; }
+		/// <summary>
+		/// Gets the process event.
+		/// </summary>
+		/// <value>The process event.</value>
+		public EPEventService ProcessEvent {
+			get => _processEvent;
+			set => _processEvent = value;
+		}
 
-	    /// <summary>
+		/// <summary>
         /// Gets or sets the sender.
         /// </summary>
         /// <value>The sender.</value>
 	    public AbstractSender Sender
 	    {
-	        get { return _sender; }
-            set
+	        get => _sender;
+	        set
             {
                 _sender = value;
-                _sender.Runtime = Runtime;
+                _sender.Runtime = _processEvent;
             }
 	    }
 
-	    abstract public SendableEvent Read();
+	    public abstract SendableEvent Read();
    }
 }

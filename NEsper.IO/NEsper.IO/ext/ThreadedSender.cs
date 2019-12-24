@@ -6,9 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using com.espertech.esper.compat.threading;
+
+using com.espertech.esper.compat.concurrency;
 
 namespace com.espertech.esperio.ext
 {
@@ -17,32 +17,41 @@ namespace com.espertech.esperio.ext
     /// </summary>
     public class ThreadedSender : DirectSender
     {
-    	private readonly IExecutorService executorService;
-    
+        private readonly IExecutorService _executorService;
+        private readonly string _eventTypeName;
+
         /// <summary>Ctor. </summary>
         /// <param name="threadPoolSize">size of pool</param>
-        public ThreadedSender(int threadPoolSize) {
-    		executorService = new DedicatedExecutorService("threaded-sender", threadPoolSize);
-    	}
-    
+        public ThreadedSender(int threadPoolSize)
+        {
+            _executorService = new DedicatedExecutorService("threaded-sender", threadPoolSize);
+        }
+
         /// <summary>Ctor. </summary>
         /// <param name="executorService">threadpool to use</param>
         public ThreadedSender(IExecutorService executorService)
         {
-            this.executorService = executorService;
+            this._executorService = executorService;
         }
-    
+
         /// <summary>Send an event. </summary>
         /// <param name="beanToSend">event to send</param>
-        public void SendEvent(Object beanToSend) {
-            executorService.Submit(() => Runtime.SendEvent(beanToSend));
-    	}
-    
+        public void SendEvent(object beanToSend)
+        {
+            _executorService.Submit(
+                () => Runtime
+                    .SendEventBean(beanToSend, _eventTypeName));
+        }
+
         /// <summary>Send an event. </summary>
         /// <param name="mapToSend">event to send</param>
         /// <param name="eventTypeName">name of event</param>
-        public void SendEvent(IDictionary<string,object> mapToSend, String eventTypeName) {
-            executorService.Submit(() => Runtime.SendEvent(mapToSend, eventTypeName));
-    	}
+        public void SendEvent(IDictionary<string, object> mapToSend,
+            string eventTypeName)
+        {
+            _executorService.Submit(
+                () => Runtime
+                    .SendEventMap(mapToSend, eventTypeName));
+        }
     }
 }

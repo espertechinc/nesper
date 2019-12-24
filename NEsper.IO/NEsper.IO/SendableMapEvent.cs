@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.schedule;
 
 using DataMap = System.Collections.Generic.IDictionary<string, object>;
 
@@ -32,7 +30,7 @@ namespace com.espertech.esperio
 		/// <param name="timestamp">the timestamp for this event</param>
 		/// <param name="scheduleSlot">the schedule slot for the entity that created this event</param>
 		/// </summary>
-		public SendableMapEvent(DataMap mapToSend, String eventTypeName, long timestamp, long scheduleSlot)
+		public SendableMapEvent(DataMap mapToSend, string eventTypeName, long timestamp, long scheduleSlot)
             : base(timestamp, scheduleSlot)
 		{
 		    //if properties names contain a '.' we need to rebuild the nested map property
@@ -40,8 +38,8 @@ namespace com.espertech.esperio
             foreach (var property in mapToSend.Keys) {
                 int dot = property.IndexOf('.');
                 if (dot > 0) {
-                    String prefix = property.Substring(0, dot);
-                    String postfix = property.Substring(dot + 1);
+                    string prefix = property.Substring(0, dot);
+                    string postfix = property.Substring(dot + 1);
                     if (!toSend.ContainsKey(prefix)) {
                         DataMap nested = new Dictionary<string, object>();
                         nested.Put(postfix, mapToSend.Get(property));
@@ -78,7 +76,7 @@ namespace com.espertech.esperio
         /// <returns>
         /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
         /// </returns>
-		public override String ToString()
+		public override string ToString()
 		{
 			return _mapToSend.ToString();
 		}

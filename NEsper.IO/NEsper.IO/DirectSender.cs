@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 namespace com.espertech.esperio
@@ -14,12 +13,18 @@ namespace com.espertech.esperio
     /// <summary>Sender that sends without a threadpool. </summary>
     public class DirectSender : AbstractSender {
     
-    	public override void SendEvent(AbstractSendableEvent theEvent, Object beanToSend) {
-    		Runtime.SendEvent(beanToSend);
+    	public override void SendEvent(
+	        AbstractSendableEvent theEvent,
+	        object beanToSend,
+	        string eventTypeName) {
+    		Runtime.SendEventBean(beanToSend, eventTypeName);
     	}
     
-    	public override void SendEvent(AbstractSendableEvent theEvent, IDictionary<string, object> mapToSend, String eventTypeName) {
-    		Runtime.SendEvent(mapToSend, eventTypeName);
+    	public override void SendEvent(
+	        AbstractSendableEvent theEvent, 
+	        IDictionary<string, object> mapToSend,
+	        string eventTypeName) {
+    		Runtime.SendEventMap(mapToSend, eventTypeName);
     	}
     
     	public override void OnFinish() {

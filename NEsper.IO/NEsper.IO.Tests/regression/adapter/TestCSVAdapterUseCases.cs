@@ -12,12 +12,11 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
-using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.magic;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
@@ -39,14 +38,13 @@ namespace com.espertech.esperio.regression.adapter
         private readonly bool _useBean;
 
         private IContainer _container;
+        private EPRuntime _runtime;
 
         [SetUp]
         public void SetUp()
         {
             _container = SupportContainer.Reset();
         }
-
-        public EPServiceProvider EPService { get; set; }
 
         public TestCSVAdapterUseCases() : this(false)
         {
@@ -66,14 +64,14 @@ namespace com.espertech.esperio.regression.adapter
         {
             var configuration = new Configuration(_container);
             if (useBean) {
-                configuration.AddEventType(typeName, typeof (ExampleMarketDataBean));
+                configuration.Common.AddEventType(typeName, typeof (ExampleMarketDataBean));
             }
             else {
                 IDictionary<String, Object> eventProperties = new Dictionary<String, Object>();
                 eventProperties.Put("symbol", typeof (String));
                 eventProperties.Put("price", typeof (double));
                 eventProperties.Put("volume", typeof (int?));
-                configuration.AddEventType(typeName, eventProperties);
+                configuration.Common.AddEventType(typeName, eventProperties);
             }
 
             return configuration;
@@ -83,12 +81,11 @@ namespace com.espertech.esperio.regression.adapter
         {
             var spec = new CSVInputAdapterSpec(source, "TypeC");
 
-            EPService = EPServiceProviderManager.GetProvider(_container, 
-                "testPlayFromInputStream", MakeConfig("TypeC"));
-            EPService.Initialize();
-            InputAdapter feed = new CSVInputAdapter(_container, EPService, spec);
+            _runtime = EPRuntimeProvider.GetRuntime("testPlayFromInputStream", MakeConfig("TypeC"));
+            _runtime.Initialize();
+            InputAdapter feed = new CSVInputAdapter(_runtime, spec);
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select * from TypeC#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select * from TypeC#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -115,18 +112,17 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestAppThread()
         {
-            EPService = EPServiceProviderManager.GetProvider(_container,
-                "testExistingTypeNoOptions", MakeConfig("TypeA"));
-            EPService.Initialize();
+            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA");
+            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
 
-            InputAdapter inputAdapter = new CSVInputAdapter(_container, EPService, spec);
+            InputAdapter inputAdapter = new CSVInputAdapter(_runtime, spec);
             inputAdapter.Start();
 
             Assert.AreEqual(1, listener.GetNewDataList().Count);
@@ -146,60 +142,58 @@ namespace com.espertech.esperio.regression.adapter
             tradeProps.Put("notional", typeof (double?));
 
             var config = new Configuration(_container);
-            config.AddEventType("TradeEvent", tradeProps);
-            config.AddEventType("PriceEvent", priceProps);
+            config.Common.AddEventType("TradeEvent", tradeProps);
+            config.Common.AddEventType("PriceEvent", priceProps);
 
-            EPService = EPServiceProviderManager.GetProvider(_container, "testCoordinated", config);
-            EPService.Initialize();
-            EPService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
-            EPService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
+            _runtime = EPRuntimeProvider.GetRuntime("testCoordinated", config);
+            _runtime.Initialize();
+            _runtime.EventService.ClockExternal();
+            _runtime.EventService.AdvanceTime(0);
 
-            var sourcePrices = new AdapterInputSource(CSV_FILENAME_TIMESTAMPED_PRICES);
+            var sourcePrices = new AdapterInputSource(_container, CSV_FILENAME_TIMESTAMPED_PRICES);
             var inputPricesSpec = new CSVInputAdapterSpec(sourcePrices, "PriceEvent");
             inputPricesSpec.TimestampColumn = "timestamp";
             inputPricesSpec.PropertyTypes = priceProps;
-            var inputPrices = new CSVInputAdapter(_container, inputPricesSpec);
+            var inputPrices = new CSVInputAdapter(inputPricesSpec);
 
-            var sourceTrades = new AdapterInputSource(CSV_FILENAME_TIMESTAMPED_TRADES);
+            var sourceTrades = new AdapterInputSource(_container, CSV_FILENAME_TIMESTAMPED_TRADES);
             var inputTradesSpec = new CSVInputAdapterSpec(sourceTrades, "TradeEvent");
             inputTradesSpec.TimestampColumn = "timestamp";
             inputTradesSpec.PropertyTypes = tradeProps;
-            var inputTrades = new CSVInputAdapter(_container, inputTradesSpec);
+            var inputTrades = new CSVInputAdapter(inputTradesSpec);
 
-            EPStatement stmtPrices =
-                EPService.EPAdministrator.CreateEPL("select symbol, price from PriceEvent#length(100)");
+            var stmtPrices = CompileUtil.CompileDeploy(_runtime, "select symbol, price from PriceEvent#length(100)").Statements[0];
             var listenerPrice = new SupportUpdateListener();
             stmtPrices.Events += listenerPrice.Update;
-            EPStatement stmtTrade =
-                EPService.EPAdministrator.CreateEPL("select symbol, notional from TradeEvent#length(100)");
+            var stmtTrade = CompileUtil.CompileDeploy(_runtime, "select symbol, notional from TradeEvent#length(100)").Statements[0];
             var listenerTrade = new SupportUpdateListener();
             stmtTrade.Events += listenerTrade.Update;
 
-            AdapterCoordinator coordinator = new AdapterCoordinatorImpl(EPService, true);
+            AdapterCoordinator coordinator = new AdapterCoordinatorImpl(_runtime, true);
             coordinator.Coordinate(inputPrices);
             coordinator.Coordinate(inputTrades);
             coordinator.Start();
 
-            EPService.EPRuntime.SendEvent(new CurrentTimeEvent(400));
+            _runtime.EventService.AdvanceTime(400);
             Assert.IsFalse(listenerTrade.IsInvoked());
             Assert.IsFalse(listenerPrice.IsInvoked());
 
             // invoke read of events at 500 (see CSV)
-            EPService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
+            _runtime.EventService.AdvanceTime(1000);
             Assert.AreEqual(1, listenerTrade.GetNewDataList().Count);
             Assert.AreEqual(1, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
             listenerPrice.Reset();
 
             // invoke read of price events at 1500 (see CSV)
-            EPService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
+            _runtime.EventService.AdvanceTime(2000);
             Assert.AreEqual(0, listenerTrade.GetNewDataList().Count);
             Assert.AreEqual(1, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
             listenerPrice.Reset();
 
             // invoke read of trade events at 2500 (see CSV)
-            EPService.EPRuntime.SendEvent(new CurrentTimeEvent(3000));
+            _runtime.EventService.AdvanceTime(3000);
             Assert.AreEqual(1, listenerTrade.GetNewDataList().Count);
             Assert.AreEqual(0, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
@@ -213,17 +207,16 @@ namespace com.espertech.esperio.regression.adapter
         public void TestDynamicType()
         {
             var spec = new CSVInputAdapterSpec(
-                new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeB");
+                new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeB");
 
             var config = new Configuration(_container);
-            config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
-            EPService = EPServiceProviderManager.GetDefaultProvider(config);
-            EPService.Initialize();
+            config.Runtime.Threading.IsInternalTimerEnabled = false;
+            _runtime = EPRuntimeProvider.GetDefaultRuntime(config);
+            _runtime.Initialize();
 
-            InputAdapter feed = new CSVInputAdapter(_container, EPService, spec);
+            InputAdapter feed = new CSVInputAdapter(_runtime, spec);
 
-            EPStatement stmt =
-                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeB#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeB#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -241,21 +234,19 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1000PerSec()
         {
-            EPService = EPServiceProviderManager.GetProvider(
-                _container, "testExistingTypeNoOptions", MakeConfig("TypeA"));
-            EPService.Initialize();
+            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime.Initialize();
 
-            EPStatement stmt =
-                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
             var spec = new CSVInputAdapterSpec(
-                new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA");
+                new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA");
             spec.EventsPerSec = 1000;
             spec.IsUsingEngineThread = true;
 
-            InputAdapter inputAdapter = new CSVInputAdapter(_container, EPService, spec);
+            InputAdapter inputAdapter = new CSVInputAdapter(_runtime, spec);
             inputAdapter.Start();
             Thread.Sleep(1000);
 
@@ -268,19 +259,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestEngineThread1PerSec()
         {
-            EPService = EPServiceProviderManager.GetProvider(
-                _container, "testExistingTypeNoOptions", MakeConfig("TypeA"));
-            EPService.Initialize();
+            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA"));
+            _runtime.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            var spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE_MULTIPLE), "TypeA");
+            var spec = new CSVInputAdapterSpec(new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE_MULTIPLE), "TypeA");
             spec.EventsPerSec = 1;
             spec.IsUsingEngineThread = true;
 
-            InputAdapter inputAdapter = new CSVInputAdapter(_container, EPService, spec);
+            InputAdapter inputAdapter = new CSVInputAdapter(_runtime, spec);
             inputAdapter.Start();
 
             Thread.Sleep(1500);
@@ -300,15 +290,14 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestExistingTypeNoOptions()
         {
-            EPService = EPServiceProviderManager.GetProvider(
-                _container, "testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
-            EPService.Initialize();
+            _runtime = EPRuntimeProvider.GetRuntime("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
+            _runtime.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
+            var stmt = CompileUtil.CompileDeploy(_runtime, "select symbol, price, volume from TypeA#length(100)").Statements[0];
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            (new CSVInputAdapter(_container, EPService, new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA")).Start();
+            (new CSVInputAdapter(_runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA")).Start();
 
             Assert.AreEqual(1, listener.GetNewDataList().Count);
         }
@@ -321,7 +310,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
             Stream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(myCSV));
-            TrySource(new AdapterInputSource(inputStream));
+            TrySource(new AdapterInputSource(_container, inputStream));
         }
 
         /// <summary>
@@ -332,7 +321,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
             var reader = new StringReader(myCSV);
-            TrySource(new AdapterInputSource(reader));
+            TrySource(new AdapterInputSource(_container, reader));
         }
     }
 }

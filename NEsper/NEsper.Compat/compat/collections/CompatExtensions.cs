@@ -14,13 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
-
-using Castle.Components.DictionaryAdapter.Xml;
-using Castle.Core.Internal;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.magic;
@@ -1068,7 +1062,7 @@ namespace com.espertech.esper.compat.collections
                 throw new ArgumentException("unable to convert non-enumerable type");
             }
 
-            var arrayElementType = arrayType.GetComponentType();
+            var arrayElementType = arrayType.GetElementType();
             var arrayListType = typeof(List<>).MakeGenericType(arrayElementType);
             if (arrayListType == null) {
                 throw new ArgumentException("unable to create generic list type for \"" + arrayElementType.CleanName() + "\"");

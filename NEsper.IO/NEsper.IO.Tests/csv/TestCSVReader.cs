@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
@@ -34,7 +36,7 @@ namespace com.espertech.esperio.csv
         public void TestClose()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(_container, new AdapterInputSource(path));
+            var reader = new CSVReader(new AdapterInputSource(_container, path));
 
             reader.Close();
             try {
@@ -73,7 +75,7 @@ namespace com.espertech.esperio.csv
         public void TestParsing()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(_container, new AdapterInputSource(path));
+            var reader = new CSVReader(new AdapterInputSource(_container, path));
 
             String[] nextRecord = reader.GetNextRecord();
             var expected = new[] {"8", "8.0", "c", "'c'", "string", "string"};
@@ -119,7 +121,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestReset()
         {
-            var reader = new CSVReader(_container, new AdapterInputSource("regression/endOnNewline.csv"));
+            var reader = new CSVReader(new AdapterInputSource(_container, "regression/endOnNewline.csv"));
 
             String[] nextRecord = reader.GetNextRecord();
             var expected = new[] {"first line", "1"};
@@ -139,7 +141,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestTitleRow()
         {
-            var reader = new CSVReader(_container, new AdapterInputSource("regression/titleRow.csv"));
+            var reader = new CSVReader(new AdapterInputSource(_container, "regression/titleRow.csv"));
             reader.Looping = true;
 
             // isUsingTitleRow is false by default, so get the title row
@@ -197,16 +199,17 @@ namespace com.espertech.esperio.csv
             var container = ContainerExtensions.CreateDefaultContainer();
 
             var configuration = new Configuration(container);
-            configuration.AddEventType<Figure>();
+            configuration.Common.AddEventType(typeof(Figure));
 
-            var ep = EPServiceProviderManager.GetProvider(container, "testNestedProperties", configuration);
+            var ep = EPRuntimeProvider.GetRuntime("testNestedProperties", configuration);
             var ul = new SupportUpdateListener();
 
-            ep.EPAdministrator.CreateEPL("select * from Figure").Events += ul.Update;
+            var stmt = CompileUtil.CompileDeploy(ep, "select * from Figure").Statements[0];
+            stmt.Events += ul.Update;
 
-            var source = new AdapterInputSource("regression/nestedProperties.csv");
+            var source = new AdapterInputSource(_container, "regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(_container, ep, spec);
+            var adapter = new CSVInputAdapter(ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());
@@ -227,15 +230,15 @@ namespace com.espertech.esperio.csv
             figure.Put("Name", typeof (string));
             figure.Put("Point", point);
 
-            configuration.AddEventType("Figure", figure);
-            var ep = EPServiceProviderManager.GetProvider(
-                _container, "testNestedMapProperties", configuration);
+            configuration.Common.AddEventType("Figure", figure);
+            var ep = EPRuntimeProvider.GetRuntime("testNestedMapProperties", configuration);
             var ul = new SupportUpdateListener();
-            ep.EPAdministrator.CreateEPL("select * from Figure").Events += ul.Update;
+            var stmt = CompileUtil.CompileDeploy(ep, "select * from Figure").Statements[0];
+            stmt.Events += ul.Update;
 
-            var source = new AdapterInputSource("regression/nestedProperties.csv");
+            var source = new AdapterInputSource(_container, "regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(_container, ep, spec);
+            var adapter = new CSVInputAdapter(ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());
@@ -245,7 +248,7 @@ namespace com.espertech.esperio.csv
 
         private void AssertLooping(String path)
         {
-            var reader = new CSVReader(_container, new AdapterInputSource(path));
+            var reader = new CSVReader(new AdapterInputSource(_container, path));
             reader.Looping = true;
 
             String[] nextRecord = reader.GetNextRecord();
@@ -283,7 +286,7 @@ namespace com.espertech.esperio.csv
 
         private void AssertNonLooping(String path)
         {
-            var reader = new CSVReader(_container, new AdapterInputSource(path));
+            var reader = new CSVReader(new AdapterInputSource(_container, path));
 
             String[] nextRecord = reader.GetNextRecord();
             var expected = new[] { "first line", "1" };

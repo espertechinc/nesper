@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -24,12 +23,14 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 {
     public class DataflowInstantiator
     {
         public static EPDataFlowInstance Instantiate(
+            IContainer container,
             int agentInstanceId,
             DataflowDesc dataflow,
             EPDataFlowInstantiationOptions options)
@@ -58,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             statementContext.VariableManagementService.SetLocalVersion();
 
             // instantiate operators
-            var operators = InstantiateOperators(agentInstanceContext, options, dataflow);
+            var operators = InstantiateOperators(container, agentInstanceContext, options, dataflow);
 
             // determine binding of each channel to input methods (ports)
             IList<LogicalChannelBinding> operatorChannelBindings = new List<LogicalChannelBinding>();
@@ -123,6 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static IDictionary<int, object> InstantiateOperators(
+            IContainer container,
             AgentInstanceContext agentInstanceContext,
             EPDataFlowInstantiationOptions options,
             DataflowDesc dataflow)
@@ -130,7 +132,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             IDictionary<int, object> operators = new Dictionary<int, object>();
 
             foreach (var operatorNum in dataflow.OperatorMetadata.Keys) {
-                var @operator = InstantiateOperator(operatorNum, dataflow, options, agentInstanceContext);
+                var @operator = InstantiateOperator(
+                    container, operatorNum, dataflow, options, agentInstanceContext);
                 operators.Put(operatorNum, @operator);
             }
 
@@ -138,6 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         }
 
         private static object InstantiateOperator(
+            IContainer container,
             int operatorNum,
             DataflowDesc dataflow,
             EPDataFlowInstantiationOptions options,
@@ -178,6 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             try {
                 @operator = operatorFactory.Operator(
                     new DataFlowOpInitializeContext(
+                        container,
                         dataflow.DataflowName,
                         metadata.OperatorName,
                         operatorNum,

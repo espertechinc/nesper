@@ -1,4 +1,4 @@
-using com.espertech.esper.client;
+using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esperio
 {
@@ -12,7 +12,7 @@ namespace com.espertech.esperio
 	    /// Gets or sets the engine instance.
 		/// </summary>
 
-	    EPServiceProvider EPServiceProvider
+	    EPRuntime Runtime
 		{
 			get ;
 			set ;

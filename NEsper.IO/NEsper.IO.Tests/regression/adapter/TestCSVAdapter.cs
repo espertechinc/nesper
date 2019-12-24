@@ -8,16 +8,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 using NUnit.Framework;
+
+using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
 {
@@ -26,7 +27,7 @@ namespace com.espertech.esperio.regression.adapter
     {
         private SupportUpdateListener _listener;
         private String _eventTypeName;
-        private EPServiceProvider _epService;
+        private EPRuntime _runtime;
         private long _currentTime;
         private InputAdapter _adapter;
         private String[] _propertyOrderTimestamps;
@@ -40,27 +41,24 @@ namespace com.espertech.esperio.regression.adapter
             _container = SupportContainer.Reset();
 
             _propertyTypes = new Dictionary<String, Object>();
-            _propertyTypes.Put("myInt", typeof (int?));
-            _propertyTypes.Put("myDouble", typeof (double?));
-            _propertyTypes.Put("myString", typeof (String));
+            _propertyTypes.Put("myInt", typeof(int?));
+            _propertyTypes.Put("myDouble", typeof(double?));
+            _propertyTypes.Put("myString", typeof(String));
 
             _eventTypeName = "mapEvent";
             var configuration = new Configuration(_container);
-            configuration.AddEventType(_eventTypeName, _propertyTypes);
-            configuration.AddEventType("myNonMapEvent", typeof (Type).FullName);
+            configuration.Runtime.Threading.IsInternalTimerEnabled = false;
+            configuration.Common.AddEventType(_eventTypeName, _propertyTypes);
+            configuration.Common.AddEventType("myNonMapEvent", typeof(Type).FullName);
 
-            _epService = EPServiceProviderManager.GetProvider(_container, "CSVProvider", configuration);
-            _epService.Initialize();
-            EPAdministrator administrator = _epService.EPAdministrator;
+            _runtime = EPRuntimeProvider.GetRuntime("CSVProvider", configuration);
+            _runtime.Initialize();
 
-            String statementText = "select * from mapEvent#length(5)";
-            EPStatement statement = administrator.CreateEPL(statementText);
+            var statementText = "select * from mapEvent#length(5)";
+            var statement = CompileDeploy(_runtime, statementText).Statements[0];
 
             _listener = new SupportUpdateListener();
             statement.Events += _listener.Update;
-
-            // Turn off external clocking
-            _epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
 
             // Set the clock to 0
             _currentTime = 0;
@@ -76,25 +74,27 @@ namespace com.espertech.esperio.regression.adapter
                 adapter.Start();
                 Assert.Fail();
             }
-            catch (EPException)
-            {
+            catch (EPException) {
                 // Expected
             }
 
             try {
-                adapter.EPService = null;
+                adapter.Runtime = null;
                 Assert.Fail();
             }
             catch (ArgumentNullException) {
                 // Expected
             }
 
-            adapter.EPService = _epService;
+            adapter.Runtime = _runtime;
             adapter.Start();
             Assert.AreEqual(3, _listener.GetNewDataList().Count);
         }
 
-        private void AssertEvent(int howManyBack, int? myInt, double? myDouble, String myString)
+        private void AssertEvent(int howManyBack,
+            int? myInt,
+            double? myDouble,
+            String myString)
         {
             Assert.IsTrue(_listener.IsInvoked());
             Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
@@ -109,12 +109,12 @@ namespace com.espertech.esperio.regression.adapter
         private void SendTimeEvent(int timeIncrement)
         {
             _currentTime += timeIncrement;
-            var theEvent = new CurrentTimeEvent(_currentTime);
-            _epService.EPRuntime.SendEvent(theEvent);
+            _runtime.EventService.AdvanceTime(_currentTime);
         }
 
 
-        private void AssertEvents(bool isLooping, IEnumerable<object[]> events)
+        private void AssertEvents(bool isLooping,
+            IEnumerable<object[]> events)
         {
             if (isLooping) {
                 AssertLoopingEvents(events);
@@ -136,12 +136,19 @@ namespace com.espertech.esperio.regression.adapter
             }
             else {
                 // properties = [callbackDelay, intOne, doubleOne, StringOne, intTwo, doubleTwo, stringTwo]
-                AssertTwoEvents((int?) properties[1], (double?) properties[2], (String) properties[3],
-                                (int?) properties[4], (double?) properties[5], (String) properties[6]);
+                AssertTwoEvents(
+                    (int?) properties[1],
+                    (double?) properties[2],
+                    (String) properties[3],
+                    (int?) properties[4],
+                    (double?) properties[5],
+                    (String) properties[6]);
             }
         }
 
-        private void AssertEvent(Object myInt, Object myDouble, Object myString)
+        private void AssertEvent(Object myInt,
+            Object myDouble,
+            Object myString)
         {
             Assert.IsTrue(_listener.GetAndClearIsInvoked());
             Assert.AreEqual(1, _listener.GetLastNewData().Length);
@@ -152,8 +159,12 @@ namespace com.espertech.esperio.regression.adapter
             _listener.Reset();
         }
 
-        private void AssertTwoEvents(int? intOne, double? doubleOne, String stringOne,
-                                     int? intTwo, double? doubleTwo, String stringTwo)
+        private void AssertTwoEvents(int? intOne,
+            double? doubleOne,
+            String stringOne,
+            int? intTwo,
+            double? doubleTwo,
+            String stringTwo)
         {
             Assert.IsTrue(_listener.IsInvoked());
             Assert.AreEqual(2, _listener.GetNewDataList().Count);
@@ -196,59 +207,37 @@ namespace com.espertech.esperio.regression.adapter
             }
         }
 
-        private void StartAdapter(String filename, int eventsPerSec, bool isLooping, bool usingEngineThread,
-                                  String timestampColumn, String[] propertyOrder)
+        private void StartAdapter(String filename,
+            int eventsPerSec,
+            bool isLooping,
+            bool usingEngineThread,
+            String timestampColumn,
+            String[] propertyOrder)
         {
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(filename), _eventTypeName);
+            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container, filename), _eventTypeName);
             if (eventsPerSec != -1) {
                 adapterSpec.EventsPerSec = eventsPerSec;
             }
+
             adapterSpec.IsLooping = isLooping;
             adapterSpec.PropertyOrder = propertyOrder;
             adapterSpec.IsUsingEngineThread = usingEngineThread;
             adapterSpec.TimestampColumn = timestampColumn;
 
-            _adapter = new CSVInputAdapter(_container, _epService, adapterSpec);
+            _adapter = new CSVInputAdapter(_runtime, adapterSpec);
             _adapter.Start();
         }
 
-        private void AssertFailedConstruction(String filename, String eventTypeName)
+        private void AssertFailedConstruction(String filename,
+            String eventTypeName)
         {
             try {
-                (new CSVInputAdapter(_container, _epService, new AdapterInputSource(filename), eventTypeName)).Start();
+                (new CSVInputAdapter(_runtime, new AdapterInputSource(_container, filename), eventTypeName)).Start();
                 Assert.Fail();
             }
-            catch (EPException ) {
+            catch (EPException) {
                 // Expected
             }
-        }
-
-        [Test]
-        public void TestAutoTyped()
-        {
-            var config = new Configuration(_container);
-            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
-            var adapter = new CSVInputAdapter(
-                _container,
-                epService,
-                new AdapterInputSource(new StringReader("sym,price\nGOOG,22\nGOOG,33")),
-                "MarketData"
-                );
-            try {
-                epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData#length(2)");
-                Assert.Fail("should fail due to type conversion");
-            }
-            catch (EPStatementException e) {
-                Assert.IsTrue(e.Message.Contains("Implicit conversion"));
-            }
-
-            var adapter2 = new CSVInputAdapter(
-                _container,
-                epService,
-                new AdapterInputSource(new StringReader("sym,long price\nGOOG,22\nGOOG,33")),
-                "MarketData2"
-                );
-            epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData2#length(2)");
         }
 
         [Test]
@@ -262,7 +251,7 @@ namespace com.espertech.esperio.regression.adapter
             events.Add(new Object[] {200, 3, 3.3, "three"});
             events.Add(new Object[] {200, 5, 5.5, "five"});
 
-            bool isLooping = false;
+            var isLooping = false;
             StartAdapter(filename, eventsPerSec, isLooping, true, "timestamp", _propertyOrderTimestamps);
             AssertEvents(isLooping, events);
 
@@ -274,15 +263,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestConflictingPropertyOrder()
         {
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource("regression/intsTitleRow.csv"),
-                                                      "intsTitleRowEvent");
+            CompileDeploy(_runtime, "@public @buseventtype create schema intsTitleRowEvent(intOne string, intTwo string)");
+
+            var adapterSpec = new CSVInputAdapterSpec(
+                new AdapterInputSource(_container, "regression/intsTitleRow.csv"),
+                "intsTitleRowEvent");
             adapterSpec.EventsPerSec = 10;
             adapterSpec.PropertyOrder = new[] {"intTwo", "intOne"};
             adapterSpec.IsUsingEngineThread = true;
-            _adapter = new CSVInputAdapter(_container, _epService, adapterSpec);
+            _adapter = new CSVInputAdapter(_runtime, adapterSpec);
 
             const string statementText = "select * from intsTitleRowEvent#length(5)";
-            EPStatement statement = _epService.EPAdministrator.CreateEPL(statementText);
+            var statement = CompileDeploy(_runtime, statementText).Statements[0];
             statement.Events += _listener.Update;
 
             _adapter.Start();
@@ -362,15 +354,15 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestInputStream()
         {
-            Stream stream = _container.ResourceManager().GetResourceAsStream("regression/noTimestampOne.csv");
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(stream), _eventTypeName);
+            var stream = _container.ResourceManager().GetResourceAsStream("regression/noTimestampOne.csv");
+            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource(_container, stream), _eventTypeName);
             adapterSpec.PropertyOrder = _propertyOrderNoTimestamps;
 
-            new CSVInputAdapter(_container, _epService, adapterSpec);
+            new CSVInputAdapter(_runtime, adapterSpec);
 
             adapterSpec.IsLooping = true;
             try {
-                new CSVInputAdapter(_container, _epService, adapterSpec);
+                new CSVInputAdapter(_runtime, adapterSpec);
                 Assert.Fail();
             }
             catch (EPException) {
@@ -414,15 +406,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestNoPropertyTypes()
         {
-            var adapterSpec = new CSVInputAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"),
-                                                      "allStringEvent");
+            CompileDeploy(_runtime, "@public @buseventtype create schema allStringEvent(myInt string, myDouble string, myString string)");
+
+            var adapterSpec = new CSVInputAdapterSpec(
+                new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
+                "allStringEvent");
             adapterSpec.EventsPerSec = 10;
             adapterSpec.PropertyOrder = new[] {"myInt", "myDouble", "myString"};
             adapterSpec.IsUsingEngineThread = true;
-            _adapter = new CSVInputAdapter(_container, _epService, adapterSpec);
+            _adapter = new CSVInputAdapter(_runtime, adapterSpec);
 
             const string statementText = "select * from allStringEvent#length(5)";
-            EPStatement statement = _epService.EPAdministrator.CreateEPL(statementText);
+            var statement = CompileDeploy(_runtime, statementText).Statements[0];
             statement.Events += _listener.Update;
 
             _adapter.Start();
@@ -490,12 +485,13 @@ namespace com.espertech.esperio.regression.adapter
         public void TestNullEPService()
         {
             var adapter = new CSVInputAdapter(
-                _container, new AdapterInputSource("regression/titleRow.csv"), _eventTypeName);
+                new AdapterInputSource(_container, "regression/titleRow.csv"),
+                _eventTypeName);
             RunNullEPService(adapter);
 
             _listener.Reset();
 
-            adapter = new CSVInputAdapter(_container, new AdapterInputSource("regression/titleRow.csv"), _eventTypeName);
+            adapter = new CSVInputAdapter(new AdapterInputSource(_container, "regression/titleRow.csv"), _eventTypeName);
             RunNullEPService(adapter);
         }
 
@@ -609,16 +605,19 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestRuntimePropertyTypes()
         {
+            CompileDeploy(_runtime, "@public @buseventtype create schema propertyTypeEvent(myInt int, myDouble double, myString string)");
+
             var adapterSpec = new CSVInputAdapterSpec(
-                new AdapterInputSource("regression/noTimestampOne.csv"), "propertyTypeEvent");
+                new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
+                "propertyTypeEvent");
             adapterSpec.EventsPerSec = 10;
-            adapterSpec.PropertyOrder = new[] { "myInt", "myDouble", "myString" };
+            adapterSpec.PropertyOrder = new[] {"myInt", "myDouble", "myString"};
             adapterSpec.PropertyTypes = _propertyTypes;
             adapterSpec.IsUsingEngineThread = true;
-            _adapter = new CSVInputAdapter(_container, _epService, adapterSpec);
+            _adapter = new CSVInputAdapter(_runtime, adapterSpec);
 
             const string statementText = "select * from propertyTypeEvent#length(5)";
-            EPStatement statement = _epService.EPAdministrator.CreateEPL(statementText);
+            var statement = CompileDeploy(_runtime, statementText).Statements[0];
             statement.Events += _listener.Update;
 
             _adapter.Start();
@@ -637,12 +636,13 @@ namespace com.espertech.esperio.regression.adapter
         public void TestRuntimePropertyTypesInvalid()
         {
             var propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
-            propertyTypesInvalid.Put("anotherProperty", typeof (String));
+            propertyTypesInvalid.Put("anotherProperty", typeof(String));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent");
+                    new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
+                    "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
-                (new CSVInputAdapter(_container, _epService, adapterSpec)).Start();
+                (new CSVInputAdapter(_runtime, adapterSpec)).Start();
                 Assert.Fail();
             }
             catch (EPException) {
@@ -650,12 +650,13 @@ namespace com.espertech.esperio.regression.adapter
             }
 
             propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
-            propertyTypesInvalid.Put("myInt", typeof (String));
+            propertyTypesInvalid.Put("myInt", typeof(String));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent");
+                    new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
+                    "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
-                (new CSVInputAdapter(_container, _epService, adapterSpec)).Start();
+                (new CSVInputAdapter(_runtime, adapterSpec)).Start();
                 Assert.Fail();
             }
             catch (EPException) {
@@ -664,12 +665,13 @@ namespace com.espertech.esperio.regression.adapter
 
             propertyTypesInvalid = new Dictionary<String, Object>(_propertyTypes);
             propertyTypesInvalid.Remove("myInt");
-            propertyTypesInvalid.Put("anotherInt", typeof (int?));
+            propertyTypesInvalid.Put("anotherInt", typeof(int?));
             try {
                 var adapterSpec = new CSVInputAdapterSpec(
-                    new AdapterInputSource("regression/noTimestampOne.csv"), "mapEvent");
+                    new AdapterInputSource(_container, "regression/noTimestampOne.csv"),
+                    "mapEvent");
                 adapterSpec.PropertyTypes = propertyTypesInvalid;
-                (new CSVInputAdapter(_container, _epService, adapterSpec)).Start();
+                (new CSVInputAdapter(_runtime, adapterSpec)).Start();
                 Assert.Fail();
             }
             catch (EPException) {
@@ -688,7 +690,7 @@ namespace com.espertech.esperio.regression.adapter
             events.Add(new Object[] {200, 3, 3.3, "timestampOne.three"});
             events.Add(new Object[] {200, 5, 5.5, "timestampOne.five"});
 
-            bool isLooping = false;
+            var isLooping = false;
             StartAdapter(filename, eventsPerSec, isLooping, true, "timestamp", _propertyOrderTimestamps);
             AssertEvents(isLooping, events);
 
@@ -766,14 +768,14 @@ namespace com.espertech.esperio.regression.adapter
         public void TestTitleRowNoTimestamp()
         {
             const string filename = "regression/titleRowNoTimestamp.csv";
-            int eventsPerSec = 10;
+            var eventsPerSec = 10;
 
             IList<Object[]> events = new List<Object[]>();
             events.Add(new Object[] {100, 1, 1.1, "one"});
             events.Add(new Object[] {100, 3, 3.3, "three"});
             events.Add(new Object[] {100, 5, 5.5, "five"});
 
-            bool isLooping = true;
+            var isLooping = true;
             _propertyOrderNoTimestamps = null;
             StartAdapter(filename, eventsPerSec, isLooping, true, null, null);
             AssertLoopingEvents(events);

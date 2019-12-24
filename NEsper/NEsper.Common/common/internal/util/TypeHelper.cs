@@ -35,6 +35,8 @@ using com.espertech.esper.grammar.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
+using TypeExtensions = com.espertech.esper.compat.TypeExtensions;
+
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>
