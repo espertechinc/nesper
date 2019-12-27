@@ -8,9 +8,6 @@
 
 namespace com.espertech.esper.common.client.dataflow.core
 {
-    /// <summary>
-    /// Collector for use with the <seealso cref="EPStatementSource" /> operator.
-    /// </summary>
     public interface EPDataFlowIRStreamCollector
     {
         /// <summary>

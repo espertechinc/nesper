@@ -476,7 +476,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             arrayItem = simpleTypeParser.Parse(textContent);
                         }
                     }
-                    catch (Exception e) {
+                    catch (Exception) {
                         if (Log.IsInfoEnabled) {
                             Log.Info(
                                 "Parse error for text content " +

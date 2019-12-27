@@ -1977,7 +1977,7 @@ namespace com.espertech.esper.common.@internal.util
                     try {
                         return genericType.MakeGenericType(genericTypeArgs);
                     }
-                    catch (TypeLoadException e) {
+                    catch (TypeLoadException) {
                         if (throwOnError) {
                             throw; // Don't use ThrowOnReturnNull because you will lose the exception stack
                         }

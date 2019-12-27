@@ -57,6 +57,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
         /// </summary>
         /// <param name="specification">configuration</param>
         /// <param name="runtimeURI">runtime URI</param>
+        /// <param name="rwLockManager">the read-write lock manager</param>
         public MetricReportingServiceImpl(
             ConfigurationRuntimeMetricsReporting specification,
             string runtimeURI,

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Examples.ATM</AssemblyName>
+        <AssemblyTitle>NEsper.Examples.ATM</AssemblyTitle>
+        <PackageId>NEsper.Examples.ATM</PackageId>
+        <RootNamespace>NEsper.Examples.ATM</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(NetCore)'=='true'">
+        <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(NetFramework)' == 'net471'">
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="4.5.6" />
+        <PackageReference Include="NUnit" Version="3.10.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Runtime\NEsper.Runtime.csproj" />
+        <ProjectReference Include="..\..\support\NEsper.Examples.Support.csproj" />
+    </ItemGroup>
+</Project>

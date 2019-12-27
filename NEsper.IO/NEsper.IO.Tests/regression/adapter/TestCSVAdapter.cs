@@ -98,9 +98,9 @@ namespace com.espertech.esperio.regression.adapter
         {
             Assert.IsTrue(_listener.IsInvoked());
             Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
-            EventBean[] data = _listener.GetNewDataList()[howManyBack];
+            var data = _listener.GetNewDataList()[howManyBack];
             Assert.AreEqual(1, data.Length);
-            EventBean theEvent = data[0];
+            var theEvent = data[0];
             Assert.AreEqual(myInt, theEvent.Get("myInt"));
             Assert.AreEqual(myDouble, theEvent.Get("myDouble"));
             Assert.AreEqual(myString, theEvent.Get("myString"));
@@ -152,7 +152,7 @@ namespace com.espertech.esperio.regression.adapter
         {
             Assert.IsTrue(_listener.GetAndClearIsInvoked());
             Assert.AreEqual(1, _listener.GetLastNewData().Length);
-            EventBean theEvent = _listener.GetLastNewData()[0];
+            var theEvent = _listener.GetLastNewData()[0];
             Assert.AreEqual(myInt, theEvent.Get("myInt"));
             Assert.AreEqual(myDouble, theEvent.Get("myDouble"));
             Assert.AreEqual(myString, theEvent.Get("myString"));
@@ -170,7 +170,7 @@ namespace com.espertech.esperio.regression.adapter
             Assert.AreEqual(2, _listener.GetNewDataList().Count);
 
             Assert.AreEqual(1, _listener.GetNewDataList()[0].Length);
-            EventBean theEvent = _listener.GetNewDataList()[0][0];
+            var theEvent = _listener.GetNewDataList()[0][0];
             Assert.AreEqual(intOne, theEvent.Get("myInt"));
             Assert.AreEqual(doubleOne, theEvent.Get("myDouble"));
             Assert.AreEqual(stringOne, theEvent.Get("myString"));

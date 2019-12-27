@@ -8,11 +8,12 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.module;
 
 namespace com.espertech.esper.compiler.client
 {
     /// <summary>
-    ///     Arguments holder for use with <seealso cref="EPCompiler.Compile" />.
+    ///     Arguments holder for use with <seealso cref="EPCompiler.Compile(Module, CompilerArguments)" />.
     ///     <para>
     ///         The compiler arguments always contain a configuration. When there is no configuration provided the compiler
     ///         uses the default

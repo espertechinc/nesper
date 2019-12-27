@@ -33,7 +33,7 @@ namespace com.espertech.esperio.csv
     	public void TestResolveTitleRow()
     	{
     		// Use first row
-    		String[] firstRow = new String[] { "myDouble", "myInt", "myString" };
+    		var firstRow = new String[] { "myDouble", "myInt", "myString" };
     		Assert.AreEqual(firstRow, CSVPropertyOrderHelper.ResolvePropertyOrder(firstRow, _propertyTypes));
     	}
     }

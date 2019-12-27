@@ -363,7 +363,6 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // there can be only one fields and statement provider
-            StmtClassForgable fields = null;
             StmtClassForgable stmtProvider = null;
             foreach (var forgable in forgables) {
                 if (forgable.ForgableType == StmtClassForgableType.STMTPROVIDER) {

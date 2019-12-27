@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     returns only the whole number part of the result and any fractional part is dropped.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsIntegerDivision { get; private set; }
+        public bool IsIntegerDivision { get; set; }
 
         /// <summary>
         ///     Set to false (default) for integer division returning double values.
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     If integer devision is set, then division by zero for non-FP operands also returns null.
         /// </summary>
         /// <value>indicator for division-by-zero results</value>
-        public bool IsDivisionByZeroReturnsNull { get; private set; }
+        public bool IsDivisionByZeroReturnsNull { get; set; }
 
         /// <summary>
         ///     Set to false (default) to have division by zero return Double.Infinity.
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     if the parameter set is empty or has constant-only return values.
         /// </summary>
         /// <value>cache flag</value>
-        public bool IsUdfCache { get; private set; }
+        public bool IsUdfCache { get; set; }
 
         /// <summary>
         ///     Set to true (the default) to indicate that user-defined functions cache return results
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Enables or disables non-SQL standard builtin aggregation functions.
         /// </summary>
         /// <value>indicator</value>
-        public bool IsExtendedAggregation { get; private set; }
+        public bool IsExtendedAggregation { get; set; }
 
         /// <summary>
         ///     Enables or disables non-SQL standard builtin aggregation functions.
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     documentation).
         /// </summary>
         /// <value>indicator</value>
-        public bool IsDuckTyping { get; private set; }
+        public bool IsDuckTyping { get; set; }
 
         /// <summary>
         ///     Set to true to indicate that duck typing is enable for the specific syntax where it is allowed (check the

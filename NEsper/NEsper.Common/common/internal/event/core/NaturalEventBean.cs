@@ -15,9 +15,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// <summary>
     ///     An event that is carries multiple representations of event properties: A
     ///     synthetic representation that is designed for delivery as <seealso cref="EventBean" /> to
-    ///     client <seealso cref="UpdateListener" /> code, and a
-    ///     natural representation as a bunch of Object-type properties for fast delivery to
-    ///     client subscriber objects via method call.
+    ///     client <seealso cref="EventHandler" /> code, and a natural representation as a bunch
+    ///     of Object-type properties for fast delivery to client subscriber objects via method call.
     /// </summary>
     public class NaturalEventBean : EventBean,
         DecoratingEventBean

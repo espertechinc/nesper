@@ -308,7 +308,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestPlayFromInputStream()
         {
-            String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+            var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
             Stream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(myCSV));
             TrySource(new AdapterInputSource(_container, inputStream));
         }
@@ -319,7 +319,7 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
         public void TestPlayFromStringReader()
         {
-            String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+            var myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
             var reader = new StringReader(myCSV);
             TrySource(new AdapterInputSource(_container, reader));
         }

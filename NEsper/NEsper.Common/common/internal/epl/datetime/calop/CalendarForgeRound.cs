@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
@@ -25,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
     public class CalendarForgeRound : CalendarForge,
         CalendarOp
     {
-        private readonly int code;
         private readonly DateTimeFieldEnum field;
         private readonly DateTimeMethodEnum method;
 
@@ -35,19 +33,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             this.field = field;
             this.method = method;
-            switch (method) {
-                case DateTimeMethodEnum.ROUNDCEILING:
-                    code = ApacheCommonsDateUtils.MODIFY_CEILING;
-                    break;
-                case DateTimeMethodEnum.ROUNDFLOOR:
-                    code = ApacheCommonsDateUtils.MODIFY_TRUNCATE;
-                    break;
-                case DateTimeMethodEnum.ROUNDHALF:
-                    code = ApacheCommonsDateUtils.MODIFY_ROUND;
-                    break;
-                default:
-                    throw new ArgumentException("Unrecognized method '" + method + "'");
-            }
         }
 
         public CalendarOp EvalOp => this;

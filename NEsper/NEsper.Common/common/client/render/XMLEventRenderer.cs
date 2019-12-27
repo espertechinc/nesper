@@ -6,30 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.client.render
 {
     /// <summary>
-    /// Renderer for an event into the XML textual format.
-    /// <para>
-    /// A renderer is dedicated to rendering only a certain type of events and subtypes
-    /// of that type, as the render cache type metadata and prepares structures to
-    /// enable fast rendering.
-    /// </para>
-    /// <para>
-    /// For rendering events of different types, use a quick-access method in <seealso cref="EventRenderer"/>.
-    /// </para>
+    ///     Renderer for an event into the XML textual format.
+    ///     <para>
+    ///         A renderer is dedicated to rendering only a certain type of events and subtypes
+    ///         of that type, as the render cache type metadata and prepares structures to
+    ///         enable fast rendering.
+    ///     </para>
     /// </summary>
     public interface XMLEventRenderer
     {
         /// <summary>
-        /// RenderAny a given event in the XML format.
+        ///     RenderAny a given event in the XML format.
         /// </summary>
         /// <param name="rootElementName">the name of the root element, may include namespace information</param>
         /// <param name="theEvent">the event to render</param>
         /// <returns>
-        /// XML formatted text
+        ///     XML formatted text
         /// </returns>
         string Render(
             string rootElementName,

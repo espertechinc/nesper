@@ -23,9 +23,9 @@ namespace com.espertech.esperio.support.util
             string epl)
         {
             try {
-                CompilerArguments args = new CompilerArguments(epService.ConfigurationDeepCopy);
+                var args = new CompilerArguments(epService.ConfigurationDeepCopy);
                 args.Path.Add(epService.RuntimePath);
-                EPCompiled compiled = EPCompilerProvider.Compiler.Compile(epl, args);
+                var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
                 return epService.DeploymentService.Deploy(compiled);
             }
             catch (Exception ex) {
@@ -39,7 +39,7 @@ namespace com.espertech.esperio.support.util
             string expected)
         {
             try {
-                CompilerArguments args = new CompilerArguments(epService.ConfigurationDeepCopy);
+                var args = new CompilerArguments(epService.ConfigurationDeepCopy);
                 args.Path.Add(epService.RuntimePath);
                 EPCompilerProvider.Compiler.Compile(graph, args);
                 Assert.Fail();
@@ -52,10 +52,10 @@ namespace com.espertech.esperio.support.util
         }
 
 
-        public static void UndeployAll(EPRuntime epService)
+        public static void UndeployAll(EPRuntime runtime)
         {
             try {
-                epService.DeploymentService.UndeployAll();
+                runtime.DeploymentService.UndeployAll();
             }
             catch (EPUndeployException e) {
                 throw new EPRuntimeException(e);

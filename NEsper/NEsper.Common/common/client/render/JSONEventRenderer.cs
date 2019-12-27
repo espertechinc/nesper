@@ -6,17 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.client.render
 {
     /// <summary>
-    /// Renderer for an event into the JSON textual format.
-    /// <para>
-    /// A renderer is dedicated to rendering only a certain type of events and subtypes of that type, as the render
-    /// cache type metadata and prepares structures to enable fast rendering. <para />For rendering events of different
-    /// types, use a quick-access method in <seealso cref="EventRenderer" />.
-    /// </para>
+    ///     Renderer for an event into the JSON textual format.
+    ///     <para>
+    ///         A renderer is dedicated to rendering only a certain type of events and
+    ///         subtypes of that type, as the render cache type metadata and prepares
+    ///         structures to enable fast rendering.
+    ///     </para>
     /// </summary>
     public interface JSONEventRenderer
     {

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Examples.AutoId</AssemblyName>
+        <AssemblyTitle>NEsper.Examples.AutoId</AssemblyTitle>
+        <PackageId>NEsper.Examples.AutoId</PackageId>
+        <RootNamespace>NEsper.Examples.AutoId</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(NetCore)'=='true'">
+        <PackageReference Include="System.Data.Common" Version="4.3.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
+        <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="4.5.6" />
+        <PackageReference Include="NUnit" Version="3.10.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Common\NEsper.Common.csproj" />
+        <ProjectReference Include="..\..\..\NEsper\NEsper.Runtime\NEsper.Runtime.csproj" />
+        <ProjectReference Include="..\..\support\NEsper.Examples.Support.csproj" />
+        <ProjectReference Include="..\stockticker\NEsper.Examples.StockTicker.csproj" />
+    </ItemGroup>
+</Project>

@@ -21,7 +21,7 @@ namespace com.espertech.esper.runtime.client.plugin
         /// <para>
         /// Invoked before the engine instance is fully initialized. Thereby this is not the place
         /// to look up an engine instance from <seealso cref="EPRuntimeProvider"/>
-        /// and use it. Use the <<see cref="PostInitialize" /> method instead.
+        /// and use it. Use the <see cref="PostInitialize" /> method instead.
         /// </para>
         /// </summary>
         /// <param name="context">the plug in context</param>

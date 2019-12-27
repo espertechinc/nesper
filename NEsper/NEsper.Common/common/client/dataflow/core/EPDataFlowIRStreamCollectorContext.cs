@@ -62,14 +62,14 @@ namespace com.espertech.esper.common.client.dataflow.core
         public EventBean[] OldEvents { get; }
 
         /// <summary>
-        ///     Returns the statement and can safely be cast to EPStatement when needed(typed object to not require a dependency on
+        ///     Returns the statement and can safely be cast to EPStatement when needed (typed object to not require a dependency on
         ///     runtime)
         /// </summary>
         /// <returns>statement</returns>
         public object Statement { get; }
 
         /// <summary>
-        ///     Returns the runtime instance and can safely be cast to EPServiceProvider when needed(typed object to not require a
+        ///     Returns the runtime instance and can safely be cast to EPRuntime when needed (typed object to not require a
         ///     dependency on runtime)
         /// </summary>
         /// <returns>runtime instance</returns>

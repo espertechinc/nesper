@@ -60,7 +60,7 @@ namespace com.espertech.esperio.support.util
     
         public EventBean[] GetAndResetLastNewData()
         {
-            EventBean[] lastNew = _lastNewData;
+            var lastNew = _lastNewData;
             Reset();
             return lastNew;
         }
@@ -75,7 +75,7 @@ namespace com.espertech.esperio.support.util
             Assert.AreEqual(1, _lastNewData.Length);
             Assert.IsNull(_lastOldData);
     
-            EventBean lastNew = _lastNewData[0];
+            var lastNew = _lastNewData[0];
             Reset();
             return lastNew;
         }
@@ -90,7 +90,7 @@ namespace com.espertech.esperio.support.util
             Assert.AreEqual(1, _lastOldData.Length);
             Assert.IsNull(_lastNewData);
     
-            EventBean lastNew = _lastOldData[0];
+            var lastNew = _lastOldData[0];
             Reset();
             return lastNew;
         }
@@ -117,7 +117,7 @@ namespace com.espertech.esperio.support.util
     
         public bool GetAndClearIsInvoked()
         {
-            bool invoked = _isInvoked;
+            var invoked = _isInvoked;
             _isInvoked = false;
             return invoked;
         }
