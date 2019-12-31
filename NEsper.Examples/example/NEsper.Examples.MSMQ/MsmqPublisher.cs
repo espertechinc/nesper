@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Messaging;
 
-using com.espertech.esper.client;
+using com.espertech.esper.runtime.client;
 
 namespace NEsper.Examples.MSMQ
 {

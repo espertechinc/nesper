@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,10 +8,13 @@
 
 using System;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.util;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compiler.client;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
+
+using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.VirtualDW
 {
@@ -21,7 +24,7 @@ namespace NEsper.Examples.VirtualDW
     
         public static void Main(String[] args)
         {
-            SampleVirtualDataWindowMain sample = new SampleVirtualDataWindowMain();
+            var sample = new SampleVirtualDataWindowMain();
             try
             {
                 sample.Run();
@@ -38,102 +41,121 @@ namespace NEsper.Examples.VirtualDW
 
             var container = ContainerExtensions.CreateDefaultContainer();
 
-            Configuration config = new Configuration(container);
-            config.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.MAP; // use Map-type events for testing
-            config.AddPlugInVirtualDataWindow("sample", "samplevdw", typeof(SampleVirtualDataWindowFactory).FullName);
-            config.AddEventTypeAutoName(typeof(SampleVirtualDataWindowMain).Namespace);    // import all event classes
+            var config = new Configuration(container);
+            config.Common.EventMeta.DefaultEventRepresentation = EventUnderlyingType.MAP; // use Map-type events for testing
+            config.Compiler.AddPlugInVirtualDataWindow("sample", "samplevdw", typeof(SampleVirtualDataWindowFactory).FullName);
+            config.Common.AddEventType(typeof(SampleTriggerEvent));
+            config.Common.AddEventType(typeof(SampleJoinEvent));
+            config.Common.AddEventType(typeof(SampleMergeEvent));
     
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(container, "LargeExternalDataExample", config);
+            var runtime = EPRuntimeProvider.GetRuntime("LargeExternalDataExample", config);
     
             // First: Create an event type for rows of the external data - here the example use a Map-based event and any of the other types (POJO, XML) can be used as well.
             // Populate event property names and types.
             // Note: the type must match the data returned by virtual data window indexes.
-            epService.EPAdministrator.CreateEPL("create schema SampleEvent as (key1 string, key2 string, value1 int, value2 double)");
+            CompileDeploy(runtime, "create schema SampleEvent as (key1 string, key2 string, value1 int, value2 double)");
     
             Log.Info("Creating named window with virtual.");
     
             // Create Named Window holding SampleEvent instances
-            epService.EPAdministrator.CreateEPL("create window MySampleWindow.sample:samplevdw() as SampleEvent");
+            CompileDeploy(runtime, "create window MySampleWindow.sample:samplevdw() as SampleEvent");
     
             // Example subquery
             Log.Info("Running subquery example.");
-            RunSubquerySample(epService);
+            RunSubquerySample(runtime);
     
             // Example joins
             Log.Info("Running join example.");
-            RunJoinSample(epService);
+            RunJoinSample(runtime);
     
             // Sample FAF
             Log.Info("Running fire-and-forget query example.");
-            RunSampleFireAndForgetQuery(epService);
+            RunSampleFireAndForgetQuery(runtime);
     
             // Sample On-Merge
             Log.Info("Running on-merge example.");
-            RunSampleOnMerge(epService);
+            RunSampleOnMerge(runtime);
     
             // Cleanup
             Log.Info("Destroying engine instance, sample completed successfully.");
-            epService.Dispose();
+            runtime.Destroy();
         }
     
-        private void RunSubquerySample(EPServiceProvider epService) {
+        private void RunSubquerySample(EPRuntime runtime) {
     
-            String epl = "select (select key2 from MySampleWindow where key1 = ste.triggerKey) as key2 from SampleTriggerEvent ste";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            SampleUpdateListener sampleListener = new SampleUpdateListener();
+            var epl = "select (select key2 from MySampleWindow where key1 = ste.triggerKey) as key2 from SampleTriggerEvent ste";
+            var stmt = CompileDeploy(runtime, epl);
+            var sampleListener = new SampleUpdateListener();
             stmt.Events += sampleListener.Update;
     
-            epService.EPRuntime.SendEvent(new SampleTriggerEvent("sample1"));
+            runtime.EventService.SendEventBean(new SampleTriggerEvent("sample1"), "SampleTriggerEvent");
             Log.Info("Subquery returned: " + sampleListener.LastEvent.Get("key2"));
             // For assertions against expected results please see the regression test suite
         }
     
-        private void RunJoinSample(EPServiceProvider epService) {
-            String epl = "select sw.* " +
+        private void RunJoinSample(EPRuntime runtime) {
+            var epl = "select sw.* " +
                     "from SampleJoinEvent#lastevent() sje, MySampleWindow sw " +
                     "where sw.Key1 = sje.propOne and sw.Key2 = sje.propTwo";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            SampleUpdateListener sampleListener = new SampleUpdateListener();
+            EPStatement stmt = CompileDeploy(runtime, epl);
+            var sampleListener = new SampleUpdateListener();
             stmt.Events += sampleListener.Update;
     
-            epService.EPRuntime.SendEvent(new SampleJoinEvent("sample1", "sample2")); // see values in SampleVirtualDataWindowIndex
+            runtime.EventService.SendEventBean(new SampleJoinEvent("sample1", "sample2"), "SampleJoinEvent"); // see values in SampleVirtualDataWindowIndex
             Log.Info("Join query returned: " + sampleListener.LastEvent.Get("key1") + " and " + sampleListener.LastEvent.Get("key2"));
     
             // For assertions against expected results please see the regression test suite
         }
     
-        private void RunSampleFireAndForgetQuery(EPServiceProvider epService) {
-            String fireAndForget = "select * from MySampleWindow where key1 = 'sample1' and key2 = 'sample2'"; // see values in SampleVirtualDataWindowIndex
-            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery(fireAndForget);
+        private void RunSampleFireAndForgetQuery(EPRuntime runtime) {
+            var fireAndForget = "select * from MySampleWindow where key1 = 'sample1' and key2 = 'sample2'"; // see values in SampleVirtualDataWindowIndex
+            var compilerArgs = new CompilerArguments();
+            compilerArgs.Path.Add(runtime.RuntimePath);
+
+            var compiled = EPCompilerProvider.Compiler.CompileQuery(fireAndForget, compilerArgs);
+            var result = runtime.FireAndForgetService.ExecuteQuery(compiled);
     
             Log.Info("Fire-and-forget query returned: " + result.Array[0].Get("key1") + " and " + result.Array[0].Get("key2"));
     
             // For assertions against expected results please see the regression test suite
         }
     
-        private void RunSampleOnMerge(EPServiceProvider epService) {
+        private void RunSampleOnMerge(EPRuntime runtime) {
     
-            String onDelete =
+            var onDelete =
                     "on SampleMergeEvent " +
                     "merge MySampleWindow " +
                     "where key1 = propOne " +
                     "when not matched then insert select propOne as key1, propTwo as key2, 0 as value1, 0d as value2 " +
                     "when matched then update set key2 = propTwo";
     
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(onDelete);
-            SampleUpdateListener sampleListener = new SampleUpdateListener();
+            var stmt = CompileDeploy(runtime, onDelete);
+            var sampleListener = new SampleUpdateListener();
             stmt.Events += sampleListener.Update;
     
             // not-matching case
-            epService.EPRuntime.SendEvent(new SampleMergeEvent("mykey-sample", "hello"));
+            runtime.EventService.SendEventBean(new SampleMergeEvent("mykey-sample", "hello"), "SampleMergeEvent");
             Log.Info("Received inserted key: " + sampleListener.LastEvent.Get("key1") + " and " + sampleListener.LastEvent.Get("key2"));
     
             // matching case
-            epService.EPRuntime.SendEvent(new SampleMergeEvent("sample1", "newvalue"));  // see values in SampleVirtualDataWindowIndex
+            runtime.EventService.SendEventBean(new SampleMergeEvent("sample1", "newvalue"), "SampleMergeEvent");  // see values in SampleVirtualDataWindowIndex
             Log.Info("Received updated key: " + sampleListener.LastEvent.Get("key1") + " and " + sampleListener.LastEvent.Get("key2"));
     
             // For assertions against expected results please see the regression test suite
         }
+        
+        private EPStatement CompileDeploy(
+            EPRuntime runtime,
+            string epl)
+        {
+            var args = new CompilerArguments();
+            args.Path.Add(runtime.RuntimePath);
+            args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC;
+            args.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+
+            var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
+            var deployment = runtime.DeploymentService.Deploy(compiled);
+            return deployment.Statements[0];
+        }
     }
-    
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compiler.client;
+using com.espertech.esper.runtime.client;
 
 using NEsper.Examples.MatchMaker.eventbean;
 
@@ -24,25 +26,25 @@ namespace NEsper.Examples.MatchMaker.monitor
         public const double PROXIMITY_RANGE = 1;
 
         private readonly HashSet<int> _existingUsers = new HashSet<int>();
-        private readonly EPServiceProvider _epService;
+        private readonly EPRuntime _runtime;
 
         private EPStatement _locateOther;
         private readonly MatchAlertListener _matchAlertListener;
         private readonly int _mobileUserId;
 
-        public MatchMakingMonitor(EPServiceProvider epService, MatchAlertListener matchAlertListener)
+        public MatchMakingMonitor(EPRuntime runtime, MatchAlertListener matchAlertListener)
         {
             _matchAlertListener = matchAlertListener;
-            _epService = epService;
+            _runtime = runtime;
 
             // Get called for any user showing up
-            var factory = _epService.EPAdministrator.CreatePattern("every user=" + typeof (MobileUserBean).FullName);
+            var factory = CompileDeploy("every user=" + typeof (MobileUserBean).FullName);
             factory.Events += HandleFactoryEvents;
         }
 
-        public MatchMakingMonitor(EPServiceProvider epService, MobileUserBean mobileUser, MatchAlertListener matchAlertListener)
+        public MatchMakingMonitor(EPRuntime runtime, MobileUserBean mobileUser, MatchAlertListener matchAlertListener)
         {
-            _epService = epService;
+            _runtime = runtime;
             _matchAlertListener = matchAlertListener;
             _mobileUserId = mobileUser.UserId;
 
@@ -50,7 +52,7 @@ namespace NEsper.Examples.MatchMaker.monitor
             SetupPatterns(mobileUser);
 
             // Listen to my own location changes so my data is up-to-date
-            EPStatement locationChange = _epService.EPAdministrator.CreatePattern(
+            EPStatement locationChange = CompileDeploy(
                 "every myself=" + typeof (MobileUserBean).FullName +
                 "(UserId=" + mobileUser.UserId + ")");
 
@@ -75,7 +77,7 @@ namespace NEsper.Examples.MatchMaker.monitor
             Log.Debug(".update New user encountered, user=" + user.UserId);
 
             _existingUsers.Add(user.UserId);
-            new MatchMakingMonitor(_epService, user, _matchAlertListener);
+            new MatchMakingMonitor(_runtime, user, _matchAlertListener);
         }
 
         private void SetupPatterns(MobileUserBean mobileUser)
@@ -85,7 +87,7 @@ namespace NEsper.Examples.MatchMaker.monitor
             double locYLow = mobileUser.LocationY - PROXIMITY_RANGE;
             double locYHigh = mobileUser.LocationY + PROXIMITY_RANGE;
 
-            _locateOther = _epService.EPAdministrator.CreatePattern(
+            _locateOther = CompileDeploy(
                 "every other=" + typeof (MobileUserBean).FullName +
                 "(locationX in [" + locXLow + ":" + locXHigh + "]," +
                 "locationY in [" + locYLow + ":" + locYHigh + "]," +
@@ -104,6 +106,19 @@ namespace NEsper.Examples.MatchMaker.monitor
                     var alert = new MatchAlertBean(other.UserId, _mobileUserId);
                     _matchAlertListener.Emitted(alert);
                 };
+        }
+        
+        private EPStatement CompileDeploy(
+            string epl)
+        {
+            var args = new CompilerArguments();
+            args.Path.Add(_runtime.RuntimePath);
+            args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC;
+            args.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+
+            var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
+            var deployment = _runtime.DeploymentService.Deploy(compiled);
+            return deployment.Statements[0];
         }
     }
 }

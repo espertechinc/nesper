@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// <summary>
     ///     EventBean wrapper for XML documents.
     /// </summary>
-    public class XElementEventBean : EventBeanSPI
+    public class XEventBean : EventBeanSPI
     {
         private XElement _theEvent;
 
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// </summary>
         /// <param name="theEvent">is the node with event property information</param>
         /// <param name="type">is the event type for this event wrapper</param>
-        public XElementEventBean(
+        public XEventBean(
             XElement theEvent,
             EventType type)
         {

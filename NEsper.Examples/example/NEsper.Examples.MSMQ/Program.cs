@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,15 +10,19 @@ using System;
 using System.Threading;
 using System.Xml.Linq;
 
-using com.espertech.esper.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.compiler.client;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
+
+using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.MSMQ
 {
     class Program
     {
-        private static EPServiceProvider _serviceProvider;
+        private static EPRuntime _runtime;
         /// <summary>
         /// Egress point for events
         /// </summary>
@@ -61,15 +65,15 @@ namespace NEsper.Examples.MSMQ
 
             // Creates a statement that looks for market data events.
             var configuration = new Configuration(container);
-            configuration.AddEventType<MarketDataTrade>();
-            configuration.AddEventType<EndOfTest>();
+            configuration.Common.AddEventType<MarketDataTrade>();
+            configuration.Common.AddEventType<EndOfTest>();
             // set to true to decouple event processing from msmq latency
-            configuration.EngineDefaults.Threading.IsThreadPoolOutbound = false;
+            configuration.Runtime.Threading.IsThreadPoolOutbound = false;
 
-            _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
-            _serviceProvider.EPAdministrator.CreateEPL("select * from MarketDataTrade").
+            _runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
+            CompileDeploy("select * from MarketDataTrade").
                 Events += (sender, eventArgs) => _publisher.SendEvent(eventArgs);
-            _serviceProvider.EPAdministrator.CreateEPL("select * from EndOfTest")
+            CompileDeploy("select * from EndOfTest")
                 .Events += (sender, eventArgs) => _publisher.SendEvent(eventArgs);
          
             // create a publisher
@@ -98,7 +102,7 @@ namespace NEsper.Examples.MSMQ
         /// </summary>
         static void SendEvents()
         {
-            var sender = _serviceProvider.EPRuntime.GetEventSender("MarketDataTrade");
+            var sender = _runtime.EventService.GetEventSender("MarketDataTrade");
             var milliTime = PerformanceObserver.TimeMillis(
                 delegate
                     {
@@ -111,14 +115,14 @@ namespace NEsper.Examples.MSMQ
 
             Console.WriteLine("Send: {0} events in {1} us", EventCount, milliTime);
 
-            _serviceProvider.EPRuntime.SendEvent(new EndOfTest());
+            _runtime.EventService.SendEventBean(new EndOfTest(), "EndOfTest");
         }
 
         /// <summary>
         /// Consumes the event coming from the queue.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="updateEventArgs">The <see cref="com.espertech.esper.client.UpdateEventArgs"/> instance containing the event data.</param>
+        /// <param name="updateEventArgs">The <see cref="UpdateEventArgs"/> instance containing the event data.</param>
         static void ConsumeEvent(Object sender, UpdateEventArgs updateEventArgs)
         {
             foreach(var eventBean in updateEventArgs.NewEvents) {
@@ -132,6 +136,18 @@ namespace NEsper.Examples.MSMQ
                         break;
                 }
             }
+        }
+        
+        public static EPStatement CompileDeploy(string epl)
+        {
+            var args = new CompilerArguments();
+            args.Path.Add(_runtime.RuntimePath);
+            args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC;
+            args.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+
+            var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
+            var deployment = _runtime.DeploymentService.Deploy(compiled);
+            return deployment.Statements[0];
         }
     }
 

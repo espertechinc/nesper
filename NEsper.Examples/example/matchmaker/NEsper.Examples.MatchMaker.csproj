@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,7 +13,6 @@
   <ItemGroup Condition="'$(NetCore)'=='true'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.0" />
-    <PackageReference Include="System.Configuration.Abstractions" Version="2.0.2.45" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(NetFramework)' == 'net471'">
@@ -25,7 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
-    <ProjectReference Include="..\..\..\NEsper\NEsper.csproj" />
+    <ProjectReference Include="..\..\..\NEsper\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
+    <ProjectReference Include="..\..\..\NEsper\NEsper.Common\NEsper.Common.csproj" />
+    <ProjectReference Include="..\..\..\NEsper\NEsper.Runtime\NEsper.Runtime.csproj" />
+    <ProjectReference Include="..\..\support\NEsper.Examples.Support.csproj" />
   </ItemGroup>
 </Project>

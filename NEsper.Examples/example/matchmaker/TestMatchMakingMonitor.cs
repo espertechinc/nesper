@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,13 +8,16 @@
 
 using System;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat.container;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 
 using NEsper.Examples.MatchMaker.eventbean;
 using NEsper.Examples.MatchMaker.monitor;
 
 using NUnit.Framework;
+
+using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.MatchMaker
 {
@@ -31,20 +34,24 @@ namespace NEsper.Examples.MatchMaker
                 .InitializeDatabaseDrivers();
 
             var configuration = new Configuration(container);
-            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
+            configuration.Common.EventMeta.ClassPropertyResolutionStyle =
                 PropertyResolutionStyle.CASE_INSENSITIVE;
 
             _listener = new MatchAlertListener();
-            EPServiceProviderManager.PurgeDefaultProvider();
-            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
-            _epService.Initialize();
+            EPRuntimeProvider
+                .GetDefaultRuntime()
+                .DeploymentService
+                .UndeployAll();
 
-            new MatchMakingMonitor(_epService, _listener);
+            _runtime = EPRuntimeProvider.GetDefaultRuntime(configuration);
+            _runtime.Initialize();
+
+            new MatchMakingMonitor(_runtime, _listener);
         }
 
         public void TearDown()
         {
-            _epService.Dispose();
+            _runtime.Destroy();
         }
 
         #endregion
@@ -53,13 +60,13 @@ namespace NEsper.Examples.MatchMaker
         private const int USER_ID_2 = 2;
 
         private MatchAlertListener _listener;
-        private EPServiceProvider _epService;
+        private EPRuntime _runtime;
 
 
-        ///<summary>
-        ///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        ///</summary>
-        ///<filterpriority>2</filterpriority>
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <filterpriority>2</filterpriority>
         public void Dispose()
         {
         }
@@ -67,46 +74,49 @@ namespace NEsper.Examples.MatchMaker
         [Test]
         public void TestLocationChanges()
         {
+            var sender = _runtime.EventService.GetEventSender(typeof(MobileUserBean).Name);
+            
             var user1 = new MobileUserBean(USER_ID_1, 10, 10,
                                             Gender.MALE, HairColor.BLONDE, AgeRange.AGE_4,
                                             Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_1);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
 
             var user2 = new MobileUserBean(USER_ID_2, 10, 10,
                                             Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_1,
                                             Gender.MALE, HairColor.BLONDE, AgeRange.AGE_4);
-            _epService.EPRuntime.SendEvent(user2);
+            sender.SendEvent(user2);
 
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
             user1.SetLocation(8.99999, 10);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
             Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
             user1.SetLocation(9, 10);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
             user1.SetLocation(11, 10);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
             user1.SetLocation(11.0000001, 10);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
             Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
             user2.SetLocation(10.0000001, 9);
-            _epService.EPRuntime.SendEvent(user2);
+            sender.SendEvent(user2);
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
         }
 
         [Test]
         public void TestPreferredMatching()
         {
+            var sender = _runtime.EventService.GetEventSender(typeof(MobileUserBean).Name);
             var user1 = new MobileUserBean(USER_ID_1, 10, 10,
                                             Gender.MALE, HairColor.RED, AgeRange.AGE_6,
                                             Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_5);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
 
             // Test all combinations
             foreach (Gender gender in Enum.GetValues(typeof (Gender))) {
@@ -116,7 +126,7 @@ namespace NEsper.Examples.MatchMaker
                         var userA = new MobileUserBean(USER_ID_2, 10, 10,
                                                        Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_5,
                                                        gender, color, age);
-                        _epService.EPRuntime.SendEvent(userA);
+                        sender.SendEvent(userA);
 
                         if (_listener.EmittedList.Count == 1) {
                             Assert.AreEqual(gender, Gender.MALE);
@@ -135,10 +145,11 @@ namespace NEsper.Examples.MatchMaker
         [Test]
         public void TestPreferredMatchingBackwards()
         {
+            var sender = _runtime.EventService.GetEventSender(typeof(MobileUserBean).Name);
             var user1 = new MobileUserBean(USER_ID_1, 10, 10,
                                             Gender.MALE, HairColor.RED, AgeRange.AGE_6,
                                             Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_5);
-            _epService.EPRuntime.SendEvent(user1);
+            sender.SendEvent(user1);
 
             // Test all combinations
             foreach (Gender gender in Enum.GetValues(typeof (Gender))) {
@@ -148,7 +159,7 @@ namespace NEsper.Examples.MatchMaker
                         var userB = new MobileUserBean(USER_ID_2, 10, 10,
                                                        gender, color, age,
                                                        Gender.MALE, HairColor.RED, AgeRange.AGE_6);
-                        _epService.EPRuntime.SendEvent(userB);
+                        sender.SendEvent(userB);
 
                         if (_listener.EmittedList.Count == 1) {
                             Assert.AreEqual(gender, Gender.FEMALE);

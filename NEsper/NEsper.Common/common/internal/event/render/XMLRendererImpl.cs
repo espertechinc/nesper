@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
@@ -195,7 +193,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 buf.Append(mappedProp.Name);
 
                 if (value != null) {
-                    var map = (IDictionary<string, object>) value;
+                    var map = value.AsStringDictionary();
                     if (!map.IsEmpty()) {
                         using (var enumerator = map.GetEnumerator()) {
                             while (enumerator.MoveNext()) {

@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var type = eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeXMLDOM(eventTypeName, type);
             var namedNode = GetXElementFromNode(node);
-            return new XElementEventBean(namedNode, type);
+            return new XEventBean(namedNode, type);
         }
 
         public EventBean AdapterForAvro(

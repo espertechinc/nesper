@@ -4,8 +4,8 @@ using System.Messaging;
 using System.Threading;
 using System.Xml.Linq;
 
-using com.espertech.esper.client;
-using com.espertech.esper.events.xml;
+using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.runtime.client;
 
 namespace NEsper.Examples.MSMQ
 {

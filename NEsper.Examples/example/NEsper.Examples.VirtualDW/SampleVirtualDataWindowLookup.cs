@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.compat.collections;
 
 namespace NEsper.Examples.VirtualDW
@@ -34,7 +34,7 @@ namespace NEsper.Examples.VirtualDW
             eventData.Put("key2", "sample2");
             eventData.Put("value1", 100);
             eventData.Put("value2", 1.5d);
-            EventBean theEvent = _context.EventFactory.Wrap(eventData);
+            var theEvent = _context.EventFactory.Wrap(eventData);
             return new HashSet<EventBean> { theEvent };
         }
     }

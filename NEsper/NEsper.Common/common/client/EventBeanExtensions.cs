@@ -14,16 +14,13 @@ namespace com.espertech.esper.common.client
     {
         public static EventBean AsEventBean(this object value)
         {
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
-            else if (value is EventBean eventBean)
-            {
+            else if (value is EventBean eventBean) {
                 return eventBean;
             }
-            else
-            {
+            else {
                 throw new ArgumentException("not an event bean", nameof(value));
             }
         }

@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>NEsper</id>
-    <version>6.1.1</version>
+    <version>8.0.0-beta-1</version>
     <authors>EsperTech</authors>
     <owners>EsperTech</owners>
     <language>en-us</language>
@@ -25,11 +25,9 @@
       <dependency id="Sharpen" version="1.0.0.3" />
     </dependencies>
   </metadata>
+
   <files>
-    <file src="build\NEsper-6.1.1\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
-    <file src="build\NEsper-6.1.1\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
-    <file src="build\NEsper-6.1.1\lib\net45\NEsper.IO.dll" target="lib\net45\NEsper.IO.dll" />
-    <file src="build\NEsper-6.1.1\lib\net45\NEsper.IO.xml" target="lib\net45\NEsper.IO.xml" />
-    <file src="build\NEsper-6.1.1\lib\net45\NEsper.Avro.dll" target="lib\net45\NEsper.Avro.dll" />
+    <file src="build\NEsper-8.0.0-beta-1\lib\**" target="lib\{framework name}[{version}]" />
   </files>
 </package>
+  

@@ -359,6 +359,24 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
+        ///     Add an name for an event type represented by plain-old object events,
+        ///     and the name is the simple class name of the class.
+        /// </summary>
+        public void AddEventType<T>()
+        {
+            AddEventType(typeof(T).Name, typeof(T).FullName);
+        }
+
+        /// <summary>
+        ///     Add an name for an event type represented by plain-old object events.
+        /// </summary>
+        /// <param name="eventTypeName">is the name for the event type</param>
+        public void AddEventType<T>(string eventTypeName)
+        {
+            AddEventType(eventTypeName, typeof(T).FullName);
+        }
+        
+        /// <summary>
         ///     Add an name for an event type that represents IDictionary events.
         ///     <para />
         ///     Each entry in the type map is the property name and the fully-qualified

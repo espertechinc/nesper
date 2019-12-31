@@ -3,12 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">Any CPU</Platform>
-    <Framework Condition=" '$(Framework)' == '' ">net46</Framework>
+    <Framework Condition=" '$(Framework)' == '' ">net462</Framework>
 
     <SolutionDir>$(MSBuildProjectDirectory)</SolutionDir>
     <!-- Distribution version -->
     <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-    <Version Condition=" '$(Version)' == '' ">6.1.1</Version>
+    <Version Condition=" '$(Version)' == '' ">8.0.0-beta-1</Version>
 
     <!-- Build Directories -->
     <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
@@ -21,18 +21,9 @@
     <LicenseFile>NEsper.Install\License.rtf</LicenseFile>
   </PropertyGroup>
 
-  <Target Name="ApplyLabel">
-  <!--
-    <FileUpdate
-       Files="$(MSBuildProjectDirectory)\NEsper.Documentation\NEsper.Documentation.shfbproj"
-       Regex="build\\NEsper-[0-9\.]+\\"
-       ReplacementText="build\NEsper-$(Version)" />
-  -->
-  </Target>
-
   <Target Name="Rebuild">
     <Message Text="Rebuilding NEsper $(Configuration)" />
-    <MSBuild Projects="NEsperAll.sln" Targets="Rebuild" />
+    <MSBuild Projects="NEsperAll.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=$(Framework)" />
   </Target>
 
   <Target Name="Clean">
@@ -53,10 +44,7 @@
   <!-- SECTION BREAK -->
 
   <Target Name="Release-All">
-    <MSBuild
-      Projects="NEsper.proj"
-      Properties="Configuration=$(Configuration);Platform=Any CPU"
-      Targets="Clean;Release-Target;Clean"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=Any CPU" Targets="Clean;Release-Target;Clean"/>
   </Target>
 
   <Target Name="Build-AnyCPU">
@@ -87,19 +75,20 @@
     </ItemGroup>
 
     <ItemGroup>
-      <NEsperSource Include="NEsper\**\*.cs"      Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.xml"     Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.xsl"     Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.xslt"    Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.xsd"     Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.sql"     Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.config"  Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.csproj"  Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.proj"    Exclude="NEsper\**\bin\**\*"/>
-      <NEsperSource Include="NEsper\**\*.sln" 	  Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.cs" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.xml" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.xsl" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.xslt" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.xsd" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.sql" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.config" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.csproj" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.proj" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.sln" Exclude="NEsper\**\bin\**\*"/>
+      <CoreSource Include="NEsper\**\*.g4" Exclude="NEsper\**\bin\**\*"/>
     </ItemGroup>
 
-    <Copy SourceFiles="@(NEsperSource)" DestinationFiles="@(NEsperSource->'$(BuildRoot)\src\NEsper\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(CoreSource)" DestinationFiles="@(CoreSource->'$(BuildRoot)\src\NEsper\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
     <Copy SourceFiles="@(NEsperTop)" DestinationFiles="@(NEsperTop->'$(BuildRoot)\src\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
   </Target>
 
@@ -109,13 +98,13 @@
 
     <!-- NEsper.IO // src -->
     <ItemGroup>
-      <NEsperIOSource Include="NEsper.IO\**\*.cs"       Exclude="NEsper.IO\**\bin\**\*"/>
-      <NEsperIOSource Include="NEsper.IO\**\*.xml"      Exclude="NEsper.IO\**\bin\**\*"/>
-      <NEsperIOSource Include="NEsper.IO\**\*.csv"      Exclude="NEsper.IO\**\bin\**\*"/>
-      <NEsperIOSource Include="NEsper.IO\**\*.xsl"      Exclude="NEsper.IO\**\bin\**\*"/>
-      <NEsperIOSource Include="NEsper.IO\**\*.config"   Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.cs" Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.xml" Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.csv" Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.xsl" Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.config" Exclude="NEsper.IO\**\bin\**\*"/>
       <NEsperIOSource Include="NEsper.IO\**\*.settings" Exclude="NEsper.IO\**\bin\**\*"/>
-      <NEsperIOSource Include="NEsper.IO\**\*.csproj"   Exclude="NEsper.IO\**\bin\**\*"/>
+      <NEsperIOSource Include="NEsper.IO\**\*.csproj" Exclude="NEsper.IO\**\bin\**\*"/>
     </ItemGroup>
 
     <Copy SourceFiles="@(NEsperIOSource)" DestinationFiles="@(NEsperIOSource->'$(BuildRoot)\src\NEsper.IO\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
@@ -127,19 +116,37 @@
 
     <!-- NEsper.Avro // src -->
     <ItemGroup>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.cs"       Exclude="NEsper.Avro\**\bin\**\*"/>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.xml"      Exclude="NEsper.Avro\**\bin\**\*"/>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.csv"      Exclude="NEsper.Avro\**\bin\**\*"/>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.xsl"      Exclude="NEsper.Avro\**\bin\**\*"/>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.config"   Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.cs" Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.xml" Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.csv" Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.xsl" Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.config" Exclude="NEsper.Avro\**\bin\**\*"/>
       <NEsperAvroSource Include="NEsper.Avro\**\*.settings" Exclude="NEsper.Avro\**\bin\**\*"/>
-      <NEsperAvroSource Include="NEsper.Avro\**\*.csproj"   Exclude="NEsper.Avro\**\bin\**\*"/>
+      <NEsperAvroSource Include="NEsper.Avro\**\*.csproj" Exclude="NEsper.Avro\**\bin\**\*"/>
     </ItemGroup>
 
     <Copy SourceFiles="@(NEsperAvroSource)" DestinationFiles="@(NEsperAvroSource->'$(BuildRoot)\src\NEsper.Avro\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
   </Target>
 
-  <Target Name="Copy-Source-All" DependsOnTargets="Copy-Source-Main;Copy-Source-IO;Copy-Source-Avro" />
+  <Target Name="Copy-Source-Examples">
+    <MakeDir Directories="$(BuildRoot)\src\NEsper" />
+    <MakeDir Directories="$(BuildRoot)\src\NEsper.Examples" />
+
+    <!-- NEsper.Examples // src -->
+    <ItemGroup>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.cs" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.xml" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.csv" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.xsl" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.config" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.settings" Exclude="NEsper.Examples\**\bin\**\*"/>
+      <NEsperExamplesSource Include="NEsper.Examples\**\*.csproj" Exclude="NEsper.Examples\**\bin\**\*"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(NEsperExamplesSource)" DestinationFiles="@(NEsperExamplesSource->'$(BuildRoot)\src\NEsper.Examples\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
+  </Target>
+
+  <Target Name="Copy-Source-All" DependsOnTargets="Copy-Source-Main;Copy-Source-IO;Copy-Source-Avro;Copy-Source-Examples" />
 
   <!-- SECTION BREAK -->
 
@@ -151,47 +158,38 @@
 
     <!-- NEsper // bin -->
     <ItemGroup>
-      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.xml"/>
-      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.dll"/>
-      <Binaries Include="NEsper\NEsper\bin\$(Configuration)\$(Framework)\NEsper.dll.config"/>
+      <Binaries Include="NEsper\NEsper.Compat\bin\$(Configuration)\$(Framework)\NEsper.Compat.xml" Condition="Exists('NEsper\NEsper.Compat\bin\$(Configuration)\$(Framework)\NEsper.Compat.xml')" />
+      <Binaries Include="NEsper\NEsper.Compat\bin\$(Configuration)\$(Framework)\NEsper.Compat.dll"/>
 
-      <Binaries
-          Include="NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll"
-          Condition="Exists('NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll')"
-          />
-      <Binaries
-          Include="NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll"
-          Condition="Exists('NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll')"
-          />
-      <Binaries
-          Include="NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll"
-          Condition="Exists('NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll')"
-          />
-      <Binaries
-          Include="NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll"
-          Condition="Exists('NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll')"
-          />
+      <Binaries Include="NEsper\NEsper.Common\bin\$(Configuration)\$(Framework)\NEsper.Common.xml" Condition="Exists('NEsper\NEsper.Common\bin\$(Configuration)\$(Framework)\NEsper.Common.xml')" />
+      <Binaries Include="NEsper\NEsper.Common\bin\$(Configuration)\$(Framework)\NEsper.Common.dll"/>
 
-      <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml"/>
+      <Binaries Include="NEsper\NEsper.Compiler\bin\$(Configuration)\$(Framework)\NEsper.Compiler.xml" Condition="Exists('NEsper\NEsper.Compiler\bin\$(Configuration)\$(Framework)\NEsper.Compiler.xml')" />
+      <Binaries Include="NEsper\NEsper.Compiler\bin\$(Configuration)\$(Framework)\NEsper.Compiler.dll"/>
+
+      <Binaries Include="NEsper\NEsper.Grammar\bin\$(Configuration)\$(Framework)\NEsper.Grammar.xml" Condition="Exists('NEsper\NEsper.Grammar\bin\$(Configuration)\$(Framework)\NEsper.Grammar.xml')" />
+      <Binaries Include="NEsper\NEsper.Grammar\bin\$(Configuration)\$(Framework)\NEsper.Grammar.dll"/>
+
+      <Binaries Include="NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.xml" Condition="Exists('NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.xml')" />
+      <Binaries Include="NEsper\NEsper.Runtime\bin\$(Configuration)\$(Framework)\NEsper.Runtime.dll"/>
+
+      <Binaries Include="NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll" Condition="Exists('NEsper\NEsper.Data.MySQL\bin\$(Configuration)\$(Framework)\NEsper.Data.MySQL.dll')" />
+      <Binaries Include="NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll" Condition="Exists('NEsper\NEsper.Data.PgSQL\bin\$(Configuration)\$(Framework)\NEsper.Data.PgSQL.dll')" />
+      <Binaries Include="NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll" Condition="Exists('NEsper\NEsper.Data.SQLite\bin\$(Configuration)\$(Framework)\NEsper.Data.SQLite.dll')" />
+      <Binaries Include="NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll" Condition="Exists('NEsper\NEsper.Log.NLog\bin\$(Configuration)\$(Framework)\NEsper.Log.NLog.dll')" />
+
+      <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml" Condition="Exists('NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.xml')" />
       <Binaries Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\$(Framework)\NEsper.IO.dll"/>
-      
-      <Binaries Include="NEsper.Avro\bin\$(Configuration)\$(Framework)\NEsper.Avro.dll"/>
+
+      <Binaries Include="NEsper.Avro\bin\$(Configuration)\$(Framework)\NEsper.Avro.dll" Condition="Exists('NEsper.Avro\bin\$(Configuration)\$(Framework)\NEsper.Avro.xml')" />
     </ItemGroup>
 
-    <Copy SourceFiles="@(Binaries)"
-          DestinationFolder="$(BuildRoot)\lib\$(Framework)"
-          SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(Binaries)" DestinationFolder="$(BuildRoot)\lib\$(Framework)" SkipUnchangedFiles="True" />
   </Target>
 
   <Target Name="Copy-Binaries-All">
-    <MSBuild
-      Projects="NEsper.proj"
-      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net452"
-      Targets="Copy-Binaries-Main"/>
-    <MSBuild
-      Projects="NEsper.proj"
-      Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.0"
-      Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net462" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.0" Targets="Copy-Binaries-Main"/>
   </Target>
 
   <!-- SECTION BREAK -->
@@ -240,22 +238,12 @@
   </Target>
 
   <Target Name="Documentation">
-    <!--
     <Message Text="Building NEsper Documentation - Configuration: $(Configuration)" />
-    <MSBuild Projects="NEsper.Documentation.sln" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\NEsper.chm')"/>
+    <MSBuild Projects="NEsper.Documentation.sln" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\index.html')"/>
     <Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
-    -->
   </Target>
 
-  <Target Name="Reference-Documentation">
-    <MSBuild Projects="$(MSBuildProjectDirectory)\docs\reference\Documentation.proj" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\reference')"/>
-    <ItemGroup>
-      <DocItems Include="$(MSBuildProjectDirectory)/docs/reference/build/**" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DocItems)" DestinationFiles="@(DocItems->'$(BuildRoot)\docs\reference\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="True" />
-  </Target>
-
-  <Target Name="ZipDistribution" DependsOnTargets="ApplyLabel;Documentation">
+  <Target Name="ZipDistribution" DependsOnTargets="Documentation">
     <PropertyGroup>
       <Powershell Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</Powershell>
       <PrepareZip>$(MSBuildProjectDirectory)\support\PrepareZip.ps1</PrepareZip>
