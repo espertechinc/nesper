@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>NEsper.Compat</AssemblyName>
     <AssemblyTitle>NEsper.Compat</AssemblyTitle>
-    <PackageId>NEsper</PackageId>
+    <PackageId>NEsper.Compat</PackageId>
     <RootNamespace>com.espertech.esper</RootNamespace>
-    <Summary>A compatibilty library for NEsper.</Summary>
+    <Summary>A compatibility library for NEsper.</Summary>
     <Description>A compatibility library for NEsper.</Description>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
