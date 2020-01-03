@@ -13,8 +13,9 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.collections;
+
+using Range = com.espertech.esper.common.@internal.filterspec.Range;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {

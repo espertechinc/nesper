@@ -40,7 +40,7 @@ namespace NEsper.Benchmark.Server
                 foreach (var m in CLIENT_CONNECTIONS.Values)
                 {
                     cnx++;
-                    totalCount += m.countForStatSecLast;
+                    totalCount += m._countForStatSecLast;
                     any = m;
                 }
             }
@@ -48,23 +48,23 @@ namespace NEsper.Benchmark.Server
 	        if (any != null) {
 	            Console.WriteLine("Throughput {0:F} (active {1} pending {2} cnx {3})",
 	                              (float) totalCount/statSec,
-	                              any.executor.ThreadCount,
-	                              any.executor.QueueDepth,
+	                              any._executor.ThreadCount,
+	                              any._executor.QueueDepth,
 	                              cnx);
 	        }
 	    }
 
-        private static int ID = 0;
+        private static int _id = 0;
 
-	    private readonly CEPProvider.ICEPProvider cepProvider;
+	    private readonly CEPProvider.ICEPProvider _cepProvider;
 
-        private readonly Executor executor;
-	    private readonly int statSec;
-	    private long countForStatSec = 0;
-	    private long countForStatSecLast = 0;
-	    private long lastThroughputTick = Environment.TickCount;
+        private readonly Executor _executor;
+	    private readonly int _statSec;
+	    private long _countForStatSec = 0;
+	    private long _countForStatSecLast = 0;
+	    private long _lastThroughputTick = Environment.TickCount;
 	    private readonly int myID;
-        private readonly DataAssembler dataAssembler;
+        private readonly DataAssembler _dataAssembler;
 
         /// <summary>
         /// Gets the data assembler.
@@ -72,7 +72,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The data assembler.</value>
         public DataAssembler DataAssembler
         {
-            get { return dataAssembler; }
+            get { return _dataAssembler; }
         }
 
         /// <summary>
@@ -84,12 +84,12 @@ namespace NEsper.Benchmark.Server
         /// <param name="statSec">The stat sec.</param>
         protected ClientConnection(Executor executor, CEPProvider.ICEPProvider cepProvider, int statSec)
         {
-            this.myID = Interlocked.Increment(ref ID) - 1;
-            this.dataAssembler = new DataAssembler();
-            this.dataAssembler.MarketDataEvent += EnqueueEvent;
-            this.executor = executor;
-	        this.cepProvider = cepProvider;
-	        this.statSec = statSec;
+            myID = Interlocked.Increment(ref _id) - 1;
+            _dataAssembler = new DataAssembler();
+            _dataAssembler.MarketDataEvent += EnqueueEvent;
+            _executor = executor;
+	        _cepProvider = cepProvider;
+	        _statSec = statSec;
 
             lock (CLIENT_CONNECTIONS_LOCK)
             {
@@ -128,12 +128,12 @@ namespace NEsper.Benchmark.Server
         {
             var nsTop = PerformanceObserver.NanoTime;
 
-            executor.Execute(
+            _executor.Execute(
                 delegate {
                     if (mdEvent != null)
                     {
                         var ns = PerformanceObserver.NanoTime;
-                        cepProvider.SendMarketDataEvent(mdEvent);
+                        _cepProvider.SendMarketDataEvent(mdEvent);
                         var nsDone = PerformanceObserver.NanoTime;
                         var msDelta = (nsDone - mdEvent.Time) / 1000000;
                         var nsDelta1 = nsDone - ns;
@@ -146,12 +146,12 @@ namespace NEsper.Benchmark.Server
                 });
 
             //stats
-            countForStatSec++;
-            if (Environment.TickCount - lastThroughputTick > statSec * 1E3)
+            _countForStatSec++;
+            if (Environment.TickCount - _lastThroughputTick > _statSec * 1E3)
             {
-                countForStatSecLast = countForStatSec;
-                countForStatSec = 0;
-                lastThroughputTick = Environment.TickCount;
+                _countForStatSecLast = _countForStatSec;
+                _countForStatSec = 0;
+                _lastThroughputTick = Environment.TickCount;
             }
         }
 

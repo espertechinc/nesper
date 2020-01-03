@@ -21,10 +21,11 @@ using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookup;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
+using Range = com.espertech.esper.common.@internal.filterspec.Range;
 
 namespace com.espertech.esper.common.@internal.epl.virtualdw
 {

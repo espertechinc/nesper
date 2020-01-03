@@ -35,7 +35,7 @@ namespace NEsper.Benchmark.Server
                 foreach (var m in CLIENT_CONNECTIONS.Values)
                 {
                     cnx++;
-                    totalCount += m.countLast10sLast;
+                    totalCount += m._countLast10SLast;
                     any = m;
                 }
             }
@@ -44,40 +44,40 @@ namespace NEsper.Benchmark.Server
 	        }
 	    }
 
-        private int iterationsLeft = -1;
-	    private readonly int simulationRate;
-	    private readonly CEPProvider.ICEPProvider cepProvider;
-        private readonly Thread thread;
-        private readonly Executor executor;
-	    private readonly int statSec;
-	    private long countLast10sLast = 0;
-	    private long countLast10s = 0;
-	    private long lastThroughputTick;
-	    private readonly int myID;
-	    private static int ID = 0;
+        private int _iterationsLeft = -1;
+	    private readonly int _simulationRate;
+	    private readonly CEPProvider.ICEPProvider _cepProvider;
+        private readonly Thread _thread;
+        private readonly Executor _executor;
+	    private readonly int _statSec;
+	    private long _countLast10SLast = 0;
+	    private long _countLast10S = 0;
+	    private long _lastThroughputTick;
+	    private readonly int _myId;
+	    private static int _id = 0;
 
         private readonly HighResolutionTimeProvider _highResolutionTimeProvider =
                 HighResolutionTimeProvider.Instance;
 
 	    public SimulateClientConnection(int simulationRate, int iterations, Executor executor, CEPProvider.ICEPProvider cepProvider, int statSec)
         {
-	        lastThroughputTick = _highResolutionTimeProvider.CurrentTime;
+	        _lastThroughputTick = _highResolutionTimeProvider.CurrentTime;
 
-	        thread = new Thread(Run);
-	        thread.Name = "EsperServer-cnx-" + ID++;
+	        _thread = new Thread(Run);
+	        _thread.Name = "EsperServer-cnx-" + _id++;
 
-	        this.iterationsLeft = iterations;
-	        this.simulationRate = simulationRate;
-	        this.executor = executor;
-	        this.cepProvider = cepProvider;
-	        this.statSec = statSec;
-	        myID = ID - 1;
+	        _iterationsLeft = iterations;
+	        _simulationRate = simulationRate;
+	        _executor = executor;
+	        _cepProvider = cepProvider;
+	        _statSec = statSec;
+	        _myId = _id - 1;
 
 	        // simulationRate event / s
 	        // 10ms ~ simulationRate / 1E2
             lock (CLIENT_CONNECTIONS_LOCK)
             {
-                CLIENT_CONNECTIONS.Put(myID, this);
+                CLIENT_CONNECTIONS.Put(_myId, this);
             }
         }
 
@@ -86,7 +86,7 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Start()
         {
-            thread.Start();
+            _thread.Start();
         }
 
         /// <summary>
@@ -94,12 +94,12 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void WaitForCompletion()
         {
-            thread.Join();
+            _thread.Join();
         }
 
 	    public void Run() {
-	        Console.WriteLine("Event per s = {0}", simulationRate);
-	        var eventPer10Millis = (simulationRate / 100);
+	        Console.WriteLine("Event per s = {0}", _simulationRate);
+	        var eventPer10Millis = (_simulationRate / 100);
 	        Console.WriteLine("Event per 10ms = " + Math.Max(eventPer10Millis, 1));
 	        var market = new MarketData[Symbols.SYMBOLS.Length];
 	        for (var i = 0; i < market.Length; i++) {
@@ -108,18 +108,18 @@ namespace NEsper.Benchmark.Server
 
 	        try {
 	            var tickerIndex = 0;
-                while(--iterationsLeft != 0) {
+                while(--_iterationsLeft != 0) {
 	                var ms = _highResolutionTimeProvider.CurrentTime;
 	                for (var i = 0; i < eventPer10Millis; i++) {
 	                    tickerIndex = tickerIndex % Symbols.SYMBOLS.Length;
 	                    var eventObj = market[tickerIndex++];
 	                    //note the cloning here, although we don't change volume or price
 	                    var simulatedEvent = (MarketData) eventObj.Clone();
-	                    executor.Execute(
+	                    _executor.Execute(
 	                        delegate
 	                            {
                                     var ns = _highResolutionTimeProvider.CurrentTime;
-	                                cepProvider.SendMarketDataEvent(simulatedEvent);
+	                                _cepProvider.SendMarketDataEvent(simulatedEvent);
                                     var nsDone = _highResolutionTimeProvider.CurrentTime;
 	                                var statsInstance = StatsHolder.All;
                                     statsInstance.Engine.Update(nsDone - ns);
@@ -127,15 +127,15 @@ namespace NEsper.Benchmark.Server
                                     statsInstance.EndToEnd.Update((nsDone - simulatedEvent.Time) / 1000000);
 	                            });
 	                    //stats
-	                    countLast10s++;
+	                    _countLast10S++;
 	                }
 
 	                var currentTime = _highResolutionTimeProvider.CurrentTime;
-	                if (currentTime - lastThroughputTick > statSec * 1E9) {
+	                if (currentTime - _lastThroughputTick > _statSec * 1E9) {
 	                    //System.out.Println("Avg["+myID+"] " + countLast10s/10 + " active " + executor.GetPoolSize() + " pending " + executor.GetQueue().Count);
-	                    countLast10sLast = countLast10s;
-	                    countLast10s = 0;
-	                    lastThroughputTick = currentTime;
+	                    _countLast10SLast = _countLast10S;
+	                    _countLast10S = 0;
+	                    _lastThroughputTick = currentTime;
 	                }
 	                // going to fast compared to target rate
 	                var deltaTime = currentTime - ms;
@@ -153,7 +153,7 @@ namespace NEsper.Benchmark.Server
 	        {
                 lock (CLIENT_CONNECTIONS_LOCK)
 	            {
-	                CLIENT_CONNECTIONS.Remove(myID);
+	                CLIENT_CONNECTIONS.Remove(_myId);
 	            }
 	        }
 	    }

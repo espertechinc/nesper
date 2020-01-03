@@ -43,18 +43,18 @@ namespace NEsper.Benchmark.Server
     /// </summary>
 	public class Server 
     {
-        private IPAddress address = IPAddress.Any;
-        private readonly Thread thread;
-	    private readonly int port;
-        private readonly int sleepListenerMillis;
-        private readonly int statSec;
-        private readonly int simulationRate;
-        private readonly int simulationThread;
-        private readonly string mode;
-        private readonly Executor executor;
-        private readonly Timer timer;
-        private readonly IPMode ipMode;
-        private readonly int simulationIterations;
+        private IPAddress _address = IPAddress.Any;
+        private readonly Thread _thread;
+	    private readonly int _port;
+        private readonly int _sleepListenerMillis;
+        private readonly int _statSec;
+        private readonly int _simulationRate;
+        private readonly int _simulationThread;
+        private readonly string _mode;
+        private readonly Executor _executor;
+        private readonly Timer _timer;
+        private readonly IPMode _ipMode;
+        private readonly int _simulationIterations;
 
 	    public static readonly int DEFAULT_PORT = 6789;
         public static readonly int? DEFAULT_THREADCORE = null;
@@ -70,29 +70,29 @@ namespace NEsper.Benchmark.Server
         public static readonly HashSet<string> AVAILABLE_EXECUTORS =
             new HashSet<string>(new string[] {"inline", "unbound", "bound", "mqueue"});
 
-	    private CEPProvider.ICEPProvider cepProvider;
+	    private CEPProvider.ICEPProvider _cepProvider;
 
 	    public Server(string mode, string hostOrAddr, int port, IPMode ipMode, Executor executor, int sleep, int statSec, int simulationThread, int simulationRate, int simulationIterations)
         {
-            thread = new Thread(Run);
-            thread.Name = "EsperServer-main";
+            _thread = new Thread(Run);
+            _thread.Name = "EsperServer-main";
 
             if (!string.IsNullOrEmpty(hostOrAddr)) {
-                address = ResolveHostOrAddress(hostOrAddr);
+                _address = ResolveHostOrAddress(hostOrAddr);
             }
 
-	        this.mode = mode;
-	        this.port = port;
-            this.ipMode = ipMode;
-            this.executor = executor;
-	        this.sleepListenerMillis = sleep;
-	        this.statSec = statSec;
-	        this.simulationThread = simulationThread;
-	        this.simulationRate = simulationRate;
-	        this.simulationIterations = simulationIterations;
+	        _mode = mode;
+	        _port = port;
+            _ipMode = ipMode;
+            _executor = executor;
+	        _sleepListenerMillis = sleep;
+	        _statSec = statSec;
+	        _simulationThread = simulationThread;
+	        _simulationRate = simulationRate;
+	        _simulationIterations = simulationIterations;
 
 	        // turn on stat dump
-	        timer = new Timer(DisplayStatistics, null, 0L, statSec*1000);
+	        _timer = new Timer(DisplayStatistics, null, 0L, statSec*1000);
 	    }
 
         /// <summary>
@@ -119,13 +119,13 @@ namespace NEsper.Benchmark.Server
             StatsHolder.Dump("server");
             StatsHolder.Dump("endToEnd");
             StatsHolder.Reset();
-            if (simulationRate <= 0)
+            if (_simulationRate <= 0)
             {
-                ClientConnection.DumpStats(statSec);
+                ClientConnection.DumpStats(_statSec);
             }
             else
             {
-                SimulateClientConnection.DumpStats(statSec);
+                SimulateClientConnection.DumpStats(_statSec);
             }
         }
 
@@ -135,8 +135,8 @@ namespace NEsper.Benchmark.Server
         /// <value>The provider.</value>
         public CEPProvider.ICEPProvider Provider
         {
-            get { return cepProvider; }
-            set { cepProvider = value; }
+            get => _cepProvider;
+            set => _cepProvider = value;
         }
 
         /// <summary>
@@ -147,23 +147,23 @@ namespace NEsper.Benchmark.Server
 	        lock (this)
 	        {
 	            // register ESP/CEP engine
-	            cepProvider = CEPProvider.GetCEPProvider();
-	            cepProvider.Init(sleepListenerMillis);
+	            _cepProvider = CEPProvider.GetCEPProvider();
+	            _cepProvider.Init(_sleepListenerMillis);
 
 	            // register statements
 	            var suffix = MODES.Get("_SUFFIX");
-	            if (mode == "NOOP")
+	            if (_mode == "NOOP")
 	            {
 	                ;
 	            }
 	            else
 	            {
-	                var stmtString = MODES.Get(mode) + " " + suffix;
-	                Console.WriteLine("Using " + mode + " : " + stmtString);
+	                var stmtString = MODES.Get(_mode) + " " + suffix;
+	                Console.WriteLine("Using " + _mode + " : " + stmtString);
 
-	                if (MODES.Get(mode).IndexOf('$') < 0)
+	                if (MODES.Get(_mode).IndexOf('$') < 0)
 	                {
-	                    cepProvider.RegisterStatement(stmtString, mode);
+	                    _cepProvider.RegisterStatement(stmtString, _mode);
 	                    Console.WriteLine("\nStatements registered # 1 only");
 	                }
 	                else
@@ -173,14 +173,14 @@ namespace NEsper.Benchmark.Server
 	                    {
 	                        if (i%100 == 0) Console.WriteLine(".");
 	                        var ticker = Symbols.SYMBOLS[i];
-	                        cepProvider.RegisterStatement(stmtString.Replace("\\$", ticker), mode + "-" + ticker);
+	                        _cepProvider.RegisterStatement(stmtString.Replace("\\$", ticker), _mode + "-" + ticker);
 	                    }
 	                    Console.WriteLine("\nStatements registered # " + Symbols.SYMBOLS.Length);
 	                }
 	            }
 	        }
 
-	        thread.Start();
+	        _thread.Start();
 	    }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void WaitForCompletion()
         {
-            thread.Join();
+            _thread.Join();
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Run()
         {
-            if (simulationRate <= 0)
+            if (_simulationRate <= 0)
             {
                 RunServer();
             }
@@ -211,11 +211,11 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void RunServer()
 	    {
-            var endpoint = new IPEndPoint(address, port);
+            var endpoint = new IPEndPoint(_address, _port);
 
-            if (ipMode == IPMode.TCP)
+            if (_ipMode == IPMode.TCP)
             {
-                Console.WriteLine("Server accepting TCP connections on port {0}", port);
+                Console.WriteLine("Server accepting TCP connections on port {0}", _port);
                 
                 var listener = new TcpListener(endpoint);
                 listener.Start();
@@ -224,18 +224,18 @@ namespace NEsper.Benchmark.Server
                 {
                     var client = listener.AcceptTcpClient();
                     Console.WriteLine("Client connected to server.");
-                    ClientConnection clientConnection = new TcpClientConnection(client, executor, cepProvider, statSec);
+                    ClientConnection clientConnection = new TcpClientConnection(client, _executor, _cepProvider, _statSec);
                     clientConnection.Start();
                 } while (true);
             }
-            else if ( ipMode == IPMode.UDP )
+            else if ( _ipMode == IPMode.UDP )
             {
-                Console.WriteLine("Server accepting UDP datagrams on port {0}", port);
+                Console.WriteLine("Server accepting UDP datagrams on port {0}", _port);
 
                 var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 socket.Bind(endpoint);
 
-                var clientConnection = new UdpClientConnection(socket, executor, cepProvider, statSec);
+                var clientConnection = new UdpClientConnection(socket, _executor, _cepProvider, _statSec);
                 clientConnection.Start();
 
                 while( true )
@@ -252,13 +252,13 @@ namespace NEsper.Benchmark.Server
         {
             Console.WriteLine(
                 "Server in sumulation mode with event/s {0} x {1} = {2}",
-                simulationThread,
-                simulationRate,
-                simulationThread*simulationRate);
+                _simulationThread,
+                _simulationRate,
+                _simulationThread*_simulationRate);
 
-	        var sims = new SimulateClientConnection[simulationThread];
+	        var sims = new SimulateClientConnection[_simulationThread];
 	        for (var i = 0; i < sims.Length; i++) {
-	            sims[i] = new SimulateClientConnection(simulationRate, simulationIterations, executor, cepProvider, statSec);
+	            sims[i] = new SimulateClientConnection(_simulationRate, _simulationIterations, _executor, _cepProvider, _statSec);
 	            sims[i].Start();
 	        }
 
@@ -272,9 +272,13 @@ namespace NEsper.Benchmark.Server
 	        //Console.SetOut(new DummyTextWriter(Console.Out));
 
 	        // load modes
+	        // - this needs to be revised as it is no longer applicable
+#if false
 	        var baseInfo = (NameValueCollection) ConfigurationManager.GetSection("StatementProperties");
-	        for (var ii = 0; ii < baseInfo.Count; ii++)
-	            MODES.Add(baseInfo.GetKey(ii), baseInfo.Get(ii));
+	        for (var ii = 0; ii < baseInfo.Count; ii++) {
+		        MODES.Put(baseInfo.GetKey(ii), baseInfo.Get(ii));
+	        }
+#endif
 
 	        MODES.Put("NOOP", "");
 

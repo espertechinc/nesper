@@ -18,8 +18,8 @@ namespace NEsper.Benchmark.Common
     {
         public static byte[] ComputeMD5Hash( byte[] data, int offset, int length )
         {
-            MD5 md5Hasher = MD5.Create();
-            byte[] dataHash = md5Hasher.ComputeHash(data, offset, length);
+            var md5Hasher = MD5.Create();
+            var dataHash = md5Hasher.ComputeHash(data, offset, length);
             return dataHash;
         }
 
@@ -34,8 +34,8 @@ namespace NEsper.Benchmark.Common
         {
             var sb = new StringBuilder();
 
-            int tail = offset + length;
-            for( int ii = offset ; ii < tail ; ii++ ) {
+            var tail = offset + length;
+            for( var ii = offset ; ii < tail ; ii++ ) {
                 sb.AppendFormat("{0:X2}", data[ii]);
             }
 
@@ -56,7 +56,7 @@ namespace NEsper.Benchmark.Common
         /// <returns></returns>
         public static byte[] Extract(byte[] data, int offset, int length)
         {
-            byte[] edata = new byte[length];
+            var edata = new byte[length];
             Array.Copy(data, offset, edata, 0, length);
             return edata;
         }

@@ -13,9 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="Antlr4.Runtime.Standard">
-            <HintPath>..\..\..\..\..\Users\Aaron\.nuget\packages\antlr4.runtime.standard\4.7.1.1\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
-        </Reference>
+        <Reference Include="Antlr4.Runtime.Standard" />
     </ItemGroup>
 
 </Project>

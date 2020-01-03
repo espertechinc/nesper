@@ -18,22 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Net.Compilers" Version="3.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.Standard">
-      <HintPath>..\..\..\..\..\Users\Aaron\.nuget\packages\antlr4.runtime.standard\4.7.1.1\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
+    <Reference Include="Antlr4.Runtime.Standard" />
   </ItemGroup>
 </Project>

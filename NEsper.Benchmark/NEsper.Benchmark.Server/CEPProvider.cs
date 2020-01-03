@@ -43,7 +43,7 @@ namespace NEsper.Benchmark.Server
         {
             private EPRuntime _runtime;
             private EventSender _marketDataSender;
-            private int sleepMillis;
+            private int _sleepMillis;
 
             public void Init(int sleepListenerMillis)
             {
@@ -53,7 +53,7 @@ namespace NEsper.Benchmark.Server
                 configuration.Common.AddEventType("Market", typeof(MarketData));
                 _runtime = EPRuntimeProvider.GetRuntime("benchmark", configuration);
                 _marketDataSender = _runtime.EventService.GetEventSender("Market");
-                sleepMillis = sleepListenerMillis;
+                _sleepMillis = sleepListenerMillis;
             }
             
             public EPDeployment CompileDeploy(string epl)
@@ -74,9 +74,9 @@ namespace NEsper.Benchmark.Server
             {
                 if (e.NewEvents != null)
                 {
-                    if (sleepMillis > 0)
+                    if (_sleepMillis > 0)
                     {
-                        Thread.Sleep(sleepMillis);
+                        Thread.Sleep(_sleepMillis);
                     }
                 }
             }

@@ -14,8 +14,8 @@ namespace NEsper.Benchmark.Server
 {
     public class UdpClientConnection : ClientConnection
     {
-        private readonly Socket socket;
-        private readonly byte[] dataArray;
+        private readonly Socket _socket;
+        private readonly byte[] _dataArray;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UdpClientConnection"/> class.
@@ -27,10 +27,10 @@ namespace NEsper.Benchmark.Server
 	    public UdpClientConnection(Socket socket, Executor executor, CEPProvider.ICEPProvider cepProvider, int statSec)
             : base(executor, cepProvider, statSec)
         {
-            dataArray = new byte[64 * 1024]; // maximum udp datagram is 64k
+            _dataArray = new byte[64 * 1024]; // maximum udp datagram is 64k
 
-            this.socket = socket;
-            this.socket.BeginReceive(dataArray, 0, dataArray.Length, SocketFlags.None, ReceiveCallback, null);
+            _socket = socket;
+            _socket.BeginReceive(_dataArray, 0, _dataArray.Length, SocketFlags.None, ReceiveCallback, null);
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace NEsper.Benchmark.Server
             try
             {
                 SocketError errorCode;
-                var bytesReceived = socket.EndReceive(ar, out errorCode);
+                var bytesReceived = _socket.EndReceive(ar, out errorCode);
                 if (bytesReceived > 0) {
-                    DataAssembler.Deserialize(dataArray, 0, bytesReceived);
+                    DataAssembler.Deserialize(_dataArray, 0, bytesReceived);
                 }
             }
             catch (IOException e)
@@ -54,7 +54,7 @@ namespace NEsper.Benchmark.Server
                 Console.Error.WriteLine(e.StackTrace);
             }
 
-            socket.BeginReceive(dataArray, 0, dataArray.Length, SocketFlags.None, ReceiveCallback, null);
+            _socket.BeginReceive(_dataArray, 0, _dataArray.Length, SocketFlags.None, ReceiveCallback, null);
         }
     }
 }

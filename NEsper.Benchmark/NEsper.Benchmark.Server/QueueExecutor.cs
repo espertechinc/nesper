@@ -16,9 +16,9 @@ namespace NEsper.Benchmark.Server
 {
     public class QueueExecutor : Executor
     {
-        private readonly Thread[] eventHandleThreads;
-        private bool isHandlingEvents;
-        private readonly IBlockingQueue<WaitCallback> eventQueue;
+        private readonly Thread[] _eventHandleThreads;
+        private bool _isHandlingEvents;
+        private readonly IBlockingQueue<WaitCallback> _eventQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueueExecutor"/> class.
@@ -26,16 +26,16 @@ namespace NEsper.Benchmark.Server
         /// <param name="numThreads">The num threads.</param>
         public QueueExecutor(int numThreads)
         {
-            eventQueue = new ImperfectBlockingQueue<WaitCallback>();
+            _eventQueue = new ImperfectBlockingQueue<WaitCallback>();
 
-            isHandlingEvents = true;
-            eventHandleThreads = new Thread[numThreads];
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            _isHandlingEvents = true;
+            _eventHandleThreads = new Thread[numThreads];
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii] = new Thread(ProcessEventQueue);
-                eventHandleThreads[ii].Name = "EsperEventHandler-" + ii;
-                eventHandleThreads[ii].IsBackground = true;
-                eventHandleThreads[ii].Start();
+                _eventHandleThreads[ii] = new Thread(ProcessEventQueue);
+                _eventHandleThreads[ii].Name = "EsperEventHandler-" + ii;
+                _eventHandleThreads[ii].IsBackground = true;
+                _eventHandleThreads[ii].Start();
             }
         }
 
@@ -45,7 +45,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The thread count.</value>
         public int ThreadCount
         {
-            get { return eventHandleThreads.Length; }
+            get { return _eventHandleThreads.Length; }
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The queue depth.</value>
         public int QueueDepth
         {
-            get { return eventQueue.Count; }
+            get { return _eventQueue.Count; }
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The executor.</value>
         public void Execute(WaitCallback waitCallback)
         {
-            eventQueue.Push(waitCallback);
+            _eventQueue.Push(waitCallback);
         }
 
         /// <summary>
@@ -71,11 +71,11 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Stop()
         {
-            isHandlingEvents = false;
+            _isHandlingEvents = false;
 
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii].Join();
+                _eventHandleThreads[ii].Join();
             }
         }
 
@@ -84,9 +84,9 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Start()
         {
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii].Start();
+                _eventHandleThreads[ii].Start();
             }
         }
 
@@ -95,10 +95,10 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         private void ProcessEventQueue()
         {
-            while (isHandlingEvents)
+            while (_isHandlingEvents)
             {
                 WaitCallback qEvent;
-                if (eventQueue.Pop(100, out qEvent))
+                if (_eventQueue.Pop(100, out qEvent))
                 {
                     try
                     {

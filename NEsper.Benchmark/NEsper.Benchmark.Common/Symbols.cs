@@ -28,18 +28,12 @@ namespace NEsper.Benchmark.Common
 
 	    static Symbols()
         {
-	        int symbolcount = 1000;
-            String optionalConfigArg = ConfigurationManager.AppSettings.Get("esper.benchmark.symbol");
-            if ( optionalConfigArg != null )
-            {
-                symbolcount = Int32.Parse(optionalConfigArg);
-            }
-
-	        string symbolTest = symbolcount.ToString();
+	        var symbolcount = 1000;
+	        var symbolTest = symbolcount.ToString();
 
 	        LENGTH = symbolTest.Length;
-	        String[] symbols = new String[symbolcount];
-	        for (int i = 0; i < symbols.Length; i++) {
+	        var symbols = new string[symbolcount];
+	        for (var i = 0; i < symbols.Length; i++) {
 	            symbols[i] = "S" + i;
 	            while (symbols[i].Length < LENGTH) {
 	                symbols[i] += "A";
@@ -50,13 +44,13 @@ namespace NEsper.Benchmark.Common
 	        SIZE = Encoding.Unicode.GetByteCount(symbols[0]);
 	    }
 
-	    public static readonly String[] SYMBOLS;
+	    public static readonly string[] SYMBOLS;
 
         public static double NextPrice(double baseVal)
         {
-	        int percentVar = RAND.Next(9) + 1;
-	        int trend = RAND.Next(3);
-	        double result = baseVal;
+	        var percentVar = RAND.Next(9) + 1;
+	        var trend = RAND.Next(3);
+	        var result = baseVal;
 	        switch (trend) {
 	            case 0:
 	                result *= 1.0D - percentVar * 0.01D;

@@ -65,7 +65,7 @@ namespace NEsper.Benchmark.Common
         {
             get
             {
-                int trueIndex = (rIndex + index)%buffer.Length;
+                var trueIndex = (rIndex + index)%buffer.Length;
                 return buffer[trueIndex];
             }
         }
@@ -100,10 +100,10 @@ namespace NEsper.Benchmark.Common
         /// <param name="advance">if set to <c>true</c> [advance].</param>
         public void WriteAll( ByteWriter byteWriter, bool advance)
         {
-            int byteCount = buffer.Length - currCapacity;
+            var byteCount = buffer.Length - currCapacity;
 
             // Can we copy it all in one shot
-            int distToEnd = buffer.Length - rIndex;
+            var distToEnd = buffer.Length - rIndex;
             if (distToEnd >= byteCount)
             {
                 byteWriter.Invoke(buffer, rIndex, byteCount);
@@ -137,12 +137,12 @@ namespace NEsper.Benchmark.Common
         /// <returns></returns>
         public byte[] ReadAll(bool advance)
         {
-            int buffLength = buffer.Length;
-            int byteCount = buffLength - currCapacity;
-            byte[] data = new byte[byteCount];
+            var buffLength = buffer.Length;
+            var byteCount = buffLength - currCapacity;
+            var data = new byte[byteCount];
 
             // Can we copy it all in one shot
-            int distToEnd = buffLength - rIndex;
+            var distToEnd = buffLength - rIndex;
             if (distToEnd >= byteCount)
             {
                 Array.Copy(buffer, rIndex, data, 0, byteCount);
@@ -170,14 +170,14 @@ namespace NEsper.Benchmark.Common
         /// <returns></returns>
         public int Read( byte[] data, int offset, int byteCount )
         {
-            int buffLength = buffer.Length;
-            int maxCount = buffLength - currCapacity;
+            var buffLength = buffer.Length;
+            var maxCount = buffLength - currCapacity;
             if ( byteCount > maxCount ) {
                 byteCount = maxCount;
             }
 
             // Can we copy it all in one shot
-            int distToEnd = buffLength - rIndex;
+            var distToEnd = buffLength - rIndex;
             if ( distToEnd >= byteCount ) {
                 Array.Copy(buffer, rIndex, data, offset, byteCount);
             } else {
@@ -208,8 +208,8 @@ namespace NEsper.Benchmark.Common
 
             // Can the entire buffer be written in one shot or do
             // we need to wrap around and write at the beginning?
-            int buffLength = buffer.Length;
-            int distToEnd = buffLength - wIndex;
+            var buffLength = buffer.Length;
+            var distToEnd = buffLength - wIndex;
             if ( distToEnd >= byteCount ) {
                 Array.Copy(data, offset, buffer, wIndex, byteCount);
             } else {

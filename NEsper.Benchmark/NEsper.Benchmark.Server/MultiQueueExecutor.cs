@@ -15,11 +15,11 @@ namespace NEsper.Benchmark.Server
 {
     public class MultiQueueExecutor : Executor
     {
-        private readonly Thread[] eventHandleThreads;
-        private bool isHandlingEvents;
-        private Queue<WaitCallback> eventQueue;
-        private object eventQueueLock;
-        private readonly int maxQueue;
+        private readonly Thread[] _eventHandleThreads;
+        private bool _isHandlingEvents;
+        private Queue<WaitCallback> _eventQueue;
+        private object _eventQueueLock;
+        private readonly int _maxQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueueExecutor"/> class.
@@ -28,18 +28,18 @@ namespace NEsper.Benchmark.Server
         /// <param name="maxQueueSize">Size of the max queue.</param>
         public MultiQueueExecutor(int numThreads, int? maxQueueSize)
         {
-            maxQueue = maxQueueSize ?? 128*1024;
-            eventQueueLock = new object();
-            eventQueue = new Queue<WaitCallback>();
+            _maxQueue = maxQueueSize ?? 128*1024;
+            _eventQueueLock = new object();
+            _eventQueue = new Queue<WaitCallback>();
 
-            isHandlingEvents = true;
-            eventHandleThreads = new Thread[numThreads];
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            _isHandlingEvents = true;
+            _eventHandleThreads = new Thread[numThreads];
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii] = new Thread(ProcessEventQueue);
-                eventHandleThreads[ii].Name = "EsperEventHandler-" + ii;
-                eventHandleThreads[ii].IsBackground = true;
-                eventHandleThreads[ii].Start();
+                _eventHandleThreads[ii] = new Thread(ProcessEventQueue);
+                _eventHandleThreads[ii].Name = "EsperEventHandler-" + ii;
+                _eventHandleThreads[ii].IsBackground = true;
+                _eventHandleThreads[ii].Start();
             }
         }
 
@@ -49,7 +49,7 @@ namespace NEsper.Benchmark.Server
         /// <value>The thread count.</value>
         public int ThreadCount
         {
-            get { return eventHandleThreads.Length; }
+            get { return _eventHandleThreads.Length; }
         }
 
         /// <summary>
@@ -60,8 +60,8 @@ namespace NEsper.Benchmark.Server
         {
             get
             {
-                lock(eventQueueLock) {
-                    return eventQueue.Count;
+                lock(_eventQueueLock) {
+                    return _eventQueue.Count;
                 }
             }
         }
@@ -72,9 +72,9 @@ namespace NEsper.Benchmark.Server
         /// <value>The executor.</value>
         public void Execute(WaitCallback waitCallback)
         {
-            lock (eventQueueLock) {
-                eventQueue.Enqueue(waitCallback);
-                Monitor.Pulse(eventQueueLock);
+            lock (_eventQueueLock) {
+                _eventQueue.Enqueue(waitCallback);
+                Monitor.Pulse(_eventQueueLock);
             }
         }
 
@@ -83,11 +83,11 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Stop()
         {
-            isHandlingEvents = false;
+            _isHandlingEvents = false;
 
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii].Join();
+                _eventHandleThreads[ii].Join();
             }
         }
 
@@ -96,9 +96,9 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         public void Start()
         {
-            for (var ii = 0; ii < eventHandleThreads.Length; ii++)
+            for (var ii = 0; ii < _eventHandleThreads.Length; ii++)
             {
-                eventHandleThreads[ii].Start();
+                _eventHandleThreads[ii].Start();
             }
         }
 
@@ -107,16 +107,16 @@ namespace NEsper.Benchmark.Server
         /// </summary>
         private void ProcessEventQueue()
         {
-            var myEventQueue = new Queue<WaitCallback>(maxQueue);
+            var myEventQueue = new Queue<WaitCallback>(_maxQueue);
 
-            while (isHandlingEvents)
+            while (_isHandlingEvents)
             {
-                lock( eventQueueLock ) {
-                    while (eventQueue.Count == 0)
-                        Monitor.Wait(eventQueueLock);
+                lock( _eventQueueLock ) {
+                    while (_eventQueue.Count == 0)
+                        Monitor.Wait(_eventQueueLock);
 
-                    var tempQueue = eventQueue;
-                    eventQueue = myEventQueue;
+                    var tempQueue = _eventQueue;
+                    _eventQueue = myEventQueue;
                     myEventQueue = tempQueue;
                     //myEventQueue = Interlocked.Exchange(ref eventQueue, myEventQueue);
                 }

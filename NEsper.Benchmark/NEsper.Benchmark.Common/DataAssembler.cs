@@ -79,7 +79,7 @@ namespace NEsper.Benchmark.Common
         /// Delays the flush timer.
         /// </summary>
         /// <param name="userData">The user data.</param>
-        private void DelayFlushTimer(Object userData)
+        private void DelayFlushTimer(object userData)
         {
             FlushStream();
         }
@@ -125,8 +125,8 @@ namespace NEsper.Benchmark.Common
                         // which is unhealthy for reassembly.
 
                         if ( WriteMessage != null ) {
-                            byte[] data = outMemBuffer.ReadAll();
-                            byte[] hash = hashFactory(data);
+                            var data = outMemBuffer.ReadAll();
+                            var hash = hashFactory(data);
                             // Create a second buffer to copy the hash and data into
                             byte[] wContainer;
                             if (hash == null) {
@@ -162,7 +162,7 @@ namespace NEsper.Benchmark.Common
         {
             long maxSize = MaxMessageLength;
             long curSize = outMemBuffer.Length;
-            long extSize = curSize + numBytes;
+            var extSize = curSize + numBytes;
             if (extSize > maxSize)
             {
                 FlushStream();
@@ -185,12 +185,12 @@ namespace NEsper.Benchmark.Common
 
                 //Console.WriteLine("MB> {0}", ByteUtil.ToHexString(inMemBuffer.ReadAll(false)));
 
-                int eMessageSize = ReadInt32(
+                var eMessageSize = ReadInt32(
                     inMemBuffer[0],
                     inMemBuffer[1],
                     inMemBuffer[2],
                     inMemBuffer[3]);
-                int eMessageSequence = ReadInt32(
+                var eMessageSequence = ReadInt32(
                     inMemBuffer[4],
                     inMemBuffer[5],
                     inMemBuffer[6],
@@ -212,7 +212,7 @@ namespace NEsper.Benchmark.Common
 
                 // Push the payload into the inboundMessageQueue
                 if (MarketDataEvent != null) {
-                    MarketData mdEvent = MarketData.Deserialize(eMessageBody);
+                    var mdEvent = MarketData.Deserialize(eMessageBody);
                     MarketDataEvent(this, mdEvent);
                 }
             } while (true);
@@ -224,12 +224,12 @@ namespace NEsper.Benchmark.Common
         /// <param name="mdEvent">The md event.</param>
         public int Serialize(MarketData mdEvent)
         {
-            byte[] data = MarketData.SerializeAsArray(mdEvent);
+            var data = MarketData.SerializeAsArray(mdEvent);
             // Create the message header
 
-            int eMessageSequence = 0;
-            int eMessageSize = data.Length;
-            byte[] eMessageHeader = new byte[8];
+            var eMessageSequence = 0;
+            var eMessageSize = data.Length;
+            var eMessageHeader = new byte[8];
 
             // Check the stream and flush if necessary before adding
             // the current buffer.
@@ -265,7 +265,7 @@ namespace NEsper.Benchmark.Common
 
         private static void TestHashMD5(byte[] dataHash, byte[] data)
         {
-            byte[] realHash = ByteUtil.ComputeMD5Hash(data, 0, data.Length);
+            var realHash = ByteUtil.ComputeMD5Hash(data, 0, data.Length);
 
             var _realHash = ByteUtil.ToHexString(realHash);
             var _dataHash = ByteUtil.ToHexString(dataHash);
@@ -287,10 +287,10 @@ namespace NEsper.Benchmark.Common
         public void Deserialize( byte[] packet, int offset, int length )
         {
             try {
-                int hashLength = BitConverter.ToInt32(packet, offset);
+                var hashLength = BitConverter.ToInt32(packet, offset);
                 // Get the hash
-                byte[] hash = ByteUtil.Extract(packet, offset + 4, hashLength);
-                byte[] data = ByteUtil.Extract(packet, offset + 4 + hashLength, length - offset - 4 - hashLength);
+                var hash = ByteUtil.Extract(packet, offset + 4, hashLength);
+                var data = ByteUtil.Extract(packet, offset + 4 + hashLength, length - offset - 4 - hashLength);
                 // Check the data against the hash
                 hashTester(hash, data);
                 // Write the contents to the memory buffer
@@ -302,7 +302,7 @@ namespace NEsper.Benchmark.Common
             }
         }
 
-        public static Int32 ReadInt32(byte a, byte b, byte c, byte d)
+        public static int ReadInt32(byte a, byte b, byte c, byte d)
         {
             return (a | b << 8 | c << 16 | d << 24);
         }

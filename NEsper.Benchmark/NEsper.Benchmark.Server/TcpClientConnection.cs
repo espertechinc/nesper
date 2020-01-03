@@ -15,8 +15,8 @@ namespace NEsper.Benchmark.Server
 {
     public class TcpClientConnection : ClientConnection
     {
-        private readonly Socket socket;
-        private readonly Thread readThread;
+        private readonly Socket _socket;
+        private readonly Thread _readThread;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TcpClientConnection"/> class.
@@ -28,10 +28,10 @@ namespace NEsper.Benchmark.Server
 	    public TcpClientConnection(TcpClient socketChannel, Executor executor, CEPProvider.ICEPProvider cepProvider, int statSec)
             : base(executor, cepProvider, statSec)
         {
-            socket = socketChannel.Client;
+            _socket = socketChannel.Client;
 
-            readThread = new Thread(ProcessConnection);
-            readThread.Name = "EsperServer-cnx-" + MyID;
+            _readThread = new Thread(ProcessConnection);
+            _readThread.Name = "EsperServer-cnx-" + MyID;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace NEsper.Benchmark.Server
         {
             base.Start();
 
-            readThread.Start();
+            _readThread.Start();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace NEsper.Benchmark.Server
         {
             base.Stop();
 
-            readThread.Join();
+            _readThread.Join();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace NEsper.Benchmark.Server
 
                 while (true)
                 {
-                    var byteCount = socket.Receive(dataBuffer);
+                    var byteCount = _socket.Receive(dataBuffer);
                     if ( byteCount > 0 ) {
                         DataAssembler.Deserialize(dataBuffer, 0, byteCount);
                     }
@@ -79,7 +79,7 @@ namespace NEsper.Benchmark.Server
             }
             finally
             {
-                socket.Close();
+                _socket.Close();
                 RemoveSelf();
                 StatsHolder.Remove(StatsHolder.Engine);
                 StatsHolder.Remove(StatsHolder.Server);

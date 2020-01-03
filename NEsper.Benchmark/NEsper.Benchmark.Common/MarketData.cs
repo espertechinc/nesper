@@ -28,8 +28,8 @@ namespace NEsper.Benchmark.Common
 
         static MarketData()
         {
-            int bytesPerEvent = SIZE + 4; // Add in the packing header
-            int bitsPerEvent = bytesPerEvent*8;
+            var bytesPerEvent = SIZE + 4; // Add in the packing header
+            var bitsPerEvent = bytesPerEvent*8;
             const int megaBit = 1024*1024;
             const int gigaBit = 1024*megaBit;
 
@@ -38,14 +38,14 @@ namespace NEsper.Benchmark.Common
             Console.WriteLine("    1 Gbit/s {1,10} <==> {0}k events/s", gigaBit/bitsPerEvent/1000, gigaBit);
 	    }
 
-	    private String ticker;
+	    private string ticker;
 	    private double price;
 	    private int volume;
 
 	    private long time;//ms
 	    private readonly long inTime;
 
-        public MarketData(String ticker, double price, int volume, long time)
+        public MarketData(string ticker, double price, int volume, long time)
         {
             this.ticker = ticker;
             this.price = price;
@@ -54,7 +54,7 @@ namespace NEsper.Benchmark.Common
             this.inTime = HighResolutionTimeProvider.Instance.CurrentTime;
         }
 
-	    public MarketData(String ticker, double price, int volume)
+	    public MarketData(string ticker, double price, int volume)
         {
 	        this.ticker = ticker;
 	        this.price = price;
@@ -96,9 +96,9 @@ namespace NEsper.Benchmark.Common
             var bTicker = new byte[Symbols.SIZE];
             encoding.GetBytes(md.ticker, 0, md.ticker.Length, bTicker, 0);
 
-            byte[] bPrice = BitConverter.GetBytes(md.Price);
-            byte[] bVolume = BitConverter.GetBytes(md.Volume);
-            byte[] bTickCount = BitConverter.GetBytes(md.Time);
+            var bPrice = BitConverter.GetBytes(md.Price);
+            var bVolume = BitConverter.GetBytes(md.Volume);
+            var bTickCount = BitConverter.GetBytes(md.Time);
 
             var mdArray = new byte[SIZE];
             Array.Copy(bTicker, 0, mdArray, 0, Symbols.SIZE);
@@ -147,12 +147,12 @@ namespace NEsper.Benchmark.Common
         //    return ticker+" : "+time+" : "+price+" : "+volume;
         //}
 
-	    public Object Clone()
+	    public object Clone()
         {
 	        return new MarketData(ticker, price, volume);
 	    }
 	}
 
-    public delegate void MarketDataEventHandler(Object sender, MarketData e);
+    public delegate void MarketDataEventHandler(object sender, MarketData e);
 
 } // End of namespace
