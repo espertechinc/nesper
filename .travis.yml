@@ -1,4 +1,4 @@
 language: csharp
 solution: NEsperAll.sln
 dist: trusty
-dotnet: 2.1
+dotnet: 3.0 

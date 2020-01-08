@@ -21,6 +21,20 @@
     <LicenseFile>NEsper.Install\License.rtf</LicenseFile>
   </PropertyGroup>
 
+  <Target Name="Info">
+    <Message Text="MSBuildBinPath: $(MSBuildBinPath)" />
+    <Message Text="MSBuildExtensionsPath: $(MSBuildExtensionsPath)" />
+    <Message Text="MSBuildExtensionsPath32: $(MSBuildExtensionsPath32)" />
+    <Message Text="MSBuildExtensionsPath64: $(MSBuildExtensionsPath64)" />
+    <Message Text="MSBuildProgramFiles32: $(MSBuildProgramFiles32)" />
+    <Message Text="MSBuildProjectDirectory: $(MSBuildProjectDirectory)" />
+    <Message Text="MSBuildRuntimeType: $(MSBuildRuntimeType)" />
+    <Message Text="MSBuildStartupDirectory: $(MSBuildStartupDirectory)" />
+    <Message Text="MSBuildToolsPath: $(MSBuildToolsPath)" />
+    <Message Text="MSBuildToolsVersion: $(MSBuildToolsVersion)" />
+    <Message Text="MSBuildVersion: $(MSBuildVersion)" />
+  </Target>
+
   <Target Name="Rebuild">
     <Message Text="Rebuilding NEsper $(Configuration)" />
     <MSBuild Projects="NEsperAll.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=$(Framework)" />
@@ -238,6 +252,7 @@
   </Target>
 
   <Target Name="Documentation">
+    <Error Text="Sandcastle documentation must be built with a full build.  Please use msbuild instead of dotnet build." Condition=" '$(MSbuildRuntimeType)' != 'Full'" />
     <Message Text="Building NEsper Documentation - Configuration: $(Configuration)" />
     <MSBuild Projects="NEsper.Documentation.sln" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\index.html')"/>
     <Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
