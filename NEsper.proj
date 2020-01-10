@@ -47,12 +47,17 @@
   </Target>
 
   <Target Name="VeryClean">
+    <Delete Files="$(BuildPath)\NEsper-$(Version).zip" />
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=Any CPU" Targets="Clean"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=Any CPU" Targets="Clean"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=x86" Targets="Clean"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=x86" Targets="Clean"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=x64" Targets="Clean"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=x64" Targets="Clean"/>
+  </Target>
+
+  <Target Name="Restore">
+    <MSBuild Projects="NEsperAll.sln" Targets="Restore" />
   </Target>
 
   <!-- SECTION BREAK -->
@@ -62,12 +67,15 @@
   </Target>
 
   <Target Name="Build-AnyCPU">
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=Any CPU" Targets="Restore"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=Any CPU" Targets="Restore"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=Any CPU" Targets="Build"/>
     <MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=Any CPU" Targets="Build"/>
   </Target>
 
   <Target Name="Build">
     <Message Text="Building NEsper $(Configuration)" />
+    <MSBuild Projects="NEsperAll.sln" Targets="Restore" />
     <MSBuild Projects="NEsperAll.sln" Targets="Build" />
   </Target>
 
@@ -203,7 +211,7 @@
 
   <Target Name="Copy-Binaries-All">
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net462" Targets="Copy-Binaries-Main"/>
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.0" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.1" Targets="Copy-Binaries-Main"/>
   </Target>
 
   <!-- SECTION BREAK -->
@@ -259,11 +267,7 @@
   </Target>
 
   <Target Name="ZipDistribution" DependsOnTargets="Documentation">
-    <PropertyGroup>
-      <Powershell Condition=" '$(PowerShellExe)'=='' ">%WINDIR%\System32\WindowsPowerShell\v1.0\powershell.exe</Powershell>
-      <PrepareZip>$(MSBuildProjectDirectory)\support\PrepareZip.ps1</PrepareZip>
-    </PropertyGroup>
-    <Exec Command="$(Powershell) -NonInteractive -ExecutionPolicy Unrestricted -File $(PrepareZip) -Version $(Version) -BuildPath $(BuildPath)" />
+    <ZipDirectory SourceDirectory="$(BuildRoot)" DestinationFile="$(BuildPath)\NEsper-$(Version).zip" />
   </Target>
 
   <Target Name="Distribution">
