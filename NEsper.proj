@@ -266,7 +266,7 @@
     <Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
   </Target>
 
-  <Target Name="ZipDistribution" DependsOnTargets="Documentation">
+  <Target Name="ZipDistribution" DependsOnTargets="Distribution,Documentation">
     <ZipDirectory SourceDirectory="$(BuildRoot)" DestinationFile="$(BuildPath)\NEsper-$(Version).zip" />
   </Target>
 
