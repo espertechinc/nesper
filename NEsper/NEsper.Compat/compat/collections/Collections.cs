@@ -438,7 +438,8 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="dictionary"></param>
         /// <param name="key"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TK">type for key</typeparam>
+        /// <typeparam name="TV">type for value</typeparam>
         /// <returns></returns>
         public static bool CheckedContainsKey<TK,TV>(
             this IDictionary<TK,TV> dictionary,

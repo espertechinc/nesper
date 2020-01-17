@@ -182,7 +182,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseSByte(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(sbyte?);
                     }
 
                 case sbyte sbyteValue:
@@ -234,7 +234,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseSByte(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(sbyte);
                     }
 
                 case sbyte sbyteValue:
@@ -293,7 +293,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseByte(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(byte?);
                     }
 
                 default:
@@ -312,7 +312,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseByte(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(byte);
                     }
 
                 default:
@@ -441,7 +441,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt16(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(short?);
                     }
 
                 default:
@@ -460,7 +460,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt16(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(short);
                     }
 
                 default:
@@ -483,7 +483,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt32(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(int?);
                     }
 
                 default:
@@ -502,7 +502,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt32(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(int);
                     }
 
                 default:
@@ -525,7 +525,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt64(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(long?);
                     }
 
                 default:
@@ -544,7 +544,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseInt64(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(long);
                     }
 
                 default:
@@ -569,7 +569,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt16(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(ushort?);
                     }
 
                 default:
@@ -588,7 +588,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt16(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(ushort);
                     }
 
                 default:
@@ -611,7 +611,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt32(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(uint?);
                     }
 
                 default:
@@ -630,7 +630,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt32(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(uint);
                     }
 
                 default:
@@ -653,7 +653,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt64(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(ulong?);
                     }
 
                 default:
@@ -672,7 +672,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseUInt64(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(ulong);
                     }
 
                 default:
@@ -695,7 +695,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseFloat(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(float?);
                     }
 
                 default:
@@ -714,7 +714,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseFloat(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(float);
                     }
 
                 default:
@@ -737,7 +737,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseDouble(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(double?);
                     }
 
                 default:
@@ -756,7 +756,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseDouble(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(double);
                     }
 
 
@@ -780,7 +780,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseDecimal(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(decimal?);
                     }
 
                 default:
@@ -799,7 +799,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseDecimal(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(decimal);
                     }
 
                 default:
@@ -822,7 +822,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseBigInteger(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(BigInteger?);
                     }
 
                 default:
@@ -841,7 +841,7 @@ namespace com.espertech.esper.compat.util
                         return SimpleTypeParserFunctions.ParseBigInteger(stringValue);
                     }
                     catch (FormatException) {
-                        return default;
+                        return default(BigInteger);
                     }
 
                 default:

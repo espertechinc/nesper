@@ -114,7 +114,6 @@ namespace com.espertech.esper.compat.datetime
         /// Formats the specified date time.
         /// </summary>
         /// <param name="dateTime">The date time.</param>
-        /// <returns></returns>
         public string Format(DateTime? dateTime)
         {
             return dateTime == null ? null : Format(dateTime.Value);
@@ -123,8 +122,7 @@ namespace com.espertech.esper.compat.datetime
         /// <summary>
         /// Formats the specified date time.
         /// </summary>
-        /// <param name="dateTime">The date time.</param>
-        /// <returns></returns>
+        /// <param name="timeInMillis">The time in milliseconds.</param>
         public string Format(long? timeInMillis)
         {
             return timeInMillis == null ? null : Format(DateTimeEx.UtcInstance(timeInMillis.Value));
@@ -134,7 +132,6 @@ namespace com.espertech.esper.compat.datetime
         /// Returns a DateTimeFormat for the specified date time format.
         /// </summary>
         /// <param name="dateTimeFormat">The date time format.</param>
-        /// <returns></returns>
         public static DateTimeFormat For(string dateTimeFormat)
         {
             return new DateTimeFormat(
