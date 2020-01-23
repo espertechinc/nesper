@@ -8,6 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>09c3e32d-1f92-40c1-b3fc-b89953ec7db8</ProjectGuid>
+    <SHFBROOT Condition="'$(SHFBROOT)' == ''">C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\</SHFBROOT>
     <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
     <AssemblyName>NEsper.Documentation</AssemblyName>
