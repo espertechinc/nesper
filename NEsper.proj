@@ -211,7 +211,7 @@
 
   <Target Name="Copy-Binaries-All">
     <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=net462" Targets="Copy-Binaries-Main"/>
-    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.0" Targets="Copy-Binaries-Main"/>
+    <MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration);Platform=$(Platform);Framework=netstandard2.1" Targets="Copy-Binaries-Main"/>
   </Target>
 
   <!-- SECTION BREAK -->
