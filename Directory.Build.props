@@ -45,7 +45,7 @@
 		<DefineConstants>$(DefineConstants);NETFRAMEWORK;NET471;</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
 		<NetCore>true</NetCore>
 		<DefineConstants>$(DefineConstants);NETCORE;NETSTANDARD;NETSTANDARD2_0;</DefineConstants>
 	</PropertyGroup>
