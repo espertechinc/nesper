@@ -42,7 +42,6 @@
       <DocumentationSource sourceFile="..\NEsper\NEsper.Runtime\NEsper.Runtime.csproj" />
       <DocumentationSource sourceFile="..\NEsper\NEsper.Grammar\NEsper.Grammar.csproj" />
       <DocumentationSource sourceFile="..\NEsper.IO\NEsper.IO\NEsper.IO.csproj" />
-      <DocumentationSource sourceFile="..\NEsper.Avro\NEsper.Avro.csproj" />
     </DocumentationSources>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
     <BuildAssemblerVerbosity>OnlyErrors</BuildAssemblerVerbosity>
